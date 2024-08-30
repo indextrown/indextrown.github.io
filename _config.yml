@@ -19,11 +19,11 @@ locale                   : "en-US"
 title                    : "DongHyeon Kim's Blog"
 title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
-name                     : "indextrown2"
+name                     : "indextrown"
 description              : "데이터로 보다 안전한 세상을 만들고 싶습니다."
-url                      : https://indextrown2.github.io
+url                      : https://indextrown.github.io
 baseurl                  : # the subpath of your site, e.g. "/blog"
-repository               : "indextrown2/indextrown2.github.io" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
+repository               : "indextrown/indextrown.github.io" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 teaser                   : "/assets/logos/background.png" # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 logo                     : "/assets/logos/logo.svg" # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
 masthead_title           : # overrides the website title displayed in the masthead, use " " for no title
@@ -32,7 +32,7 @@ words_per_minute         : 200
 comments:
   provider               : "utterances" # false (default), "disqus", "discourse", "facebook", "staticman", "staticman_v2", "utterances", "giscus", "custom"
   disqus:
-    shortname            : indextrown2-github-io # https://help.disqus.com/customer/portal/articles/466208-what-s-a-shortname-
+    shortname            : indextrown-github-io # https://help.disqus.com/customer/portal/articles/466208-what-s-a-shortname-
   discourse:
     server               : # https://meta.discourse.org/t/embedding-discourse-comments-via-javascript/31963 , e.g.: meta.discourse.org
   facebook:
