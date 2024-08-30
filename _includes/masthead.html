@@ -1,0 +1,114 @@
+{% capture logo_path %}{{ site.logo }}{% endcapture %}
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="{{ '/' | relative_url }}">
+          <img src="{{ logo_path | relative_url }}" alt="{{ site.masthead_title | default: site.title }}"></a> -->
+        <a class="site-title" href="{{ '/' | relative_url }}">
+          @ DDangchan_i
+          <span class="site-subtitle">Datascience Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        {% include toggle.html %}
+
+        <ul class="visible-links">
+          {%- for link in site.data.navigation.main -%}
+            <li class="masthead__menu-item">
+              <a href="{{ link.url | relative_url }}"{% if link.description %} title="{{ link.description }}"{% endif %}>{{ link.title }}</a>
+            </li>
+          {%- endfor -%}
+        </ul>
+        {% if site.search == true %}
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">{{ site.data.ui-text[site.locale].search_label | default: "Toggle search" }}</span>
+          <i class="fas fa-search"></i>
+        </button>
+        {% endif %}
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">{{ site.data.ui-text[site.locale].menu_label | default: "Toggle menu" }}</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>

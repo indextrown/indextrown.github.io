@@ -1,0 +1,49 @@
+/* ==========================================================================
+   Default skin
+   ========================================================================== */
+
+// Intentionally left blank
+// customize skin color
+$background-color: #ffffff !default;
+$text-color: #0a1a31 !default;
+$muted-text-color: #236376 !default;
+$primary-color: #3d3d3d !default;
+$border-color: mix(#fff, #393e46, 75%) !default;
+$footer-background-color: mix(#fff, $primary-color, 80%) !default;
+$link-color: #1e515c !default;
+$masthead-link-color: $text-color !default;
+$masthead-link-color-hover: $text-color !default;
+$navicon-link-color-hover: mix(#fff, $text-color, 80%) !default;
+
+// Dark mode
+
+$dark-background-color: rgb(33,37,41) !default;
+$dark-text-color: #ffffff !default;
+$dark-muted-text-color: #a3a3a3 !default;
+$dark-primary-color: #ffffff !default;
+$dark-border-color: mix(#fff, #393e46, 75%) !default;
+$dark-footer-background-color: mix(#fff, $primary-color, 80%) !default;
+$dark-link-color: #aaddfb !default;
+$dark-masthead-link-color: $text-color !default;
+$dark-masthead-link-color-hover: $text-color !default;
+$dark-navicon-link-color-hover: mix(#fff, $text-color, 80%) !default;
+
+
+
+.pagination--pager:hover {
+  background-color: $link-color !important; //override
+  // color: #fff;
+}
+
+// customize remote buttons color
+.fa-h-square:before {
+  color: #a3a3a3;
+}
+
+.fa-caret-square-up:before {
+  color: #a3a3a3;
+}
+
+.fa-caret-square-down:before {
+  color: #a3a3a3;
+}

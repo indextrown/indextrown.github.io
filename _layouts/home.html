@@ -1,0 +1,79 @@
+---
+layout: archive
+---
+
+{{ content }}
+
+<script src="/assets/js/home.js"></script>
+
+
+{% assign n_posts = site.posts | size %}
+
+<h3 class="archive__subtitle">전체 게시글
+  <span class="n_posts">({{n_posts}})</span>
+</h3>
+<!-- 
+<div class="container">
+  <div class="row">
+   <div class="col-12">
+     <div id="search-bar">
+       <i class="fa fa-search" aria-hidden="true"></i>
+       <input id="search-input" type="text" placeholder="검색어를 입력하세요." />
+     </div>
+     <ul id="results-container"></ul>
+   </div>
+  </div>
+</div> -->
+
+
+{% assign tags = site.data.tags | sort_natural %}
+
+
+
+<!--Tag List-->
+<ul class="tags">
+  {% for tag in tags %}
+    {% capture tag_size %}{{ site.tags[tag] | size }}{% endcapture %}
+    {% if tag_size > "0" %}
+    <li><span class="tag" data-tag="{{tag | replace : ' ', '_' }}">{{ tag }} ({{ tag_size }})</span></li>
+    {% endif %}
+  {% endfor %}
+</ul>
+
+
+
+<!-- {% if paginator %}
+  {% assign posts = paginator.posts %}
+{% else %}
+  {% assign posts = site.posts %}
+{% endif %} -->
+
+{% assign posts = site.posts %}
+
+{% assign entries_layout = page.entries_layout | default: 'list' %}
+<div class="entries-{{ entries_layout }}">
+  {% for post in posts %}
+  <div class="post-wrapper" 
+  {% if post.tags %}
+    {% for tag in post.tags %}
+      data-{{ tag | replace : ' ', '_' }}
+    {% endfor %}
+  {% endif %}>
+    {% include archive-single.html type=entries_layout %}
+    {% if post.tags %}
+      <div class="archive__item-tags">
+        {% for tag in post.tags %}
+          {% if site.data.tags contains tag %}
+          {% assign tag_slug = tag | replace: ' ', '_' %}
+            <a class="posttag tagged" href="/posts/?tag={{ tag_slug }}">{{ tag }}</a>
+          {% else %}
+            <a class="posttag untagged">{{ tag }}</a>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+
+<!-- {% include paginator.html %}-->

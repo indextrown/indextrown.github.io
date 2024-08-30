@@ -1,0 +1,49 @@
+{% assign popular_links = site.data.analytics %}
+
+<div class="blog-slider">
+    <div class="blog-slider__wrp swiper-wrapper">
+
+    {% for link in popular_links limit: 5 %}
+    {% assign post = site.posts | where: "url", link[0] | first %}
+
+    {% if post.header.teaser %}
+        {% capture teaser %}{{ post.header.teaser }}{% endcapture %}
+    {% else %}
+        {% assign teaser = site.teaser %}
+    {% endif %}
+
+      <div class="blog-slider__item swiper-slide">
+        <div class="blog-slider__img">
+          
+          <img src="{{ teaser | relative_url }}" alt="">
+        </div>
+        <div class="blog-slider__content">
+          <span class="blog-slider__code">{{ post.date | date: "%b %d, %Y" }}</span>
+          <div class="blog-slider__title">{{ post.title }}</div>
+          <div class="blog-slider__text">{{ post.excerpt | markdownify | strip_html | truncate: 130 }}</div>
+          <a href="{{ post.url | relative_url }}" class="blog-slider__button">READ MORE</a>
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+    <div class="blog-slider__pagination"></div>
+</div>
+
+<script src="/assets/js/swiper-bundle.min.js"></script>
+<link rel="stylesheet" href="/assets/css/swiper-bundle.min.css">
+<script>
+
+    var swiper = new Swiper('.blog-slider', {
+      spaceBetween: 30,
+      effect: 'fade',
+      loop: true,
+      mousewheel: {
+        invert: false,
+      },
+      // autoHeight: true,
+      pagination: {
+        el: '.blog-slider__pagination',
+        clickable: true,
+      }
+    });
+</script>

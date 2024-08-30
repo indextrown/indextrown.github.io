@@ -1,0 +1,23 @@
+{% case site.tag_archive.type %}
+  {% when "liquid" %}
+    {% assign path_type = "#" %}
+  {% when "jekyll-archives" %}
+    {% assign path_type = nil %}
+{% endcase %}
+
+{% if site.tag_archive.path %}
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].tags_label | default: "Tags :" }} </strong>
+    <span class="archive__item-tags">
+    {% for tag in page.tags %}
+    {% if site.data.tags contains tag %}
+    {% assign tag_slug = tag | replace: ' ', '_' %}
+      <a class="posttag tagged" href="/posts/?tag={{ tag_slug }}">{{ tag }}</a>
+    {% else %}
+      <a class="posttag untagged">{{ tag }}</a>
+    {% endif %}
+    {% endfor %}
+    </span>  
+  </p>
+{% endif %}

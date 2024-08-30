@@ -1,0 +1,8 @@
+# main links
+main:
+  - title: "About"
+    url: /about/
+  - title: "Articles"
+    url: /posts/
+  # - title: "DS roadmap"
+  #   url: /dsroadmap/

@@ -1,0 +1,945 @@
+<!-- Bootstrap and Fontawesome -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="https://kit.fontawesome.com/f1a4cfc769.js" crossorigin="anonymous"></script> 
+
+<!-- Doc -->
+
+<div class="bg-dark h-100 w-100 py-4">
+    <div class="d-flex justify-content-center align-items-center flex-column mb-4 mt-4">
+       <h1 class="mb-4 text-white text-center">데이터사이언스 로드맵</h1>
+       <p class="w-80 text-white text-center" style="word-break: keep-all;">
+        이 페이지에는 데이터사이언스를 학습하는 과정에 필요한 영역들과 추천하는 교재, 강의를 정리해놓았습니다. <br>
+        작게나마 학습 과정에 도움이 되었으면 좋겠습니다. <br>
+        <small style="font-size: x-small;">(데스크탑으로 보시면 더 자세한 코멘트를 보실 수 있습니다)</small>
+       </p>
+    </div>
+ 
+    <main id="infographic" class="d-flex flex-column align-items-center py-5">
+       <section class="step one text-info">
+          <div class="circle">
+            <i class="fa-solid fa-chart-simple display-1 mb-3"></i>
+             <h4>STEP 1</h4><h5>Fundamentals</h5>
+          </div>
+          <article data-step="1">
+            <header class="d-flex align-items-center text-info bg-info bg-opacity-10">
+               <i class="fa-solid fa-chart-simple bg-info"></i>
+               <h6 class="text-uppercase my-3">Mathematics</h6>
+            </header>
+
+            <div class="body">
+               <small>  
+                  수학은 통계학과 데이터사이언스를 공부하는 과정에서 가장 기본이 되는 학문입니다. 다음과 같은 내용 및 교재를 추천합니다. <br>
+                  <ul>
+                     <li>미적분학 : <a target="_blank" href="https://www.stewartcalculus.com/">Stewart Calculus</a>
+                        <p>- 미적분학은 수학과 통계학 모든 영역에 필요한 기본적인 수학적 도구입니다.</p></li>
+                     <li>선형대수 : <a target="_blank" href="https://www.google.com/search?q=matrix+algebra+useful+for+statistics">Matrix Algebra Useful for Statistics</a>
+                        <p>- 선형대수학을 본격적으로 다루지는 않지만, 통계학에서 사용되는 행렬 대수에 대한 내용을 다룹니다. <a href="https://www.yes24.com/Product/Goods/61353041" target="_blank">번역본</a>도 존재합니다.</p></li>
+                     <li>해석학 기초 : <a target="_blank" href="https://www.yes24.com/Product/Goods/67479715">프로그래머를 위한 기초 해석학</a>
+                        <p>
+                           - 해석학이 처음이시라면 추천드리는 기본적인 인트로 교재입니다. 이슬비 님의 <a href="https://iseulbee.com/archives/the-art-of-analysis-4ed/" target="_blank">맛있는 해석학</a> 교재도 추천드립니다.
+                        </p>
+                     </li>
+                     <li>
+                        실해석학 : <a target="_blank" href="https://www.google.com/search?q=Royden+real+analysis">Royden, Real analysis</a>
+                        <p>
+                           - 측도론 기반의 확률론을 공부하기 위해서는 실해석학이 필요합니다. Rudin의 <a target="_blank"  href="https://web.math.ucsb.edu/~agboola/teaching/2021/winter/122A/rudin.pdf">PMA</a>보다 접근이 쉬워 Royden 교재를 추천드립니다.
+                        </p>
+                     </li>
+                  </ul>
+               </small>
+               <div class="d-flex justify-content-between mt-3 controls">
+                  <a class="btn btn-outline-info" href="#">Prev</a>
+                  <a class="btn btn-outline-info" href="#">Next</a>
+               </div>
+            </div>
+         </article>
+          <article data-step="2">
+             <header class="d-flex align-items-center text-info bg-info bg-opacity-10">
+                <i class="fa-solid fa-chart-simple bg-info"></i>
+                <h6 class="text-uppercase my-3">Mathematical Statistics</h6>
+             </header>
+ 
+             <div class="body">
+                <small>
+                  통계학의 확률변수 관련 개념과 추정, 검정 등의 내용은 머신러닝, 딥러닝을 공부하는데 필수적인 내용입니다. 다음과 같은 내용 및 교재를 추천합니다. <br>
+                  <ul>
+                     <li>
+                        기초통계학 : <a target="_blank" href="https://www.google.com/search?q=hogg+probability+and+statistical+inference">Probability and Statistical Inferece</a>
+                        <p>
+                           - 수리통계적 접근 이전에 통계학과 확률론의 기본적인 내용을 다룹니다. 교양수업 수준의 기초통계학보다는 더 깊이 있는 내용을 다룹니다.
+                        </p>
+                     </li>
+                     <li>
+                        수리통계학 : <a target="_blank" href="https://www.yes24.com/Product/Goods/96579721">김우철, 수리통계학</a>, <a target="_blank" href="https://www.google.com/search?q=hogg+introduction+to+mathematical+statistics">Hogg, Introduction to mathematical statistics</a>
+                        <p>- 미적분학, 선형대수학에 대한 사전지식이 요구됩니다. 두 책의 난이도는 비슷한 편인데, 국내 책이라는 점과 다양한 예제가 많다는 점에서 개인적으로는 김우철 교수님의 책을 선호하는 편입니다.</p>
+                     </li>
+                  </ul>
+                </small>
+                <div class="d-flex justify-content-between mt-3 controls">
+                   <a class="btn btn-outline-info" href="#">Prev</a>
+                   <a class="btn btn-outline-info" href="#">Next</a>
+                </div>
+             </div>
+          </article>
+          <article data-step="3">
+             <header class="d-flex align-items-center text-info bg-info bg-opacity-10">
+                <i class="fa-solid fa-chart-simple bg-info"></i>
+                <h6 class="text-uppercase my-3">Linear Regression</h6>
+             </header>
+ 
+             <div class="body">
+                <small> 
+                  회귀분석 과목은 머신러닝의 다양한 모형들을 이해하기 위해 필수적으로 알아야 하는 내용입니다. 선형대수학과 기본적인 수리통계에 대한 사전지식이 요구되며, 다음 교재들을 추천합니다. <br>
+                  <ul>
+                     <li>
+                        <a target="_blank" href="https://ocd.lcwu.edu.pk/cfiles/Statistics/Stat-503/IntroductiontoLinearRegressionAnalysisbyDouglasC.MontgomeryElizabethA.PeckG.GeoffreyViningz-lib.org.pdf">Introduction to Linear Regression Analysis</a>
+                        <p>- 가장 널리 쓰이는 회귀분석의 교과서 같은 교재로, 회귀분석의 다양한 내용을 다룹니다.</p>
+                     </li>
+                     <li>
+                        <a target="_blank" href="https://www.utstat.toronto.edu/~brunner/books/LinearModelsInStatistics.pdf">Linear Models in Statistics</a>
+                        <p>- Montgomery 교재보다 선형대수 관점에서 깊이 있는 내용을 다룹니다. 개인적으로는 해당 교재를 제일 선호합니다.</p>
+                     </li>
+                     <li>
+                        <a target="_blank" href="https://www.yes24.com/Product/Goods/119629346">데이터분석 전문가를 위한 고급회귀분석</a>
+                        <p>- 국내 교재 중 가장 깊이 있는 회귀분석 교재라고 생각됩니다. 최근 개정되며 차원축소 등의 내용이 추가되었습니다.</p>
+                     </li>
+                  </ul>
+                </small>
+                <div class="d-flex justify-content-between mt-3 controls">
+                   <a class="btn btn-outline-info" href="#">Prev</a>
+                   <a class="btn btn-outline-info" href="#">Next</a>
+                </div>
+             </div>
+          </article>
+          <article data-step="4">
+             <header class="d-flex align-items-center text-info bg-info bg-opacity-10">
+                <i class="fa-solid fa-chart-simple bg-info"></i>
+                <h6 class="text-uppercase my-3">Probability Theory</h6>
+             </header>
+ 
+             <div class="body">
+                <small> 확률론 역시 데이터 과학에서 필수적인 내용입니다. 데이터사이언스를 위해 측도론 기반의 확률론을 필수적으로 공부할 필요는 없지만, 통계학의 깊이 있는 이해를 위해서는 요구된다고 생각됩니다.
+                  <ul>
+                     <li>
+                        <a target="_blank" href="http://www.seyedkalali.com/wp-content/uploads/2016/11/A-First-Course-in-Probability-8th-ed.-Sheldon-Ross.pdf">A First Course in Probability</a>
+                        <p>- 측도론을 사용하지는 않으면서도 확률론의 많은 내용들을 깊이 있게 다루는 교재입니다.</p>
+                     </li>
+                     <li>
+                        <a target="_blank" href="https://www.google.com/search?q=billingsley+probability+and+measure">Probability and Measure</a>
+                        <p>
+                           - 측도론 기반의 확률론을 공부하기 위한 교재입니다. 실해석학에 대한 사전지식이 요구되지만, 이 교재는 사전지식에 대한 설명이 자세히 되어있기에 추천합니다. 다만 개인적으로 교재의 서술 순서가 다소 난해한 부분이 있습니다.
+                        </p>
+                     </li>
+                     <li>
+                        <a target="_blank" href="https://services.math.duke.edu/~rtd/PTE/PTE5_011119.pdf">Probability: Theory and Examples</a>
+                        <p>
+                           - 마찬가지로 측도론 기반의 확률론을 공부하기 위한 교재입니다. Billingsley 교재보다는 난이도가 높다고 생각되며 설명이 자세하지는 않습니다. 다만 예제의 해설을 구할 수 있습니다.
+                        </p>
+                     </li>
+                  </ul>
+                </small>
+                <div class="d-flex justify-content-between mt-3 controls">
+                   <a class="btn btn-outline-info" href="#">Prev</a>
+                   <a class="btn btn-outline-info" href="#">Next</a>
+                </div>
+             </div>
+          </article>
+          <article data-step="5">
+            <header class="d-flex align-items-center text-info bg-info bg-opacity-10">
+               <i class="fa-solid fa-chart-simple bg-info"></i>
+               <h6 class="text-uppercase my-3">Advanced Statistics</h6>
+            </header>
+
+            <div class="body">
+               <small> 아래 교재들은 데이터사이언스를 위한 것이라기 보다는 더 깊이 있는 수리통계적 지식을 위한 교재들입니다. <br>
+                 <ul>
+                    <li>
+                       <a target="_blank" href="https://www.google.com/search?q=theory+of+point+estimation">Theory of Point Estimation</a>
+                       <p>- 통계학의 대가 Lehmann의 책으로, 점추정에 대한 매우 깊이있는 내용을 다루고 있습니다.</p>
+                    </li>
+                    <li>
+                       <a target="_blank" href="https://www.google.com/search?q=testing+statistical+hypotheses">Testing Statistical Hypotheses</a>
+                       <p>- TPE와 마찬가지로 Lehmann의 책이며, 가설검정에 대한 깊이있는 내용을 다루고 있습니다.</p>
+                    </li>
+                    <li>
+                        <a target="_blank" href="https://www.google.com/search?q=jun+shao+mathematical+statistics">Mathematical Statistics, Jun shao</a>
+                        <p>
+                           - 측도론을 기반으로 수리통계에 대한 내용을 전개하는 책이라, 개인적으로 보다 엄밀한 정의나 설명이 필요하다고 생각되는 부분에서 참고한 책입니다.
+                        </p>
+                    </li>
+                 </ul>
+               </small>
+               <div class="d-flex justify-content-between mt-3 controls">
+                  <a class="btn btn-outline-info" href="#">Prev</a>
+                  <a class="btn btn-outline-info" href="#">Next</a>
+               </div>
+            </div>
+         </article>
+       </section>
+
+       <!-- ML -->
+
+       <section class="step two text-warning">
+          <div class="circle">
+             <i class="fa-solid fa-desktop display-1 mb-3"></i>
+             <h4>STEP 2</h4>
+             <h5>Machine Learning</h5>
+          </div>
+          <article data-step="6">
+             <header class="d-flex align-items-center text-warning bg-warning bg-opacity-10">
+                <i class="fa-solid fa-desktop bg-warning"></i>
+                <h6 class="text-uppercase-flex my-3">Statistical Learning</h6>
+             </header>
+ 
+             <div class="body">
+                <small> 
+                  많은 머신러닝 방법론들은 복잡한 통계적 방법론들로 볼 수 있습니다. 전통적인 통계방법론들이 머신러닝으로 확장되는 과정을 잘 설명하는 교재 두 권을 소개합니다. 
+                  <ul>
+                     <li>
+                        <a href="https://www.statlearning.com/" target="_blank">An Introduction to Statistical Learning</a>
+                        <p>Regression, Classification 부터 여러 머신러닝 방법들에 대한 이론적인 내용을 다양하게 소개합니다. 최근에는 R 이외에도 Python 코드 기반의 pdf도 제공되어 머신러닝 입문으로 공부하기에 좋은 책이라고 생각됩니다. 한국어 번역본도 존재합니다.</p>
+                     </li>
+                     <li>
+                        <a href="https://hastie.su.domains/Papers/ESLII.pdf" target="_blank">The Elements of Statistical Learning</a>
+                        <p>
+                           앞선 교재보다 머신러닝의 이론적인 내용을 더 깊이 있게 다룹니다. 학부 수리통계학, 회귀분석 수준 이상의 배경 지식이 요구되는 것 같습니다.
+                        </p>
+                     </li>
+                  </ul>
+                </small>
+ 
+                <div class="d-flex justify-content-between mt-3 controls">
+                   <a class="btn btn-outline-warning" href="#">Prev</a>
+                   <a class="btn btn-outline-warning" href="#">Next</a>
+                </div>
+             </div>
+          </article>
+          <article data-step="7">
+             <header class="d-flex align-items-center text-warning bg-warning bg-opacity-10">
+                <i class="fa-solid fa-desktop bg-warning"></i>
+                <h6 class="text-uppercase-flex my-3">Probabilistic Machine Learning</h6>
+             </header>
+ 
+             <div class="body">
+                <small>
+                  최근 통계학 기반의 머신러닝 교재들 중 개인적으로 가장 선호하는 Kevin P. Murphy의 교재를 소개합니다. 확률론과 수리통계학에 기반한 접근 방식으로 거의 대부분의 머신러닝 토픽들을 다룹니다. 최근 연구들도 반영되어 있어 머신러닝의 최신 동향을 파악하기에도 좋습니다. <br>
+                  <ul>
+                     <li>
+                        <a href="https://probml.github.io/pml-book/book1.html" target="_blank">Probabilistic Machine Learning : An Introduction</a>
+                        <p>- 머신러닝의 다양한 내용들을 확률론적으로 접근하는 방식으로 다룹니다. ESL보다는 약간 쉬운 난이도라고 생각되며, 딥러닝에 대해서는 앞선 통계적 머신러닝 교재들보다 더 깊이 있게 다룹니다.
+                        </p>
+                     </li>
+                     <li>
+                        <a href="https://probml.github.io/pml-book/book2.html" target="_blank">Probabilistic Machine Learning : Advanced Topics</a>
+                        <p>- 앞선 교재보다 더욱 깊이 있는 내용들을 다룹니다. 전체적인 흐름보다는 구체적인 방법론들을 다루며 방대한 양의 토픽이 수록되어 있습니다. 특히 그래피컬 모델, 생성형 모델과 베이지안 방법론들에 대한 설명이 잘 되어 있습니다.</p>
+                     </li>
+                  </ul>
+                </small>
+                <div class="d-flex justify-content-between mt-3 controls">
+                   <a class="btn btn-outline-warning" href="#">Prev</a>
+                   <a class="btn btn-outline-warning" href="#">Next</a>
+                </div>
+             </div>
+          </article>
+          <article data-step="8">
+             <header class="d-flex align-items-center text-warning bg-warning bg-opacity-10">
+                <i class="fa-solid fa-desktop bg-warning"></i>
+                <h6 class="text-uppercase my-3">Gaussian Process</h6>
+             </header>
+ 
+             <div class="body">
+                <small>
+                  가우시안 프로세스는 머신러닝의 다양한 분야에 직접적으로 활용되거나 응용되는 방법론입니다. 베이지안 방법론에 대한 사전지식이 있으면 좋으며, 다음 교재를 추천합니다. <br>
+                  <ul>
+                     <li>
+                        <a href="https://gaussianprocess.org/gpml/" target="_blank">Gaussian Processes for Machine Learning</a>
+                        <p>
+                           - 가우시안 프로세스에 대한 깊이 있는 내용을 다루는 교재입니다. SVM 등 머신러닝 방법론들과 연결되는 내용이 잘 서술되어 있습니다. 가우시안 프로세스와 딥러닝 등의 연결점에 대해서는, <a href="https://probml.github.io/pml-book/book2.html" target="_blank">Probabilistic Machine Learning : Advanced Topics</a> 교재의 Gaussian Process 챕터를 참고하면 좋습니다.
+                        </p>
+                     </li>
+                  </ul>
+                </small>
+                <div class="d-flex justify-content-between mt-3 controls">
+                   <a class="btn btn-outline-warning" href="#">Prev</a>
+                   <a class="btn btn-outline-warning" href="#">Next</a>
+                </div>
+             </div>
+          </article>
+          <article data-step="9">
+             <header class="d-flex align-items-center text-warning bg-warning bg-opacity-10">
+                <i class="fa-solid fa-desktop bg-warning"></i>
+                <h6 class="text-uppercase my-3">Optimization</h6>
+             </header>
+ 
+             <div class="body">
+                <small> 
+                  최적화 문제는 머신러닝과 딥러닝 알고리즘에서 많은 중요성을 차지하는 영역입니다. 여러 최적화 문제에 대해 공부하면 도움이 될 것 같습니다. 
+                  <ul>
+                     <li>
+                        <a href="https://web.stanford.edu/~boyd/cvxbook/" target="_blank">Convex Optimization</a> 
+                        <p>
+                           볼록최적화 분야의 바이블이라고도 할 수 있는 Boyd의 교재입니다. 서술이 매우 친절하며, 사전지식 없이도 최적화에 대해 공부할 수 있다고 생각됩니다.
+                        </p>
+                     </li>
+                     <li>
+                        <a href="https://bayesoptbook.com/" target="_blank">Bayesian Optimization</a>
+                        <p>
+                           베이지안 최적화에 대한 교재입니다. 베이지안 최적화는 최근 머신러닝과 딥러닝 모델에서의 하이퍼파라미터 튜닝에 시도되는 방법론입니다. 가우시안 프로세스에 대한 사전지식이 요구됩니다.
+                        </p>
+                     </li>
+                  </ul>
+                </small>
+                <div class="d-flex justify-content-between mt-3 controls">
+                   <a class="btn btn-outline-warning" href="#">Prev</a>
+                   <a class="btn btn-outline-warning" href="#">Next</a>
+                </div>
+             </div>
+          </article>
+
+          <article data-step="10">
+            <header class="d-flex align-items-center text-warning bg-warning bg-opacity-10">
+               <i class="fa-solid fa-desktop bg-warning"></i>
+               <h6 class="text-uppercase my-3">Deep Learning</h6>
+            </header>
+
+            <div class="body">
+               <small>
+                 딥러닝은 최근 몇년간 데이터사이언스 분야에서 가장 큰 영향력을 끼치고 있는 분야입니다. 딥러닝을 공부하기 위해서는 기초 선형대수, 미적분학, 확률론, 통계학과 머신러닝 방법론들에 대한 지식이 요구됩니다. <br>
+                 <ul>
+                    <li>
+                       <a href="https://cs231n.stanford.edu/" target="_blank">CS231n: Deep Learning for CV</a>
+                       <p>- 딥러닝의 기초적인 내용을 다루는 강의입니다. 딥러닝을 공부하기 위한 사전지식이 없다면 이 강의를 추천합니다. 유튜브에서 강의 영상도 확인할 수 있습니다.</p>
+                    </li>
+                    <li>
+                       <a href="https://udlbook.github.io/udlbook/" target="_blank">Understanding Deep Learning</a>
+                       <p>- 딥러닝의 이론적 백그라운드부터 AI ethics까지 폭넓은 주제를 다룹니다. 수학적 설명이 자세히 잘 되어있으며 최근의 딥러닝 동향도 반영되어 있어 추천드리는 책입니다.</p>
+                    </li>
+                    <li>
+                       <a href="https://pytorch.org/tutorials/beginner/introyt.html" target="_blank">Pytorch Tutorials</a>
+                       <p>- 딥러닝 프레임워크인 Pytorch의 공식 튜토리얼입니다. 파이토치를 사용하여 딥러닝을 공부하고 싶다면 이 튜토리얼을 추천드립니다.</p>
+                    </li>
+                 </ul>
+               </small>
+               <div class="d-flex justify-content-between mt-3 controls">
+                  <a class="btn btn-outline-warning" href="#">Prev</a>
+                  <a class="btn btn-outline-warning" href="#">Next</a>
+               </div>
+            </div>
+         </article>
+       </section>
+
+    <!-- other skills -->
+
+       <section class="step three text-success">
+          <div class="circle">
+             <i class="fa-solid fa-book display-1 mb-3"></i>
+             <h4>STEP 3</h4><h5>Other Topics</h5>
+          </div>
+          <article data-step="11">
+             <header class="d-flex align-items-center text-success bg-success bg-opacity-10">
+                <i class="fa-solid fa-book bg-success px-3"></i>
+                <h6 class="text-uppercase my-3">Causal Inference</h6>
+             </header>
+ 
+             <div class="body">
+                <small>
+                  인과추론은 최근 몇년간 데이터사이언스 분야에서 떠오른 분야입니다. 일반적으로 인과추론은 Potential outcome framework, Causal Diagram framework의 두 가지 프레임워크로 나누어 접근하는데, 다음 교재들을 추천합니다. <br>
+                  <ul>
+                     <li>
+                        <a href="https://www.google.com/search?q=Causal+Inference+for+Statistics%2C+Social%2C+and+Biomedical+Sciences%3A+An+Introduction" target="_blank">
+                           Causal Inference for Statistics, Social, and Biomedical Sciences: An Introduction
+                        </a>
+                        <p>
+                          Potential outcome framework 기반의 인과추론을 다루는 교재입니다. 수리통계학적 지식이 필요합니다.
+                        </p>
+                     </li>
+                     <li>
+                        <a href="https://www2.stat.duke.edu/~fl35/CausalInferenceClass.html" target="_blank">
+                           STA 640: Causal Inference Lecture Notes
+                        </a>
+                        <p>
+                           Duke university의 Fan Li 교수님의 인과추론 강의입니다. Potential outcome framework 기반의 인과추론을 다룹니다. 앞선 교재를 기반으로 강의자료가 제공되어 있습니다.
+                        </p>
+                     </li>
+                     <li>
+                        <a href="https://library.oapen.org/bitstream/id/056a11be-ce3a-44b9-8987-a6c68fce8d9b/11283.pdf" target="_blank">
+                           Elements of Causal Inference
+                        </a>
+                        <p>
+                           Causal Diagram framework 기반의 인과추론을 다루는 교재입니다. Potential outcome framework에 비해 수학적인 내용이 덜하고, 더 직관적인 내용을 다룹니다.
+                        </p>
+                     </li>
+                     <li>
+                        <a href="https://www.bradyneal.com/causal-inference-course" target="_blank">
+                           Brady Neal's Causal Inference Course
+                        </a>
+                        <p>
+                           Brady Neal의 causal diagram framework 기반 인과추론 강의입니다. 강의자료와 영상이 제공되며, 인과추론을 처음 접하시는 분들에게 추천드립니다.
+                        </p>
+                     </li>
+                  </ul>
+                </small>
+ 
+                <div class="d-flex justify-content-between mt-3 controls">
+                   <a class="btn btn-outline-success" href="#">Prev</a>
+                   <a class="btn btn-outline-success" href="#">Next</a>
+                </div>
+             </div>
+          </article>
+          <article data-step="12">
+             <header class="d-flex align-items-center text-success bg-success bg-opacity-10">
+                <i class="fa-solid fa-book bg-success px-3"></i>
+                <h6 class="text-uppercase my-3">Time Series Analysis</h6>
+             </header>
+ 
+             <div class="body">
+               <small> 전통적인 시계열 모델은 최근 딥러닝 모델로 비교적 많이 대체되었지만, 여전히 시계열 분석의 기본적인 내용들은 중요합니다. 다음 교재들을 추천합니다. <br>
+                  <ul>
+                     <li>
+                        <a href="https://www.google.com/search?q=time+series+and+its+applications" target="_blank">Time Series and Its Applications</a>
+                     </li>
+                     <li>
+                        <a href="https://www.youtube.com/watch?v=hCl8zTYM4So" target="_blank">한양대학교 이기천 교수님 OCW 강의</a>
+                     </li>
+                  </ul>
+               </small>
+                <div class="d-flex justify-content-between mt-3 controls">
+                   <a class="btn btn-outline-success" href="#">Prev</a>
+                   <a class="btn btn-outline-success" href="#">Next</a>
+                </div>
+             </div>
+          </article>
+          <article data-step="13">
+             <header class="d-flex align-items-center text-success bg-success bg-opacity-10">
+                <i class="fa-solid fa-book bg-success px-3"></i>
+                <h6 class="text-uppercase my-3">Spatial Data Analysis</h6>
+             </header>
+ 
+             <div class="body">
+                <small>
+                  공간통계학은 다양한 활용분야를 가지고 있는 통계학의 한 분야입니다. Geostatistical, Lattice, Point pattern 데이터를 다룹니다. 확률론과 수리통계학, 가우시안 프로세스에 대한 사전지식이 요구됩니다.<br>
+                  <ul>
+                     <li>
+                        <a href="https://www.google.com/search?q=handbook+of+spatial+statistics">Handbook of Spatial Statistics</a>,
+                        <a href="https://www.google.com/search?q=cressie+statistics+for+spatial+data">Statistics for Spatial Data</a>
+                        <p>
+                           공간통계학의 다양한 이론적인 내용들을 다루는 교재들입니다. 확률론과 수리통계학에 대한 깊은 이해가 있으면 좋습니다.
+                        </p>
+                     </li>
+                     <li>
+                        <a href="https://asdar-book.org/" target="_blank">Applied Spatial Data Analysis with R</a>
+                        <p>
+                           R을 이용한 공간 자료 예제가 많이 수록되어 있는 교재입니다. 앞선 교재보다 쉬운 난이도를 가지고 있습니다.
+                        </p>
+                     </li>
+                     <li>
+                        <a href="https://www.google.com/search?q=hierarchical+modeling+for+spatial+data" target="_blank">Hierarchical Modeling for Spatial Data</a>
+                        <p>
+                           공간 자료의 Bayesian hierarchical model에 대한 교재입니다.
+                        </p>
+                     </li>
+                  </ul>
+                </small>
+                <div class="d-flex justify-content-between mt-3 controls">
+                   <a class="btn btn-outline-success" href="#">Prev</a>
+                   <a class="btn btn-outline-success" href="#">Next</a>
+                </div>
+             </div>
+          </article>
+          <article data-step="14">
+             <header class="d-flex align-items-center text-success bg-success bg-opacity-10">
+                <i class="fa-solid fa-book bg-success px-3"></i>
+                <h6 class="text-uppercase my-3">Bayesian</h6>
+             </header>
+ 
+             <div class="body">
+                <small>
+                  베이지안 방법론은 통계학의 주요 분야 중 하나입니다. 확률론, 수리통계에 대한 사전지식이 요구됩니다. <br>
+                  <ul>
+                     <li>
+                        <a href="https://stat.columbia.edu/~gelman/book/" target="_blank">Bayesian Data Analysis</a>
+                        <p>
+                           Andrew Gelman 교수님의 베이지안 교재입니다. 베이지안의 바이블이라고도 불리며, 베이지안 방법론의 다양한 내용들을 다룹니다. 최근 교재에는 Python 코드 예제도 수록되어 있습니다.
+                        </p>
+                     </li>
+                  </ul>
+                </small>
+                <div class="d-flex justify-content-between mt-3 controls">
+                   <a class="btn btn-outline-success" href="#">Prev</a>
+                   <a class="btn btn-outline-success" href="#">Next</a>
+                </div>
+             </div>
+          </article>
+          <article data-step="15">
+             <header class="d-flex align-items-center text-success bg-success bg-opacity-10">
+                <i class="fa-solid fa-book bg-success px-3"></i>
+                <h6 class="text-uppercase my-3">ETC</h6>
+             </header>
+ 
+             <div class="body">
+                <small> 
+                  앞선 주제들 외에, 추가적으로 공부해두면 좋을 법한 토픽들을 소개합니다. 
+                  <ul>
+                     <li>
+                        <a href="https://library.oapen.org/bitstream/handle/20.500.12657/22385/9780367221898_text%20%281%29.pdf?sequence=1&isAllowed=y" target="_blank">Small Sample Size Solutions</a>
+                        <p>
+                        - 머신러닝과 딥러닝 모델들은 주로 빅데이터 기반으로 학습이 이루어지는데, 데이터가 적은 경우 사용가능한 통계적 방법론(회귀분석, 구조방정식 등)을 다루고 있습니다.
+                        </p>
+                     </li>
+                     <li>
+                        <a href="https://www.cis.upenn.edu/~aaroth/Papers/privacybook.pdf" target="_blank">Differential Privacy</a>
+                        <p>
+                           차등적 정보보호에 대한 교재입니다. 최근 데이터사이언스 분야에서 많이 활용되고 있는 분야로 머신러닝 모델들의 개인정보 보호나, 개인정보가 보호된 데이터셋 배포에 활용됩니다.
+                        </p>
+                     </li>
+                     <li>
+                        <a href="https://www.google.com/search?q=topological+data+analysis+with+applications" target="_blank">Topological Data Analysis</a>, <a href="https://www.google.com/search?q=Manifold+Learning+Theory+and+Applications" target="_blank">Manifold Learning</a>
+                        <p>
+                           위상적 구조를 갖는 데이터를 분석하는 방법론들로, 역시 최근 데이터사이언스 분야에서 많이 연구되고 있는 분야입니다. 다만, 위상수학과 미분기하학 등 깊은 수학적 지식이 요구됩니다.
+                        </p>
+                     </li>
+                  </ul>
+                </small>
+                <div class="d-flex justify-content-between mt-3 controls">
+                   <a class="btn btn-outline-success" href="#">Prev</a>
+                   <a class="btn btn-outline-success" href="#">Next</a>
+                </div>
+             </div>
+          </article>
+
+          <!-- final step -->
+
+          <article data-step="16">
+             <header class="d-flex align-items-center bg-primary bg-opacity-10">
+                <i class="fa-solid fa-flag-checkered bg-primary display-2 p-4"></i>
+                <h6 class="text-uppercase my-3">Data Science</h6>
+             </header>
+             <div class="body">
+                <small>
+                  앞서 소개한 이론적인 내용 외에도 데이터베이스(SQL 등), 시스템(Hadoop, Spark) 등 데이터 엔지니어링에 대한 지식이나 프로그래밍에 대한 지식 역시 데이터사이언스를 위한 필요한 내용입니다. <br>
+                  다만, <b>데이터 공학</b>이 아닌 <b>데이터 과학</b>을 표방하는 분야이기에, 데이터의 본질을 이해하는 것이 중요하고 이를 위해 수학과 통계학에 기반한 이론적인 내용들을 공부하는 것이 우선된다고 생각됩니다.
+                </small>
+                <div class="d-flex justify-content-between mt-3 controls">
+                   <a class="btn btn-outline-primary" href="#">Prev</a>
+                   <a class="btn btn-outline-primary invisible" href="#">Next</a>
+                </div>
+             </div>
+          </article>
+       </section>
+
+       <p class="text-white mt-5" style="font-size: small;">
+         Made by ddangchani.github.io (ver. 2024)
+      </p>
+    </main>
+ </div>
+
+<style>
+
+h1 {
+    font-family: "NanumSquareNeoBold";
+}
+
+small, p {
+    font-family: "NanumSquareNeo";
+}
+
+ul {
+   margin-top: 1em;
+}
+
+li > p {
+   @media screen and (max-width: 768px) { 
+      display: none !important;
+   }
+}
+
+#infographic .circle {
+   --circleSize: min(calc(100vw / 3), 400px);
+   width: var(--circleSize);
+   height: var(--circleSize);
+
+   z-index: 1;
+   border-radius: 50% !important;
+   border: 7px double;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   text-align: center;
+   padding: 40px;
+   position: absolute;
+   left: 50%;
+   margin: 40px 0;
+
+   h5{
+      font-size: 1.0em
+   }
+
+   @media screen and (max-width: 768px) {
+        width: 190px;
+        height: 190px;
+        padding: 8px;
+        position: absolute;
+        left: 55%;
+        h5 {
+         font-size: 0.85em !important;
+      }
+    }
+
+   @media screen and (max-width: 400px) {
+      width: 170px;
+      height: 170px;
+      padding: 8px;
+      position: absolute;
+      left: 55%;
+   }
+}
+
+#infographic section {
+   margin-bottom: 1em;
+}
+
+#infographic section:nth-child(odd) .circle {
+   transform: translateX(-120%);
+}
+
+#infographic article {
+   max-width: 410px;
+
+   @media screen and (max-width: 768px) {
+        max-width: 200px;
+        margin-bottom: 15px;
+        left: 40%;
+    }
+
+   @media screen and (max-width: 400px) {
+      max-width: 170px;
+      margin-bottom: 15px;
+      left: 40%;
+   }
+
+   margin-bottom: 30px;
+   cursor: pointer;
+   left: 50%;
+   position: relative;
+}
+#infographic article header {
+   border-top-right-radius: 30px;
+   border-bottom-right-radius: 30px;
+
+   @media screen and (max-width: 768px) {
+        border-top-right-radius: 15px;
+        border-bottom-right-radius: 15px;
+        max-height: 50px;
+
+        h6 {
+            font-size: 0.8em !important;
+        }
+    }
+}
+#infographic article header i {
+   display: flex;
+   font-size: 2em;
+   border-radius: 50%;
+   background-clip: padding-box;
+   padding: 14px;
+   transition: transform 0.4s;
+   color: #fff;
+   border: 16px solid var(--bs-dark);
+   margin: -16px 0 -16px -20px;
+
+   @media screen and (max-width: 768px) {
+        border: 12px solid var(--bs-dark);
+        font-size: 1.5em;
+    }
+    
+}
+#infographic article:hover header i {
+   transform: scale(1.2);
+}
+#infographic article.active header i {
+   transform: none;
+}
+
+#infographic article .body {
+   background: var(--bgColor);
+   padding: 0 20px;
+   border-bottom-right-radius: 30px;
+   border-bottom-left-radius: 30px;
+   max-height: 0;
+   transition: max-height 0.5s, padding 0.5s;
+   overflow: hidden;
+   z-index: 3;
+}
+#infographic article .body .btn {
+   padding: 3px 10px;
+   text-transform: uppercase;
+}
+#infographic :nth-child(even) article {
+   text-align: left;
+   transform: translateX(-100%);
+
+   @media screen and (max-width: 768px) {
+    transform: translateX(-60%);
+   }
+}
+#infographic :nth-child(even) article header {
+   flex-flow: row-reverse;
+   border-top-left-radius: 30px;
+   border-bottom-left-radius: 30px;
+
+   h6 {
+      text-align: center;
+      margin: 0 auto;
+   }
+}
+
+#infographic section:nth-child(odd) article.active header {
+   border-bottom-right-radius: 0;
+}
+#infographic section:nth-child(even) article.active header {
+   border-bottom-left-radius: 0;
+}
+
+#infographic article.active .body {
+   padding: 20px;
+   max-height: fit-content;
+   border: 1px solid;
+
+   @media screen and (max-width: 768px) {
+    max-height: fit-content;
+   }
+}
+
+#infographic section article header h6 {
+   text-align: center;
+   margin: 0 auto;
+}
+
+/* 
+   Articles Positioning
+   Uncomment these for debugging article positions
+*/
+/*#infographic .circle {
+   outline: 96px solid yellow;
+}
+#infographic article header i {
+   opacity: 0.5;
+   position: relative;
+}
+#infographic article header i:after {
+   content: "";
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   width: 4px;
+   height: 4px;
+   transform: translate(-2px, -2px);
+   background: blue;
+}*/
+
+#infographic article[data-step="1"] {
+   margin-left: 6px;
+   @media screen and (max-width: 768px) {
+        margin-left: 0px;
+   }
+}
+#infographic article[data-step="2"] {
+   margin-left: 54px;
+    @media screen and (max-width: 768px) {
+          margin-left: 25px;
+    }
+}
+#infographic article[data-step="3"] {
+   margin-left: 71px;
+    @media screen and (max-width: 768px) {
+          margin-left: 40px;
+    }
+}
+#infographic article[data-step="4"] {
+   margin-left: 61px;
+    @media screen and (max-width: 768px) {
+          margin-left: 20px;
+    }
+}
+#infographic article[data-step="5"] {
+   margin-left: 22px;
+    @media screen and (max-width: 768px) {
+          margin-left: 0px;
+    }
+}
+#infographic article[data-step="6"] {
+   margin-left: -5px;
+}
+#infographic article[data-step="7"] {
+   margin-left: -54px;
+}
+#infographic article[data-step="8"] {
+   margin-left: -70px;
+}
+#infographic article[data-step="9"] {
+   margin-left: -60px;
+}
+#infographic article[data-step="10"] {
+   margin-left: -21px;
+}
+#infographic article[data-step="11"] {
+   margin-left: 7px;
+
+    @media screen and (max-width: 768px) {
+          margin-left: 0px;
+    }
+}
+#infographic article[data-step="12"] {
+   margin-left: 55px;
+
+    @media screen and (max-width: 768px) {
+          margin-left: 25px;
+    }
+}
+#infographic article[data-step="13"] {
+   margin-left: 73px;
+
+    @media screen and (max-width: 768px) {
+          margin-left: 40px;
+    }
+}
+#infographic article[data-step="14"] {
+   margin-left: 62px;
+
+    @media screen and (max-width: 768px) {
+          margin-left: 20px;
+    }
+}
+#infographic article[data-step="15"] {
+   margin-left: 23px;
+
+    @media screen and (max-width: 768px) {
+          margin-left: 0px;
+    }
+}
+
+#infographic article[data-step="16"] {
+   left: -20% !important;
+   color: rgb(56, 135, 255);
+   min-width: 150% !important;
+   margin-top: 4em;
+   text-align: center;
+   i {
+    font-size: 2em;
+    padding: 12px !important;
+   }
+   
+   b {
+      color: rgb(153, 194, 255) !important;
+   }
+
+   h6 {
+      font-size: 1.1em !important;
+   }
+}
+
+
+/* Icon size adjust */
+
+#infographic section:nth-child(1) article header i {
+   padding: 15px 17.5px;
+   font-size: 2em !important;
+
+   @media screen and (max-width: 768px) {
+      font-size: 1.5em !important;
+      padding: 10px 11.5px !important;
+   }
+}
+
+#infographic section:nth-child(2) article header i {
+   margin: -16px -20px -16px 0;
+   padding: 15px 12.5px;
+
+    @media screen and (max-width: 768px) {
+     padding: 10px 8.5px !important;
+    }
+}
+
+#infographic section:nth-child(3) article header i {
+    padding: 15px 17.5px !important;
+
+    @media screen and (max-width: 768px) {
+     padding: 10px 11.5px !important;
+    }
+}
+
+/* font color for a tag */
+#infographic section:nth-child(1) article ul a {
+    color: #5bd4ec !important;
+
+      &:hover {
+         color: #fff !important;
+      }
+}
+
+#infographic section:nth-child(2) article ul a {
+    color: #fcd86b !important;
+
+      &:hover {
+         color: #fff !important;
+      }
+}
+
+#infographic section:nth-child(3) article ul a {
+    color: #3ecb89 !important;
+
+      &:hover {
+         color: #fff !important;
+      }
+}
+
+
+/* search */
+
+.results {
+   h2 a {
+      text-decoration: none;
+   }
+}
+
+</style>
+
+<script>
+
+// Expand/Collapse Article
+document.querySelectorAll("#infographic article").forEach((article) => {
+   article.addEventListener("click", () => {
+      article.classList.toggle("active");
+   });
+});
+
+// Always Collapse Article on click outside
+document.addEventListener("mouseup", (e) => {
+   document.querySelectorAll("article.active").forEach((article) => {
+      if (article.contains(e.target)) return;
+      if (article === e.target) return;
+      article.classList.remove("active");
+   });
+});
+
+// Activate artciles through prev/next interactions
+document.querySelectorAll("#infographic article .btn").forEach((btn) => {
+   btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      var isprev =
+         e.target === e.target.parentElement.firstElementChild ? true : false;
+      var article = btn.closest("article");
+      var step = parseInt(article.getAttribute("data-step"));
+      var next = document.querySelector(
+         `[data-step="${isprev ? step - 1 : step + 1}"]`
+      );
+      next.classList.add("active");
+      next.scrollIntoView({
+         behavior: "smooth",
+         block: "nearest"
+      });
+   });
+});
+
+ </script>

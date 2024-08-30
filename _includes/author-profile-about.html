@@ -1,0 +1,176 @@
+{% assign author = site.author %}
+
+<div class="grid-container">
+  <div class="grid-item about_avatar">
+    {% if author.avatar %}
+      <img src="{{ author.avatar | relative_url }}" alt="{{ author.name }}" itemprop="image" class="u-photo">
+    {% endif %}
+  </div>
+  
+  <div class="grid-item about_content">
+
+    <div class="my-name">DongHyeon Kim</div>
+    {% if author.bio %}
+      <div class="about__bio p-note" itemprop="description">
+        {{ author.bio | markdownify }}
+      </div>
+    {% endif %}
+    <div class="about_urls-wrapper">
+      <ul class="about_urls">
+        {% if author.location %}
+          <li class="my-location" itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+            <i class="fas fa-fw fa-map-marker-alt"></i> <span itemprop="name" class="p-locality">Seoul, South Korea</span>
+          </li>
+        {% endif %}
+        
+        <!-- {% if author.links %}
+          {% for link in author.links %}
+            {% if link.label and link.url %}
+              <li>
+                <a href="{{ link.url }}" rel="nofollow noopener noreferrer me"{% if link.url contains 'http' %} itemprop="sameAs"{% endif %}>
+                  <i class="{{ link.icon | default: 'fas fa-link' }}"></i><span class="label">{{ link.label }}</span>
+                </a>
+              </li>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+         -->
+        <li>
+          <a href="mailto:lghan00020@gmail.com" class="u-email" target="_top">
+            <meta itemprop="email" content="{{ author.email }}" />
+            <i class="fas fa-fw fa-envelope-square"></i><span class="label"> {{ site.data.ui-text[site.locale].email_label | default: "Email" }}</span>
+          </a>
+        </li>
+        
+        <li>
+          <a href="https://www.linkedin.com/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+            <i class="fab fa-fw fa-linkedin"></i><span class="label"> LinkedIn</span>
+          </a>
+        </li>
+        
+        <!-- {% if author.instagram %}
+          <li>
+            <a href="https://instagram.com/{{ author.instagram }}" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+              <i class="fab fa-fw fa-instagram"></i><span class="label">Instagram</span>
+            </a>
+          </li>
+        {% endif %} -->
+        
+        <li>
+          <a href="https://github.com/indextrown" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+            <i class="fab fa-fw fa-github"></i><span class="label"> GitHub</span>
+          </a>
+        </li>
+        
+        {% if author.youtube %}
+          {% if author.youtube contains "://" %}
+            <li>
+              <a href="{{ author.youtube }}" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+                <i class="fab fa-fw fa-youtube"></i><span class="label">YouTube</span>
+              </a>
+            </li>
+          {% elsif author.youtube %}
+            <li>
+              <a href="https://www.youtube.com/user/{{ author.youtube }}" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+                <i class="fab fa-fw fa-youtube"></i><span class="label">YouTube</span>
+              </a>
+            </li>
+          {% endif %}
+        {% endif %}
+        
+        <a href="https://hits.seeyoufarm.com">
+          <style>
+            @media screen and (max-width: 1024px) {
+              .hits {
+                display: none;
+              }
+            }
+            @media screen and (min-width: 1025px) {
+              .hits {
+              width: auto;
+              height: auto;
+              max-width: 150px;
+              max-height: 30px;
+            } 
+            }
+          </style>
+          <img class="hits" src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fddangchani.github.io&count_bg=%233D99C8&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false"/>
+        </a>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<style>
+.grid-container {
+  display: grid;
+  grid-template-columns: 1.2fr 2fr;
+  grid-column-start: 50%;
+  gap: 5px;
+  margin-bottom: 20px;
+  place-content: center;
+
+  @media (min-width: 641px) and (max-width: 1023px) {
+    margin-left: 15vw;
+    margin-right: 15vw;
+  }
+}
+.grid-item {
+  padding: 5px;
+  text-align: center;
+}
+
+.grid-item.about_avatar {
+  text-align: right !important;
+  /* padding-top: 50px; */
+}
+
+.grid-item.about_content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.about_urls {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  text-align: center;
+  font-size: 0.8em;
+
+  @media (max-width: 415px) {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    /* 각 element 사이에 여백 */
+    gap: 10px;
+    font-size: 1.5em;
+    .my-location {
+      display: none;
+    }
+    .label {
+      display: none;
+    }
+  }
+}
+
+.u-photo {
+  border-radius: 20%;
+  max-height: 100%;
+}
+
+.my-name {
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 1.5em;
+}
+
+.about__bio {
+  word-break: keep-all;
+  font-size: 0.8em;
+}
+
+  
+</style>

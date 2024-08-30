@@ -1,0 +1,54 @@
+---
+layout : default
+---
+<!--Hey! This is the original version
+of Simple CSS Waves-->
+
+{% assign author = page.author | default: page.authors[0] | default: site.author %}
+{% assign author = site.data.authors[author] | default: author %}
+
+
+<div class="index-header">
+
+    <!--Content before waves-->
+    <div class="inner-header flex">
+    <!--Just the logo.. Don't mind this-->
+      <h1>DongHyeon Kim's Blog</h1>
+      <h2>알고리즘을 공부하고 있는 대학생 블로그입니다.</h2>
+      <div class="button-container">
+        <div class='button -regular center'>
+          <a href="/about/" style="color: #161616;">About Me</a>
+        </div>
+      </div>
+    </div>
+    
+    <!--Waves Container-->
+    <div>
+    <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+    viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+    <defs>
+    <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+    </defs>
+    <g class="parallax">
+    <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.7)" />
+    <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.5)" />
+    <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.3)" />
+    <use xlink:href="#gentle-wave" x="48" y="7" fill="#fff" />
+    </g>
+    </svg>
+    </div>
+    <!--Waves end-->
+    
+</div>
+
+<!-- popular post -->
+
+<h1 class="index-title">Popular Posts</h1>
+
+{% include popular_posts.html %}
+
+
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/index.css">
