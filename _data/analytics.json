@@ -1,4 +1,5 @@
 {
+    "/프로그래머스-181187/": {"link": "/프로그래머스-181187/", "count": 5000},
     "/BN-and-MRF/": {"link": "/BN-and-MRF/", "count": 100},
     "/Jupyter-convert/": {"link": "/Jupyter-convert/", "count": 52},
     "/Optimal-Transport/": {"link": "/Optimal-Transport/", "count": 40},
@@ -26,6 +27,5 @@
     "/Spatial-Hierarchical-Model/": {"link": "/Spatial-Hierarchical-Model/", "count": 5},
     "/machine learning/Gaussian_Process_Classification/": {"link": "/machine learning/Gaussian_Process_Classification/", "count": 5},
     "/machine learning/Gaussian_Process_Regression/": {"link": "/machine learning/Gaussian_Process_Regression/", "count": 5},
-    "/statistics/MM_algorithm/": {"link": "/statistics/MM_algorithm/", "count": 5},
-    "/프로그래머스-181187/": {"link": "/프로그래머스-181187/", "count": 5}
+    "/statistics/MM_algorithm/": {"link": "/statistics/MM_algorithm/", "count": 5}
 }
