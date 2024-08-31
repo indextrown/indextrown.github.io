@@ -1,5 +1,5 @@
 ---
-title: OpenGL Modeling Primitive Drawing
+title: Computer-Graphics
 tags: 
 - Machine Learning
 - Optimization
