@@ -1,14 +1,13 @@
 ---
-title: Optimal Transport
-tags: 
-- Machine Learning
-- Optimization
-- Python
-category: ""
-use_math: true
-header: 
-  teaser: /assets/img/Pasted image 20231229142238.png
+title: "Uikit Combine"
+date: 2024-08-23
+layout: post
+url: "/Uikit-Combine/"
+header:
+  teaser: teaser: /assets/img/Pasted image 20240131190247.png
+excerpt: "This is a brief description or excerpt of the Uikit Combine blog post."
 ---
+
 본 포스트는 서울대학교 M2480.001200 *인공지능을 위한 이론과 모델링* 강의노트를 간단히 재구성한 것입니다.
 
 # Optimal Transport
