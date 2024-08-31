@@ -72,3 +72,4 @@ myIntArrayPublisher.sink(receiveCompletion: { completion in
 }, receiveValue: { receivedValue in
      print("값을 받았다: \(receivedValue)")
 })
+```
