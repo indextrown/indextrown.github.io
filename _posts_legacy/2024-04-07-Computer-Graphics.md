@@ -1,14 +1,17 @@
 ---
-title: "1. OpenGL Modeling Primitive Drawing"
+title: OpenGL Modeling Primitive Drawing
 tags: 
-- C  
-- C++  
-- Computer Graphics  
-- C_C++    
+- Machine Learning
+- Optimization
+- Python
+category: ""
 use_math: true
 header: 
-  teaser: /assets/img/Pasted image 20240213151745.png
+  teaser: /assets/img/Pasted image 20231229142238.png
 ---
+
+
+
 
 # Modeling이란
 
