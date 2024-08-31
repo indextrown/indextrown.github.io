@@ -1,7 +1,9 @@
 {
+    "/Computer-Graphics": {"link": "/Computer-Graphics", "count": 102},
     "/Uikit-Combine": {"link": "/Uikit-Combine", "count": 101},
     "/statistics/MM_algorithm/": {"link": "/statistics/MM_algorithm/", "count": 100},
     "/BN-and-MRF/": {"link": "/BN-and-MRF/", "count": 99},
     "/Jupyter-convert/": {"link": "/Jupyter-convert/", "count": 52},
     "/Optimal-Transport/": {"link": "/Optimal-Transport/", "count": 40}
 }
+
