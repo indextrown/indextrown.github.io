@@ -4,7 +4,7 @@ date: 2024-08-23
 layout: post
 url: "/Uikit-Combine/"
 header:
-  teaser: teaser: /assets/img/Pasted image 20240131190247.png
+  teaser: /assets/img/Pasted image 20240213151745.png
 excerpt: "This is a brief description or excerpt of the Uikit Combine blog post."
 ---
 
