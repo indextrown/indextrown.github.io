@@ -9,7 +9,7 @@ use_math: true
 header: 
   teaser: /assets/img/Pasted image 20231229142238.png
 ---
-본 포스트는 서울대학교 M2480.001200 *인공지능을 위한 이론과 모델링* 강의노트를 간단히 재구성한 것입니다.
+테스트입니다.
 
 # Optimal Transport_test2
 
