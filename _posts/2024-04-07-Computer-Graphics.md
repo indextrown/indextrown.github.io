@@ -1,5 +1,5 @@
 ---
-title: "OpenGL Modeling Primitive Drawing"
+title: "1. OpenGL Modeling Primitive Drawing"
 tags: 
 - C  
 - C++  
@@ -10,30 +10,8 @@ header:
   teaser: /assets/img/Pasted image 20240213151745.png
 ---
 
-# Combine이란
-비동기처리 이벤트를 처리하기 위한 애플에서 만든 프레임워크이다.  
-ios 13버전부터 적용 가능하다고 한다.
-
-  
-@Publisher: Rx에서 옵저저블과 비슷하다고 보면된다. 즉 데이터랑 에러타입을 제네릭 형태로 같이 보낸다.  
-에러타입중에 never라는게 있는데 어떠한 에러도 발생시키지 않는다.
-publisher는 이벤트를 본고 subscriber(구독자가)가 이벤트를 받는다(구독한다) 즉 서로 연결되어있다.
-
-
-
-
-```swift
-
-```
-
-
-
-
-
-
-
-
-
+# Modeling이란
+ㅋㅋ
 
 컴퓨터 그래픽스 기술을 이용해 3D모델(모형)을 만드는 것이다.  
 - Wireframe modeling  
