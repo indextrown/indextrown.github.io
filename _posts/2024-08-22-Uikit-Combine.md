@@ -27,7 +27,7 @@ Combine은 앱 내에서 일어나는 이벤트들의 진행 결과 등을 선�
  Combine은 정리하자면  
  Publisher라는 이벤트 반응 전송기계  
  Subscriber라는 이벤트 수집기계  
- 이 두가를 연결해주는 프레임워크이다.  
+ 이 두개를 연결해주는 프레임워크이다.  
    
 
 Subscriber 는 Publisher 에게 데이터를 받기만 하는 일방향적 관계이며,  

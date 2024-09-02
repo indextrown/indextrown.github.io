@@ -1,0 +1,152 @@
+---
+title: "Uikit Combine"
+tags: 
+- Uikit
+use_math: true
+header: 
+  teaser: /assets/img/Pasted image 20240213151745.png
+---
+
+# 비동기 처리의 필요성과 방법
+
+## 비동기 처리가 필요한 이유
+
+부하가 많이 걸리는 작업은 메인 스레드가 아닌 다른 스레드에서 처리해야 한다.   
+메인 스레드는 사용자 인터페이스(UI)와 상호작용하며, iOS는 초당 60프레임으로 화면을 다시 그립니다. 따라서 메인 스레드에서 시간이 오래 걸리는 작업을 수행하면 다음과 같은 문제를 겪을 수 있다. 
+
+- **테이블뷰를 스크롤할 때 버벅임 발생**: 이미지나 데이터 로딩 같은 무거운 작업이 메인 스레드에서 실행되면 스크롤 시 UI가 멈추거나 지연될 수 있습니다.
+- **원하지 않는 UI 동작 발생**: 사용자 입력에 대한 반응이 느려지거나, 화면이 응답하지 않는 경우가 생길 수 있습니다.  
+  
+
+## 스레드의 개념
+
+스레드는 작업을 병렬로 수행할 수 있게 해주는 단위입니다. 스레드에는 물리적인 스레드와 소프트웨어적인 스레드가 있다.  
+
+- **물리적인 스레드**: 실제 CPU에서 실행되는 스레드입니다.
+- **소프트웨어적인 스레드**: 운영 체제나 런타임 환경에서 관리하는 논리적인 스레드입니다.
+
+<!-- ![스레드 개념](https://prod-files-secure.s3.us-west-2.amazonaws.com/a2bacc83-1924-4309-80e8-d18801d486d0/99e705a6-f9b8-48f4-88a6-4006e6e46f0d/image.png) -->
+
+간단한 작업은 메인 스레드에서 처리해도 문제가 없다.
+
+<!-- ![간단한 작업](https://prod-files-secure.s3.us-west-2.amazonaws.com/a2bacc83-1924-4309-80e8-d18801d486d0/1c93ac14-e4dd-4c17-9b9c-eefe0422137f/image.png) -->
+
+하지만 무거운 작업은 메인 스레드에서 처리해서는 안 된다.
+
+## 동시성 처리
+
+동시성 처리는 작업을 여러 스레드에서 병렬로 실행할 수 있도록 하는 기법이다. iOS에서는 다음과 같은 도구를 사용하여 동시성 처리를 수행할 수 있다.
+
+- **DispatchQueue (Grand Central Dispatch)**: 작업을 큐에 추가하고 iOS가 자동으로 스레드를 관리하여 작업을 병렬로 수행한다.
+- **OperationQueue**: 작업의 의존성을 관리하고, 동시성 처리를 쉽게 할 수 있도록 도와준다.
+
+<!-- ![동시성 처리](https://prod-files-secure.s3.us-west-2.amazonaws.com/a2bacc83-1924-4309-80e8-d18801d486d0/c4e52e6b-d03f-4d99-b4ba-e6cc2669f916/image.png) -->
+
+작업을 큐에 추가하면 iOS가 자동으로 여러 스레드로 나누어 처리한다.
+
+## 병렬(Parallel)과 동시성(Concurrency)의 개념
+
+- **병렬 (Parallel)**: 물리적인 스레드에서 실제로 동시에 일을 하는 개념이다.
+- **동시성 (Concurrency)**: 메인 스레드가 아닌 다른 소프트웨어적인 스레드에서 동시에 일을 하는 개념이다. 성능, 반응성, 최적화와 관련된 문제를 해결하는 기법이다.
+
+## 비동기 / 동기
+
+- **비동기 (Asynchronous)**: 작업을 다른 스레드에서 수행하고, 작업이 끝나기를 기다리지 않고 다음 작업을 진행한다.
+- **동기 (Synchronous)**: 작업을 다른 스레드에서 수행하고, 작업이 끝나기를 기다린 후 다음 작업을 진행한다.
+
+## 직렬(Serial) / 동시(Concurrent)
+
+- **직렬 (Serial)**: 하나의 스레드에서 순서대로 작업을 처리하는 큐입니다. 순서가 중요한 작업에 사용된다.
+- **동시 (Concurrent)**: 여러 스레드에서 동시에 작업을 처리하는 큐다.
+
+## 컴플리션 핸들러의 존재 이유
+
+비동기 처리는 작업이 끝날 때까지 메인 스레드가 기다리지 않기 때문에, 작업이 끝나는 시점을 알고 후속 처리를 명확히 하기 위해 컴플리션 핸들러를 사용한다. 이를 통해 비동기 작업이 완료된 후 적절한 처리를 할 수 있다.
+
+## 잘못된 비동기 함수 예시
+
+다음은 비동기 처리가 제대로 이루어지지 않는 코드이다:
+
+```swift
+func getImages(with urlString: String) -> UIImage? {
+    
+    // MARK: 문자열을 받아서 URL 구조체를 만든다
+    let url = URL(string: urlString)!
+    
+    // MARK: photoImage를 nil로 초기화
+    var photoImage: UIImage? = nil
+    
+    // MARK: URLSession을 사용하여 비동기적으로 서버와 통신한다
+    URLSession.shared.dataTask(with: url) { (data, response, error) in
+        if error != nil {
+            print("에러 있음: \(error!)")
+        }
+        // 옵셔널 바인딩
+        guard let imageData = data else { return }
+        
+        // 데이터를 UIImage 타입으로 변형
+        photoImage = UIImage(data: imageData)
+        
+    }.resume()
+    
+    return photoImage    // 항상 nil이 나옴
+}
+```
+
+이 함수는 URLSession의 비동기 작업이 완료되기 전에 photoImage를 반환하기 때문에 항상 nil을 반환한다.  
+  
+    
+
+# 해결 방법
+
+리턴 값을 없애고, 컴플리션 핸들러를 사용하여 비동기 작업이 완료된 후 결과를 처리한다.
+
+```swift
+func getImages(with urlString: String, completionHandler: @escaping (UIImage?) -> Void) {
+    
+    // URL 구조체를 생성
+    guard let url = URL(string: urlString) else {
+        completionHandler(nil)
+        return
+    }
+    
+    // URLSession을 사용하여 비동기적으로 서버와 통신한다
+    URLSession.shared.dataTask(with: url) { (data, response, error) in
+        if let error = error {
+            print("에러 있음: \(error)")
+            completionHandler(nil)
+            return
+        }
+        
+        // 옵셔널 바인딩
+        guard let imageData = data else {
+            completionHandler(nil)
+            return
+        }
+        
+        // 데이터를 UIImage 타입으로 변형
+        let image = UIImage(data: imageData)
+        
+        // 컴플리션 핸들러 호출
+        completionHandler(image)
+        
+    }.resume()
+}
+```
+
+# 사용법
+다음과 같이 호출하여 비동기 작업이 완료된 후 이미지를 처리할 수 있다.  
+```swift
+getImages(with: "https://example.com/image.jpg") { image in
+    if let image = image {
+        // 이미지 처리 (예: UIImageView에 설정)
+        DispatchQueue.main.async {
+            imageView.image = image
+        }
+    } else {
+        // 에러 처리 또는 기본 이미지 설정
+        print("이미지 로드 실패")
+    }
+}
+
+```
