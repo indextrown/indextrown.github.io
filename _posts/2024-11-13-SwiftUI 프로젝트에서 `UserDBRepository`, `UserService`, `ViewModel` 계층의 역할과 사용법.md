@@ -61,10 +61,10 @@ func getUser(userId: String) async throws -> UserObject {
 
 ## 3. 앱에서 사용하는 데이터 모델(User)과 데이터베이스 객체(UserObject)차이
 **UserObject:**   
-    - 데이터베이스와 직접적으로 관련된 구조이다. 데이터베이스에 저장하거나 가져오는 형태로 디자인되어있다.
-    - 데이터베이스와의 의존성이 있는 구조체로, 데이터 저장 형식(JSON, Dictionary등)에 최적화되어있다.
-    - 예를 들어 Firebase Realtime Database는 Json 기반으로 데이터를 저장하므로, UserObject는 이러한 데이터 포멧을 고려한 구조를 가진다.     
-    - ex) Double 타입으로 변환된 createdAt 값을 사용.  
+- 데이터베이스와 직접적으로 관련된 구조이다. 데이터베이스에 저장하거나 가져오는 형태로 디자인되어있다.
+- 데이터베이스와의 의존성이 있는 구조체로, 데이터 저장 형식(JSON, Dictionary등)에 최적화되어있다.
+- 예를 들어 Firebase Realtime Database는 Json 기반으로 데이터를 저장하므로, UserObject는 이러한 데이터 포멧을 고려한 구조를 가진다.     
+- ex) Double 타입으로 변환된 createdAt 값을 사용.    
 
 ```swift
 // 데이터베이스와 통신하기 위해 설계된 데이터 모델
