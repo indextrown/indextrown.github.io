@@ -18,7 +18,7 @@ struct Calendar: View {
 
     var body: some View {
         VStack {
-            Text("선택한 날짜: \\(selectedDate, formatter: dateFormatter)")
+            Text("선택한 날짜: \(selectedDate, formatter: dateFormatter)")
                 .padding()
 
             DatePicker(
@@ -27,7 +27,7 @@ struct Calendar: View {
                 displayedComponents: [.date] // 날짜만 표시 (시간은 제외)
             )
             .datePickerStyle(GraphicalDatePickerStyle()) // 그래픽 스타일
-            .environment(\\.locale, Locale(identifier: "ko_KR")) // 한국 로케일 설정
+            .environment(\.locale, Locale(identifier: "ko_KR")) // 한국 로케일 설정
             .padding()
 
             Spacer()
