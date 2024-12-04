@@ -55,7 +55,7 @@ struct Calendar: View {
 
 <div style="flex: 1;" markdown="1">
 
-![Calendar Preview](/assets/img/Calendar.png)
+![Calendar Preview](/assets/img/Calendar.png){: style="max-width: 100%; height: auto; border: 1px solid #ccc;"}
 
 </div>
 
