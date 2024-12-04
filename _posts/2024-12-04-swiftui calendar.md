@@ -51,8 +51,8 @@ struct Calendar: View {
 
 </div>
     <div style="flex: 1;">
-        <img src="/assets/img/Calendar.png" alt="Calendar.png" style="max-width: 100%; border: 1px solid #ccc;" />
+        <img src="../assets/img/Calendar.png" alt="Calendar.png" style="max-width: 100%; border: 1px solid #ccc;" />
     </div>
 </div>
 
-![](/assets/img/Calendar.png){: .align-center}   
+<!-- ![](/assets/img/Calendar.png){: .align-center}    -->
