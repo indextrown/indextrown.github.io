@@ -8,23 +8,13 @@ use_math: true
 
 ## SwiftUI에서 제공하는 캘린더
 
+SwiftUI에서 제공하는 `DatePicker`를 사용하여 간단한 캘린더를 구현할 수 있습니다.
 
+<table>
+<tr>
+<td>
 
-<div style="display: flex; align-items: flex-start; gap: 20px;">
-    <!-- 코드 섹션 -->
-    <div style="flex: 1;">
-
-``` swift
-func getUser(userId: String) async throws -> UserObject {
-    guard let value = try await self.db.child(DBKey.Users).child(userId).getData().value else {
-        throw DBError.emptyValue
-    }
-    let data = try JSONSerialization.data(withJSONObject: value)
-    return try JSONDecoder().decode(UserObject.self, from: data)
-}
-```
-
-``` swift  
+```swift
 struct Calendar: View {
     @State private var selectedDate = Date() // 선택된 날짜를 저장할 변수
 
@@ -57,14 +47,17 @@ struct Calendar: View {
 }
 
 #Preview {
-    ProfileView()
-}    
+    CalendarView()
+}
 ```
 
-</div>
-    <div style="flex: 1;">
-        <img src="../assets/img/Calendar.png" alt="Calendar.png" style="max-width: 100%; border: 1px solid #ccc;" />
-    </div>
-</div>
+</td>
+<td>
 
-<!-- ![](/assets/img/Calendar.png){: .align-center}    -->
+![Calendar Preview](../assets/img/Calendar.png)
+
+</td>
+</tr>
+</table>
+
+위 코드와 이미지를 참고하여 SwiftUI에서 제공하는 `DatePicker`의 기본적인 사용법을 익혀보세요.
