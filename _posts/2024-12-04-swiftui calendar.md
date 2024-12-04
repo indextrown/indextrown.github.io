@@ -46,7 +46,7 @@ struct Calendar: View {
 
 #Preview {
     ProfileView()
-}
+}  
 ```
 
 </div>
