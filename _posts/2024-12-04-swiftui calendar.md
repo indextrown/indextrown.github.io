@@ -11,9 +11,18 @@ use_math: true
 <div style="display: flex; align-items: flex-start; gap: 20px;">
     <!-- 코드 섹션 -->
     <div style="flex: 1;">
-
-
+    
 ``` swift
+func getUser(userId: String) async throws -> UserObject {
+    guard let value = try await self.db.child(DBKey.Users).child(userId).getData().value else {
+        throw DBError.emptyValue
+    }
+    let data = try JSONSerialization.data(withJSONObject: value)
+    return try JSONDecoder().decode(UserObject.self, from: data)
+}
+```
+
+``` swift  
 struct Calendar: View {
     @State private var selectedDate = Date() // 선택된 날짜를 저장할 변수
 
