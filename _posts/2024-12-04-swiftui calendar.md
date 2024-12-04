@@ -10,17 +10,15 @@ use_math: true
 
 SwiftUI에서 제공하는 `DatePicker`를 사용하여 간단한 캘린더를 구현할 수 있습니다.
 
-<div style="display: flex; align-items: flex-start; gap: 20px;">
-
-<div style="flex: 1;">
-
-```swift
+| 코드 | 미리보기 |
+|------|----------|
+| ```swift
 struct Calendar: View {
     @State private var selectedDate = Date() // 선택된 날짜를 저장할 변수
 
     var body: some View {
         VStack {
-            Text("선택한 날짜: \(selectedDate, formatter: dateFormatter)")
+            Text("선택한 날짜: \\(selectedDate, formatter: dateFormatter)")
                 .padding()
 
             DatePicker(
@@ -29,7 +27,7 @@ struct Calendar: View {
                 displayedComponents: [.date] // 날짜만 표시 (시간은 제외)
             )
             .datePickerStyle(GraphicalDatePickerStyle()) // 그래픽 스타일
-            .environment(\.locale, Locale(identifier: "ko_KR")) // 한국 로케일 설정
+            .environment(\\.locale, Locale(identifier: "ko_KR")) // 한국 로케일 설정
             .padding()
 
             Spacer()
@@ -49,17 +47,7 @@ struct Calendar: View {
 #Preview {
     CalendarView()
 }
-```
-
-</div>
-
-<div style="flex: 1;">
-
-![Calendar Preview](/assets/img/Calendar.png)
-
-</div>
-
-</div>
+``` | ![Calendar Preview](/assets/img/Calendar.png) |
 
 ---
 
