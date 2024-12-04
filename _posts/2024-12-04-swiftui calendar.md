@@ -10,9 +10,9 @@ use_math: true
 
 SwiftUI에서 제공하는 `DatePicker`를 사용하여 간단한 캘린더를 구현할 수 있습니다.
 
-<div style="display: flex; gap: 20px;">
+<div style="display: flex; gap: 20px;" markdown="1">
 
-<div style="flex: 1;">
+<div style="flex: 1;" markdown="1">
 
 ```swift
 struct Calendar: View {
@@ -53,7 +53,7 @@ struct Calendar: View {
 
 </div>
 
-<div style="flex: 1;">
+<div style="flex: 1;" markdown="1">
 
 ![Calendar Preview](/assets/img/Calendar.png)
 
