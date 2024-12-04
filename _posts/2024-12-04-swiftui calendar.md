@@ -12,7 +12,8 @@ use_math: true
     <!-- 코드 섹션 -->
     <div style="flex: 1;">
 
-```swift   
+
+``` swift
 struct Calendar: View {
     @State private var selectedDate = Date() // 선택된 날짜를 저장할 변수
 
