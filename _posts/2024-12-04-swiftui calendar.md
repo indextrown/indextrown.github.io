@@ -54,7 +54,7 @@ struct Calendar: View {
 </td>
 <td>
 
-![Calendar Preview](../assets/img/Calendar.png)
+![Calendar Preview](/assets/img/Calendar.png)
 
 </td>
 </tr>
