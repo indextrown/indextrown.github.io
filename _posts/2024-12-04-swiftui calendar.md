@@ -8,6 +8,12 @@ use_math: true
 
 ## SwiftUI에서 제공하는 캘린더
 
+
+
+<div style="display: flex; align-items: flex-start; gap: 20px;">
+    <!-- 코드 섹션 -->
+    <div style="flex: 1;">
+
 ``` swift
 func getUser(userId: String) async throws -> UserObject {
     guard let value = try await self.db.child(DBKey.Users).child(userId).getData().value else {
@@ -17,10 +23,6 @@ func getUser(userId: String) async throws -> UserObject {
     return try JSONDecoder().decode(UserObject.self, from: data)
 }
 ```
-
-<div style="display: flex; align-items: flex-start; gap: 20px;">
-    <!-- 코드 섹션 -->
-    <div style="flex: 1;">
 
 ``` swift  
 struct Calendar: View {
