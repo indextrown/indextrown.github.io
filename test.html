@@ -1,8 +1,72 @@
-<div>게시글 5</div>
-<div>게시글 4</div>
-<div>게시글 7</div>
-<div>게시글 2</div>
-<div>게시글 9</div>
-<div>게시글 1</div>
-<div>게시글 8</div>
-<div>게시글 3</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starlink Logo Animation</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+            margin: 0;
+        }
+
+        .logo-x {
+            font-size: 10rem;
+            font-weight: bold;
+            color: white; /* 기본 흰색 */
+            position: relative;
+            display: inline-block;
+            overflow: hidden; /* 효과가 텍스트 외부로 나가지 않도록 설정 */
+        }
+
+        .logo-x::before {
+            content: "X";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, yellow, transparent);
+            background-size: 200% 200%; /* 배경 크기 확장 */
+            -webkit-background-clip: text; /* 텍스트 내부에만 효과 */
+            -webkit-text-fill-color: transparent; /* 텍스트 색상 투명 */
+            animation: sweep 0.5s ease-in-out forwards; /* 더 빠르게 실행 */
+            opacity: 0; /* 기본적으로 보이지 않음 */
+        }
+
+        .logo-x.animate::before {
+            opacity: 1; /* 애니메이션 실행 시 보이도록 설정 */
+        }
+
+        @keyframes sweep {
+            0% {
+                background-position: -100% 100%; /* 좌측 하단에서 시작 */
+            }
+            100% {
+                background-position: 100% -100%; /* 우측 상단으로 이동 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-x" id="logoX">X</div>
+
+    <script>
+        const logoX = document.getElementById("logoX");
+
+        // 0.3초 후에 애니메이션 시작
+        setTimeout(() => {
+            logoX.classList.add("animate"); // 노란색 애니메이션 추가
+
+            // 애니메이션이 끝난 뒤 다시 흰색으로 복원
+            setTimeout(() => {
+                logoX.classList.remove("animate"); // 애니메이션 클래스 제거
+            }, 500); // 애니메이션 지속 시간(0.5초) 이후 복원
+        }, 300);
+    </script>
+</body>
+</html>
