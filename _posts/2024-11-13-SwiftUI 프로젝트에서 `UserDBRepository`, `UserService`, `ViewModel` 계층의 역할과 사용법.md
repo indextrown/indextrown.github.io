@@ -1,5 +1,5 @@
 ---
-title: "SwiftUI 프로젝트에서 `UserDBRepository`, `UserService`, `ViewModel` 계층의 역할과 사용법"
+title: "[SwiftUI] 프로젝트에서 `UserDBRepository`, `UserService`, `ViewModel` 계층의 역할과 사용법"
 tags:
 - SwiftUI
 category: ''
