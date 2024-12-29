@@ -1,5 +1,5 @@
 ---
-title: "Uikit Combine"
+title: "[Uikit] Combine"
 tags: 
 - Uikit
 use_math: true
@@ -20,7 +20,7 @@ Combine은 앱 내에서 일어나는 이벤트들의 진행 결과 등을 선�
 - URLSession.shared.dataTask { }를 사용하면 completion()을 써야하고 class - delegate를 적용하는 상황들이 직관적이지 않고  
 조금만 복잡해져도 스파게티 코드가 될 수 있다.
 
-![alt text](image.png)
+![alt text](/assets/img/Combine.png)
 
 
 
