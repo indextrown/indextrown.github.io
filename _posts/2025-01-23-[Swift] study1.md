@@ -4,7 +4,7 @@ tags:
 - ESTsoft
 use_math: true
 header: 
-  teaser: /assets/img/Swift/Swift.png
+  teaser: /assets/img/Swift/SwiftWhite.png
 ---
 
 # Swift
