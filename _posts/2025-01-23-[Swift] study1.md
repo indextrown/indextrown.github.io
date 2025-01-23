@@ -58,7 +58,7 @@ print(constantValue)  // 10
 // constantValue = 20 -> [컴파일 오류] 상수는 값을 변경할 수 없다
 ```
 
-# Model
+<!-- # Model
 - 폭포수
     
     특징: 순차적이고 계획적인 개발 방식
@@ -81,7 +81,7 @@ print(constantValue)  // 10
     
     장점: 반복적인 점진적 개발, 팀원들의 자율성과 협업 강조
     
-    단점: 경험 많은 팀 필요, 스크럼 마스터와 제품 책임자의 역활 중요
+    단점: 경험 많은 팀 필요, 스크럼 마스터와 제품 책임자의 역활 중요 -->
 
 # 메모리
 ### RAM ( Random Access Memory)
@@ -144,7 +144,7 @@ print(name ?? "Unknown") // 출력: Unknown
 
 # 사용자 입력(`readLine()`)
 - 사용자가 입력한 값을 문자열로 반환한다.
-- 반환값은 옵셔널 타입이다 `String?`
+- 반환값은 옵셔널 타입이다 `String?`  
 ```swift
 print("이름을 입력하세요:")
 if let input = readLine() {
@@ -160,7 +160,7 @@ if let input = readLine(), let number = Int(input) {
 } else {
     print("올바른 숫자를 입력하세요.")
 }
-```
+```  
 
 # 터미널에서 Swift코드 실행법
 - cd ~/Library/Developer/Xcode/DerivedData/ESTSOFT-cqoylveavglfvdbfmajyjceadgbw/Build/Products/Debug/
