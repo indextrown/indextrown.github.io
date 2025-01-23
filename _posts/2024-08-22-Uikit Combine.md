@@ -5,7 +5,7 @@ tags:
 use_math: true
 header: 
   teaser: /assets/img/Combine/Combine.png
-  overlay_filter: 0  # 필터 제거
+  overlay_image: false  # 오버레이 비활성화
   
 #   teaser: /assets/img/Pasted image 20240213151745.png
 ---
