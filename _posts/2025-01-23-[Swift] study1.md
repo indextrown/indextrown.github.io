@@ -144,7 +144,8 @@ print(name ?? "Unknown") // 출력: Unknown
 
 # 사용자 입력(`readLine()`)
 - 사용자가 입력한 값을 문자열로 반환한다.
-- 반환값은 옵셔널 타입이다 `String?`  
+- 반환값은 옵셔널 타입이다 `String?`   
+
 ```swift
 print("이름을 입력하세요:")
 if let input = readLine() {
