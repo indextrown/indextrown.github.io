@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ddangchani.github.io/sitemap.xml
+Sitemap: https://indextrown.github.io/sitemap.xml
