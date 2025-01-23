@@ -3,8 +3,6 @@ title: "[Uikit] Combine"
 tags: 
 - Uikit
 use_math: true
-classes:
-  - no-overlay  # 오버레이 클래스 제거
 header: 
   teaser: /assets/img/Combine/Combine.png
 

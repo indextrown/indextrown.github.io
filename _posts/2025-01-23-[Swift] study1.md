@@ -1,10 +1,10 @@
 ---
-title: "[Swift] Swift 기초 문법 01"
+title: "[Swift] 기초 문법 01"
 tags: 
 - ESTsoft
 use_math: true
 header: 
-  teaser: 
+  teaser: /assets/img/Swift/Swift.png
 ---
 
 # Swift
