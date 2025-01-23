@@ -20,7 +20,7 @@ title                    : "DongHyeon Kim's Blog"
 title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "indextrown"
-description              : "데이터로 보다 안전한 세상을 만들고 싶습니다."
+description              : "Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다."
 url                      : https://indextrown.github.io
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "indextrown/indextrown.github.io" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
