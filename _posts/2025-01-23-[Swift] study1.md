@@ -83,8 +83,7 @@ print(constantValue)  // 10
     
     단점: 경험 많은 팀 필요, 스크럼 마스터와 제품 책임자의 역활 중요 -->
 
-# 메모리
-### RAM ( Random Access Memory)
+# 메모리 = RAM ( Random Access Memory)
 ### **Stack** (변수 - `var`)
 - **빠른 할당과 해제**: LIFO 방식으로 메모리 할당과 해제가 이루어지기 때문에 빠르고 효율적이다.
 - **값 타입**: `Int`, `Double`, `Struct`를 저장하는 메모리 영역이다.
