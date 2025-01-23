@@ -4,7 +4,8 @@ tags:
 - Uikit
 use_math: true
 header: 
-  teaser: /assets/img/Pasted image 20240213151745.png
+  teaser: /assets/img/[Uikit] Combine/Pasted image Combine.png
+#   teaser: /assets/img/Pasted image 20240213151745.png
 ---
 
 
@@ -21,7 +22,6 @@ Combine은 앱 내에서 일어나는 이벤트들의 진행 결과 등을 선�
 조금만 복잡해져도 스파게티 코드가 될 수 있다.
 
 ![alt text](/assets/img/Combine.png)
-
 
 
  Combine은 정리하자면  
