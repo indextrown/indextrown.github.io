@@ -1,7 +1,7 @@
 ---
-title: "[Swift] Study1"
+title: "[Swift] Swift 기초 문법 01"
 tags: 
-- Uikit
+- ESTsoft
 use_math: true
 header: 
   teaser: 
