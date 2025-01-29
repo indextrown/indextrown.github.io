@@ -1,7 +1,7 @@
 ---
 title: "[SwiftUI] TabView"
 tags: 
-- Swift
+- SwiftUI
 use_math: true
 header: 
   teaser: /assets/img/Swift/SwiftWhite.png
@@ -9,38 +9,10 @@ header:
 
 # 기본 TabView
 - 사용목적: 여러 개의 화면을 탭으로 관리할 수 있다.
-```swift
-import SwiftUI
-
-struct ContentView: View {
-    var body: some View {
-        TabView {
-            Text("홈 화면")
-                .tabItem {
-                    Image(systemName: "house.fill")
-                    Text("홈")
-                }
-            
-            Text("검색 화면")
-                .tabItem {
-                    Image(systemName: "magnifyingglass")
-                    Text("검색")
-                }
-            
-            Text("설정 화면")
-                .tabItem {
-                    Image(systemName: "gearshape.fill")
-                    Text("설정")
-                }
-        }
-    }
-}
-```
 
 <div style="display: flex; align-items: center;">
   <div style="flex: 1;">
-    <pre>
-      <code>
+    <pre><code class="language-swift">
 import SwiftUI
 
 struct ContentView: View {
@@ -71,8 +43,7 @@ struct ContentView: View {
         }
     }
 }
-      </code>
-    </pre>
+    </code></pre>
   </div>
   <div style="flex: 1; text-align: center;">
     <img src="/assets/img/Animation.png" alt="TabView 예제" width="300">
