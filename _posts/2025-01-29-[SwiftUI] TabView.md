@@ -48,6 +48,6 @@ struct ContentView: View {
 
   </div>
   <div style="flex: 1; text-align: center;">
-    <img src="/assets/img/Animation.png" alt="TabView 예제" width="300">
+    <img src="/assets/img/SwiftUI/[SwiftUI] TabView.png" alt="TabView 예제" width="300">
   </div>
 </div>
