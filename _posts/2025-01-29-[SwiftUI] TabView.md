@@ -12,7 +12,8 @@ header:
 
 <div style="display: flex; align-items: center;">
   <div style="flex: 1;">
-    <pre><code class="language-swift">
+
+{% highlight swift %}
 import SwiftUI
 
 struct ContentView: View {
@@ -43,7 +44,8 @@ struct ContentView: View {
         }
     }
 }
-    </code></pre>
+{% endhighlight %}
+
   </div>
   <div style="flex: 1; text-align: center;">
     <img src="/assets/img/Animation.png" alt="TabView 예제" width="300">
