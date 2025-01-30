@@ -12,6 +12,7 @@ header:
 
 ## ✅ 1. Firebase Cloud Functions 설정
 - 먼저 Firebase CLI를 설치하고 프로젝트에 Cloud Functions를 추가  
+
 ```bash
 # Firebase CLI 설치 (설치 안 되어 있다면)
 brew install firebase-cli
@@ -28,8 +29,8 @@ firebase init functions
 # 환경변수 추가 (필요할 경우)
 echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
+```  
 
-```
 ## ✅ 2. (Gmail + Nodemailer 사용)
 - Google 앱 비밀번호에서 비밀번호를 생성
 - Gmail -> 설정 -> 전달 및 POP/IMAP -> IMAP 사용
