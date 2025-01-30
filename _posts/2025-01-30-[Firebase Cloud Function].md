@@ -11,7 +11,7 @@ header:
 - Cloud Functions는 Firebase의 기능과 HTTP 요청에 의해서 Trigger 되는 이벤트에 응답하여 백엔드 코드를 자동으로 실행시켜주는 서버리스 프레임워크
 
 ## ✅ 1. Firebase Cloud Functions 설정
-- 먼저 Firebase CLI를 설치하고 프로젝트에 Cloud Functions를 추가
+- 먼저 Firebase CLI를 설치하고 프로젝트에 Cloud Functions를 추가  
 ```bash
 # Firebase CLI 설치 (설치 안 되어 있다면)
 brew install firebase-cli
