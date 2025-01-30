@@ -40,7 +40,8 @@ source ~/.zshrc
 - Gmail + Nodemailer를 활용
 - ✅ 닉네임이 처음 생성될 때만 이메일 전송 + 구글 시트 추가
 - ✅ 닉네임이 변경되거나 다른 정보가 변경될 경우, 이메일 없이 시트만 업데이트
-- ✅ 유저가 삭제되면 '탈퇴'로 표시
+- ✅ 유저가 삭제되면 '탈퇴'로 표시  
+
 ```javascript
 const { onValueUpdated, onValueDeleted } = require("firebase-functions/v2/database");
 const admin = require("firebase-admin");
