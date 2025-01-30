@@ -233,7 +233,8 @@ functions@ /Users/kimdonghyeon/functions
 
 ## ✅ 5. 구글 스프레드 시트
 ## 5-1 
-- googleapis 모듈 설치 필요
+- googleapis 모듈 설치 필요  
+
 ```bash
 # nvm을 사용하여 Node.js 22로 변경
 brew install nvm
@@ -249,11 +250,10 @@ node -v
 
 # googleapis 설치
 npm install googleapis
-
 ```
 
 
-- 📌 Firebase 환경 변수에 JSON 키 저장
+📌 Firebase 환경 변수에 JSON 키 저장
 ```bash
 firebase functions:config:set google_sheets.service_account_json="$(cat service-account.json)"
 ```
