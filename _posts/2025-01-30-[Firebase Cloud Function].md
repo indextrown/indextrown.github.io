@@ -253,7 +253,7 @@ npm install googleapis
 ```
 
 
-📌 Firebase 환경 변수에 JSON 키 저장
+## 📌 Firebase 환경 변수에 JSON 키 저장
 ```bash
 firebase functions:config:set google_sheets.service_account_json="$(cat service-account.json)"
 ```
