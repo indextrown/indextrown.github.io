@@ -1,7 +1,7 @@
 ---
-title: "[Uikit] Combine"
+title: "[Combine] Combine Framework"
 tags: 
-- Uikit
+- Combine
 use_math: true
 header: 
   teaser: /assets/img/Combine/Combine.png
@@ -151,6 +151,24 @@ let subscription = justPublisher.sink { completion in
 */
 ```
 
+### 예제 4) Empty
+- 값을 생성하지 않고 완료만 하는 Publisher  
+- 에러 없이(failure == Never) 종료한다
+- 주로 기본값이 없거나, 특정 조건에서 Publisher를 반환해야 할 때 사용된다  
+
+```swift
+var cancellables = Set<AnyCancellable>()
+        
+let emptyPublisher = Empty<Int, Never>()
+
+emptyPublisher.sink { completion in
+    print("완료: \(completion)")
+} receiveValue: { value in
+    print("받은 값: \(value)")
+}.store(in: &cancellables)
+
+// 완료: finished
+```
 
 
 
