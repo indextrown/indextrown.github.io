@@ -90,7 +90,7 @@ stream
     } receiveValue: { value in
         print("받은 값: \(value)")
     }
-    // 반환된 AnyCancellable 저장
+    // 구독 저장(반환된 AnyCancellable 저장)
     .store(in: &cancellables)
 
 /*
@@ -100,7 +100,7 @@ stream
 스트림 완료: finished
 */
 ```
-### 예제 2) 에러 발생
+### 예제 2) Fail 
 ```swift
 // 커스텀 에러 타입 정의
 enum MyError: Error {
@@ -119,14 +119,14 @@ publisher
         case .finished:
             print("스트림 완료")
         case .failure(let error):
-            print("스트림 에러 발생: \(error)")
+            print("스트림 에러 (항상)발생: \(error)")
         }
     } receiveValue: { value in
         print("받은 값: \(value)")
     }
     .store(in: &cancellables)
 
-// 스트림 에러 발생: testError
+// 스트림 에러 (항상)발생: testError
 ```
 
 ### 예제 3) Just
@@ -169,10 +169,79 @@ emptyPublisher.sink { completion in
 
 // 완료: finished
 ```
+### 예제 5) Future
+- 비동기 작업을 처리할 때 유용
+- ex) 네트워크 요청, 파일 읽기, 데이터베이스 작업
+- 한번만 값을 방출(Just와 유사하지만 비동기적으로 동작)
+- 성공(.success(value)) 또는 실패(.failure(error))로 완료됨
 
+```swift
+import Combine
+import SwiftUI
 
+func fetchData() -> Future<String, Error> {
+    return Future { promise in
+        DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
+            // let success = Bool.random()
+            let success = false
+            
+            if success {
+                promise(.success("데이터 가져오기 성공"))
+            } else {
+                promise(.failure(URLError(.badServerResponse)))
+            }
+        }
+    }
+}
 
+// AnyCancellable을 저장할 곳
+var cancellables = Set<AnyCancellable>()
 
+let cancellable = fetchData()
+    .sink { completion in
+        switch completion {
+        case .finished:
+            print("스트림 완료")
+        case .failure(let error):
+            print("에러 발생: \(error)")
+        }
+    } receiveValue: { value in
+        print("받은 값: \(value)")
+    }.store(in: &cancellables)
+
+// RunLoop를 사용해 비동기 작업 대기
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 5))
+```
+
+```swift
+// 1. 구독 저장소
+var cancellables = Set<AnyCancellable>()
+
+// 2. 비동기 작업을 수행하는 Future Publisher 생성
+let futurePublisher = Future<Int, Error> { promise in
+    DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+        let result = 42 // 비동기 작업 결과
+        promise(.success(result)) // 성공적으로 값을 방출
+    }
+}
+
+// 3. 구독 시작 및 결과 처리
+futurePublisher
+    .sink { completion in
+        switch completion {
+        case .finished:
+            print("스트림 완료")
+        case .failure(let error):
+            print("에러 발생: \(error.localizedDescription)")
+        }
+    } receiveValue: { value in
+        print("받은 값: \(value)")
+    }
+    .store(in: &cancellables) // 구독 유지
+
+// RunLoop를 사용해 비동기 작업 대기
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 2))
+```
 
 
 
