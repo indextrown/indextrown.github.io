@@ -6,8 +6,6 @@ from datetime import datetime
 
 questions = []
 
-
-
 def yes_or_no(question):
     while "the answer is invalid":
         reply = str(input(question+' (y/n): ')).lower().strip()
