@@ -1,8 +1,8 @@
 import os
 from datetime import datetime
 
-blog_dir = '/Users/dangchan/Desktop/ddangchani.github.io' # 깃블로그 디렉토리
-target_dir = '/Users/dangchan/Desktop/Github/Algorithm/프로그래머스' # 알고리즘 문제 디렉토리 프로그래머스
+# blog_dir = '/Users/dangchan/Desktop/ddangchani.github.io' # 깃블로그 디렉토리
+# target_dir = '/Users/dangchan/Desktop/Github/Algorithm/프로그래머스' # 알고리즘 문제 디렉토리 프로그래머스
 
 questions = []
 
