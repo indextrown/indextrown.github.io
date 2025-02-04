@@ -98,13 +98,6 @@ social:
 analytics:
   provider               : false
 
-# analytics:
-#   provider               : "google-gtag" # false (default), "google", "google-universal", "google-gtag", "custom"
-#   google:
-#     tracking_id          : "G-QXX68H21RZ"
-#     anonymize_ip         : # true, false (default)
-
-
 # Site Author
 author:
   name             : "Dong Hyeon"
