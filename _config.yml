@@ -95,8 +95,8 @@ social:
   links: # An array of links to social media profiles
 
 # Analytics
-analytics:
-  provider               : false
+# analytics:
+#   provider               : false
 
 # Site Author
 author:
