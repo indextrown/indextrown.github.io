@@ -95,8 +95,11 @@ social:
   links: # An array of links to social media profiles
 
 # Analytics
-# analytics:
-#   provider               : false
+analytics:
+  provider               : "google-gtag" # false (default), "google", "google-universal", "google-gtag", "custom"
+  google:
+    tracking_id          : "G-QWHN9Q48E9"
+    anonymize_ip         : false  # true로 설정하면 IP 익명화 활성화
 
 # Site Author
 author:
