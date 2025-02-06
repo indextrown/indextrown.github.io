@@ -104,7 +104,7 @@ analytics:
 # Site Author
 author:
   name             : "Dong Hyeon"
-  avatar           : "/assets/logos/bio- iphoto.png" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
+  avatar           : "/assets/logos/bio-photo.png" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio              : "Swift, 알고리즘 공부"
   location         : "South Korea"
   email            : 
