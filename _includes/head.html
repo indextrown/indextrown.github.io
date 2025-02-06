@@ -2,6 +2,11 @@
 
 {% include seo.html %}
 
+<!-- 여기에 analytics 추가 -->
+{% if jekyll.environment == 'production' and site.analytics.provider and site.analytics.google.tracking_id %}
+  {% include analytics.html %}
+{% endif %}
+
 {% unless site.atom_feed.hide %}
   <link href="{% if site.atom_feed.path %}{{ site.atom_feed.path }}{% else %}{{ '/feed.xml' | relative_url }}{% endif %}" type="application/atom+xml" rel="alternate" title="{{ site.title }} Feed">
 {% endunless %}
