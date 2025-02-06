@@ -30,14 +30,14 @@ struct ContentView: View {
                     Text("홈")
                 }
                 .tag(0)
-
+    
             Text("검색 화면")
                 .tabItem {
                     Image(systemName: "magnifyingglass")
                     Text("검색")
                 }
                 .tag(1)
-
+    
             Text("설정 화면")
                 .tabItem {
                     Image(systemName: "gearshape.fill")
