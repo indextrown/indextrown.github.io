@@ -1,5 +1,5 @@
 ---
-title: "[Blog] 깃블로그 이미지 편하게 작성하는법"
+title: "[Concurrency] 클로저와 self 키워드"
 tags: 
 - Blog
 use_math: true
