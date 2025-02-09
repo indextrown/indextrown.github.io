@@ -1,5 +1,5 @@
 ---
-title: "📌 [SwiftUI] List + 기본 TextField 문제점"
+title: "[SwiftUI] List + 기본 TextField 문제점"
 tags: 
 - SwiftUI
 use_math: true
