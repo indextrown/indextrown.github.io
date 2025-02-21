@@ -41,13 +41,14 @@ struct DoubleStackQueue<T> {
 @main
 struct Main {
     static func main() {
-        let times = 1_000_000 // 100만 개 삽입
+        // 100만 개 삽입
+        let times = 1_000_000 
         var myQueue = DoubleStackQueue<Int>()
 
         // 🔹 Enqueue 시간 측정
         var startTime = CFAbsoluteTimeGetCurrent()
         for i in 1...times {
-            myQueue.enqueue(i) // ✅ 변수명 수정
+            myQueue.enqueue(i) 
         }
         var durationTime = CFAbsoluteTimeGetCurrent() - startTime
         print("DoubleStackQueue enqueue time: \(durationTime) seconds")
@@ -55,7 +56,7 @@ struct Main {
         // 🔹 Dequeue 시간 측정
         startTime = CFAbsoluteTimeGetCurrent()
         for _ in 1...times {
-            myQueue.dequeue() // ✅ 변수명 수정
+            myQueue.dequeue() 
         }
         durationTime = CFAbsoluteTimeGetCurrent() - startTime
         print("DoubleStackQueue dequeue time: \(durationTime) seconds\n")
