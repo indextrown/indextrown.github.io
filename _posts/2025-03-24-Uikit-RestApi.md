@@ -2,7 +2,6 @@
 title: "[Uikit] Rest Api앱 만들기-1"
 tags: 
 - Uikit
-use_math: true
 header: 
   teaser: 
 typora-root-url: ../
@@ -26,3 +25,6 @@ typora-root-url: ../
 
 ![1](/assets/img/2025-03-24-Uikit-RestApi/1.png)
 ![1](/assets/img/2025-03-24-Uikit-RestApi/1.png)
+![1](/assets/img/Uikit-RestApi/1.png)
+
+
