@@ -25,3 +25,4 @@ typora-root-url: ../
 
 
 ![1](/assets/img/2025-03-24-Uikit-RestApi/1.png)
+![1](/assets/img/2025-03-24-Uikit-RestApi/1.png)
