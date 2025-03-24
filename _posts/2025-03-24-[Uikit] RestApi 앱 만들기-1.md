@@ -21,4 +21,4 @@ typora-root-url: ../
 <img src="/assets/img/2025-03-24-[Uikit] RestApi 앱 만들기-1/1.png" alt="img1.daumcdn" style="zoom:70%;" />
 
 
-
+![image-20250324225434887](/assets/img/2025-03-24-[Uikit] RestApi 앱 만들기-1/image-20250324225434887.png)
