@@ -15,6 +15,12 @@ typora-root-url: ../
 
 ## 2. MainVC.storyboard 만들기
 
+
+
+<img src="/assets/img/2025-03-24-[Uikit] RestApi 앱 만들기-1/1.png" alt="img1.daumcdn" style="zoom:25%;" />
+
+
+
 <!-- ![plz](/assets/img/2025-02-06-[Blog] 깃블로그 이미지 편하게 작성하는법/plz.png) -->
 
 ![1](/assets/img/2025-03-24-[Uikit] RestApi 앱 만들기-1/1.png)
