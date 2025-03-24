@@ -28,4 +28,4 @@ typora-root-url: ../
 
 
 
-![image-20250325024944303](/assets/img/2025-03-24-[Uikit]-RestApi-앱-만들기-1/image-20250325024944303.png)
+![image-20250325025730278](/assets/img/2025-03-24-[Uikit]-RestApi-앱-만들기-1/image-20250325025730278.png)
