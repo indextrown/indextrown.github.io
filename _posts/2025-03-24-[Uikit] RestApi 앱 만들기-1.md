@@ -15,4 +15,6 @@ typora-root-url: ../
 
 ## 2. MainVC.storyboard 만들기
 
-- ![image-20250324223142052](/assets/img/2025-03-24-[Uikit] RestApi 앱 만들기-1/image-20250324223142052.png)
+<!-- ![plz](/assets/img/2025-02-06-[Blog] 깃블로그 이미지 편하게 작성하는법/plz.png) -->
+
+![image-20250324223142052](/assets/img/2025-03-24-[Uikit] RestApi 앱 만들기-1/image-20250324223142052.png)
