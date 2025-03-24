@@ -22,6 +22,6 @@ typora-root-url: ../
 <!-- <img src="/assets/img/2025-03-24-[Uikit] RestApi 앱 만들기-1/2.png" alt="img1.daumcdn" style="zoom:70%;" /> -->
 <!-- <img src="/assets/img/2025-03-24-[Uikit] RestApi 앱 만들기-1/1.png" alt="img1.daumcdn" style="zoom:70%;" /> -->
 
-![1](/assets/img/2025-03-24-Uikit-RestApi-앱-만들기-1/1.png)
-![1](/assets/img/2025-03-24-Uikit-RestApi-앱-만들기-1/1.png)
 
+
+![1](/assets/img/2025-03-24-Uikit-RestApi/1.png)
