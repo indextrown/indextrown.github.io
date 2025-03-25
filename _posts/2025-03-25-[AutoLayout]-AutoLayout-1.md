@@ -20,7 +20,8 @@ typora-root-url: ../
 
 ## 3. 예시
 
-- 기준 객체(Safe Area)로부터 왼쪽으로 30, 오른쪽으로 30, 위로 100만큼의 margin이 있고 heigh가 200이라는 제약조건이 있는 UIView를 그려보자.
+### 기준 객체(Safe Area)로부터 왼쪽으로 30, 오른쪽으로 30, 위로 100만큼의 margin이 있고 heigh가 200이라는 제약조건이 있는 UIView를 그려보자.
+
 - UIView의 width를 정해주지 않았지만 Leading / Trailing Constraints에 의해 서로 당기는 성질이 있어서 해상도 별로 width가 자동으로 저장된다.
 - 만약 가로의 크기가 100인 해상도일 경우 UIView는 100 - 30 - 30 = 40만큼의 width를 가질 것이다.
 - 오토 레이아웃은 크기와 위치가 제일 중요하다.
