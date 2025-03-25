@@ -14,6 +14,4 @@ typora-root-url: ../
 
 ## 2. MainVC.storyboard 만들기
 
-
-
 ![image-20250325133051536](/assets/img/2025-03-25-[AutoLayout]-AutoLayout test/image-20250325133051536.png)
