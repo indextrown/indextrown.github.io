@@ -1,7 +1,7 @@
 ---
-title: "[Uikit] Rest Api앱 만들기-1"
+title: "[AutoLayout]-AutoLayout-1"
 tags: 
-- Uikit
+- AutoLayout
 header: 
   teaser: 
 typora-root-url: ../
