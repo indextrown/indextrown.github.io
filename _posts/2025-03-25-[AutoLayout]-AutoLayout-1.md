@@ -30,13 +30,6 @@ typora-root-url: ../
 
 <img src="/assets/img/2025-03-25-[AutoLayout]-AutoLayout-1/image-20250325141039466.png" alt="image-20250325141039466" style="width:20%;">
 
-<table style="border-collapse: collapse;">
-  <tr>
-    <td style="padding: 0;">
-      <img src="/assets/img/2025-03-25-[AutoLayout]-AutoLayout-1/image-20250325141039466.png" alt="image-20250325141039466" style="width:20%;">
-    </td>
-    <td style="padding: 0;">
-      <img src="/assets/img/2025-03-25-[AutoLayout]-AutoLayout-1/image-20250325141039466.png" alt="image-20250325141039466" style="width:20%;">
-    </td>
-  </tr>
-</table>
+| <img src="/assets/img/2025-03-25-[AutoLayout]-AutoLayout-1/image-20250325141039466.png" alt="image-20250325141039466" style="width:50%;"> | <img src="/assets/img/2025-03-25-[AutoLayout]-AutoLayout-1/image-20250325141039466.png" alt="image-20250325141039466" style="width:50%;"> |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+
