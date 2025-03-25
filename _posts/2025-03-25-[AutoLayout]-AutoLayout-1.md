@@ -27,4 +27,4 @@ typora-root-url: ../
 - 여기서 크기는 height: 200, width: SafeArea에서 좌우 margin(30)을 뺀 나머지 값(해상도별로 동적으로 변함)
 - 여기서 위치는 Leading: 30, Trailing: 30, Top: 50
 
-<img src="/assets/img/2025-03-25-[AutoLayout]-AutoLayout-1/image-20250325141039466.png" alt="image-20250325141039466" style="width:50%;">
+<img src="/assets/img/2025-03-25-[AutoLayout]-AutoLayout-1/image-20250325141039466.png" alt="image-20250325141039466" style="width:20%;">
