@@ -21,7 +21,7 @@ typora-root-url: ../
 - 비즈니스 로직은 데이터베이스와 바인딩되어 있지 않다.
 - 비즈니스 로직은 외부 세계(입출력 등)에 대해 아무것도 알지 못한다.
 
-> 요약하자면, **소프트웨어를 역할별로 레이어를 나눔고**   
+> 요약하자면, **소프트웨어를 역할별로 레이어를 나누고**   
 > 각 레이어를 **완전히 분리하여 의존성을 낮추는 것**  이 클린아키텍처의 핵심이다.  
 > 이를 통해 변화에 유연하고 테스트하기 쉬운 구조를 만들 수 있다.
 
@@ -87,7 +87,7 @@ typora-root-url: ../
 > Data Layer와 Presentation Layer가 Domain Layer를 바라보는 방향으로 의존성 방향이 지켜져야 한다.
 
 
-<img src="/assets/img/2025-03-25-[CleanArchitecture]-CleanArchitecture/clean4.png" alt="clean1" style="width: 50%;">
+<img src="/assets/img/2025-03-25-[CleanArchitecture]-CleanArchitecture/clean4.png" alt="clean4" style="width: 50%;">
 
 
 ## Reference
