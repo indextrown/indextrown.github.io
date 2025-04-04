@@ -1,5 +1,5 @@
 ---
-title: "[CleanArchitecture]-객체 지향 설계의 5원칙 SOLID"
+title: "[CleanArchitecture]-클린 아키텍처"
 tags: 
 - CleanArchitecture
 header: 
