@@ -1,7 +1,7 @@
 ---
 title: "[RxSwift]-RxSwift1"
 tags: 
-- RxSwift1
+- RxSwift
 header: 
   teaser: 
 typora-root-url: ../
