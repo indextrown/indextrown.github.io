@@ -18,9 +18,9 @@ typora-root-url: ../
 - Authentication 생성
 - Authentication에서 로그인 방법에서 카카오 로그인을 위해 OIDC 추가(이때 업그레이드 해줘야함)
 
-<img src="/assets/img/2025-03-25-[Haruhancut]-Haruhancut-1/스크린샷 2025-04-08 오후 9.19.56.png" alt="clean1" style="width: 80%;">
+<img src="/assets/img/2025-03-25-[Haruhancut]-Haruhancut-1/1.png" alt="clean1" style="width: 80%;">
 
-<img src="/assets/img/2025-03-25-[Haruhancut]-Haruhancut-1/스크린샷 2025-04-08 오후 9.27.09.png" alt="clean1" style="width: 80%;">
+<img src="/assets/img/2025-03-25-[Haruhancut]-Haruhancut-1/2.png" alt="clean1" style="width: 80%;">
 - 프로젝트 설정에서 Google-Info.plist다운
 
 ## 3. 코드 설정
@@ -74,7 +74,6 @@ func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>)
 ```
 
 ### MVC.swift
-<details> <summary>클릭해서 펼치기</summary>  
 
 ```swift
 import UIKit
@@ -242,12 +241,10 @@ extension LoginViewController {
 #Preview {
     LoginViewController()
 }
-```  
+```
 
-</details>
 
 ### VIewController + ViewModel
-<details> <summary>클릭해서 펼치기</summary>   
 
 ### ViewController  
 ``` swift
@@ -493,10 +490,9 @@ final class LoginViewModel {
 }
 ```
 
-</details>
+
 
 ### VIewController + ViewModel + Results
-<details> <summary>클릭해서 펼치기</summary>   
 
 ### ViewController
 ``` swift
@@ -732,4 +728,3 @@ final class LoginViewModel {
     }
 }
 ```
-</details>
