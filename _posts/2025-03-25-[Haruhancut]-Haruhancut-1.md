@@ -243,13 +243,14 @@ extension LoginViewController {
 #Preview {
     LoginViewController()
 }
-```
+``` 
+
 </details>
 
 ### VIewController + ViewModel
 <details> <summary>클릭해서 펼치기</summary>   
 
-### ViewController
+### ViewController  
 ``` swift
 import UIKit
 import RxSwift
@@ -437,7 +438,8 @@ extension LoginViewController {
 #Preview {
     LoginViewController()
 }
-```
+```  
+
 
 ### ViewModel
 ``` swift
@@ -490,7 +492,8 @@ final class LoginViewModel {
         }
     }
 }
-```
+```  
+
 </details>
 
 ### VIewController + ViewModel + Results
@@ -676,8 +679,9 @@ extension LoginViewController {
 
 #Preview {
     LoginViewController()
-}
-```
+}  
+```  
+
 
 ### ViewModel
 ``` swift
