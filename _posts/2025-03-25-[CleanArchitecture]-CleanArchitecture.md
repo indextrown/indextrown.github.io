@@ -33,13 +33,13 @@ typora-root-url: ../
 
 이다. 하지만 모든 개발자들이 **적은 인력으로 유지보수가 가능하면서 결함율이 낮은** 소프트웨어를 만들어낼 수 없다.  
 오히려 **많은 인력을가지고도 유지보수도 못하고 버그는 많이 생기는** 소프트웨어를 만든다.
-  
+
 > 소프트웨어를 만드는 건 누구나 할 수 있지만,  
 > **적은 인력으로 유지보수가 쉬운 '좋은 소프트웨어'를 만드는 건 어렵다.**   
 
 그렇기 떄문에 **좋은 아키텍처** 의 개념이 중요하다.  
 좋은 아키텍처는 **변화에 강하고, 유지보수가 쉽고, 테스트가 쉬운 구조**를 만드는 데 핵심이 된다.
-  
+
 ## 모바일에서의 클린아키텍처
 <div style="display: flex; justify-content: space-between;">
   <img src="/assets/img/2025-03-25-[CleanArchitecture]-CleanArchitecture/clean1.png" alt="clean1" style="width: 50%;">
