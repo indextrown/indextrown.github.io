@@ -74,7 +74,6 @@ func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>)
 ```
 
 ### MVC.swift
-
 <details> <summary>클릭해서 펼치기</summary>  
 
 ```swift
@@ -243,8 +242,7 @@ extension LoginViewController {
 #Preview {
     LoginViewController()
 }
-``` 
-
+```
 </details>
 
 ### VIewController + ViewModel
@@ -438,7 +436,7 @@ extension LoginViewController {
 #Preview {
     LoginViewController()
 }
-```  
+```
 
 
 ### ViewModel
@@ -492,7 +490,7 @@ final class LoginViewModel {
         }
     }
 }
-```  
+```
 
 </details>
 
@@ -680,7 +678,7 @@ extension LoginViewController {
 #Preview {
     LoginViewController()
 }  
-```  
+```
 
 
 ### ViewModel
