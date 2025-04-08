@@ -55,7 +55,7 @@ func doSomethingIncredible(forWho: String) throws -> IncredibleThing
 doSomethingIncredible("me")
     .retry(3)
 ```
-- API 통신을 하다보면, 성공할 떄도 있지만 실패할 떄도 분명 존재한다.
+- API 통신을 하다보면, 성공할 때도 있지만 실패할 떄도 분명 존재한다.
 - 실패시 단순히 끝나는게 아니라 3번 정도 재시도 할 수 있다면 좋겠지만 재시도 코드는 많이 복잡하고, 재사용하기도 어렵다.
 - RxSwift를 사용하면 retry연산자를 사용해 쉽게 재시도 코드를 작서할 수 있다
 
