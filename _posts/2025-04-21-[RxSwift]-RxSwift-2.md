@@ -93,5 +93,4 @@ viewModel.username
         print("유저 이름은 \(name)")
     })
     .disposed(by: disposeBag)
-
 ```
