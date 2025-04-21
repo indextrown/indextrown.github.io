@@ -10,4 +10,88 @@ typora-root-url: ../
 <img src="/assets/img/2025-03-25-[RxSwift]-RxSwift-1/image.png" alt="clean1" style="width: 70%;">
 
 
-## 1. 반응형 프로그래밍이란?
+## 1. Rx란?
+파이프라인 연결이다
+
+## 2. 구성
+- 보내는 것 - Observable
+- 연결 - subScribe
+- 중간처리 - 연산자
+
+## 3. 큰 개념
+### 보내는 것 - 옴저버블(총알 = 구독 가능한 것)
+1. Observable
+  - 가장 기본 베이스, 생성하자마자 이벤트를 전달한다
+  - .onNext(), .onError(), .onCompleted()를 통해 이벤트를 받을 수 있다
+  - .subscribe()를 통해 이벤트를 발행 가능
+  - 이벤트를 정의하고, 정적인 스트림 생성(한방향: 선언 -> 구독)
+
+2. Subject
+  - Observable(구독 가능한 것)이면서 Observer(관찰자)
+  - 일단 연결을 해두고 원하는 시점에 이벤트를 보낸다.
+  - 외부에서 직접 값을 넣고, 동적인 스트림 생성(양방향)
+  - BehaviorSubject - 상태
+    - 초기값 필수
+    - 구독 시, 가장 최신값 1개를 즉시 전달받음
+    - 이후에는 일반 Observable처럼 .onNext 이벤트를 수신
+  - PublishSubjcet - 단방향 이벤트
+    - 구독 이후 이벤트만 받음(초기값 없음)
+    - 주로 이벤트 전달용
+
+3. Relay
+- Subject의 변형으로, error가 없고 UI바인딩에 최적화
+- PublishRelay 
+  - 단방향 이벤트 전달(버튼 클릭)
+- BehaviorRelay
+  - 상태 저장, 초기값 필수 -> accept() 사용
+
+4. Driver
+- 메인스레드, share(1)
+- UI 바인딩 전용으로 사용되는 옵저버블
+
+### 구독
+1. subscribe(onNext:)
+- next, error, completed 시퀀스 이벤트를 받을 수 있다
+- 직점 onError 처리 가능하다
+- viewModel 내부, 로직 처리, 이벤트 감지, 에러 대응
+- Disposable 반환해야한다
+- 모든 Observable계열 구독 가능
+- bind(onNext:) 보다 범용적, 완료/에러 받을 수 있다
+
+2. bind(to:)
+- UI 컴포넌트 프로퍼티에 바인딩할 때 사용
+- 구독과 동시에 값이 특정 속성에 직접 들어가는 방식
+- 값을 특정UI의 속성에 직접 구독해서 바인딩
+```swift
+// label.text = title처럼 자동으로 연결하는 직접 바인딩 방식
+viewModel.title
+    .bind(to: label.rx.text)
+    .disposed(by: disposeBag)
+```
+3. bind(onNext:)
+- 단순히 이벤트를 수신하고 구독 형태
+- 내부에 명시적으로 처리 로직을 작성해야 함
+- 값을 받아서 직접 처리(프린트, 로직 실행)하는 방식으로 구독
+```swift
+viewModel.title
+    .bind(onNext: { text in
+        print("값 출력: \(text)")
+    })
+    .disposed(by: disposeBag)
+```
+
+4. 비교
+```swift
+// 1. 자동 UI 업데이트 (bind to UI)
+viewModel.username // Observable<String>
+    .bind(to: label.rx.text) // 📲 label.text = 값
+    .disposed(by: disposeBag)
+
+// 2. 내가 직접 프린트 (bind with closure)
+viewModel.username
+    .bind(onNext: { name in
+        print("유저 이름은 \(name)")
+    })
+    .disposed(by: disposeBag)
+
+```
