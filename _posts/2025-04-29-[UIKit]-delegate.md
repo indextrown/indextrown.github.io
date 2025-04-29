@@ -205,7 +205,7 @@ private func handleButton(_ sender: UIButton) {
 }
 ```
 
-## SecondViewController에서 함수가 동작해야하는 시점 설ㅈ정
+## SecondViewController에서 함수가 동작해야하는 시점 설정
 우리가 원하는 타이밍에 함수가 작동할 수 있도록 코드 구현. 화면을 전달하면서 값을 전달하면된다. delegate의 textDidInput함수를 호출하는 시점이 결정되었고 이제 버튼이 눌리게 되면 View 가 Dismiss 되기 전 이 함수를 호출하며 FirstViewController 가 값을 전달받게 된다. 이게 가능한 이유는 SecondViewController 가 present 되기 전 우리가 FirstViewController 를 delegate 로 설정해주었기 때문이다.
 ```swift
 @objc
