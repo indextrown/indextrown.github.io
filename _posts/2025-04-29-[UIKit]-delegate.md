@@ -25,108 +25,194 @@ UIKit 클론코딩을 하다 보면 여러가지 상황에서 Delegate Protocol�
 ### FirstViewController는 결과값을 표시할 Label, 두번째 Controller를 뛰울 Button
 ### SecondViewController는 결과값을 입력받을 TextField와 첫번째 Controller로 돌아갈 수 있는 Button을 배치
 
+### Protocol
+```swift
+/// 1
+protocol CustomTextFieldDelegate: AnyObject {
+    func textDidInput(text: String)
+}
+```
+
 ### FirstViewController
 ```swift
-class FirstViewController: UIViewController {
+//
+//  FirstViewController.swift
+//  MyDelegate
+//
+//  Created by 김동현 on 4/30/25.
+//
 
-    let label = UILabel()
-    let button = UIButton()
+import UIKit
+
+final class FirstViewController: UIViewController {
+    
+    // MARK: - UI Components
+    private lazy var myLabel: UILabel = {
+        let label = UILabel()
+        label.text = "hello world"
+        label.textColor = .white
+        return label
+    }()
+    
+    private lazy var nextButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("secondView", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.backgroundColor = .systemMint
+        button.layer.cornerRadius = 20
+        button.addTarget(self, action: #selector(goNextView), for: .touchUpInside)
+        return button
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
+        makeUI()
     }
-
-    // MARK: - UI
-    private func configureUI() {
-        view.backgroundColor = .white
-        setAttributes()
-        setContraints()
-    }
-
-    private func setAttributes() {
-        label.text = "Sample Text"
-
-        button.setTitle("Present", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-        button.addTarget(self, action: #selector(handleButton(_:)), for: .touchUpInside)
-    }
-
-    private func setContraints() {
-        [label, button].forEach {
+    
+    func makeUI() {
+        // MARK: - 뷰 추가
+        [myLabel, nextButton].forEach {
             view.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
-
+        
+        // MARK: - 제약조건 설정
+        // 레이블
         NSLayoutConstraint.activate([
-            label.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
-            label.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 0),
-
-            button.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
-            button.bottomAnchor.constraint(equalTo: label.topAnchor, constant: -30)
+            myLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            myLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        
+        // 버튼
+        NSLayoutConstraint.activate([
+            // 위치 제약
+            nextButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
+            nextButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            // 크기 제약
+            nextButton.heightAnchor.constraint(equalToConstant: 50),
+            nextButton.widthAnchor.constraint(equalToConstant: 200)
         ])
     }
-
-    // MARK: - Selectors
+    
     @objc
-    private func handleButton(_ sender: UIButton) {
-        let nextVC = SecondViewController()
-        self.present(nextVC, animated: true, completion: nil)
+    func goNextView() {
+        let secondVC = SecondViewController()
+        secondVC.delegate = self
+        self.present(secondVC, animated: true)
     }
 }
+
+/// 3
+extension FirstViewController: CustomTextFieldDelegate {
+    func textDidInput(text: String) {
+        myLabel.text = text
+    }
+}
+
+#Preview {
+    FirstViewController()
+}
+
 ```
 
 ### SecondViewController
 ```swift
-class SecondViewController: UIViewController {
+//
+//  SecondViewController.swift
+//  MyDelegate
+//
+//  Created by 김동현 on 4/30/25.
+//
 
-    let textField = UITextField()
-    let button = UIButton()
+import UIKit
 
+final class SecondViewController: UIViewController {
+    /// 2
+    weak var delegate: CustomTextFieldDelegate? = nil
+    
+    // MARK: - UI Components
+    private lazy var texxtField: UITextField = {
+        let textField = UITextField()
+        
+        // placeholder 스타일
+        textField.attributedPlaceholder = NSAttributedString(
+            string: "입력해주세요",
+            attributes: [.foregroundColor: UIColor.lightGray]
+        )
+        
+        // 왼쪽 여백
+        textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 0))
+        textField.leftViewMode = .always
+        
+        // 테두리 스타일
+        textField.layer.borderColor = UIColor.black.cgColor // 테두리 색상
+        textField.layer.borderWidth = 1.0 // 테두리 둑께
+        textField.layer.cornerRadius = 10 // 둘글게
+        
+        return textField
+    }()
+    
+    private lazy var endButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("secondView", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.backgroundColor = .systemMint
+        button.layer.cornerRadius = 20
+        button.addTarget(self, action: #selector(goBack), for: .touchUpInside)
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
+        view.backgroundColor = .darkGray
+        /// print("delegate 상태:", delegate as Any)
+        makeUI()
     }
-
-    // MARK: - UI
-    private func configureUI() {
-        view.backgroundColor = .white
-        setAttributes()
-        setContraints()
-    }
-
-    private func setAttributes() {
-        textField.layer.borderColor = UIColor.lightGray.cgColor
-        textField.layer.borderWidth = 0.5
-
-        button.setTitle("Dismiss", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-        button.addTarget(self, action: #selector(handleButton(_:)), for: .touchUpInside)
-    }
-
-    private func setContraints() {
-        [textField, button].forEach {
+    
+    private func makeUI() {
+        // MARK: - 뷰 추가
+        [texxtField, endButton].forEach {
             view.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
-
+        
+        // MARK: - 제약조건 설정
+        // 텍스트필드
         NSLayoutConstraint.activate([
-            textField.heightAnchor.constraint(equalToConstant: 50),
-            textField.widthAnchor.constraint(equalToConstant: 350),
-            textField.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
-            textField.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 0),
-
-            button.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
-            button.bottomAnchor.constraint(equalTo: textField.topAnchor, constant: -30)
+            // 위치
+            texxtField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            texxtField.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            
+            // 크기
+            texxtField.heightAnchor.constraint(equalToConstant: 50),
+            texxtField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
+        ])
+        
+        // 버튼
+        NSLayoutConstraint.activate([
+            // 위치 제약
+            endButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
+            endButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            // 크기 제약
+            endButton.heightAnchor.constraint(equalToConstant: 50),
+            endButton.widthAnchor.constraint(equalToConstant: 200)
         ])
     }
-
-    // MARK: - Selectors
+    
     @objc
-    private func handleButton(_ sender: UIButton) {
-        self.dismiss(animated: true, completion: nil)
+    private func goBack() {
+        let text = texxtField.text ?? ""
+        self.delegate?.textDidInput(text: text)
+        self.dismiss(animated: true)
     }
 }
+
+#Preview {
+    FirstViewController()
+}
+
 ```
 
 ## 3. Delegate Pattern 연습
@@ -167,8 +253,8 @@ class ChatViewController: UIViewController, ChatDelegate {
 
 이 실습에서는 SecondViewController 의 UITextField 에 입력받은 내용을 FirstViewController 의 UILabel 에 전달해야하므로 우리가 구현할 method 는 String 을 Parameter 로 전달 받는다.
 ```swift
-protocol CustomTextFieldDelegate: class {
-    func textDidInput(didInput text: String)
+protocol CustomTextFieldDelegate: AnyObject {
+    func textDidInput(text: String)
 }
 ```
 
@@ -176,7 +262,7 @@ protocol CustomTextFieldDelegate: class {
 SecondViewController에서 delegate 인스턴스를 생성한다. delegate인스턴스는 CustomTextFieldDelegate를 타입으로 가짐으로서 이 인스턴스에 접근해서 우리가 Protocol 내부에 작성해두었던 함수에 접근할 수 있게 된다.
 ```swift
 // weak 을 사용해 ARC 가 증가하지 않도록 만들어줌으로서 메모리 Leak 이 발생하지 않도록 방지해주는 것이 중요
-weak var delegate: CustomTextFieldDelegate?
+weak var delegate: CustomTextFieldDelegate? = nil
 ```
 
 ### Protocol 채택 및 필수 method 구현
@@ -185,9 +271,10 @@ Protocol을 채택할 때는 반드시 Extension으로 주어야 하는 것은 �
 Protocol 이 채택되고 나면 경고창이 뜨면서 필수 함수를 구현하라고 나오는데 이 때 Xcode 가 지원하는 자동에러처리를 사용하면 함수 하나가 생성된다.
 
 ```swift
+/// 3
 extension FirstViewController: CustomTextFieldDelegate {
-    func textDidInput(didInput text: String) {
-        label.text = text
+    func textDidInput(text: String) {
+        myLabel.text = text
     }
 }
 ```
@@ -198,10 +285,10 @@ delegate 인스턴스를 생성했을 때 Optional 형태로 생성하였다. �
 위임 방법은 FirstViewController에서 화면을 present할 때 구현해놓은 nextVC의 delegate에 접근에서 설정할 수 있다
 ```swift
 @objc
-private func handleButton(_ sender: UIButton) {
-    let nextVC = SecondViewController()
-    nextVC.delegate = self
-    self.present(nextVC, animated: true, completion: nil)
+func goNextView() {
+    let secondVC = SecondViewController()
+    secondVC.delegate = self
+    self.present(secondVC, animated: true)
 }
 ```
 
@@ -209,127 +296,14 @@ private func handleButton(_ sender: UIButton) {
 우리가 원하는 타이밍에 함수가 작동할 수 있도록 코드 구현. 화면을 전달하면서 값을 전달하면된다. delegate의 textDidInput함수를 호출하는 시점이 결정되었고 이제 버튼이 눌리게 되면 View 가 Dismiss 되기 전 이 함수를 호출하며 FirstViewController 가 값을 전달받게 된다. 이게 가능한 이유는 SecondViewController 가 present 되기 전 우리가 FirstViewController 를 delegate 로 설정해주었기 때문이다.
 ```swift
 @objc
-private func handleButton(_ sender: UIButton) {
-    let text = textField.text ?? ""
-    self.delegate?.textDidInput(didInput: text)
-    self.dismiss(animated: true, completion: nil)
+private func goBack() {
+    let text = texxtField.text ?? ""
+    self.delegate?.textDidInput(text: text)
+    self.dismiss(animated: true)
 }
 ```
 
-### FirstViewController
-```swift
-class FirstViewController: UIViewController {
 
-    let label = UILabel()
-    let button = UIButton()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        configureUI()
-    }
-
-    // MARK: - UI
-    private func configureUI() {
-        view.backgroundColor = .white
-        setAttributes()
-        setContraints()
-    }
-
-    private func setAttributes() {
-        label.text = "Sample Text"
-
-        button.setTitle("Present", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-        button.addTarget(self, action: #selector(handleButton(_:)), for: .touchUpInside)
-    }
-
-    private func setContraints() {
-        [label, button].forEach {
-            view.addSubview($0)
-            $0.translatesAutoresizingMaskIntoConstraints = false
-        }
-
-        NSLayoutConstraint.activate([
-            label.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
-            label.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 0),
-
-            button.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
-            button.bottomAnchor.constraint(equalTo: label.topAnchor, constant: -30)
-        ])
-    }
-
-    // MARK: - Selectors
-    @objc
-    private func handleButton(_ sender: UIButton) {
-        let nextVC = SecondViewController()
-        nextVC.delegate = self
-        self.present(nextVC, animated: true, completion: nil)
-    }
-}
-
-extension FirstViewController: CustomTextFieldDelegate {
-    func textDidInput(didInput text: String) {
-        label.text = text
-    }
-}
-```
-
-### SecondViewController
-```swift
-class SecondViewController: UIViewController {
-
-    weak var delegate: CustomTextFieldDelegate?
-
-    let textField = UITextField()
-    let button = UIButton()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        configureUI()
-    }
-
-    // MARK: - UI
-    private func configureUI() {
-        view.backgroundColor = .white
-        setAttributes()
-        setContraints()
-    }
-
-    private func setAttributes() {
-        textField.layer.borderColor = UIColor.lightGray.cgColor
-        textField.layer.borderWidth = 0.5
-
-        button.setTitle("Dismiss", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-        button.addTarget(self, action: #selector(handleButton(_:)), for: .touchUpInside)
-    }
-
-    private func setContraints() {
-        [textField, button].forEach {
-            view.addSubview($0)
-            $0.translatesAutoresizingMaskIntoConstraints = false
-        }
-
-        NSLayoutConstraint.activate([
-            textField.heightAnchor.constraint(equalToConstant: 50),
-            textField.widthAnchor.constraint(equalToConstant: 350),
-            textField.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
-            textField.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 0),
-
-            button.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
-            button.bottomAnchor.constraint(equalTo: textField.topAnchor, constant: -30)
-        ])
-    }
-
-    // MARK: - Selectors
-    @objc
-    private func handleButton(_ sender: UIButton) {
-        let text = textField.text ?? ""
-        self.delegate?.textDidInput(didInput: text)
-        self.dismiss(animated: true, completion: nil)
-    }
-}
-```
 
 ## Reference
 - https://kasroid.github.io/posts/ios/20201010-uikit-delegate-pattern/
