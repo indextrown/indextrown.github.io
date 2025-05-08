@@ -1,5 +1,5 @@
 ---
-title: "[UIKit]-테이블뷰1"
+title: "[TableView] 1. 테이블뷰 예제"
 tags: 
 - UIKit
 - TableView
@@ -8,7 +8,7 @@ header:
 typora-root-url: ../
 ---
 
-## 1. 테이블 뷰
+## 테이블 뷰
 테이블뷰는 dataSource와 delegate, Cell로 이루어져있다.
 
 ### 구성

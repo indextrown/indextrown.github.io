@@ -1,5 +1,5 @@
 ---
-title: "[UIKit]-테이블뷰2"
+title: "[TableView] 2. 스토리보드로 여러 화면 분기하기"
 tags: 
 - UIKit
 - TableView
@@ -12,9 +12,7 @@ typora-root-url: ../
 
 <!-- <img src="{{ '/assets/img/2025-05-08-[UIKit]-tableView2/1.png' | relative_url }}" alt="커스텀셀" width="30%"> -->
 
-## 1. 스토리보드로 테이블뷰 만들기
-
-
+## 스토리보드로 여러 화면 분기하기
 
 <img src="{{ '/assets/img/2025-05-08-[UIKit]-tableView2/image-20250508214538806.png' | relative_url }}" alt="커스텀셀" width="70%">
 

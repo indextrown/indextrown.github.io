@@ -445,7 +445,7 @@ checkbox.addEventListener('change', function() {
 
 
 <h3 class="archive__subtitle">전체 게시글
-  <span class="n_posts">(37)</span>
+  <span class="n_posts">(38)</span>
 </h3>
 <!-- 
 <div class="container">
@@ -533,12 +533,12 @@ checkbox.addEventListener('change', function() {
   
     
     
-    <li><span class="tag" data-tag="TableView">TableView (2)</span></li>
+    <li><span class="tag" data-tag="TableView">TableView (3)</span></li>
     
   
     
     
-    <li><span class="tag" data-tag="UIKit">UIKit (3)</span></li>
+    <li><span class="tag" data-tag="UIKit">UIKit (4)</span></li>
     
   
 </ul>
@@ -570,7 +570,7 @@ checkbox.addEventListener('change', function() {
     
     <h2 class="archive__item-title no_toc" itemprop="headline">
       
-        <a href="/UIKit-tableView2/" rel="permalink">[UIKit]-테이블뷰2
+        <a href="/UIKit-tableView3/" rel="permalink">[TableView] 3. 스토리보드로 커스텀 테이블뷰 구현하기
 </a>
       
     </h2>
@@ -599,18 +599,10 @@ checkbox.addEventListener('change', function() {
 
 
 
-1. 스토리보드로 테이블뷰 만들기
+스토리보드로 커스텀 테이블뷰 구현하기
 
-
-
-필요 파일
-
-
-  MainViewController
-  Main.storyboard
-
-
-MainStoryboard에서 Command + Shift + L을 눌러서 Storyboard를 추가하고 우측 하단의 Embeded In을 눌러서 ...</p>
+ 
+위 사진은 1. 테이블뷰 예제에서 구현한 방식이다. 사진처럼 셀 스타일이 기본 셀이라서 커스텀을 할 수 없다. 그래서 보통 UITableViewCell을 상속받아 커스텀 Cell Class를 만들어 입맛대로 만든다. 커스텀 Cell...</p>
   </article>
 </div>
 
@@ -649,7 +641,7 @@ MainStoryboard에서 Command + Shift + L을 눌러서 Storyboard를 추가하고
     
     <h2 class="archive__item-title no_toc" itemprop="headline">
       
-        <a href="/UIKit-tableView1/" rel="permalink">[UIKit]-테이블뷰1
+        <a href="/UIKit-tableView2/" rel="permalink">[TableView] 2. 스토리보드로 여러 화면 분기하기
 </a>
       
     </h2>
@@ -674,7 +666,86 @@ MainStoryboard에서 Command + Shift + L을 눌러서 Storyboard를 추가하고
   </p>
 
 
-    <p class="archive__item-excerpt" itemprop="description">1. 테이블 뷰
+    <p class="archive__item-excerpt" itemprop="description">
+
+
+
+스토리보드로 여러 화면 분기하기
+
+
+
+필요 파일
+
+
+  MainViewController
+  Main.storyboard
+
+
+MainStoryboard에서 Command + Shift + L을 눌러서 Storyboard를 추가하고 우측 하단의 Embeded In을 눌러서 N...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=UIKit">UIKit</a>
+          
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=TableView">TableView</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-UIKit
+    
+      data-TableView
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/UIKit-tableView1/" rel="permalink">[TableView] 1. 테이블뷰 예제
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-05-08T00:00:00+00:00">May 8, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">테이블 뷰
 테이블뷰는 dataSource와 delegate, Cell로 이루어져있다.
 
 구성
@@ -684,7 +755,7 @@ MainStoryboard에서 Command + Shift + L을 눌러서 Storyboard를 추가하고
       데이터와 관련된 부분
       셀을 어떻게 보여줄 지
       데이터 크기, 종류에 따른 셀의 타입 정하기
-      리스트 개수가 몇...</p>
+      리스트 개수가 몇개인지...</p>
   </article>
 </div>
 
