@@ -216,7 +216,7 @@ var store = [{
         "teaser": "/assets/logos/background.png"
       },{
         "title": "[UIKit]-테이블뷰2",
-        "excerpt":"테이블뷰뽀개기 06 - 스토리보드 등록 커스텀 쎌        테스트 중입니다  22  ","categories": [],
+        "excerpt":"테이블뷰뽀개기 06 - 스토리보드 등록 커스텀 쎌        이전 포스팅에서 최종 구현한 코드 화면이다. 각 셀의 body가 많기 때문에 커스텀 셀을 만들어보자  ","categories": [],
         "tags": ["UIKit","TableView"],
         "url": "/UIKit-tableView2/",
         "teaser": "/assets/logos/background.png"
