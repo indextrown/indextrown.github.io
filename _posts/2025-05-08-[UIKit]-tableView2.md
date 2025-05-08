@@ -10,4 +10,7 @@ typora-root-url: ../
 
 # 테이블뷰뽀개기 06 - 스토리보드 등록 커스텀 쎌
 
-<img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.pngg" style="width: 70%;">
+<!-- ![1](/assets/img/2025-05-08-[UIKit]-tableView2/1.png) -->
+
+
+<img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%">
