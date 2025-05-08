@@ -15,8 +15,18 @@ typora-root-url: ../
 
 ## 스토리보드로 커스텀 테이블뷰 구현하기
 
-<img src="{{ '/assets/img/2025-05-08-[UIKit]-tableView3/image-20250509003319693.png' | relative_url }}" alt="커스텀셀" width="30%"> 
-위 사진은 **1. 테이블뷰 예제**에서 구현한 방식이다. 사진처럼 셀 스타일이 기본 셀이라서 커스텀을 할 수 없다. 그래서 보통 UITableViewCell을 상속받아 커스텀 Cell Class를 만들어 입맛대로 만든다. 커스텀 Cell 적용 방식이 **1. 스토리보드, 2. Nib파일, 3. 코드 방식** 총 3가지가 있는데 이번 포스팅에서는 스토리보드 방식으로 진행한다.
+<table>
+  <tr>
+    <td><img src="{{ '/assets/img/2025-05-08-[UIKit]-tableView3/image-20250509003319693.png' | relative_url }}" alt="커스텀셀1" width="100%"></td>
+    <td><img src="{{ '/assets/img/2025-05-08-[UIKit]-tableView3/image-20250509020704480.png' | relative_url }}" alt="커스텀셀2" width="100%"></td>
+  </tr>
+  <tr>
+    <td style="text-align:center;">기존 셀</td>
+    <td style="text-align:center;">구현할 커스텀 셀</td>
+  </tr>
+</table>
+
+위 왼쪽 사진은 **1. 테이블뷰 예제**에서 구현한 방식이다. 사진처럼 셀 스타일이 기본 셀이라서 커스텀을 할 수 없다. 그래서 보통 UITableViewCell을 상속받아 커스텀 Cell Class를 만들어 입맛대로 만든다. 커스텀 Cell 적용 방식이 **1. 스토리보드, 2. Nib파일, 3. 코드 방식** 총 3가지가 있는데 이번 포스팅에서는 스토리보드 방식으로 커스템 셀 구현을 진행한다.
 <br/>
 
 <img src="{{ '/assets/img/2025-05-08-[UIKit]-tableView3/스크린샷 2025-05-09 오전 12.38.22(2).png' | relative_url }}" alt="커스텀셀" width="100%"> 
