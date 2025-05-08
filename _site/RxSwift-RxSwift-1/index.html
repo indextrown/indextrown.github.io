@@ -1,0 +1,643 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[RxSwift]-1. RxSwift란?">
+    <meta itemprop="description" content="1. 반응형 프로그래밍이란?데이터의 흐름 및 변경사항을 전파하는 데 중점을 둔 프로그래밍 패러다임이다.   이 패러다임을 사용할 경우, 주변 환경/데이터 변화가 생길 때 연결된 실행 모델들이 이 이벤트를 받아 동작하도록 설계하는 방식이다.  선(→) : 데이터가 흐르는 경로이며, Observable이라고 부른다.  점(●) : 시간에 따라 발생하는 이벤트(Event) 하나를 의미한다.  debounce 박스 : 이벤트를 필터링하는 Operator(연산자)로, 너무 잦은 이벤트를 제어한다.  아래쪽 선 : debounce 이후 실제로 구독자에게 전달되는 결과 흐름을 보여준다.비유로 설명자동차(Event)들이 도로(Ovservable)를 따라 달리고 있을 때,교통경찰 역할을 하는 debounce가 너무 많은 차를 제어해준다.  지나치게 빠르게 지나가는 차들은 걸러내고, 일정 시간 동안 마지막으로 지나간 차(이벤트)만 통과시킨다.  즉 이벤트가 여러 번 발생하더라도 debounce를 통과한 이벤트만 최종적으로 전달한다.2. RxSwift란?Reactive Extension/Programming + Swift로, 관찰 가능한 시퀀스를 사용하여 비동기 및 이벤트 기반 프로그램을 구성하기 위한 라이브러리다.Swift는 함수형 프로그래밍(Functional Programming) 패러다임을 강조하는 언어이다.   이에 RxSwift는 반응형 프로그래밍(Reactive Programming)을 더하여, Swift에서 FRP(Functional Reactive Programming)을 따를 수 있도록 한다.  즉 Swift를 반응형 프로그래밍 하는 것이다.예시Observable    .combineLatest(firstName.rx.text, lastName.rx.text) {  $0 + &quot; &quot; $1 }    .map { &quot;Greetings, \(#0)&quot; }    .bind(to: greetingLabel.rx.text)    .disposed(by: DisposeBag)  comBineLatest나 map을 RxSwift에서 Operator라고 부른다.  이러한 연산자를 사용해서 이벤트의 값을 여러 형태로 조합하거나 변경할 수 있다.  또한 MVVM패턴을 적용할 때 View와 ViewModel을 연결해주는, 데이터 바인딩을 수행해야 한다.  이때 bind(정확히 말하자면 bind는 RxCocoa이다) 연산자를 사용하여 쉽게 바인딩이 가능하다.   DisoatchQueue에서 직접 조정해야 했던 작업들을 자동으로 처리해준다.3. RxSwift 사용 목적func doSomethingIncredible(forWho: String) throws -&gt; IncredibleThing// 재시도doSomethingIncredible(&quot;me&quot;)    .retry(3)  API 통신을 하다보면, 성공할 때도 있지만 실패할 떄도 분명 존재한다.  실패시 단순히 끝나는게 아니라 3번 정도 재시도 할 수 있다면 좋겠지만 재시도 코드는 많이 복잡하고, 재사용하기도 어렵다.  RxSwift를 사용하면 retry연산자를 사용해 쉽게 재시도 코드를 작성할 수 있다.Reference  https://velog.io/@gnwjd309/RxSwift-1  https://reactivex.io/intro.html  https://github.com/ReactiveX/RxSwift  https://babbab2.tistory.com/182  https://ios-development.tistory.com/95">
+    <meta itemprop="datePublished" content="2025-03-25T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/RxSwift-RxSwift-1/" class="u-url" itemprop="url">[RxSwift]-1. RxSwift란?
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=RxSwift">RxSwift</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-03-25T00:00:00+00:00">March 25, 2025</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <p><img src="/assets/img/2025-03-25-[RxSwift]-RxSwift-1/image.png" alt="clean1" style="width: 70%;" /></p>
+
+<h2 id="1-반응형-프로그래밍이란">1. 반응형 프로그래밍이란?</h2>
+<p>데이터의 흐름 및 변경사항을 전파하는 데 중점을 둔 프로그래밍 패러다임이다.   <br />
+이 패러다임을 사용할 경우, 주변 환경/데이터 변화가 생길 때 연결된 실행 모델들이 이 이벤트를 받아 동작하도록 설계하는 방식이다.</p>
+
+<ul>
+  <li><strong>선(→)</strong> : 데이터가 흐르는 경로이며, <strong>Observable</strong>이라고 부른다.</li>
+  <li><strong>점(●)</strong> : 시간에 따라 발생하는 <strong>이벤트(Event)</strong> 하나를 의미한다.</li>
+  <li><strong>debounce 박스</strong> : 이벤트를 필터링하는 <strong>Operator(연산자)</strong>로, 너무 잦은 이벤트를 제어한다.</li>
+  <li><strong>아래쪽 선</strong> : <code class="language-plaintext highlighter-rouge">debounce</code> 이후 실제로 <strong>구독자에게 전달되는 결과 흐름</strong>을 보여준다.</li>
+</ul>
+
+<h3 id="비유로-설명">비유로 설명</h3>
+<p>자동차(Event)들이 도로(Ovservable)를 따라 달리고 있을 때,<br />
+교통경찰 역할을 하는 debounce가 너무 많은 차를 제어해준다.  <br />
+지나치게 빠르게 지나가는 차들은 걸러내고, 일정 시간 동안 마지막으로 지나간 차(이벤트)만 통과시킨다.  <br />
+즉 이벤트가 여러 번 발생하더라도 debounce를 통과한 이벤트만 최종적으로 전달한다.</p>
+
+<h2 id="2-rxswift란">2. RxSwift란?</h2>
+<p>Reactive Extension/Programming + Swift로, 관찰 가능한 시퀀스를 사용하여 비동기 및 이벤트 기반 프로그램을 구성하기 위한 라이브러리다.</p>
+
+<p>Swift는 함수형 프로그래밍(Functional Programming) 패러다임을 강조하는 언어이다.   <br />
+이에 RxSwift는 반응형 프로그래밍(Reactive Programming)을 더하여, Swift에서 FRP(Functional Reactive Programming)을 따를 수 있도록 한다.  <br />
+즉 Swift를 반응형 프로그래밍 하는 것이다.</p>
+
+<h3 id="예시">예시</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">Observable</span>
+    <span class="o">.</span><span class="nf">combineLatest</span><span class="p">(</span><span class="n">firstName</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">lastName</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="p">{</span>  <span class="nv">$0</span> <span class="o">+</span> <span class="s">" "</span> <span class="nv">$1</span> <span class="p">}</span>
+    <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="s">"Greetings, </span><span class="se">\(</span><span class="err">#</span><span class="mi">0</span><span class="se">)</span><span class="s">"</span> <span class="p">}</span>
+    <span class="o">.</span><span class="nf">bind</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="n">greetingLabel</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="kt">DisposeBag</span><span class="p">)</span>
+</code></pre></div></div>
+<ul>
+  <li>comBineLatest나 map을 RxSwift에서 Operator라고 부른다.</li>
+  <li>이러한 연산자를 사용해서 이벤트의 값을 여러 형태로 조합하거나 변경할 수 있다.</li>
+  <li>또한 MVVM패턴을 적용할 때 View와 ViewModel을 연결해주는, 데이터 바인딩을 수행해야 한다.  <br />
+이때 bind(정확히 말하자면 bind는 RxCocoa이다) 연산자를 사용하여 쉽게 바인딩이 가능하다.   <br />
+DisoatchQueue에서 직접 조정해야 했던 작업들을 자동으로 처리해준다.</li>
+</ul>
+
+<h2 id="3-rxswift-사용-목적">3. RxSwift 사용 목적</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">doSomethingIncredible</span><span class="p">(</span><span class="nv">forWho</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">IncredibleThing</span>
+
+<span class="c1">// 재시도</span>
+<span class="nf">doSomethingIncredible</span><span class="p">(</span><span class="s">"me"</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">retry</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div></div>
+<ul>
+  <li>API 통신을 하다보면, 성공할 때도 있지만 실패할 떄도 분명 존재한다.</li>
+  <li>실패시 단순히 끝나는게 아니라 3번 정도 재시도 할 수 있다면 좋겠지만 재시도 코드는 많이 복잡하고, 재사용하기도 어렵다.</li>
+  <li>RxSwift를 사용하면 retry연산자를 사용해 쉽게 재시도 코드를 작성할 수 있다.</li>
+</ul>
+
+<h2 id="reference">Reference</h2>
+<ul>
+  <li>https://velog.io/@gnwjd309/RxSwift-1</li>
+  <li>https://reactivex.io/intro.html</li>
+  <li>https://github.com/ReactiveX/RxSwift</li>
+  <li>https://babbab2.tistory.com/182</li>
+  <li>https://ios-development.tistory.com/95</li>
+</ul>
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/Haruhancut-Haruhancut-1/" class="pagination--pager" title="[하루한컷] 1. iOS 카카오 로그인
+">Previous</a>
+    
+    
+      <a href="/RxSwift-RxSwift-2/" class="pagination--pager" title="[RxSwift2]-RxSwift개념
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

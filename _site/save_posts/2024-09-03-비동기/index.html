@@ -1,0 +1,149 @@
+<h1 id="비동기-처리의-필요성과-방법">비동기 처리의 필요성과 방법</h1>
+
+<h2 id="비동기-처리가-필요한-이유">비동기 처리가 필요한 이유</h2>
+
+<p>부하가 많이 걸리는 작업은 메인 스레드가 아닌 다른 스레드에서 처리해야 한다.   <br />
+메인 스레드는 사용자 인터페이스(UI)와 상호작용하며, iOS는 초당 60프레임으로 화면을 다시 그린다. 따라서 메인 스레드에서 시간이 오래 걸리는 작업을 수행하면 다음과 같은 문제를 겪을 수 있다.</p>
+
+<ul>
+  <li><strong>테이블뷰를 스크롤할 때 버벅임 발생</strong>: 이미지나 데이터 로딩 같은 무거운 작업이 메인 스레드에서 실행되면 스크롤 시 UI가 멈추거나 지연될 수 있습니다.</li>
+  <li><strong>원하지 않는 UI 동작 발생</strong>: 사용자 입력에 대한 반응이 느려지거나, 화면이 응답하지 않는 경우가 생길 수 있습니다.</li>
+</ul>
+
+<h2 id="스레드의-개념">스레드의 개념</h2>
+
+<p>스레드는 작업을 병렬로 수행할 수 있게 해주는 단위입니다. 스레드에는 물리적인 스레드와 소프트웨어적인 스레드가 있다.</p>
+
+<ul>
+  <li><strong>물리적인 스레드</strong>: 실제 CPU에서 실행되는 스레드입니다.</li>
+  <li><strong>소프트웨어적인 스레드</strong>: 운영 체제나 런타임 환경에서 관리하는 논리적인 스레드입니다.</li>
+</ul>
+
+<!-- ![스레드 개념](https://prod-files-secure.s3.us-west-2.amazonaws.com/a2bacc83-1924-4309-80e8-d18801d486d0/99e705a6-f9b8-48f4-88a6-4006e6e46f0d/image.png) -->
+
+<p>간단한 작업은 메인 스레드에서 처리해도 문제가 없다.</p>
+
+<!-- ![간단한 작업](https://prod-files-secure.s3.us-west-2.amazonaws.com/a2bacc83-1924-4309-80e8-d18801d486d0/1c93ac14-e4dd-4c17-9b9c-eefe0422137f/image.png) -->
+
+<p>하지만 무거운 작업은 메인 스레드에서 처리해서는 안 된다.</p>
+
+<h2 id="동시성-처리">동시성 처리</h2>
+
+<p>동시성 처리는 작업을 여러 스레드에서 병렬로 실행할 수 있도록 하는 기법이다. iOS에서는 다음과 같은 도구를 사용하여 동시성 처리를 수행할 수 있다.</p>
+
+<ul>
+  <li><strong>DispatchQueue (Grand Central Dispatch)</strong>: 작업을 큐에 추가하고 iOS가 자동으로 스레드를 관리하여 작업을 병렬로 수행한다.</li>
+  <li><strong>OperationQueue</strong>: 작업의 의존성을 관리하고, 동시성 처리를 쉽게 할 수 있도록 도와준다.</li>
+</ul>
+
+<!-- ![동시성 처리](https://prod-files-secure.s3.us-west-2.amazonaws.com/a2bacc83-1924-4309-80e8-d18801d486d0/c4e52e6b-d03f-4d99-b4ba-e6cc2669f916/image.png) -->
+
+<p>작업을 큐에 추가하면 iOS가 자동으로 여러 스레드로 나누어 처리한다.</p>
+
+<h2 id="병렬parallel과-동시성concurrency의-개념">병렬(Parallel)과 동시성(Concurrency)의 개념</h2>
+
+<ul>
+  <li><strong>병렬 (Parallel)</strong>: 물리적인 스레드에서 실제로 동시에 일을 하는 개념이다.</li>
+  <li><strong>동시성 (Concurrency)</strong>: 메인 스레드가 아닌 다른 소프트웨어적인 스레드에서 동시에 일을 하는 개념이다. 성능, 반응성, 최적화와 관련된 문제를 해결하는 기법이다.</li>
+</ul>
+
+<h2 id="비동기--동기">비동기 / 동기</h2>
+
+<ul>
+  <li><strong>비동기 (Asynchronous)</strong>: 작업을 다른 스레드에서 수행하고, 작업이 끝나기를 기다리지 않고 다음 작업을 진행한다.</li>
+  <li><strong>동기 (Synchronous)</strong>: 작업을 다른 스레드에서 수행하고, 작업이 끝나기를 기다린 후 다음 작업을 진행한다.</li>
+</ul>
+
+<h2 id="직렬serial--동시concurrent">직렬(Serial) / 동시(Concurrent)</h2>
+
+<ul>
+  <li><strong>직렬 (Serial)</strong>: 하나의 스레드에서 순서대로 작업을 처리하는 큐입니다. 순서가 중요한 작업에 사용된다.</li>
+  <li><strong>동시 (Concurrent)</strong>: 여러 스레드에서 동시에 작업을 처리하는 큐다.</li>
+</ul>
+
+<h2 id="컴플리션-핸들러의-존재-이유">컴플리션 핸들러의 존재 이유</h2>
+
+<p>비동기 처리는 작업이 끝날 때까지 메인 스레드가 기다리지 않기 때문에, 작업이 끝나는 시점을 알고 후속 처리를 명확히 하기 위해 컴플리션 핸들러를 사용한다. 이를 통해 비동기 작업이 완료된 후 적절한 처리를 할 수 있다.</p>
+
+<h2 id="잘못된-비동기-함수-예시">잘못된 비동기 함수 예시</h2>
+
+<p>다음은 비동기 처리가 제대로 이루어지지 않는 코드이다:</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">getImages</span><span class="p">(</span><span class="n">with</span> <span class="nv">urlString</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UIImage</span><span class="p">?</span> <span class="p">{</span>
+    
+    <span class="c1">// MARK: 문자열을 받아서 URL 구조체를 만든다</span>
+    <span class="k">let</span> <span class="nv">url</span> <span class="o">=</span> <span class="kt">URL</span><span class="p">(</span><span class="nv">string</span><span class="p">:</span> <span class="n">urlString</span><span class="p">)</span><span class="o">!</span>
+    
+    <span class="c1">// MARK: photoImage를 nil로 초기화</span>
+    <span class="k">var</span> <span class="nv">photoImage</span><span class="p">:</span> <span class="kt">UIImage</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+    
+    <span class="c1">// MARK: URLSession을 사용하여 비동기적으로 서버와 통신한다</span>
+    <span class="kt">URLSession</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">dataTask</span><span class="p">(</span><span class="nv">with</span><span class="p">:</span> <span class="n">url</span><span class="p">)</span> <span class="p">{</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span> <span class="k">in</span>
+        <span class="k">if</span> <span class="n">error</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"에러 있음: </span><span class="se">\(</span><span class="n">error</span><span class="o">!</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="c1">// 옵셔널 바인딩</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">imageData</span> <span class="o">=</span> <span class="n">data</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+        
+        <span class="c1">// 데이터를 UIImage 타입으로 변형</span>
+        <span class="n">photoImage</span> <span class="o">=</span> <span class="kt">UIImage</span><span class="p">(</span><span class="nv">data</span><span class="p">:</span> <span class="n">imageData</span><span class="p">)</span>
+        
+    <span class="p">}</span><span class="o">.</span><span class="nf">resume</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="n">photoImage</span>    <span class="c1">// 항상 nil이 나옴</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>이 함수는 URLSession의 비동기 작업이 완료되기 전에 photoImage를 반환하기 때문에 항상 nil을 반환한다.</p>
+
+<h1 id="해결-방법">해결 방법</h1>
+
+<p>리턴 값을 없애고, 컴플리션 핸들러를 사용하여 비동기 작업이 완료된 후 결과를 처리한다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">getImages</span><span class="p">(</span><span class="n">with</span> <span class="nv">urlString</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">completionHandler</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">UIImage</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="p">{</span>
+    
+    <span class="c1">// URL 구조체를 생성</span>
+    <span class="k">guard</span> <span class="k">let</span> <span class="nv">url</span> <span class="o">=</span> <span class="kt">URL</span><span class="p">(</span><span class="nv">string</span><span class="p">:</span> <span class="n">urlString</span><span class="p">)</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nf">completionHandler</span><span class="p">(</span><span class="kc">nil</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// URLSession을 사용하여 비동기적으로 서버와 통신한다</span>
+    <span class="kt">URLSession</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">dataTask</span><span class="p">(</span><span class="nv">with</span><span class="p">:</span> <span class="n">url</span><span class="p">)</span> <span class="p">{</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span> <span class="k">in</span>
+        <span class="k">if</span> <span class="k">let</span> <span class="nv">error</span> <span class="o">=</span> <span class="n">error</span> <span class="p">{</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"에러 있음: </span><span class="se">\(</span><span class="n">error</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+            <span class="nf">completionHandler</span><span class="p">(</span><span class="kc">nil</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+        
+        <span class="c1">// 옵셔널 바인딩</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">imageData</span> <span class="o">=</span> <span class="n">data</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nf">completionHandler</span><span class="p">(</span><span class="kc">nil</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+        
+        <span class="c1">// 데이터를 UIImage 타입으로 변형</span>
+        <span class="k">let</span> <span class="nv">image</span> <span class="o">=</span> <span class="kt">UIImage</span><span class="p">(</span><span class="nv">data</span><span class="p">:</span> <span class="n">imageData</span><span class="p">)</span>
+        
+        <span class="c1">// 컴플리션 핸들러 호출</span>
+        <span class="nf">completionHandler</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        
+    <span class="p">}</span><span class="o">.</span><span class="nf">resume</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h1 id="사용법">사용법</h1>
+<p>다음과 같이 호출하여 비동기 작업이 완료된 후 이미지를 처리할 수 있다.</p>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">getImages</span><span class="p">(</span><span class="nv">with</span><span class="p">:</span> <span class="s">"https://example.com/image.jpg"</span><span class="p">)</span> <span class="p">{</span> <span class="n">image</span> <span class="k">in</span>
+    <span class="k">if</span> <span class="k">let</span> <span class="nv">image</span> <span class="o">=</span> <span class="n">image</span> <span class="p">{</span>
+        <span class="c1">// 이미지 처리 (예: UIImageView에 설정)</span>
+        <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="k">async</span> <span class="p">{</span>
+            <span class="n">imageView</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">image</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">// 에러 처리 또는 기본 이미지 설정</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"이미지 로드 실패"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>

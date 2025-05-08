@@ -1,0 +1,3102 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--home">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+  
+
+
+
+
+
+
+
+<div class="page__hero--overlay"
+  style="background-color: rgb(10, 75, 119); background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('');"
+>
+  
+    <div class="wrapper">
+      <h1 id="page-title" class="page__title" itemprop="headline">
+        
+          Articles
+
+        
+      </h1>
+      
+        <p class="page__lead">Swift와 크롤링 기술에 대해 공부하고 있습니다.
+</p>
+      
+      
+
+
+      
+      
+    </div>
+  
+  
+</div>
+
+
+<style>
+  .dark {
+    .page__hero--overlay {
+      background-color: rgb(69 166 231 / 85%) !important;
+    }
+  }
+</style>
+
+
+<!--  -->
+
+<div id="main" role="main">
+
+  <div class="archive">
+    
+   
+    
+
+
+<script src="/assets/js/home.js"></script>
+
+
+
+
+<h3 class="archive__subtitle">전체 게시글
+  <span class="n_posts">(37)</span>
+</h3>
+<!-- 
+<div class="container">
+  <div class="row">
+   <div class="col-12">
+     <div id="search-bar">
+       <i class="fa fa-search" aria-hidden="true"></i>
+       <input id="search-input" type="text" placeholder="검색어를 입력하세요." />
+     </div>
+     <ul id="results-container"></ul>
+   </div>
+  </div>
+</div> -->
+
+
+
+
+
+
+<!--Tag List-->
+<ul class="tags">
+  
+    
+    
+    <li><span class="tag" data-tag="Algorithm">Algorithm (3)</span></li>
+    
+  
+    
+    
+    <li><span class="tag" data-tag="AutoLayout">AutoLayout (1)</span></li>
+    
+  
+    
+    
+    <li><span class="tag" data-tag="Blog">Blog (1)</span></li>
+    
+  
+    
+    
+    <li><span class="tag" data-tag="CleanArchitecture">CleanArchitecture (2)</span></li>
+    
+  
+    
+    
+    <li><span class="tag" data-tag="Combine">Combine (1)</span></li>
+    
+  
+    
+    
+    <li><span class="tag" data-tag="Concurrency">Concurrency (7)</span></li>
+    
+  
+    
+    
+    <li><span class="tag" data-tag="Data_Structure">Data Structure (1)</span></li>
+    
+  
+    
+    
+  
+    
+    
+    <li><span class="tag" data-tag="Firebase">Firebase (1)</span></li>
+    
+  
+    
+    
+    <li><span class="tag" data-tag="Haruhancut">Haruhancut (1)</span></li>
+    
+  
+    
+    
+    <li><span class="tag" data-tag="RxSwift">RxSwift (2)</span></li>
+    
+  
+    
+    
+    <li><span class="tag" data-tag="Swift">Swift (7)</span></li>
+    
+  
+    
+    
+    <li><span class="tag" data-tag="SwiftUI">SwiftUI (6)</span></li>
+    
+  
+    
+    
+    <li><span class="tag" data-tag="TableView">TableView (2)</span></li>
+    
+  
+    
+    
+    <li><span class="tag" data-tag="UIKit">UIKit (3)</span></li>
+    
+  
+</ul>
+
+
+
+<!--  -->
+
+
+
+
+<div class="entries-list">
+  
+  <div class="post-wrapper" 
+  
+    
+      data-UIKit
+    
+      data-TableView
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/UIKit-tableView2/" rel="permalink">[UIKit]-테이블뷰2
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-05-08T00:00:00+00:00">May 8, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">테이블뷰뽀개기 06 - 스토리보드 등록 커스텀 쎌
+
+
+
+
+
+테스트 중입니다
+22
+</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=UIKit">UIKit</a>
+          
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=TableView">TableView</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-UIKit
+    
+      data-TableView
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/UIKit-tableView1/" rel="permalink">[UIKit]-테이블뷰1
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-05-08T00:00:00+00:00">May 8, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. 테이블 뷰
+테이블뷰는 dataSource와 delegate, Cell로 이루어져있다.
+
+구성
+
+  dataSource
+    
+      데이터와 관련된 부분
+      셀을 어떻게 보여줄 지
+      데이터 크기, 종류에 따른 셀의 타입 정하기
+      리스트 개수가 몇...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=UIKit">UIKit</a>
+          
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=TableView">TableView</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-UIKit
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/UIKit-delegate/" rel="permalink">[UIKit]-Delegate Pattern란?
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-04-29T00:00:00+00:00">April 29, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. Delegate 조건
+UIKit 클론코딩을 하다 보면 여러가지 상황에서 Delegate Protocol을 채택하고 Protocol 내부에서 제공하는 method를 사용하게 된다. UITextField, UITableView에서도 기능을 구현할 때 흔하게 사용되는 방식이다. A...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=UIKit">UIKit</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-RxSwift
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/RxSwift-RxSwift-2/" rel="permalink">[RxSwift2]-RxSwift개념
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-04-21T00:00:00+00:00">April 21, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+
+1. Rx란?
+파이프라인 연결이다
+
+2. 구성
+
+  보내는 것 - Observable
+  연결 - subScribe
+  중간처리 - 연산자
+
+
+3. 큰 개념
+보내는 것 - 옴저버블(총알 = 구독 가능한 것)
+
+  Observable
+    
+      가장 기본 베이스, 생성하...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=RxSwift">RxSwift</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-RxSwift
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/RxSwift-RxSwift-1/" rel="permalink">[RxSwift]-1. RxSwift란?
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-03-25T00:00:00+00:00">March 25, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+
+1. 반응형 프로그래밍이란?
+데이터의 흐름 및 변경사항을 전파하는 데 중점을 둔 프로그래밍 패러다임이다.   
+이 패러다임을 사용할 경우, 주변 환경/데이터 변화가 생길 때 연결된 실행 모델들이 이 이벤트를 받아 동작하도록 설계하는 방식이다.
+
+
+  선(→) : 데이터가 흐르는...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=RxSwift">RxSwift</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Haruhancut
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Haruhancut-Haruhancut-1/" rel="permalink">[하루한컷] 1. iOS 카카오 로그인
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-03-25T00:00:00+00:00">March 25, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. 카카오 로그인
+
+  https://developers.kakao.com/console/app 링크 접속
+  애플리케이션 추가
+  플랫폼 iOS 등록
+  네이티브 앱키를 Config.config파일에 저장
+
+
+2. 파이어베이스 프로젝트 생성
+
+  Authentication 생성...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Haruhancut">Haruhancut</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-CleanArchitecture
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/CleanArchitecture-SOLID/" rel="permalink">[CleanArchitecture]-객체 지향 설계의 5원칙 SOLID
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-03-25T00:00:00+00:00">March 25, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">SOLID 원칙이란
+SOLID 원칙이란 객체지향 설계에서 지켜야 할 5개의 소프트웨어 개발 원칙을 의미한다.   
+특정 프로그래밍 언어 혹은 프레임워크를 위해 만든 원치이 아니다.
+
+객체 지향 설계의 5원칙 SOLID
+
+  단일 책임 원칙 (Single Responsibility ...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=CleanArchitecture">CleanArchitecture</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-CleanArchitecture
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/CleanArchitecture-CleanArchitecture/" rel="permalink">[CleanArchitecture]-클린 아키텍처
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-03-25T00:00:00+00:00">March 25, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+
+Clean Architecture란?
+로버트 C 마틴(Robert C. Martin), 별명으로는 엉클 밥(Uncle Bob)이 제안한 아키텍처로 소프트웨어를 다양한 계층(Layer)으로 분리해서 다음과 같은 목표를 추구한다
+
+  아키텍처는 특정 소프트웨어 라이브러리에 의존하지...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=CleanArchitecture">CleanArchitecture</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-AutoLayout
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/AutoLayout-AutoLayout-1/" rel="permalink">[AutoLayout]-오토레이아웃-1
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-03-25T00:00:00+00:00">March 25, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. 오토레이아웃이란?
+
+
+  오토레이아웃이란 뷰 계층구조에 있는 모든 뷰의 크기와 위치를 제약조건(constraints)에 따라 동적으로 계산한다.
+  즉 자동으로 레이아웃을 그린다는 의미이다.
+
+
+2. Constraints란?
+
+
+  제약조건(Constraints)란 뷰의 위치...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=AutoLayout">AutoLayout</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Uikit
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Uikit-RestApi/" rel="permalink">[Uikit] Rest Api앱 만들기-1
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-03-24T00:00:00+00:00">March 24, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. 프로젝트 설정
+
+
+  SwiftUI 기반으로 프로젝트를 연다
+  Uikit 폴더를 만들고 MainVC.storyboard, MainVC.swift, TodoCell.storyboard, TodoCell.swift파일을 만든다
+
+
+2. MainVC.storyboard 만들기
+
+...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+            <a class="posttag untagged">Uikit</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Data_Structure
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/%EC%9E%90%EB%A3%8C%EA%B5%AC%EC%A1%B0-Queue/" rel="permalink">[자료구조] Queue
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-21T00:00:00+00:00">February 21, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Queue
+
+struct DoubleStackQueue&lt;T&gt; {
+    private var enqueueStack: [T] = []
+    private var dequeueStack: [T] = []
+    
+    var size: Int {
+        retu...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Data_Structure">Data Structure</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Algorithm
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-%EC%9D%B8%EC%A0%91%ED%96%89%EB%A0%AC/" rel="permalink">[알고리즘] 인접행렬
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-17T00:00:00+00:00">February 17, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1.  인접행렬
+
+
+  그래프와 정점과 간선의 관계를 나타내는 bool 타입의 정사각형 행렬이다.
+  정사각형 행렬의 각 요소가 0 또는 1의 값을 가짐을 의미한다.
+  0: 두 정점 사이의 경로가 없다.
+  1: 두 정점 사이의 경로가 있다.
+
+
+
+
+
+
+import Foundat...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Algorithm">Algorithm</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Concurrency
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Concurrency-async-await-3/" rel="permalink">[Concurrency] async-await-3
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-12T00:00:00+00:00">February 12, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. 에러 처리
+
+
+  
+    에러를 던지는 비동기 함수 정의
+  
+  
+    에러를 던질 수 있는 비동기함수 실행시 try await
+  
+  
+    async 다음에 throws가 와야한다.
+  
+  
+    try 다음에 await이 와야한다.
+
+    // 1
+func...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Concurrency">Concurrency</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Concurrency
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Concurrency-async-await-2/" rel="permalink">[Concurrency] async-await-2
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-12T00:00:00+00:00">February 12, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. GCD 비동기 vs Swift ConCurrency 비동기
+
+GCD 비동기
+
+
+  다른 쓰레드로 일을 시키고, 기다리지 않는다.
+  
+    해당 작업이 끝나는 시점에 콜백 함수를 통해 값을 리턴 받거나 끝난 시점을 알려준다.
+
+    // 정의
+func method(clos...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Concurrency">Concurrency</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Concurrency
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Concurrency-async-await-1/" rel="permalink">[Concurrency] async-await-1
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-12T00:00:00+00:00">February 12, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. 기존의 비동기 함수
+
+기존의 비동기 함수 정의 방법
+
+
+  오래 걸려서 얻는 결과값을 반드시 콜백 클로저 형태로 돌려받아야 했다.
+  
+    올바르지 않은 형태
+
+    // 기존 방식에서 잘못된 함수 설계의 형태
+func getImage1() -&gt; UIImage? {...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Concurrency">Concurrency</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Concurrency
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Concurrency-Task-3/" rel="permalink">[Concurrency] Task-3
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-11T00:00:00+00:00">February 11, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. Task 클로저에서 self 키워드 사용
+
+
+  
+    Task {} 로 작업을 만들 수 있다.
+  
+  
+    클로저를 할당하면 클로저를 바로 실행하면서 Task를 생성한다.
+
+    struct Work: Sendable {}
+  
+class Worker {
+    v...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Concurrency">Concurrency</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Concurrency
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Concurrency-Task-2/" rel="permalink">[Concurrency] Task-2
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-11T00:00:00+00:00">February 11, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. Task
+
+
+  비동기적인 일처리를 할 수 있는 하나의 일(work)의 단위.
+  작업의 생성한다음 바로 비동기적인 일처리를 시작한다.
+  
+    Operation 파라미터에 해당하는 클로저를 전달하면서, 작업Task을 생성 및 클로저로 전달된 (비동기적인) 작업을 즉시 실...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Concurrency">Concurrency</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Concurrency
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Concurrency-Task-1/" rel="permalink">[Concurrency] Task-1
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-11T00:00:00+00:00">February 11, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. 기존 동시성 프로그래밍(GCD)
+
+
+  대기열 / 큐를 사용하였다
+  
+    대기열에 넣어서 2번 cpu에 일을 시키는 방식으로 비동기 처리
+
+    // 기존 동시성 프로그래밍(GCD)
+// 기본적으로 다른 쓰레드로 보내지 않았다면 1번 쓰레드(cpu)에서 실행한다
+pri...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Concurrency">Concurrency</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Swift
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Swift-07-%EB%A9%94%EB%AA%A8%EB%A6%AC/" rel="permalink">[Swift] 메모리
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-10T00:00:00+00:00">February 10, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. let 사용이 성능적으로 유리한 이유
+
+
+  Stack 메모리 사용으로 메모리 할당이 빠르다.
+  컴파일러가 최적화 가능하여 불필요한 연산을 제거한다.
+  멀티스레드 환경에서 안전하며 동기화 비용이 절감된다.
+  CPU 명령어 최적화로 실행 속도 증가한다.
+  ARC 부담 감...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Swift">Swift</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Swift
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Swift-06-%EB%B0%98%EB%B3%B5%EB%AC%B8/" rel="permalink">[Swift] 반복문
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-10T00:00:00+00:00">February 10, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. for문
+
+
+  범위나 컬렉션에서 item을 하나씩 뽑아, 중괄호 안에서 반복 실행한다.
+  ⚠️ 여기서 item은 반복상수 이다.
+  
+    즉 for in 반복상수는 매번 새로운 스택 공간에 동일한 식별자로 선언과 동시에 초기화되된다.
+
+    for item in 범위...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Swift">Swift</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Swift
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Swift-05-%EC%82%BC%ED%95%AD%EB%B2%94%EC%9C%84%ED%8C%A8%ED%84%B4%EB%A7%A4%EC%B9%AD-%EC%97%B0%EC%82%B0%EC%9E%90/" rel="permalink">[Swift] (삼항/범위/패턴매칭)연산자
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-10T00:00:00+00:00">February 10, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. 삼항연산자(Ternary Conditional Operator)
+
+
+  세가지 항을 가진 연산자이다.
+  조건에 따라 선택이 2가지인 경우 사용한다.
+  ? 와 : 를 사용한다.
+  조건에 따라 리터럴 값을 선택하여 변수에 대입할 때 사용한다.
+  if문과 동일하게 사용가능하...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Swift">Swift</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Swift
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Swift-04-%ED%8A%9C%ED%94%8C/" rel="permalink">[Swift] 튜플(Tuple)
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-10T00:00:00+00:00">February 10, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. 튜플
+
+
+  원하는 연관된 데이터의 조합으로 만들 수 있는 타입이다.
+  
+    변수를 선언과 동시에 해당 멤버(데이터의 종류 및 개수)가 결정되므로 추가/삭제는 불가능하다.
+
+    // 좌표
+let position: (Int, Int) = (1, 2)
+  print(po...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Swift">Swift</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Swift
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Swift-03-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D-%EA%B8%B0%EB%B3%B8-%EC%9B%90%EB%A6%AC%EC%99%80-%EC%A1%B0%EA%B1%B4%EB%AC%B8/" rel="permalink">[Swift] 프로그래밍 기본 원리와 조건문
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-10T00:00:00+00:00">February 10, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. 프로그래밍 기본 원리
+
+
+  순차
+  조건
+  반복
+
+
+순차
+
+
+  
+    개발자가 정한 규칙으로 실행한다.
+
+    print("1")
+print("2")
+print("3")
+    
+  
+
+
+조건(if)
+
+
+  
+    조건이 참이면 {}를 실행하고 거짓이면 아무 직업도...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Swift">Swift</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Swift
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Swift-02-%EA%B8%B0%EB%B3%B8-%EC%97%B0%EC%82%B0%EC%9E%90/" rel="permalink">[Swift] 기본 연산자
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-10T00:00:00+00:00">February 10, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. 기본 연산자
+</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Swift">Swift</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Swift
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Swift-01-%EB%B3%80%EC%88%98%EC%99%80-%EC%83%81%EC%88%98-%EA%B7%B8%EB%A6%AC%EA%B3%A0-%ED%83%80%EC%9E%85/" rel="permalink">[Swift] 변수와 상수 그리고 타입
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-10T00:00:00+00:00">February 10, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. 변수(Variable) var
+
+  
+    데이터를 담을 수 있는 공간름
+  
+  
+    프로그래밍 동작의 첫번째 단계: 변수 선언
+
+    // 변수를 선언하면서 저장
+// 3이라는 숫자를 a라는 공간에 저장한다
+var a = 3	
+var b = 7
+  
+// 변수를 여...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Swift">Swift</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Concurrency
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Concurrency-01-%EB%B9%84%EB%8F%99%EA%B8%B0-%EC%B2%98%EB%A6%AC%EB%B0%A9%EC%8B%9D/" rel="permalink">[Concurrency] Swift 비동기 처리방식
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-10T00:00:00+00:00">February 10, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">📝 Swift 비동기 처리방식
+
+1. NSThread
+
+
+  Object-C 시절부터 사용되었다
+  직접 스레드를 셍성하고 괸리해야 한다.
+  수동으로 동기화 해야하다.
+  GCD나 OperationQueue에 비해 사용성이 떨어진다.
+  
+    ❌ 현재 사용 여부: 현재 거의 ...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Concurrency">Concurrency</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-SwiftUI
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/SwiftUI-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%BA%90%EC%8B%9C-%EA%B5%AC%ED%98%84/" rel="permalink">[SwiftUI] 이미지 캐시 구현
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-07T00:00:00+00:00">February 7, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">iOS file System
+
+
+
+sandbox
+
+iOS는 보안을 위해 앱 설치시 os내부 설치 프로그램이 그 앱에 자체 독립 공간(sandbox)을 생성한다.  (sandbox) 내부에는 각 역할을 가진 컨테이너 디렉터리들이 생성된다. 즉 각 iOS App은 자체 독립돈 공간 (...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=SwiftUI">SwiftUI</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Blog
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Blog-%EA%B9%83%EB%B8%94%EB%A1%9C%EA%B7%B8-%EC%9D%B4%EB%AF%B8%EC%A7%80-%ED%8E%B8%ED%95%98%EA%B2%8C-%EC%9E%91%EC%84%B1%ED%95%98%EB%8A%94%EB%B2%95/" rel="permalink">[Blog] 깃블로그 이미지 편하게 작성하는법
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-06T00:00:00+00:00">February 6, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">깃블로그 이미지 편하게 작성하는법
+
+
+  
+    Typora 다운
+  
+  
+    실행 후 좌측 상단바 Typora -&gt; 설정 -&gt; 이미지 -&gt; 사용자 정의 폴더로 이미지복사
+  
+  
+    ../assets/img/${filename} 지정
+  
+  
+   ...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Blog">Blog</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Algorithm
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-%EA%B9%8A%EC%9D%B4%EC%9A%B0%EC%84%A0%ED%83%90%EC%83%89(DFS)/" rel="permalink">[알고리즘] 깊이우선탐색(DFS)
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-01T00:00:00+00:00">February 1, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">깊이우선탐색(Depth First Search)
+그래프를 탐색할 때 쓰는 알고리즘으로 어떤 노드부터 시작해 인접한 노드들을 재귀적으로 방문하며 방문한 정점은 다시 반복하지 않고 각 분기마다 가능한 가장 멀리 있는 노드까지 탐색하는 알고리즘이다.
+
+DFS PseudoCode
+DFS(...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Algorithm">Algorithm</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Algorithm
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-%EA%B7%B8%EB%9E%98%ED%94%84%EC%9D%B4%EB%A1%A0/" rel="permalink">[알고리즘] 그래프 이론
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-02-01T00:00:00+00:00">February 1, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">정점과 간선
+
+정점(Vertex)
+
+
+  노드라고 불리며 그래프를 형성하는 기본 단위다.
+  분할할 수 없는 객체이자 점으로 표현되는 위치, 사람, 물건 등이 될 수 있다.
+
+
+간선(Edge)
+
+
+  정점을 잇는 선을 의미한다.
+  관계 경로 등이 될 수 있다.
+
+
+예시
+
+
+  “...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Algorithm">Algorithm</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Firebase
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Firebase-Cloud-Function/" rel="permalink">[Firebase] cloud functions
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-01-30T00:00:00+00:00">January 30, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Cloud Functions
+
+  Cloud Functions는 Firebase의 기능과 HTTP 요청에 의해서 Trigger 되는 이벤트에 응답하여 백엔드 코드를 자동으로 실행시켜주는 서버리스 프레임워크
+
+
+✅ 1. Firebase Cloud Functions 설정
+
+  먼저 F...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Firebase">Firebase</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-SwiftUI
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/SwiftUI-TabView/" rel="permalink">[SwiftUI] TabView
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-01-29T00:00:00+00:00">January 29, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">기본 TabView
+
+  사용목적: 여러 개의 화면을 탭으로 관리할 수 있다.
+  제약사항: TabView에는 자체적으로 배경색을 변경할 수 있는 modifier가 없다.
+  UITabBar.appearance().backgroundColor = .white 같은 UIKit 코드를...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=SwiftUI">SwiftUI</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-SwiftUI
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/SwiftUI-List-+-%EA%B8%B0%EB%B3%B8-TextField-%EB%AC%B8%EC%A0%9C%EC%A0%90/" rel="permalink">[SwiftUI] List + 기본 TextField 문제점
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-01-29T00:00:00+00:00">January 29, 2025</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">📌 1. 기존 문제 원인 분석 (SwiftUI List + 기본 TextField)
+
+✅ 원인 1: SwiftUI TextField가 List와 충돌
+
+  List는 UIKit의 UITabView를 래핑한 SwiftUI 컴포넌트이다.
+  SwiftUI의 TextField는 입력시 ...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=SwiftUI">SwiftUI</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-SwiftUI
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/SwiftUI-Animation/" rel="permalink">[SwiftUI] Animation 구현
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-12-05T00:00:00+00:00">December 5, 2024</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">SwiftUI에서 제공하는 애니메이션
+
+
+
+  
+
+    import SwiftUI
+
+// MARK: - 애니메이션
+struct AnimationView: View {
+    @State var currentTab: Int  // 현재 선택된 탭의 인덱스
+    
+    // MA...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=SwiftUI">SwiftUI</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-SwiftUI
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/SwiftUI-calendar/" rel="permalink">[SwiftUI] Calendar 구현
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-12-04T00:00:00+00:00">December 4, 2024</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">SwiftUI에서 제공하는 캘린더
+
+SwiftUI에서 제공하는 DatePicker를 사용하여 간단한 캘린더를 구현할 수 있습니다.
+
+
+
+  
+
+    import SwiftUI
+
+struct ProfileView: View {
+    @State private var selecte...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=SwiftUI">SwiftUI</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-SwiftUI
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/SwiftUI-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EC%97%90%EC%84%9C-UserDBRepository-,-UserService-,-ViewModel-%EA%B3%84%EC%B8%B5%EC%9D%98-%EC%97%AD%ED%95%A0%EA%B3%BC-%EC%82%AC%EC%9A%A9%EB%B2%95/" rel="permalink">[SwiftUI] 프로젝트에서 <code class="language-plaintext highlighter-rouge">UserDBRepository</code>, <code class="language-plaintext highlighter-rouge">UserService</code>, <code class="language-plaintext highlighter-rouge">ViewModel</code> 계층의 역할과 사용법
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-11-13T00:00:00+00:00">November 13, 2024</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">1. SwiftUI 프로젝트에서 UserDBRepository, UserService, ViewModel 계층의 역할과 사용법
+
+목차
+
+  UserDBRepository와 UserService의 개념 및 역할
+  계층을 나눈 이유
+  데이터 모델(User vs UserObject)...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=SwiftUI">SwiftUI</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Combine
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Combine-Framework/" rel="permalink">[Combine] 개념 및 예제
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-08-22T00:00:00+00:00">August 22, 2024</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+
+Combine이란
+2019년에 Apple에서 출시한 비동기처리 이벤트를 처리하기 위한 first-party 프레임워크이다.  
+Combine은 앱 내에서 일어나는 이벤트들의 진행 결과 등을 선언적으로 코딩할 수 있게끔 도와준다.  
+어떠한 이벤트를 추적할 떄 Delegate패턴...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Combine">Combine</a>
+          
+        
+      </div>
+    
+  </div>
+  
+</div>
+
+<!-- 
+-->
+
+  </div>
+</div>
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

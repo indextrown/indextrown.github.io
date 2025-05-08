@@ -1,0 +1,896 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[Combine] 개념 및 예제">
+    <meta itemprop="description" content="Combine이란2019년에 Apple에서 출시한 비동기처리 이벤트를 처리하기 위한 first-party 프레임워크이다.  Combine은 앱 내에서 일어나는 이벤트들의 진행 결과 등을 선언적으로 코딩할 수 있게끔 도와준다.  어떠한 이벤트를 추적할 떄 Delegate패턴을 사용하거나, Completion 클로저를 사용하는 대신 Combine을 활용해볼 수 있다.Combine 주요 개념Stream  데이터의 흐름이라고도 부르며 시간에 따라 순차적으로 전달되는 값들의 흐름이다  이 데이터는 비동기적으로 전달가능하다  전달 과정에서 변환, 필터링, 결합 등이 가능하다Publisher  데이터를 만들어내고 이를 스트림 형태로 방출한다  값을 방출하거나 성공적으로 완료하거나 오류로 실패한다Subscriber  Publisher로부터 완료 신호를 수신하는 역할을 한다  Publisher가 방출하는 값을 처리하고, 완료나 실패 이벤트를 받으면 스트림을 정리한다Operator  Publisher가 생성하는 이벤트를 변환하거나 처리하는 데 사용된다  map, filter, reduce등의 연산자가 존재한다  연산자를 사용하면 복잡한 비동기 작업을 쉽게 구성할 수 있다sink  Combine 퍼블리셔(Publisher)에서 방출된 데이터를 소비(consume)하기 위해 사용하는 구독자(Subscriber)이다  퍼블리셔가 내보내는 데이터를 받아서 처리하는 역할을 한다  sink를 호출하면 퍼블리셔를 구독한다  sink 메서드는 두 가지 클로저를 전달받는다  receiveCompletion: 스트림이 종료될 때(완료 또는 에러 발생 시) 호출되는 클로저  receiveValue: 스트림에서 방출된 값을 처리하는 클로저receiveCompletion  sink 메서드의 첫번째 클로저  스트림이 종료(completion) 또는 에러 발생시 호출  두가지 상태를 처리한다  finished(스트림 정상 종료)  failure(스트림에서 에러가 발생하여 종료)receiveValue  sink메서드의 두번째 클로저  퍼블리셔가 방출한 값을 받을 때 호출  여기서 값을 처리하거나 화면에 표시하는 등의 작업을 수행.store(in: &amp;cancellables)  sink 연산자로 반환된 AnyCancellable 객체를 cancellables에 저장한다  스트림이 종료되거나 cancellables가 해제되면 자동으로 구독이 취소된다cancellables:  Set 타입의 저장소이다  여기 저장된 AnyCancellable 객체는 구독이 유지되는 동안 메모리에서 해제되지 않도록 보장한다스트림의 중요한 특징  시간 기반(스트림은 데이터가 시간에 따라 순차적으로 흘러가는 형태)  비동기 처리(스트림은 데이터가 준비될 때마다 이벤트 발생시키므로 비동기 작업과 어울림)  연속성(데이터가 중단되지 않고 계속 흐를 수도 있고, 완료(completion) 또는 에러(error)가 발생하여 종료될 수 있다예제예제 1) sink  AnyCancellable 객체를 반환한다  퍼블리셔와 구독자의 생명주기를 관리하는 데 사용된다  구독 취소 전까지 스트림이 유지된다  AnyCancellable을 저장하지 않으면 구독이 즉시 해제되어 데이터 스트림이 동작하지 않는다// AnyCancellable을 저장할 곳var cancellables = Set&lt;AnyCancellable&gt;()        // 퍼블리셔let stream = [1, 2, 3].publisherstream    .sink { completion in        print(&quot;스트림 완료: \(completion)&quot;)    } receiveValue: { value in        print(&quot;받은 값: \(value)&quot;)    }    // 구독 저장(반환된 AnyCancellable 저장)    .store(in: &amp;cancellables)/*받은 값: 1받은 값: 2받은 값: 3스트림 완료: finished*/예제 2) Fail// 커스텀 에러 타입 정의enum MyError: Error {    case testError}// AnyCancellable을 저장할 곳var cancellables = Set&lt;AnyCancellable&gt;()// 퍼블리셔let publisher = Fail&lt;Int, MyError&gt;(error: .testError)publisher    .sink { completion in        switch completion {        case .finished:            print(&quot;스트림 완료&quot;)        case .failure(let error):            print(&quot;스트림 에러 (항상)발생: \(error)&quot;)        }    } receiveValue: { value in        print(&quot;받은 값: \(value)&quot;)    }    .store(in: &amp;cancellables)// 스트림 에러 (항상)발생: testError예제 3) Just  단 하나의 값을 방출하는 Publisher  값을 방출한 후 즉시 완료(finished)된다  실패하지 않는다(Failure 타입이 Never)var cancellables = Set&lt;AnyCancellable&gt;()        let justPublisher = Just(100)let subscription = justPublisher.sink { completion in    print(&quot;완료: \(completion)&quot;)} receiveValue: { value in    print(&quot;받은 값: \(value)&quot;)}/*받은 값: 100완료: finished*/예제 4) Empty  값을 생성하지 않고 완료만 하는 Publisher  에러 없이(failure == Never) 종료한다  주로 기본값이 없거나, 특정 조건에서 Publisher를 반환해야 할 때 사용된다var cancellables = Set&lt;AnyCancellable&gt;()        let emptyPublisher = Empty&lt;Int, Never&gt;()emptyPublisher.sink { completion in    print(&quot;완료: \(completion)&quot;)} receiveValue: { value in    print(&quot;받은 값: \(value)&quot;)}.store(in: &amp;cancellables)// 완료: finished예제 5) Future  비동기 작업을 처리할 때 유용  ex) 네트워크 요청, 파일 읽기, 데이터베이스 작업  한번만 값을 방출(Just와 유사하지만 비동기적으로 동작)  성공(.success(value)) 또는 실패(.failure(error))로 완료됨import Combineimport SwiftUIfunc fetchData() -&gt; Future&lt;String, Error&gt; {    return Future { promise in        DispatchQueue.global().asyncAfter(deadline: .now() + 2) {            // let success = Bool.random()            let success = false                        if success {                promise(.success(&quot;데이터 가져오기 성공&quot;))            } else {                promise(.failure(URLError(.badServerResponse)))            }        }    }}// AnyCancellable을 저장할 곳var cancellables = Set&lt;AnyCancellable&gt;()let cancellable = fetchData()    .sink { completion in        switch completion {        case .finished:            print(&quot;스트림 완료&quot;)        case .failure(let error):            print(&quot;에러 발생: \(error)&quot;)        }    } receiveValue: { value in        print(&quot;받은 값: \(value)&quot;)    }.store(in: &amp;cancellables)// RunLoop를 사용해 비동기 작업 대기RunLoop.main.run(until: Date(timeIntervalSinceNow: 5))// 1. 구독 저장소var cancellables = Set&lt;AnyCancellable&gt;()// 2. 비동기 작업을 수행하는 Future Publisher 생성let futurePublisher = Future&lt;Int, Error&gt; { promise in    DispatchQueue.global().asyncAfter(deadline: .now() + 1) {        let result = 42 // 비동기 작업 결과        promise(.success(result)) // 성공적으로 값을 방출    }}// 3. 구독 시작 및 결과 처리futurePublisher    .sink { completion in        switch completion {        case .finished:            print(&quot;스트림 완료&quot;)        case .failure(let error):            print(&quot;에러 발생: \(error.localizedDescription)&quot;)        }    } receiveValue: { value in        print(&quot;받은 값: \(value)&quot;)    }    .store(in: &amp;cancellables) // 구독 유지// RunLoop를 사용해 비동기 작업 대기RunLoop.main.run(until: Date(timeIntervalSinceNow: 2))">
+    <meta itemprop="datePublished" content="2024-08-22T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/Combine-Framework/" class="u-url" itemprop="url">[Combine] 개념 및 예제
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=Combine">Combine</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2024-08-22T00:00:00+00:00">August 22, 2024</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <!-- https://medium.com/harrythegreat/swift-combine-입문하기-가이드-1-525ccb94af57 -->
+<!-- https://velog.io/@newon-seoul/Combine-을-정리해보았습니다.-기초편 -->
+<h1 id="combine이란">Combine이란</h1>
+<p>2019년에 Apple에서 출시한 비동기처리 이벤트를 처리하기 위한 first-party 프레임워크이다.  <br />
+Combine은 앱 내에서 일어나는 이벤트들의 진행 결과 등을 선언적으로 코딩할 수 있게끔 도와준다.  <br />
+어떠한 이벤트를 추적할 떄 Delegate패턴을 사용하거나, Completion 클로저를 사용하는 대신 Combine을 활용해볼 수 있다.</p>
+
+<h1 id="combine-주요-개념">Combine 주요 개념</h1>
+<h3 id="stream">Stream</h3>
+<ul>
+  <li>데이터의 흐름이라고도 부르며 시간에 따라 순차적으로 전달되는 값들의 흐름이다</li>
+  <li>이 데이터는 비동기적으로 전달가능하다</li>
+  <li>전달 과정에서 변환, 필터링, 결합 등이 가능하다</li>
+</ul>
+
+<h3 id="publisher">Publisher</h3>
+<ul>
+  <li>데이터를 만들어내고 이를 스트림 형태로 방출한다</li>
+  <li>값을 방출하거나 성공적으로 완료하거나 오류로 실패한다</li>
+</ul>
+
+<h3 id="subscriber">Subscriber</h3>
+<ul>
+  <li>Publisher로부터 완료 신호를 수신하는 역할을 한다</li>
+  <li>Publisher가 방출하는 값을 처리하고, 완료나 실패 이벤트를 받으면 스트림을 정리한다</li>
+</ul>
+
+<h3 id="operator">Operator</h3>
+<ul>
+  <li>Publisher가 생성하는 이벤트를 변환하거나 처리하는 데 사용된다</li>
+  <li>map, filter, reduce등의 연산자가 존재한다</li>
+  <li>연산자를 사용하면 복잡한 비동기 작업을 쉽게 구성할 수 있다</li>
+</ul>
+
+<h3 id="sink">sink</h3>
+<ul>
+  <li>Combine 퍼블리셔(Publisher)에서 방출된 데이터를 소비(consume)하기 위해 사용하는 <strong>구독자(Subscriber)</strong>이다</li>
+  <li>퍼블리셔가 내보내는 데이터를 받아서 처리하는 역할을 한다</li>
+  <li>sink를 호출하면 퍼블리셔를 구독한다</li>
+  <li>sink 메서드는 두 가지 클로저를 전달받는다</li>
+  <li>receiveCompletion: 스트림이 종료될 때(완료 또는 에러 발생 시) 호출되는 클로저</li>
+  <li>receiveValue: 스트림에서 방출된 값을 처리하는 클로저</li>
+</ul>
+
+<h3 id="receivecompletion">receiveCompletion</h3>
+<ul>
+  <li>sink 메서드의 첫번째 클로저</li>
+  <li>스트림이 종료(completion) 또는 에러 발생시 호출</li>
+  <li>두가지 상태를 처리한다</li>
+  <li>finished(스트림 정상 종료)</li>
+  <li>failure(스트림에서 에러가 발생하여 종료)</li>
+</ul>
+
+<h3 id="receivevalue">receiveValue</h3>
+<ul>
+  <li>sink메서드의 두번째 클로저</li>
+  <li>퍼블리셔가 방출한 값을 받을 때 호출</li>
+  <li>여기서 값을 처리하거나 화면에 표시하는 등의 작업을 수행</li>
+</ul>
+
+<h3 id="storein-cancellables">.store(in: &amp;cancellables)</h3>
+<ul>
+  <li>sink 연산자로 반환된 AnyCancellable 객체를 cancellables에 저장한다</li>
+  <li>스트림이 종료되거나 cancellables가 해제되면 자동으로 구독이 취소된다</li>
+</ul>
+
+<h1 id="cancellables">cancellables:</h1>
+<ul>
+  <li>Set<AnyCancellable> 타입의 저장소이다</AnyCancellable></li>
+  <li>여기 저장된 AnyCancellable 객체는 구독이 유지되는 동안 메모리에서 해제되지 않도록 보장한다</li>
+</ul>
+
+<h1 id="스트림의-중요한-특징">스트림의 중요한 특징</h1>
+<ul>
+  <li>시간 기반(스트림은 데이터가 시간에 따라 순차적으로 흘러가는 형태)</li>
+  <li>비동기 처리(스트림은 데이터가 준비될 때마다 이벤트 발생시키므로 비동기 작업과 어울림)</li>
+  <li>연속성(데이터가 중단되지 않고 계속 흐를 수도 있고, 완료(completion) 또는 에러(error)가 발생하여 종료될 수 있다</li>
+</ul>
+
+<h1 id="예제">예제</h1>
+
+<h3 id="예제-1-sink">예제 1) sink</h3>
+<ul>
+  <li>AnyCancellable 객체를 반환한다</li>
+  <li>퍼블리셔와 구독자의 생명주기를 관리하는 데 사용된다</li>
+  <li>구독 취소 전까지 스트림이 유지된다</li>
+  <li>AnyCancellable을 저장하지 않으면 구독이 즉시 해제되어 데이터 스트림이 동작하지 않는다</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// AnyCancellable을 저장할 곳</span>
+<span class="k">var</span> <span class="nv">cancellables</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">AnyCancellable</span><span class="o">&gt;</span><span class="p">()</span>
+        
+<span class="c1">// 퍼블리셔</span>
+<span class="k">let</span> <span class="nv">stream</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">publisher</span>
+
+<span class="n">stream</span>
+    <span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">completion</span> <span class="k">in</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"스트림 완료: </span><span class="se">\(</span><span class="n">completion</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span> <span class="nv">receiveValue</span><span class="p">:</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"받은 값: </span><span class="se">\(</span><span class="n">value</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="c1">// 구독 저장(반환된 AnyCancellable 저장)</span>
+    <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">cancellables</span><span class="p">)</span>
+
+<span class="cm">/*
+받은 값: 1
+받은 값: 2
+받은 값: 3
+스트림 완료: finished
+*/</span>
+</code></pre></div></div>
+<h3 id="예제-2-fail">예제 2) Fail</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 커스텀 에러 타입 정의</span>
+<span class="kd">enum</span> <span class="kt">MyError</span><span class="p">:</span> <span class="kt">Error</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">testError</span>
+<span class="p">}</span>
+
+<span class="c1">// AnyCancellable을 저장할 곳</span>
+<span class="k">var</span> <span class="nv">cancellables</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">AnyCancellable</span><span class="o">&gt;</span><span class="p">()</span>
+
+<span class="c1">// 퍼블리셔</span>
+<span class="k">let</span> <span class="nv">publisher</span> <span class="o">=</span> <span class="kt">Fail</span><span class="o">&lt;</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">MyError</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">error</span><span class="p">:</span> <span class="o">.</span><span class="n">testError</span><span class="p">)</span>
+
+<span class="n">publisher</span>
+    <span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">completion</span> <span class="k">in</span>
+        <span class="k">switch</span> <span class="n">completion</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">finished</span><span class="p">:</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"스트림 완료"</span><span class="p">)</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="k">let</span> <span class="nv">error</span><span class="p">):</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"스트림 에러 (항상)발생: </span><span class="se">\(</span><span class="n">error</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="nv">receiveValue</span><span class="p">:</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"받은 값: </span><span class="se">\(</span><span class="n">value</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">cancellables</span><span class="p">)</span>
+
+<span class="c1">// 스트림 에러 (항상)발생: testError</span>
+</code></pre></div></div>
+
+<h3 id="예제-3-just">예제 3) Just</h3>
+<ul>
+  <li>단 하나의 값을 방출하는 Publisher</li>
+  <li>값을 방출한 후 즉시 완료(finished)된다</li>
+  <li>실패하지 않는다(Failure 타입이 Never)</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="nv">cancellables</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">AnyCancellable</span><span class="o">&gt;</span><span class="p">()</span>
+        
+<span class="k">let</span> <span class="nv">justPublisher</span> <span class="o">=</span> <span class="kt">Just</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="k">let</span> <span class="nv">subscription</span> <span class="o">=</span> <span class="n">justPublisher</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">completion</span> <span class="k">in</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"완료: </span><span class="se">\(</span><span class="n">completion</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+<span class="p">}</span> <span class="nv">receiveValue</span><span class="p">:</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"받은 값: </span><span class="se">\(</span><span class="n">value</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+받은 값: 100
+완료: finished
+*/</span>
+</code></pre></div></div>
+
+<h3 id="예제-4-empty">예제 4) Empty</h3>
+<ul>
+  <li>값을 생성하지 않고 완료만 하는 Publisher</li>
+  <li>에러 없이(failure == Never) 종료한다</li>
+  <li>주로 기본값이 없거나, 특정 조건에서 Publisher를 반환해야 할 때 사용된다</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="nv">cancellables</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">AnyCancellable</span><span class="o">&gt;</span><span class="p">()</span>
+        
+<span class="k">let</span> <span class="nv">emptyPublisher</span> <span class="o">=</span> <span class="kt">Empty</span><span class="o">&lt;</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Never</span><span class="o">&gt;</span><span class="p">()</span>
+
+<span class="n">emptyPublisher</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">completion</span> <span class="k">in</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"완료: </span><span class="se">\(</span><span class="n">completion</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+<span class="p">}</span> <span class="nv">receiveValue</span><span class="p">:</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"받은 값: </span><span class="se">\(</span><span class="n">value</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+<span class="p">}</span><span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">cancellables</span><span class="p">)</span>
+
+<span class="c1">// 완료: finished</span>
+</code></pre></div></div>
+<h3 id="예제-5-future">예제 5) Future</h3>
+<ul>
+  <li>비동기 작업을 처리할 때 유용</li>
+  <li>ex) 네트워크 요청, 파일 읽기, 데이터베이스 작업</li>
+  <li>한번만 값을 방출(Just와 유사하지만 비동기적으로 동작)</li>
+  <li>성공(.success(value)) 또는 실패(.failure(error))로 완료됨</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Combine</span>
+<span class="kd">import</span> <span class="kt">SwiftUI</span>
+
+<span class="kd">func</span> <span class="nf">fetchData</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Future</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kt">Future</span> <span class="p">{</span> <span class="n">promise</span> <span class="k">in</span>
+        <span class="kt">DispatchQueue</span><span class="o">.</span><span class="nf">global</span><span class="p">()</span><span class="o">.</span><span class="nf">asyncAfter</span><span class="p">(</span><span class="nv">deadline</span><span class="p">:</span> <span class="o">.</span><span class="nf">now</span><span class="p">()</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// let success = Bool.random()</span>
+            <span class="k">let</span> <span class="nv">success</span> <span class="o">=</span> <span class="kc">false</span>
+            
+            <span class="k">if</span> <span class="n">success</span> <span class="p">{</span>
+                <span class="nf">promise</span><span class="p">(</span><span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="s">"데이터 가져오기 성공"</span><span class="p">))</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nf">promise</span><span class="p">(</span><span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="kt">URLError</span><span class="p">(</span><span class="o">.</span><span class="n">badServerResponse</span><span class="p">)))</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// AnyCancellable을 저장할 곳</span>
+<span class="k">var</span> <span class="nv">cancellables</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">AnyCancellable</span><span class="o">&gt;</span><span class="p">()</span>
+
+<span class="k">let</span> <span class="nv">cancellable</span> <span class="o">=</span> <span class="nf">fetchData</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">completion</span> <span class="k">in</span>
+        <span class="k">switch</span> <span class="n">completion</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">finished</span><span class="p">:</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"스트림 완료"</span><span class="p">)</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="k">let</span> <span class="nv">error</span><span class="p">):</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"에러 발생: </span><span class="se">\(</span><span class="n">error</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="nv">receiveValue</span><span class="p">:</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"받은 값: </span><span class="se">\(</span><span class="n">value</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span><span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">cancellables</span><span class="p">)</span>
+
+<span class="c1">// RunLoop를 사용해 비동기 작업 대기</span>
+<span class="kt">RunLoop</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="nf">run</span><span class="p">(</span><span class="nv">until</span><span class="p">:</span> <span class="kt">Date</span><span class="p">(</span><span class="nv">timeIntervalSinceNow</span><span class="p">:</span> <span class="mi">5</span><span class="p">))</span>
+</code></pre></div></div>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 1. 구독 저장소</span>
+<span class="k">var</span> <span class="nv">cancellables</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">AnyCancellable</span><span class="o">&gt;</span><span class="p">()</span>
+
+<span class="c1">// 2. 비동기 작업을 수행하는 Future Publisher 생성</span>
+<span class="k">let</span> <span class="nv">futurePublisher</span> <span class="o">=</span> <span class="kt">Future</span><span class="o">&lt;</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;</span> <span class="p">{</span> <span class="n">promise</span> <span class="k">in</span>
+    <span class="kt">DispatchQueue</span><span class="o">.</span><span class="nf">global</span><span class="p">()</span><span class="o">.</span><span class="nf">asyncAfter</span><span class="p">(</span><span class="nv">deadline</span><span class="p">:</span> <span class="o">.</span><span class="nf">now</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">result</span> <span class="o">=</span> <span class="mi">42</span> <span class="c1">// 비동기 작업 결과</span>
+        <span class="nf">promise</span><span class="p">(</span><span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="n">result</span><span class="p">))</span> <span class="c1">// 성공적으로 값을 방출</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 3. 구독 시작 및 결과 처리</span>
+<span class="n">futurePublisher</span>
+    <span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">completion</span> <span class="k">in</span>
+        <span class="k">switch</span> <span class="n">completion</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">finished</span><span class="p">:</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"스트림 완료"</span><span class="p">)</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="k">let</span> <span class="nv">error</span><span class="p">):</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"에러 발생: </span><span class="se">\(</span><span class="n">error</span><span class="o">.</span><span class="n">localizedDescription</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="nv">receiveValue</span><span class="p">:</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"받은 값: </span><span class="se">\(</span><span class="n">value</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">cancellables</span><span class="p">)</span> <span class="c1">// 구독 유지</span>
+
+<span class="c1">// RunLoop를 사용해 비동기 작업 대기</span>
+<span class="kt">RunLoop</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="nf">run</span><span class="p">(</span><span class="nv">until</span><span class="p">:</span> <span class="kt">Date</span><span class="p">(</span><span class="nv">timeIntervalSinceNow</span><span class="p">:</span> <span class="mi">2</span><span class="p">))</span>
+</code></pre></div></div>
+
+<!-- 
+# 예시
+- URLSession.shared.dataTask { }를 사용하면 completion()을 써야하고 class - delegate를 적용하는 상황들이 직관적이지 않고  조금만 복잡해져도 스파게티 코드가 될 수 있다.
+
+![alt text](/assets/img/Combine.png)
+
+
+ Combine은 정리하자면  
+ Publisher라는 이벤트 반응 전송기계  
+ Subscriber라는 이벤트 수집기계  
+ 이 두개를 연결해주는 프레임워크이다.  
+   
+
+Subscriber 는 Publisher 에게 데이터를 받기만 하는 일방향적 관계이며,  
+Subscriber 가 Publisher 에게 요청할 수 있는것은 데이터를 달라는 요청만 할 수 있다.
+<br/><br/>
+  
+  
+Publisher 는 Subscriber 에게 데이터를 전달할 때, 바로 전달할 수도 있지만  
+Operator 를 활용해서, 데이터를 가공해서 줄 수 있다.
+<br/><br/>
+  
+Operator 는 Swift 에서 일상적으로 쓰는 메소드들인  
+map, flatMap, compactMap, filter 등의 이름을 따서 만든 메소드들로, 이름과 유사한 기능들을 제공한다.
+<br/><br/>
+
+더 쉽게 말하자면  
+Publisher 는 데이터를 전송만 담당,  
+Subscriber 는 데이터 수신만 담당  
+Operator 는 Publisher 가 데이터 전송할 때, 중간에 수정하는 역할이다.
+<br/><br/>
+  
+
+
+# 코드 예시
+
+
+```swift
+
+``
+
+```swift
+import UIKit
+import Combine
+
+// publisher 생성: [1, 2, 3]이라는 이벤트를 즉각적으로 보내겠다
+var myIntArrayPublisher: Publishers.Sequence<[Int], Never> = [1, 2, 3].publisher
+
+// 퍼블리셔에 대한 구독을 시작한다.
+// 'sink' 메서드를 사용하여 퍼블리셔의 값을 수신하고 처리한다
+myIntArrayPublisher.sink(receiveCompletion: { completion in
+    switch completion {
+    case .finished:
+        print("완료")
+    case .failure(let error):
+        print("error: \(error)")
+    }
+}, receiveValue: { receivedValue in
+     print("값을 받았다: \(receivedValue)")
+})
+``` -->
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="#" class="pagination--pager disabled">Previous</a>
+    
+    
+      <a href="/SwiftUI-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EC%97%90%EC%84%9C-UserDBRepository-,-UserService-,-ViewModel-%EA%B3%84%EC%B8%B5%EC%9D%98-%EC%97%AD%ED%95%A0%EA%B3%BC-%EC%82%AC%EC%9A%A9%EB%B2%95/" class="pagination--pager" title="[SwiftUI] 프로젝트에서 UserDBRepository, UserService, ViewModel 계층의 역할과 사용법
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

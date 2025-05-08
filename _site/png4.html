@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PNG Animation</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+            margin: 0;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <img id="sourceImage" src="xlogo.png" alt="Source PNG" style="display: none;">
+
+    <script>
+        const sourceImage = document.getElementById("sourceImage");
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // 최대 크기 설정
+        const maxSize = 500;
+
+        sourceImage.onload = () => {
+            const originalWidth = sourceImage.width;
+            const originalHeight = sourceImage.height;
+
+            // 비율 계산
+            const scale = Math.min(maxSize / originalWidth, maxSize / originalHeight);
+            const canvasWidth = Math.floor(originalWidth * scale);
+            const canvasHeight = Math.floor(originalHeight * scale);
+
+            // 캔버스 크기 설정
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+
+            // 이미지를 캔버스에 비율에 맞게 그리기
+            ctx.drawImage(sourceImage, 0, 0, canvasWidth, canvasHeight);
+
+            // 이미지 데이터를 가져와 흰색으로 변환
+            const imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+            const data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];     // Red
+                const g = data[i + 1]; // Green
+                const b = data[i + 2]; // Blue
+
+                // 검은색 계열 (R, G, B 값이 모두 낮은 경우) 확인
+                if (r < 50 && g < 50 && b < 50) {
+                    data[i] = 255;     // Red
+                    data[i + 1] = 255; // Green
+                    data[i + 2] = 255; // Blue
+                }
+            }
+
+            // 흰색으로 변환된 이미지를 다시 캔버스에 그리기
+            ctx.putImageData(imageData, 0, 0);
+
+            // 흰색 영역 마스크 생성
+            const whiteMask = new Uint8ClampedArray(data.length);
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];     // Red
+                const g = data[i + 1]; // Green
+                const b = data[i + 2]; // Blue
+
+                // 흰색 영역 확인 (R, G, B 값이 모두 255인 경우)
+                if (r === 255 && g === 255 && b === 255) {
+                    whiteMask[i] = 255;     // Red
+                    whiteMask[i + 1] = 255; // Green
+                    whiteMask[i + 2] = 0;   // Yellow
+                    whiteMask[i + 3] = 255; // Alpha
+                }
+            }
+
+            // 애니메이션 초기값 설정
+            let progress = 0;
+
+            // 애니메이션 함수
+            const animate = () => {
+                // 캔버스를 초기화하고 흰색 로고를 다시 그리기
+                ctx.putImageData(imageData, 0, 0);
+
+                // 데이터 복사 및 수정
+                const animatedImageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+                const newData = animatedImageData.data;
+
+                for (let i = 0; i < newData.length; i += 4) {
+                    const row = Math.floor(i / 4 / canvasWidth);
+                    const col = (i / 4) % canvasWidth;
+
+                    // 휘릭 영역에만 적용
+                    if (row + col < progress) {
+                        newData[i] = whiteMask[i];       // Red
+                        newData[i + 1] = whiteMask[i + 1]; // Green
+                        newData[i + 2] = whiteMask[i + 2]; // Yellow
+                        newData[i + 3] = whiteMask[i + 3]; // Alpha
+                    }
+                }
+
+                // 수정된 데이터 다시 그리기
+                ctx.putImageData(animatedImageData, 0, 0);
+
+                // 애니메이션 진행
+                progress += 10;
+
+                if (progress < canvasWidth + canvasHeight) {
+                    requestAnimationFrame(animate);
+                }
+            };
+
+            // 애니메이션 시작
+            setTimeout(animate, 300);
+        };
+
+        sourceImage.onerror = () => {
+            console.error("Failed to load image. Check the image path!");
+        };
+    </script>
+</body>
+</html>

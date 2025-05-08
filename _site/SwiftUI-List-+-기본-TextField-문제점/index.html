@@ -1,0 +1,706 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[SwiftUI] List + 기본 TextField 문제점">
+    <meta itemprop="description" content="📌 1. 기존 문제 원인 분석 (SwiftUI List + 기본 TextField)✅ 원인 1: SwiftUI TextField가 List와 충돌  List는 UIKit의 UITabView를 래핑한 SwiftUI 컴포넌트이다.  SwiftUI의 TextField는 입력시 상태 @Binding var text가 변경될 때마다 전체 List를 다시 그릴 수 있다.  이 과정에서 SwiftUI가 배경을 다시 렌더링하면서 검은색 잔상이 나타나게 된다.    ➡ 즉, List가 자동으로 다시 그려지면서 백그라운드 깜빡임이 발생한다  struct ErrorMainTabView: View {    @State var searchText: String    var body: some View {                ZStack {            Color.mainBlack                .ignoresSafeArea()                        VStack {                TextField(&quot;검색&quot;, text: $searchText)                    .padding()                    .background(Color.subBlack)                    .cornerRadius(10)                    .padding()                                List {                    Section(header:                        Text(&quot;Numbers&quot;)                        .foregroundColor(Color.mainGreen)                        .font(.system(size: 17, weight: .bold))                        .padding(.leading, -10)                    ) {                        ForEach(0...5, id: \.self) { memo in                            Button {                                                            } label: {                                Text(String(memo))                                    .foregroundColor(.white) // ✅ 텍스트 색상                                    .frame(maxWidth: .infinity, alignment: .leading) // ✅ 왼쪽 정렬                                                            }                            .listRowBackground(Color.subBlack) // ✅ 각 행의 배경색 지정                            .listRowSeparatorTint(Color.gray.opacity(0.4), edges: .bottom) // ✅ 구분선 색상 지정                        }                    }                }                .scrollContentBackground(.hidden) // ✅ 리스트 기본 배경 제거                .background(Color.mainBlack) // ✅ 전체 리스트 배경 변경            }        }    }}📌 2. 커스텀 UITextField를 사용했을 때 해결✅ 해결된 원인 1: UITextField는 List를 리렌더링하지 않음  UITextField는 UIKit 기반이므로, 입력 시 List를 다시 렌더링하지 않음.  SwiftUI의 TextField와 달리, @Binding 값이 바뀌어도 SwiftUI 전체 뷰를 다시 그리지 않음.  즉, UITextField를 사용하면서 List의 불필요한 리렌더링이 사라짐.    ➡ 커스텀 UITextField를 사용하면 SwiftUI의 TextField가 가지던 불필요한 리렌더링 문제를 방지할 수 있다.    struct CustomTextField: UIViewRepresentable { @Binding var text: String var placeholder: String var horizontalPadding: CGFloat = 15 // ✅ 좌우 패딩 값을 하나의 변수로 추가 final class Coordinator: NSObject, UITextFieldDelegate {     var parent: CustomTextField     init(parent: CustomTextField) {         self.parent = parent     }     func textFieldDidChangeSelection(_ textField: UITextField) {         parent.text = textField.text ?? &quot;&quot;     }     func textFieldShouldReturn(_ textField: UITextField) -&gt; Bool {         textField.resignFirstResponder() // ✅ 엔터 누르면 키보드 닫기         return true     } } func makeCoordinator() -&gt; Coordinator {     return Coordinator(parent: self) } func makeUIView(context: Context) -&gt; UITextField {     let textField = UITextField()     textField.delegate = context.coordinator     textField.placeholder = placeholder     textField.backgroundColor = UIColor(Color.subBlack)     textField.layer.cornerRadius = 10     textField.textColor = .white     textField.returnKeyType = .done     // ✅ 좌측 패딩 추가     let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: horizontalPadding, height: textField.frame.height))     textField.leftView = leftPaddingView     textField.leftViewMode = .always     // ✅ 우측 패딩 추가     let rightPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: horizontalPadding, height: textField.frame.height))     textField.rightView = rightPaddingView     textField.rightViewMode = .always     textField.addTarget(context.coordinator, action: #selector(Coordinator.textFieldDidChangeSelection(_:)), for: .editingChanged)     return textField } func updateUIView(_ uiView: UITextField, context: Context) {     uiView.text = text     uiView.placeholder = placeholder }     // ✅ 외부 터치 시 키보드를 닫는 메서드 추가 static func hideKeyboard() {     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil) }}      ">
+    <meta itemprop="datePublished" content="2025-01-29T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/SwiftUI-List-+-%EA%B8%B0%EB%B3%B8-TextField-%EB%AC%B8%EC%A0%9C%EC%A0%90/" class="u-url" itemprop="url">[SwiftUI] List + 기본 TextField 문제점
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=SwiftUI">SwiftUI</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-01-29T00:00:00+00:00">January 29, 2025</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <h1 id="-1-기존-문제-원인-분석-swiftui-list--기본-textfield">📌 1. 기존 문제 원인 분석 (SwiftUI List + 기본 TextField)</h1>
+
+<h3 id="-원인-1-swiftui-textfield가-list와-충돌">✅ 원인 1: SwiftUI TextField가 List와 충돌</h3>
+<ul>
+  <li>List는 UIKit의 UITabView를 래핑한 SwiftUI 컴포넌트이다.</li>
+  <li>SwiftUI의 TextField는 입력시 상태 <strong><em>@Binding var text</em></strong>가 변경될 때마다 전체 List를 다시 그릴 수 있다.</li>
+  <li>이 과정에서 SwiftUI가 배경을 다시 렌더링하면서 검은색 잔상이 나타나게 된다.
+    <h3 id="-즉-list가-자동으로-다시-그려지면서-백그라운드-깜빡임이-발생한다">➡ 즉, List가 자동으로 다시 그려지면서 백그라운드 깜빡임이 발생한다</h3>
+  </li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">struct</span> <span class="kt">ErrorMainTabView</span><span class="p">:</span> <span class="kt">View</span> <span class="p">{</span>
+    <span class="kd">@State</span> <span class="k">var</span> <span class="nv">searchText</span><span class="p">:</span> <span class="kt">String</span>
+    <span class="k">var</span> <span class="nv">body</span><span class="p">:</span> <span class="kd">some</span> <span class="kt">View</span> <span class="p">{</span>
+        
+        <span class="kt">ZStack</span> <span class="p">{</span>
+            <span class="kt">Color</span><span class="o">.</span><span class="n">mainBlack</span>
+                <span class="o">.</span><span class="nf">ignoresSafeArea</span><span class="p">()</span>
+            
+            <span class="kt">VStack</span> <span class="p">{</span>
+                <span class="kt">TextField</span><span class="p">(</span><span class="s">"검색"</span><span class="p">,</span> <span class="nv">text</span><span class="p">:</span> <span class="n">$searchText</span><span class="p">)</span>
+                    <span class="o">.</span><span class="nf">padding</span><span class="p">()</span>
+                    <span class="o">.</span><span class="nf">background</span><span class="p">(</span><span class="kt">Color</span><span class="o">.</span><span class="n">subBlack</span><span class="p">)</span>
+                    <span class="o">.</span><span class="nf">cornerRadius</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+                    <span class="o">.</span><span class="nf">padding</span><span class="p">()</span>
+                
+                <span class="kt">List</span> <span class="p">{</span>
+                    <span class="kt">Section</span><span class="p">(</span><span class="nv">header</span><span class="p">:</span>
+                        <span class="kt">Text</span><span class="p">(</span><span class="s">"Numbers"</span><span class="p">)</span>
+                        <span class="o">.</span><span class="nf">foregroundColor</span><span class="p">(</span><span class="kt">Color</span><span class="o">.</span><span class="n">mainGreen</span><span class="p">)</span>
+                        <span class="o">.</span><span class="nf">font</span><span class="p">(</span><span class="o">.</span><span class="nf">system</span><span class="p">(</span><span class="nv">size</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">bold</span><span class="p">))</span>
+                        <span class="o">.</span><span class="nf">padding</span><span class="p">(</span><span class="o">.</span><span class="n">leading</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">)</span>
+                    <span class="p">)</span> <span class="p">{</span>
+                        <span class="kt">ForEach</span><span class="p">(</span><span class="mi">0</span><span class="o">...</span><span class="mi">5</span><span class="p">,</span> <span class="nv">id</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="k">self</span><span class="p">)</span> <span class="p">{</span> <span class="n">memo</span> <span class="k">in</span>
+                            <span class="kt">Button</span> <span class="p">{</span>
+                                
+                            <span class="p">}</span> <span class="nv">label</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="kt">Text</span><span class="p">(</span><span class="kt">String</span><span class="p">(</span><span class="n">memo</span><span class="p">))</span>
+                                    <span class="o">.</span><span class="nf">foregroundColor</span><span class="p">(</span><span class="o">.</span><span class="n">white</span><span class="p">)</span> <span class="c1">// ✅ 텍스트 색상</span>
+                                    <span class="o">.</span><span class="nf">frame</span><span class="p">(</span><span class="nv">maxWidth</span><span class="p">:</span> <span class="o">.</span><span class="n">infinity</span><span class="p">,</span> <span class="nv">alignment</span><span class="p">:</span> <span class="o">.</span><span class="n">leading</span><span class="p">)</span> <span class="c1">// ✅ 왼쪽 정렬</span>
+                                
+                            <span class="p">}</span>
+                            <span class="o">.</span><span class="nf">listRowBackground</span><span class="p">(</span><span class="kt">Color</span><span class="o">.</span><span class="n">subBlack</span><span class="p">)</span> <span class="c1">// ✅ 각 행의 배경색 지정</span>
+                            <span class="o">.</span><span class="nf">listRowSeparatorTint</span><span class="p">(</span><span class="kt">Color</span><span class="o">.</span><span class="n">gray</span><span class="o">.</span><span class="nf">opacity</span><span class="p">(</span><span class="mf">0.4</span><span class="p">),</span> <span class="nv">edges</span><span class="p">:</span> <span class="o">.</span><span class="n">bottom</span><span class="p">)</span> <span class="c1">// ✅ 구분선 색상 지정</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+                <span class="o">.</span><span class="nf">scrollContentBackground</span><span class="p">(</span><span class="o">.</span><span class="n">hidden</span><span class="p">)</span> <span class="c1">// ✅ 리스트 기본 배경 제거</span>
+                <span class="o">.</span><span class="nf">background</span><span class="p">(</span><span class="kt">Color</span><span class="o">.</span><span class="n">mainBlack</span><span class="p">)</span> <span class="c1">// ✅ 전체 리스트 배경 변경</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h1 id="-2-커스텀-uitextfield를-사용했을-때-해결">📌 2. 커스텀 UITextField를 사용했을 때 해결</h1>
+
+<h3 id="-해결된-원인-1-uitextfield는-list를-리렌더링하지-않음">✅ 해결된 원인 1: UITextField는 List를 리렌더링하지 않음</h3>
+<ul>
+  <li>UITextField는 UIKit 기반이므로, 입력 시 List를 다시 렌더링하지 않음.</li>
+  <li>SwiftUI의 TextField와 달리, @Binding 값이 바뀌어도 SwiftUI 전체 뷰를 다시 그리지 않음.</li>
+  <li>즉, UITextField를 사용하면서 List의 불필요한 리렌더링이 사라짐.
+    <h3 id="-커스텀-uitextfield를-사용하면-swiftui의-textfield가-가지던-불필요한-리렌더링-문제를-방지할-수-있다">➡ 커스텀 UITextField를 사용하면 SwiftUI의 TextField가 가지던 불필요한 리렌더링 문제를 방지할 수 있다.</h3>
+    <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">struct</span> <span class="kt">CustomTextField</span><span class="p">:</span> <span class="kt">UIViewRepresentable</span> <span class="p">{</span>
+ <span class="kd">@Binding</span> <span class="k">var</span> <span class="nv">text</span><span class="p">:</span> <span class="kt">String</span>
+ <span class="k">var</span> <span class="nv">placeholder</span><span class="p">:</span> <span class="kt">String</span>
+ <span class="k">var</span> <span class="nv">horizontalPadding</span><span class="p">:</span> <span class="kt">CGFloat</span> <span class="o">=</span> <span class="mi">15</span> <span class="c1">// ✅ 좌우 패딩 값을 하나의 변수로 추가</span>
+
+ <span class="kd">final</span> <span class="kd">class</span> <span class="kt">Coordinator</span><span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">UITextFieldDelegate</span> <span class="p">{</span>
+     <span class="k">var</span> <span class="nv">parent</span><span class="p">:</span> <span class="kt">CustomTextField</span>
+
+     <span class="nf">init</span><span class="p">(</span><span class="nv">parent</span><span class="p">:</span> <span class="kt">CustomTextField</span><span class="p">)</span> <span class="p">{</span>
+         <span class="k">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+     <span class="p">}</span>
+
+     <span class="kd">func</span> <span class="nf">textFieldDidChangeSelection</span><span class="p">(</span><span class="n">_</span> <span class="nv">textField</span><span class="p">:</span> <span class="kt">UITextField</span><span class="p">)</span> <span class="p">{</span>
+         <span class="n">parent</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">textField</span><span class="o">.</span><span class="n">text</span> <span class="p">??</span> <span class="s">""</span>
+     <span class="p">}</span>
+
+     <span class="kd">func</span> <span class="nf">textFieldShouldReturn</span><span class="p">(</span><span class="n">_</span> <span class="nv">textField</span><span class="p">:</span> <span class="kt">UITextField</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
+         <span class="n">textField</span><span class="o">.</span><span class="nf">resignFirstResponder</span><span class="p">()</span> <span class="c1">// ✅ 엔터 누르면 키보드 닫기</span>
+         <span class="k">return</span> <span class="kc">true</span>
+     <span class="p">}</span>
+ <span class="p">}</span>
+
+ <span class="kd">func</span> <span class="nf">makeCoordinator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Coordinator</span> <span class="p">{</span>
+     <span class="k">return</span> <span class="kt">Coordinator</span><span class="p">(</span><span class="nv">parent</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span>
+ <span class="p">}</span>
+
+ <span class="kd">func</span> <span class="nf">makeUIView</span><span class="p">(</span><span class="nv">context</span><span class="p">:</span> <span class="kt">Context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITextField</span> <span class="p">{</span>
+     <span class="k">let</span> <span class="nv">textField</span> <span class="o">=</span> <span class="kt">UITextField</span><span class="p">()</span>
+     <span class="n">textField</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">coordinator</span>
+     <span class="n">textField</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">=</span> <span class="n">placeholder</span>
+     <span class="n">textField</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="kt">Color</span><span class="o">.</span><span class="n">subBlack</span><span class="p">)</span>
+     <span class="n">textField</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mi">10</span>
+     <span class="n">textField</span><span class="o">.</span><span class="n">textColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
+     <span class="n">textField</span><span class="o">.</span><span class="n">returnKeyType</span> <span class="o">=</span> <span class="o">.</span><span class="n">done</span>
+
+     <span class="c1">// ✅ 좌측 패딩 추가</span>
+     <span class="k">let</span> <span class="nv">leftPaddingView</span> <span class="o">=</span> <span class="kt">UIView</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="kt">CGRect</span><span class="p">(</span><span class="nv">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">width</span><span class="p">:</span> <span class="n">horizontalPadding</span><span class="p">,</span> <span class="nv">height</span><span class="p">:</span> <span class="n">textField</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+     <span class="n">textField</span><span class="o">.</span><span class="n">leftView</span> <span class="o">=</span> <span class="n">leftPaddingView</span>
+     <span class="n">textField</span><span class="o">.</span><span class="n">leftViewMode</span> <span class="o">=</span> <span class="o">.</span><span class="n">always</span>
+
+     <span class="c1">// ✅ 우측 패딩 추가</span>
+     <span class="k">let</span> <span class="nv">rightPaddingView</span> <span class="o">=</span> <span class="kt">UIView</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="kt">CGRect</span><span class="p">(</span><span class="nv">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">width</span><span class="p">:</span> <span class="n">horizontalPadding</span><span class="p">,</span> <span class="nv">height</span><span class="p">:</span> <span class="n">textField</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+     <span class="n">textField</span><span class="o">.</span><span class="n">rightView</span> <span class="o">=</span> <span class="n">rightPaddingView</span>
+     <span class="n">textField</span><span class="o">.</span><span class="n">rightViewMode</span> <span class="o">=</span> <span class="o">.</span><span class="n">always</span>
+
+     <span class="n">textField</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">coordinator</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="kt">Coordinator</span><span class="o">.</span><span class="nf">textFieldDidChangeSelection</span><span class="p">(</span><span class="nv">_</span><span class="p">:)),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">editingChanged</span><span class="p">)</span>
+     <span class="k">return</span> <span class="n">textField</span>
+ <span class="p">}</span>
+
+ <span class="kd">func</span> <span class="nf">updateUIView</span><span class="p">(</span><span class="n">_</span> <span class="nv">uiView</span><span class="p">:</span> <span class="kt">UITextField</span><span class="p">,</span> <span class="nv">context</span><span class="p">:</span> <span class="kt">Context</span><span class="p">)</span> <span class="p">{</span>
+     <span class="n">uiView</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+     <span class="n">uiView</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">=</span> <span class="n">placeholder</span>
+ <span class="p">}</span>
+    
+ <span class="c1">// ✅ 외부 터치 시 키보드를 닫는 메서드 추가</span>
+ <span class="kd">static</span> <span class="kd">func</span> <span class="nf">hideKeyboard</span><span class="p">()</span> <span class="p">{</span>
+     <span class="kt">UIApplication</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">sendAction</span><span class="p">(</span><span class="k">#selector</span><span class="p">(</span><span class="kt">UIResponder</span><span class="o">.</span><span class="n">resignFirstResponder</span><span class="p">),</span> <span class="nv">to</span><span class="p">:</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+ <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/SwiftUI-Animation/" class="pagination--pager" title="[SwiftUI] Animation 구현
+">Previous</a>
+    
+    
+      <a href="/SwiftUI-TabView/" class="pagination--pager" title="[SwiftUI] TabView
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

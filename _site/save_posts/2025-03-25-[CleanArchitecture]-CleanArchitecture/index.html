@@ -1,0 +1,165 @@
+<div style="display: flex; justify-content: space-between;">
+  <img src="/assets/img/2025-03-25-[CleanArchitecture]-CleanArchitecture/clean1.png" alt="clean1" style="width: 50%;" />
+  <img src="/assets/img/2025-03-25-[CleanArchitecture]-CleanArchitecture/clean2.png" alt="clean2" style="width: 50%;" />
+</div>
+
+<h2 id="clean-architecture란">Clean Architecture란?</h2>
+<ul>
+  <li>소프트웨어를 <strong>유지보수</strong>하기 쉽고, <strong>테스트 가능</strong>하며 <strong>확장 가능한 구조</strong>로 만드는 아키텍처 설계 원칙이다.</li>
+</ul>
+
+<h2 id="핵심-목표">핵심 목표</h2>
+<ul>
+  <li>비즈니스 로직과 UI, DB, 네트워크 등을 명확히 분리한다.</li>
+  <li>의존은 <strong>항상 바깥쪽(저수준) 계층에서 안쪽(고수준)계층을 향해</strong> 흐른다. 즉 안쪽 계층은 바깥 계층에 대해 전혀 몰라도 동작할 수 있어야 한다.</li>
+  <li>모바일 기준으로 <strong>Domain</strong>, <strong>Data</strong>, <strong>Presentation</strong> Layer로 나눌 수 있다.</li>
+  <li>ViewModel → UseCase → Repository (Protocol) → RepositoryImpl (API/DB)</li>
+</ul>
+
+<h2 id="계층-구조">계층 구조</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>계층</th>
+      <th>설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Domain Layer</strong></td>
+      <td>앱의 핵심 비즈니스 로직이 위치. <code class="language-plaintext highlighter-rouge">Entity</code>, <code class="language-plaintext highlighter-rouge">UseCase</code>, <code class="language-plaintext highlighter-rouge">Protocol</code>, <code class="language-plaintext highlighter-rouge">Repositpry인터페이스</code> 등이 존재하며, 어떤 프레임워크나 외부에도 의존하지 않음</td>
+    </tr>
+    <tr>
+      <td><strong>Data Layer</strong></td>
+      <td>API, DB 등 실제 데이터 소스와 통신하는 계층. <code class="language-plaintext highlighter-rouge">Repository</code>의 구체 구현체가 위치</td>
+    </tr>
+    <tr>
+      <td><strong>Presentation Layer</strong></td>
+      <td>화면(View)과 사용자와의 상호작용을 처리. <code class="language-plaintext highlighter-rouge">ViewModel</code>, <code class="language-plaintext highlighter-rouge">UI</code>, 입력 처리 등이 포함됨</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="의존성이란">의존성이란</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="kt">ViewModel</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">useCase</span> <span class="o">=</span> <span class="kt">UseCase</span><span class="p">()</span> <span class="c1">// ViewModel은 UseCase에 의존</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>의존성(Dependency) 이란, 어떤 객체가 다른 객체를 사용하거나 필요로 하는 관계를 의미한다.</li>
+  <li>ViewModel이 Usecase를 직접 생성하고 사용하고 있기 때문에 UseCase에 의존하고 있다.</li>
+  <li>이러한 관계가 많아질수록 한 객체가 변경되면 다른 객체가 변경되어야 할 가능성이 높아진다.
+    <ul>
+      <li>즉 유지보수가 어려워진다.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="의존성-역전-원칙dependency-inversion-principle">의존성 역전 원칙(Dependency Inversion Principle)</h2>
+
+<ul>
+  <li>클린 아키텍처의 원칙 중 하나로 <strong>“고수준 모듈이 저수준 모듈에 의존해서는 안된다. 대신 둘 다 추상화(인터페이스)에 의존해야 한다”</strong></li>
+</ul>
+
+<h2 id="용어-정리">용어 정리</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>용어</th>
+      <th>설명</th>
+      <th>예시</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>고수준 모듈</td>
+      <td>핵심 비즈니스 로직</td>
+      <td><code class="language-plaintext highlighter-rouge">UseCase</code></td>
+    </tr>
+    <tr>
+      <td>저수준 모듈</td>
+      <td>세부 구현 (DB, API 등)</td>
+      <td><code class="language-plaintext highlighter-rouge">Repository</code></td>
+    </tr>
+    <tr>
+      <td>추상화</td>
+      <td>중간 다리 역할</td>
+      <td><code class="language-plaintext highlighter-rouge">RepositoryProtocol</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="dip를-위반한-구조">DIP를 위반한 구조</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="kt">UseCase</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">repository</span> <span class="o">=</span> <span class="kt">Repository</span><span class="p">()</span> <span class="c1">// 구체적인 구현에 직접 의존</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>이 구조에서는 Repository가 변경되면 UseCase도 변경될 가능성이 크다.</li>
+  <li>테스트시 Mock 객첼 대체하기 어렵다.</li>
+</ul>
+
+<h2 id="dip를-지킨-구조">DIP를 지킨 구조</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protocol</span> <span class="kt">RepositoryProtocol</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">fetchUsers</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">User</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">UseCase</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">repository</span><span class="p">:</span> <span class="kt">RepositoryProtocol</span>
+
+    <span class="nf">init</span><span class="p">(</span><span class="nv">repository</span><span class="p">:</span> <span class="kt">RepositoryProtocol</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">repository</span> <span class="o">=</span> <span class="n">repository</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>이제 UseCase는 Repository 구체 구현체를 몰라도 된다.</li>
+  <li>오직 <code class="language-plaintext highlighter-rouge">RepositoryProtocol</code>이라는 <strong>추상화된 인터페이스</strong>에만 의존한다.</li>
+</ul>
+
+<h2 id="의존성-주입di-dependency-injection">의존성 주입(DI: Dependency Injection)</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">repository</span> <span class="o">=</span> <span class="kt">MockUserRepository</span><span class="p">()</span>
+<span class="k">let</span> <span class="nv">useCase</span> <span class="o">=</span> <span class="kt">FetchUsersUseCase</span><span class="p">(</span><span class="nv">repository</span><span class="p">:</span> <span class="n">repository</span><span class="p">)</span> <span class="c1">// 의존성 주입</span>
+<span class="k">let</span> <span class="nv">viewModel</span> <span class="o">=</span> <span class="kt">ViewModel</span><span class="p">(</span><span class="nv">useCase</span><span class="p">:</span> <span class="n">useCase</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<ul>
+  <li>필요한 객체(의존성)을 외부에서 주입(Inject) 해주는 방식을 말한다.</li>
+  <li>의존성을 직접 생성하지 않고, 외부에서 받아서 사용하는 것이 핵심이다.</li>
+</ul>
+
+<h2 id="의존성-주입의-장점">의존성 주입의 장점</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>장점</th>
+      <th>설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>유연성</td>
+      <td>다양한 구현체를 자유롭게 교체 가능</td>
+    </tr>
+    <tr>
+      <td>테스트 용이성</td>
+      <td>테스트 시 <code class="language-plaintext highlighter-rouge">Mock</code> 객체를 쉽게 주입</td>
+    </tr>
+    <tr>
+      <td>결합도 감소</td>
+      <td>클래스 간 강한 연결을 피함</td>
+    </tr>
+  </tbody>
+</table>
+

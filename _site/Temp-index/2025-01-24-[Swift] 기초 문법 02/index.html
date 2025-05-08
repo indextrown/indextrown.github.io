@@ -1,0 +1,63 @@
+<h1 id="프로그래밍-기본-원리">프로그래밍 기본 원리</h1>
+<ul>
+  <li>모든 프로그램은 3가지 논리로 이루어진다.</li>
+  <li>(순차 + 조건 + 반복) + 데이터</li>
+</ul>
+
+<h1 id="순차">순차</h1>
+<ul>
+  <li>개발자가 정한 규칙에 따라 순차적으로 실행한다.</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">print</span><span class="p">(</span><span class="s">"1"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="s">"2"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="s">"3"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h1 id="조건문-ifswitch">조건문 (if/switch)</h1>
+<ul>
+  <li>조건에 따라 어떤 동작을 할지 말지의 여부를 결정한다.</li>
+</ul>
+
+<h1 id="if문">if문</h1>
+<ul>
+  <li>프로그래밍 대부분의 경우에 사용한다.</li>
+  <li>아이디 자리수 여부</li>
+  <li>pw 특수 문자 포함 규칙 여부</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="n">참과</span> <span class="n">거짓을</span> <span class="n">판단할</span> <span class="n">수</span> <span class="n">있는</span> <span class="n">문장</span> <span class="p">{</span>
+    
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h1 id="switch문">switch문</h1>
+<ul>
+  <li>여러가지 선택가능한 경우의 수에 따라 코드를 실행한다.</li>
+  <li>if문보다 한정적인 형태로 사용한다.</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">switch</span> <span class="nf">변수</span><span class="p">(</span><span class="n">표현식</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">case</span> <span class="nf">변수</span><span class="p">(</span><span class="n">표현식</span><span class="p">)</span><span class="n">에서</span> <span class="n">나오는</span> <span class="nv">값</span><span class="p">:</span>
+    <span class="n">code</span>
+<span class="k">case</span> <span class="n">값2</span><span class="p">,</span> <span class="nv">값3</span><span class="p">:</span>  <span class="c1">// switch에서 콤마는 or을 의미</span>
+    <span class="n">code</span>
+<span class="k">default</span><span class="p">:</span>
+    <span class="k">break</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="if문-vs-switch문">if문 vs switch문</h2>
+<ul>
+  <li>if문
+    <ul>
+      <li>모든 조건에 대한 처리가 가능하다.</li>
+    </ul>
+  </li>
+  <li>switch문
+    <ul>
+      <li>if문보다 가독성이 좋다.</li>
+      <li>앱 개발시 분기처리에 많이 사용한다.</li>
+    </ul>
+  </li>
+</ul>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PNG Preprocessing</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+            margin: 0;
+        }
+
+        canvas {
+            display: block;
+            
+        }
+
+        img {
+            display: none; /* 원본 이미지는 숨김 */
+        }
+    </style>
+</head>
+<body>
+    <!-- 원본 PNG 이미지 -->
+    <img id="sourceImage" src="xlogo.png" alt="Source PNG">
+
+    <!-- 변환된 이미지가 표시될 Canvas -->
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const sourceImage = document.getElementById("sourceImage");
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // 최대 크기 설정 (가로, 세로 중 더 긴 쪽 기준으로 비율 유지)
+        const maxSize = 500;
+
+        sourceImage.onload = () => {
+            const originalWidth = sourceImage.width;
+            const originalHeight = sourceImage.height;
+
+            // 비율 계산
+            let scale = Math.min(maxSize / originalWidth, maxSize / originalHeight);
+            const canvasWidth = Math.floor(originalWidth * scale);
+            const canvasHeight = Math.floor(originalHeight * scale);
+
+            // 캔버스 크기를 비율에 맞게 설정
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+
+            // 이미지를 캔버스에 비율에 맞게 그리기
+            ctx.drawImage(sourceImage, 0, 0, canvasWidth, canvasHeight);
+
+            // 이미지 데이터 가져오기
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            // 픽셀 데이터를 순회하며 검은색을 흰색으로 변환
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];     // Red
+                const g = data[i + 1]; // Green
+                const b = data[i + 2]; // Blue
+
+                // 검은색 계열 (R, G, B 값이 모두 낮은 경우) 확인
+                if (r < 50 && g < 50 && b < 50) {
+                    // 흰색으로 변환
+                    data[i] = 255;     // Red
+                    data[i + 1] = 255; // Green
+                    data[i + 2] = 255; // Blue
+                }
+            }
+
+            // 수정된 이미지 데이터 다시 캔버스에 그리기
+            ctx.putImageData(imageData, 0, 0);
+        };
+    </script>
+</body>
+</html>

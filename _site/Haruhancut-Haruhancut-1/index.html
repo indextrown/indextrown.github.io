@@ -1,0 +1,1508 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[하루한컷] 1. iOS 카카오 로그인">
+    <meta itemprop="description" content="1. 카카오 로그인  https://developers.kakao.com/console/app 링크 접속  애플리케이션 추가  플랫폼 iOS 등록  네이티브 앱키를 Config.config파일에 저장2. 파이어베이스 프로젝트 생성  Authentication 생성  Authentication에서 로그인 방법에서 카카오 로그인을 위해 OIDC 추가(이때 업그레이드 해줘야함)  프로젝트 설정에서 Google-Info.plist다운3. 코드 설정AppDelegate.swiftimport UIKit// 파이어베이스import FirebaseCoreimport FirebaseAuth// 카카오톡import RxKakaoSDKCommonimport RxKakaoSDKAuthimport KakaoSDKAuthfunc application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -&gt; Bool {    // Override point for customization after application launch.        // 파이어베이스 설정    FirebaseApp.configure()        // 카카오톡 설정    if let nativeAppKey: String = Bundle.main.infoDictionary?[&quot;KAKAO_NATIVE_APP_KEY&quot;] as? String {        RxKakaoSDK.initSDK(appKey: nativeAppKey)    }        return true}func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -&gt; Bool {    // 카카오톡 로그인    if (AuthApi.isKakaoTalkLoginUrl(url)) {        return AuthController.rx.handleOpenUrl(url: url)    }        return false}SceenDelegate.swiftfunc scene(_ scene: UIScene, openURLContexts URLContexts: Set&lt;UIOpenURLContext&gt;) {    // 카카오 로그인    if let url = URLContexts.first?.url {        if (AuthApi.isKakaoTalkLoginUrl(url)) {            _ = AuthController.rx.handleOpenUrl(url: url)        }    }}MVC.swiftimport UIKitimport RxSwiftimport RxKakaoSDKAuthimport KakaoSDKAuthimport RxKakaoSDKUserimport KakaoSDKUserfinal class LoginViewController: UIViewController {        let disposeBag = DisposeBag()        private lazy var kakaoLoginButton: UIButton = {        let button = UIButton(type: .system)        var config = UIButton.Configuration.filled()        config.image = UIImage(named: &quot;Logo Kakao&quot;)        config.baseBackgroundColor = UIColor(red: 1.0, green: 0.9, blue: 0.0, alpha: 1.0)        config.imagePlacement = .leading    // 이미지가 텍스트 왼쪽에 위치        config.imagePadding = 20            // 이미지와 텍스트 사이 간격        config.title = &quot;카카오로 계속하기&quot;        config.baseForegroundColor = .black        // 폰트 설정        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in            var outgoing = incoming            outgoing.font = UIFont.systemFont(ofSize: 16, weight: .medium)            return outgoing        }        button.configuration = config        button.layer.cornerRadius = 10        button.clipsToBounds = true        // 상태에 따라 배경색 바꾸기        button.configurationUpdateHandler = { button in            var config = button.configuration            if button.isHighlighted {                config?.baseBackgroundColor = UIColor(red: 0.8, green: 0.72, blue: 0.0, alpha: 1.0) // 눌렸을 때 진한 노랑            } else {                config?.baseBackgroundColor = UIColor(red: 1.0, green: 0.9, blue: 0.0, alpha: 1.0) // 기본 노랑            }            button.configuration = config        }        button.addTarget(self, action: #selector(handleKakaoLogin), for: .touchUpInside)        return button    }()        private lazy var appleLoginButton: UIButton = {        let button = UIButton(type: .system)        var config = UIButton.Configuration.filled()        config.image = UIImage(named: &quot;Logo Apple&quot;)        config.baseBackgroundColor = .white        config.imagePlacement = .leading    // 이미지가 텍스트 왼쪽에 위치        config.imagePadding = 20            // 이미지와 텍스트 사이 간격        config.title = &quot;Apple로 계속하기&quot;        config.baseForegroundColor = .black        // 폰트 설정        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in            var outgoing = incoming            outgoing.font = UIFont.systemFont(ofSize: 16, weight: .medium)            return outgoing        }        button.configuration = config        button.layer.cornerRadius = 10        button.clipsToBounds = true        // 상태에 따라 배경색 바꾸기        button.configurationUpdateHandler = { button in            var config = button.configuration            if button.isHighlighted {                config?.baseBackgroundColor = UIColor(white: 0.9, alpha: 1.0) // 눌렀을 때 약간 회색            } else {                config?.baseBackgroundColor = .white // 원래 흰색            }            button.configuration = config        }        button.addTarget(self, action: #selector(handleAppleLogin), for: .touchUpInside)        return button    }()        // 카카오로그인버튼, 애플로그이넙튼 -&gt; 스택뷰에 추가    private lazy var stackView: UIStackView = {        let st = UIStackView(arrangedSubviews: [            kakaoLoginButton,            appleLoginButton        ])        st.spacing = 10        st.axis = .vertical        st.distribution = .fillEqually        st.alignment = .fill        return st    }()        override func viewDidLoad() {        super.viewDidLoad()        makeUI()    }        func makeUI() {        // 배경 색상        view.backgroundColor = #colorLiteral(red: 0.09411741048, green: 0.09411782771, blue: 0.102702044, alpha: 1)                // 스택뷰 -&gt; 뷰에 추가        view.addSubview(stackView)        stackView.translatesAutoresizingMaskIntoConstraints = false                // 오토레이아웃 제약 추가        NSLayoutConstraint.activate([            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),            stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),            stackView.heightAnchor.constraint(equalToConstant: 130)        ])    }        @objc private func handleKakaoLogin() {        print(&quot;✅ 카카오 로그인 버튼 눌림&quot;)        startKakaoLogin()    }        @objc private func handleAppleLogin() {        print(&quot;✅ Apple 로그인 버튼 눌림&quot;)    }}// MARK: - Observableextension LoginViewController {        func startKakaoLogin() {        fetchKakaoOpenIdToken()            .subscribe(onNext: { token in                print(&quot;✅ 받은 토큰: \(token)&quot;)            }, onError: { error in                print(&quot;❌ 로그인 에러: \(error.localizedDescription)&quot;)            })            .disposed(by: disposeBag)    }    private func fetchKakaoOpenIdToken() -&gt; Observable&lt;String&gt; {        if UserApi.isKakaoTalkLoginAvailable() {            return UserApi.shared.rx.loginWithKakaoTalk()                .map { oauthToken in                    guard let idToken = oauthToken.idToken else {                        // print(&quot;⚠️ idToken이 없습니다&quot;)                        throw NSError(domain: &quot;TokenError&quot;, code: -1, userInfo: [NSLocalizedDescriptionKey: &quot;idToken이 없습니다.&quot;])                    }                    print(&quot;✅ idToken 추출 성공 (앱 로그인)&quot;)                    return idToken                }        } else {            return UserApi.shared.rx.loginWithKakaoAccount()                .map { oauthToken in                    guard let idToken = oauthToken.idToken else {                        // print(&quot;⚠️ idToken이 없습니다&quot;)                        throw NSError(domain: &quot;TokenError&quot;, code: -1, userInfo: [NSLocalizedDescriptionKey: &quot;idToken이 없습니다.&quot;])                    }                    print(&quot;✅ idToken 추출 성공 (웹 로그인)&quot;)                    return idToken                }        }    }}#Preview {    LoginViewController()}VIewController + ViewModelViewControllerimport UIKitimport RxSwiftimport RxKakaoSDKAuthimport KakaoSDKAuthimport RxKakaoSDKUserimport KakaoSDKUserfinal class LoginViewController: UIViewController {        let disposeBag = DisposeBag()    private let viewModel = LoginViewModel()            private func bindViewModel() {        viewModel.loginSuccess            .observe(on: MainScheduler.instance)            .subscribe { token in                print(&quot;로그인 성공: \(token)&quot;)            }            .disposed(by: disposeBag)                viewModel.loginFailure            .observe(on: MainScheduler.instance)            .subscribe { errorMessage in                print(&quot;로그인 실패: \(errorMessage)&quot;)            }            .disposed(by: disposeBag)    }        private lazy var kakaoLoginButton: UIButton = {        let button = UIButton(type: .system)        var config = UIButton.Configuration.filled()        config.image = UIImage(named: &quot;Logo Kakao&quot;)        config.baseBackgroundColor = UIColor(red: 1.0, green: 0.9, blue: 0.0, alpha: 1.0)        config.imagePlacement = .leading    // 이미지가 텍스트 왼쪽에 위치        config.imagePadding = 20            // 이미지와 텍스트 사이 간격        config.title = &quot;카카오로 계속하기&quot;        config.baseForegroundColor = .black        // 폰트 설정        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in            var outgoing = incoming            outgoing.font = UIFont.systemFont(ofSize: 16, weight: .medium)            return outgoing        }        button.configuration = config        button.layer.cornerRadius = 10        button.clipsToBounds = true        // 상태에 따라 배경색 바꾸기        button.configurationUpdateHandler = { button in            var config = button.configuration            if button.isHighlighted {                config?.baseBackgroundColor = UIColor(red: 0.8, green: 0.72, blue: 0.0, alpha: 1.0) // 눌렸을 때 진한 노랑            } else {                config?.baseBackgroundColor = UIColor(red: 1.0, green: 0.9, blue: 0.0, alpha: 1.0) // 기본 노랑            }            button.configuration = config        }        button.addTarget(self, action: #selector(handleKakaoLogin), for: .touchUpInside)        return button    }()        private lazy var appleLoginButton: UIButton = {        let button = UIButton(type: .system)        var config = UIButton.Configuration.filled()        config.image = UIImage(named: &quot;Logo Apple&quot;)        config.baseBackgroundColor = .white        config.imagePlacement = .leading    // 이미지가 텍스트 왼쪽에 위치        config.imagePadding = 20            // 이미지와 텍스트 사이 간격        config.title = &quot;Apple로 계속하기&quot;        config.baseForegroundColor = .black        // 폰트 설정        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in            var outgoing = incoming            outgoing.font = UIFont.systemFont(ofSize: 16, weight: .medium)            return outgoing        }        button.configuration = config        button.layer.cornerRadius = 10        button.clipsToBounds = true        // 상태에 따라 배경색 바꾸기        button.configurationUpdateHandler = { button in            var config = button.configuration            if button.isHighlighted {                config?.baseBackgroundColor = UIColor(white: 0.9, alpha: 1.0) // 눌렀을 때 약간 회색            } else {                config?.baseBackgroundColor = .white // 원래 흰색            }            button.configuration = config        }        button.addTarget(self, action: #selector(handleAppleLogin), for: .touchUpInside)        return button    }()        // 카카오로그인버튼, 애플로그이넙튼 -&gt; 스택뷰에 추가    private lazy var stackView: UIStackView = {        let st = UIStackView(arrangedSubviews: [            kakaoLoginButton,            appleLoginButton        ])        st.spacing = 10        st.axis = .vertical        st.distribution = .fillEqually        st.alignment = .fill        return st    }()        override func viewDidLoad() {        super.viewDidLoad()        makeUI()        bindViewModel()    }        func makeUI() {        // 배경 색상        view.backgroundColor = #colorLiteral(red: 0.09411741048, green: 0.09411782771, blue: 0.102702044, alpha: 1)                // 스택뷰 -&gt; 뷰에 추가        view.addSubview(stackView)        stackView.translatesAutoresizingMaskIntoConstraints = false                // 오토레이아웃 제약 추가        NSLayoutConstraint.activate([            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),            stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),            stackView.heightAnchor.constraint(equalToConstant: 130)        ])    }        @objc private func handleKakaoLogin() {        print(&quot;✅ 카카오 로그인 버튼 눌림&quot;)        viewModel.loginWithKakao()    }        @objc private func handleAppleLogin() {        print(&quot;✅ Apple 로그인 버튼 눌림&quot;)    }}// MARK: - Observableextension LoginViewController {        func startKakaoLogin() {        fetchKakaoOpenIdToken()            .subscribe(onNext: { token in                print(&quot;✅ 받은 토큰: \(token)&quot;)            }, onError: { error in                print(&quot;❌ 로그인 에러: \(error.localizedDescription)&quot;)            })            .disposed(by: disposeBag)    }    private func fetchKakaoOpenIdToken() -&gt; Observable&lt;String&gt; {        if UserApi.isKakaoTalkLoginAvailable() {            return UserApi.shared.rx.loginWithKakaoTalk()                .map { oauthToken in                    guard let idToken = oauthToken.idToken else {                        // print(&quot;⚠️ idToken이 없습니다&quot;)                        throw NSError(domain: &quot;TokenError&quot;, code: -1, userInfo: [NSLocalizedDescriptionKey: &quot;idToken이 없습니다.&quot;])                    }                    print(&quot;✅ idToken 추출 성공 (앱 로그인)&quot;)                    return idToken                }        } else {            return UserApi.shared.rx.loginWithKakaoAccount()                .map { oauthToken in                    guard let idToken = oauthToken.idToken else {                        // print(&quot;⚠️ idToken이 없습니다&quot;)                        throw NSError(domain: &quot;TokenError&quot;, code: -1, userInfo: [NSLocalizedDescriptionKey: &quot;idToken이 없습니다.&quot;])                    }                    print(&quot;✅ idToken 추출 성공 (웹 로그인)&quot;)                    return idToken                }        }    }}#Preview {    LoginViewController()}ViewModelimport Foundationimport RxSwiftimport RxCocoaimport KakaoSDKUserimport RxKakaoSDKUserimport RxKakaoSDKAuthimport KakaoSDKAuthfinal class LoginViewModel {    private let disposeBag = DisposeBag()         // View에서 구독할 수 있도록 공개용 Subject     let loginSuccess = PublishSubject&lt;String&gt;()     let loginFailure = PublishSubject&lt;String&gt;()        func loginWithKakao() {        fetchKakaoOpenIdToken()            .subscribe { token in                self.loginSuccess.onNext(token)            } onError: { error in                self.loginFailure.onNext(error.localizedDescription)            }            .disposed(by: disposeBag)    }        private func fetchKakaoOpenIdToken() -&gt; Observable&lt;String&gt; {        if UserApi.isKakaoTalkLoginAvailable() {            return UserApi.shared.rx.loginWithKakaoTalk()                .map { oauthToken in                    guard let idToken = oauthToken.idToken else {                        // print(&quot;⚠️ idToken이 없습니다&quot;)                        throw NSError(domain: &quot;TokenError&quot;, code: -1, userInfo: [NSLocalizedDescriptionKey: &quot;idToken이 없습니다.&quot;])                    }                    print(&quot;✅ idToken 추출 성공 (앱 로그인)&quot;)                    return idToken                }        } else {            return UserApi.shared.rx.loginWithKakaoAccount()                .map { oauthToken in                    guard let idToken = oauthToken.idToken else {                        // print(&quot;⚠️ idToken이 없습니다&quot;)                        throw NSError(domain: &quot;TokenError&quot;, code: -1, userInfo: [NSLocalizedDescriptionKey: &quot;idToken이 없습니다.&quot;])                    }                    print(&quot;✅ idToken 추출 성공 (웹 로그인)&quot;)                    return idToken                }        }    }}VIewController + ViewModel + ResultsViewControllerimport UIKitimport RxSwiftimport RxKakaoSDKAuthimport KakaoSDKAuthimport RxKakaoSDKUserimport KakaoSDKUserfinal class LoginViewController: UIViewController {        let disposeBag = DisposeBag()    private let viewModel = LoginViewModel()        private func bindViewModel() {        viewModel.loginResult            .observe(on: MainScheduler.instance)            .subscribe { result in                switch result {                case .success(let token):                    print(&quot;로그인 성공: \(token)&quot;)                case .failure(let error):                    print(&quot;로그인 실패: \(error.localizedDescription)&quot;)                }            }.disposed(by: disposeBag)    }        private lazy var kakaoLoginButton: UIButton = {        let button = UIButton(type: .system)        var config = UIButton.Configuration.filled()        config.image = UIImage(named: &quot;Logo Kakao&quot;)        config.baseBackgroundColor = UIColor(red: 1.0, green: 0.9, blue: 0.0, alpha: 1.0)        config.imagePlacement = .leading    // 이미지가 텍스트 왼쪽에 위치        config.imagePadding = 20            // 이미지와 텍스트 사이 간격        config.title = &quot;카카오로 계속하기&quot;        config.baseForegroundColor = .black        // 폰트 설정        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in            var outgoing = incoming            outgoing.font = UIFont.systemFont(ofSize: 16, weight: .medium)            return outgoing        }        button.configuration = config        button.layer.cornerRadius = 10        button.clipsToBounds = true        // 상태에 따라 배경색 바꾸기        button.configurationUpdateHandler = { button in            var config = button.configuration            if button.isHighlighted {                config?.baseBackgroundColor = UIColor(red: 0.8, green: 0.72, blue: 0.0, alpha: 1.0) // 눌렸을 때 진한 노랑            } else {                config?.baseBackgroundColor = UIColor(red: 1.0, green: 0.9, blue: 0.0, alpha: 1.0) // 기본 노랑            }            button.configuration = config        }        button.addTarget(self, action: #selector(handleKakaoLogin), for: .touchUpInside)        return button    }()        private lazy var appleLoginButton: UIButton = {        let button = UIButton(type: .system)        var config = UIButton.Configuration.filled()        config.image = UIImage(named: &quot;Logo Apple&quot;)        config.baseBackgroundColor = .white        config.imagePlacement = .leading    // 이미지가 텍스트 왼쪽에 위치        config.imagePadding = 20            // 이미지와 텍스트 사이 간격        config.title = &quot;Apple로 계속하기&quot;        config.baseForegroundColor = .black        // 폰트 설정        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in            var outgoing = incoming            outgoing.font = UIFont.systemFont(ofSize: 16, weight: .medium)            return outgoing        }        button.configuration = config        button.layer.cornerRadius = 10        button.clipsToBounds = true        // 상태에 따라 배경색 바꾸기        button.configurationUpdateHandler = { button in            var config = button.configuration            if button.isHighlighted {                config?.baseBackgroundColor = UIColor(white: 0.9, alpha: 1.0) // 눌렀을 때 약간 회색            } else {                config?.baseBackgroundColor = .white // 원래 흰색            }            button.configuration = config        }        button.addTarget(self, action: #selector(handleAppleLogin), for: .touchUpInside)        return button    }()        // 카카오로그인버튼, 애플로그이넙튼 -&gt; 스택뷰에 추가    private lazy var stackView: UIStackView = {        let st = UIStackView(arrangedSubviews: [            kakaoLoginButton,            appleLoginButton        ])        st.spacing = 10        st.axis = .vertical        st.distribution = .fillEqually        st.alignment = .fill        return st    }()        override func viewDidLoad() {        super.viewDidLoad()        makeUI()        bindViewModel()    }        func makeUI() {        // 배경 색상        view.backgroundColor = #colorLiteral(red: 0.09411741048, green: 0.09411782771, blue: 0.102702044, alpha: 1)                // 스택뷰 -&gt; 뷰에 추가        view.addSubview(stackView)        stackView.translatesAutoresizingMaskIntoConstraints = false                // 오토레이아웃 제약 추가        NSLayoutConstraint.activate([            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),            stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),            stackView.heightAnchor.constraint(equalToConstant: 130)        ])    }        @objc private func handleKakaoLogin() {        print(&quot;✅ 카카오 로그인 버튼 눌림&quot;)        viewModel.loginWithKakao()    }        @objc private func handleAppleLogin() {        print(&quot;✅ Apple 로그인 버튼 눌림&quot;)    }}// MARK: - Observableextension LoginViewController {        func startKakaoLogin() {        fetchKakaoOpenIdToken()            .subscribe(onNext: { token in                print(&quot;✅ 받은 토큰: \(token)&quot;)            }, onError: { error in                print(&quot;❌ 로그인 에러: \(error.localizedDescription)&quot;)            })            .disposed(by: disposeBag)    }    private func fetchKakaoOpenIdToken() -&gt; Observable&lt;String&gt; {        if UserApi.isKakaoTalkLoginAvailable() {            return UserApi.shared.rx.loginWithKakaoTalk()                .map { oauthToken in                    guard let idToken = oauthToken.idToken else {                        // print(&quot;⚠️ idToken이 없습니다&quot;)                        throw NSError(domain: &quot;TokenError&quot;, code: -1, userInfo: [NSLocalizedDescriptionKey: &quot;idToken이 없습니다.&quot;])                    }                    print(&quot;✅ idToken 추출 성공 (앱 로그인)&quot;)                    return idToken                }        } else {            return UserApi.shared.rx.loginWithKakaoAccount()                .map { oauthToken in                    guard let idToken = oauthToken.idToken else {                        // print(&quot;⚠️ idToken이 없습니다&quot;)                        throw NSError(domain: &quot;TokenError&quot;, code: -1, userInfo: [NSLocalizedDescriptionKey: &quot;idToken이 없습니다.&quot;])                    }                    print(&quot;✅ idToken 추출 성공 (웹 로그인)&quot;)                    return idToken                }        }    }}#Preview {    LoginViewController()}  ViewModelimport Foundationimport RxSwiftimport RxCocoaimport KakaoSDKUserimport RxKakaoSDKUserimport RxKakaoSDKAuthimport KakaoSDKAuthfinal class LoginViewModel {    private let disposeBag = DisposeBag()        let loginResult = PublishSubject&lt;Result&lt;String, Error&gt;&gt;()        func loginWithKakao() {        fetchKakaoOpenIdToken()            .subscribe { token in                self.loginResult.onNext(.success(token))            } onError: { error in                self.loginResult.onNext(.failure(error))            }            .disposed(by: disposeBag)    }        private func fetchKakaoOpenIdToken() -&gt; Observable&lt;String&gt; {        if UserApi.isKakaoTalkLoginAvailable() {            return UserApi.shared.rx.loginWithKakaoTalk()                .map { oauthToken in                    guard let idToken = oauthToken.idToken else {                        // print(&quot;⚠️ idToken이 없습니다&quot;)                        throw NSError(domain: &quot;TokenError&quot;, code: -1, userInfo: [NSLocalizedDescriptionKey: &quot;idToken이 없습니다.&quot;])                    }                    print(&quot;✅ idToken 추출 성공 (앱 로그인)&quot;)                    return idToken                }        } else {            return UserApi.shared.rx.loginWithKakaoAccount()                .map { oauthToken in                    guard let idToken = oauthToken.idToken else {                        // print(&quot;⚠️ idToken이 없습니다&quot;)                        throw NSError(domain: &quot;TokenError&quot;, code: -1, userInfo: [NSLocalizedDescriptionKey: &quot;idToken이 없습니다.&quot;])                    }                    print(&quot;✅ idToken 추출 성공 (웹 로그인)&quot;)                    return idToken                }        }    }}VIewController + ViewModel + Result + Input/OutputViewControllerimport UIKitimport RxSwiftimport RxKakaoSDKAuthimport KakaoSDKAuthimport RxKakaoSDKUserimport KakaoSDKUserfinal class LoginViewController: UIViewController {        let disposeBag = DisposeBag()    private let viewModel = LoginViewModel()    private let kakaoLoginTapped = PublishSubject&lt;Void&gt;()        private func bindViewModel() {        let input = LoginViewModel.Input(kakaoLoginTapped: kakaoLoginTapped.asObservable())        let output = viewModel.transform(input: input)                output.loginResult            .observe(on: MainScheduler.instance)            .subscribe { result in                switch result {                case .success(let token):                    print(&quot;로그인 성공: \(token)&quot;)                case .failure(let error):                    print(&quot;로그인 실패: \(error.localizedDescription)&quot;)                }            }.disposed(by: disposeBag)    }        private lazy var kakaoLoginButton: UIButton = {        let button = UIButton(type: .system)        var config = UIButton.Configuration.filled()        config.image = UIImage(named: &quot;Logo Kakao&quot;)        config.baseBackgroundColor = UIColor(red: 1.0, green: 0.9, blue: 0.0, alpha: 1.0)        config.imagePlacement = .leading    // 이미지가 텍스트 왼쪽에 위치        config.imagePadding = 20            // 이미지와 텍스트 사이 간격        config.title = &quot;카카오로 계속하기&quot;        config.baseForegroundColor = .black        // 폰트 설정        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in            var outgoing = incoming            outgoing.font = UIFont.systemFont(ofSize: 16, weight: .medium)            return outgoing        }        button.configuration = config        button.layer.cornerRadius = 10        button.clipsToBounds = true        // 상태에 따라 배경색 바꾸기        button.configurationUpdateHandler = { button in            var config = button.configuration            if button.isHighlighted {                config?.baseBackgroundColor = UIColor(red: 0.8, green: 0.72, blue: 0.0, alpha: 1.0) // 눌렸을 때 진한 노랑            } else {                config?.baseBackgroundColor = UIColor(red: 1.0, green: 0.9, blue: 0.0, alpha: 1.0) // 기본 노랑            }            button.configuration = config        }        button.addTarget(self, action: #selector(handleKakaoLogin), for: .touchUpInside)        return button    }()        private lazy var appleLoginButton: UIButton = {        let button = UIButton(type: .system)        var config = UIButton.Configuration.filled()        config.image = UIImage(named: &quot;Logo Apple&quot;)        config.baseBackgroundColor = .white        config.imagePlacement = .leading    // 이미지가 텍스트 왼쪽에 위치        config.imagePadding = 20            // 이미지와 텍스트 사이 간격        config.title = &quot;Apple로 계속하기&quot;        config.baseForegroundColor = .black        // 폰트 설정        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in            var outgoing = incoming            outgoing.font = UIFont.systemFont(ofSize: 16, weight: .medium)            return outgoing        }        button.configuration = config        button.layer.cornerRadius = 10        button.clipsToBounds = true        // 상태에 따라 배경색 바꾸기        button.configurationUpdateHandler = { button in            var config = button.configuration            if button.isHighlighted {                config?.baseBackgroundColor = UIColor(white: 0.9, alpha: 1.0) // 눌렀을 때 약간 회색            } else {                config?.baseBackgroundColor = .white // 원래 흰색            }            button.configuration = config        }        button.addTarget(self, action: #selector(handleAppleLogin), for: .touchUpInside)        return button    }()        private lazy var stackView: UIStackView = {        // 카카오로그인버튼, 애플로그이넙튼 -&gt; 스택뷰에 추가        let st = UIStackView(arrangedSubviews: [            kakaoLoginButton,            appleLoginButton        ])        st.spacing = 10        st.axis = .vertical        st.distribution = .fillEqually        st.alignment = .fill        return st    }()        override func viewDidLoad() {        super.viewDidLoad()        makeUI()        bindViewModel()    }        func makeUI() {        // 배경 색상        view.backgroundColor = #colorLiteral(red: 0.09411741048, green: 0.09411782771, blue: 0.102702044, alpha: 1)                // 스택뷰 -&gt; 뷰에 추가        view.addSubview(stackView)        stackView.translatesAutoresizingMaskIntoConstraints = false                // 오토레이아웃 제약 추가        NSLayoutConstraint.activate([            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),            stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),            stackView.heightAnchor.constraint(equalToConstant: 130)        ])    }        @objc private func handleKakaoLogin() {        print(&quot;✅ 카카오 로그인 버튼 눌림&quot;)        kakaoLoginTapped.onNext(())        //viewModel.loginWithKakao()    }        @objc private func handleAppleLogin() {        print(&quot;✅ Apple 로그인 버튼 눌림&quot;)    }}#Preview {    LoginViewController()}ViewModelimport Foundationimport RxSwiftimport RxCocoaimport KakaoSDKUserimport RxKakaoSDKUserimport RxKakaoSDKAuthimport KakaoSDKAuthfinal class LoginViewModel {    private let disposeBag = DisposeBag()        // let loginResult = PublishSubject&lt;Result&lt;String, Error&gt;&gt;()        struct Input {        let kakaoLoginTapped: Observable&lt;Void&gt;    }        struct Output {        let loginResult: Observable&lt;Result&lt;String, Error&gt;&gt;    }        func transform(input: Input) -&gt; Output {        let result = PublishSubject&lt;Result&lt;String, Error&gt;&gt;()                input.kakaoLoginTapped            .flatMapLatest { [weak self] _ -&gt; Observable&lt;Result&lt;String, Error&gt;&gt; in                guard let self = self else { return .empty() }                return self.fetchKakaoOpenIdToken()                    .map { .success($0) }                    .catch { error in                            .just(.failure(error))                    }            }            .bind(to: result)            .disposed(by: disposeBag)                return Output(loginResult: result.asObservable())    }        private func fetchKakaoOpenIdToken() -&gt; Observable&lt;String&gt; {        if UserApi.isKakaoTalkLoginAvailable() {            return UserApi.shared.rx.loginWithKakaoTalk()                .map { oauthToken in                    guard let idToken = oauthToken.idToken else {                        // print(&quot;⚠️ idToken이 없습니다&quot;)                        throw NSError(domain: &quot;TokenError&quot;, code: -1, userInfo: [NSLocalizedDescriptionKey: &quot;idToken이 없습니다.&quot;])                    }                    print(&quot;✅ idToken 추출 성공 (앱 로그인)&quot;)                    return idToken                }        } else {            return UserApi.shared.rx.loginWithKakaoAccount()                .map { oauthToken in                    guard let idToken = oauthToken.idToken else {                        // print(&quot;⚠️ idToken이 없습니다&quot;)                        throw NSError(domain: &quot;TokenError&quot;, code: -1, userInfo: [NSLocalizedDescriptionKey: &quot;idToken이 없습니다.&quot;])                    }                    print(&quot;✅ idToken 추출 성공 (웹 로그인)&quot;)                    return idToken                }        }    }}">
+    <meta itemprop="datePublished" content="2025-03-25T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/Haruhancut-Haruhancut-1/" class="u-url" itemprop="url">[하루한컷] 1. iOS 카카오 로그인
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=Haruhancut">Haruhancut</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-03-25T00:00:00+00:00">March 25, 2025</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <h2 id="1-카카오-로그인">1. 카카오 로그인</h2>
+<ul>
+  <li>https://developers.kakao.com/console/app 링크 접속</li>
+  <li>애플리케이션 추가</li>
+  <li>플랫폼 iOS 등록</li>
+  <li>네이티브 앱키를 Config.config파일에 저장</li>
+</ul>
+
+<h2 id="2-파이어베이스-프로젝트-생성">2. 파이어베이스 프로젝트 생성</h2>
+<ul>
+  <li>Authentication 생성</li>
+  <li>Authentication에서 로그인 방법에서 카카오 로그인을 위해 OIDC 추가(이때 업그레이드 해줘야함)</li>
+</ul>
+
+<p><img src="/assets/img/2025-03-25-[Haruhancut]-Haruhancut-1/1.png" alt="clean1" style="width: 80%;" /></p>
+
+<p><img src="/assets/img/2025-03-25-[Haruhancut]-Haruhancut-1/2.png" alt="clean1" style="width: 80%;" /></p>
+<ul>
+  <li>프로젝트 설정에서 Google-Info.plist다운</li>
+</ul>
+
+<h2 id="3-코드-설정">3. 코드 설정</h2>
+<h3 id="appdelegateswift">AppDelegate.swift</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="c1">// 파이어베이스</span>
+<span class="kd">import</span> <span class="kt">FirebaseCore</span>
+<span class="kd">import</span> <span class="kt">FirebaseAuth</span>
+
+<span class="c1">// 카카오톡</span>
+<span class="kd">import</span> <span class="kt">RxKakaoSDKCommon</span>
+<span class="kd">import</span> <span class="kt">RxKakaoSDKAuth</span>
+<span class="kd">import</span> <span class="kt">KakaoSDKAuth</span>
+
+<span class="kd">func</span> <span class="nf">application</span><span class="p">(</span><span class="n">_</span> <span class="nv">application</span><span class="p">:</span> <span class="kt">UIApplication</span><span class="p">,</span> <span class="n">didFinishLaunchingWithOptions</span> <span class="nv">launchOptions</span><span class="p">:</span> <span class="p">[</span><span class="kt">UIApplication</span><span class="o">.</span><span class="kt">LaunchOptionsKey</span><span class="p">:</span> <span class="kt">Any</span><span class="p">]?)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
+    <span class="c1">// Override point for customization after application launch.</span>
+    
+    <span class="c1">// 파이어베이스 설정</span>
+    <span class="kt">FirebaseApp</span><span class="o">.</span><span class="nf">configure</span><span class="p">()</span>
+    
+    <span class="c1">// 카카오톡 설정</span>
+    <span class="k">if</span> <span class="k">let</span> <span class="nv">nativeAppKey</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kt">Bundle</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="n">infoDictionary</span><span class="p">?[</span><span class="s">"KAKAO_NATIVE_APP_KEY"</span><span class="p">]</span> <span class="k">as?</span> <span class="kt">String</span> <span class="p">{</span>
+        <span class="kt">RxKakaoSDK</span><span class="o">.</span><span class="nf">initSDK</span><span class="p">(</span><span class="nv">appKey</span><span class="p">:</span> <span class="n">nativeAppKey</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="kc">true</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">application</span><span class="p">(</span><span class="n">_</span> <span class="nv">app</span><span class="p">:</span> <span class="kt">UIApplication</span><span class="p">,</span> <span class="kd">open</span> <span class="nv">url</span><span class="p">:</span> <span class="kt">URL</span><span class="p">,</span> <span class="nv">options</span><span class="p">:</span> <span class="p">[</span><span class="kt">UIApplication</span><span class="o">.</span><span class="kt">OpenURLOptionsKey</span> <span class="p">:</span> <span class="kt">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[:])</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
+    <span class="c1">// 카카오톡 로그인</span>
+    <span class="k">if</span> <span class="p">(</span><span class="kt">AuthApi</span><span class="o">.</span><span class="nf">isKakaoTalkLoginUrl</span><span class="p">(</span><span class="n">url</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kt">AuthController</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="nf">handleOpenUrl</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="n">url</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="kc">false</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="sceendelegateswift">SceenDelegate.swift</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">scene</span><span class="p">(</span><span class="n">_</span> <span class="nv">scene</span><span class="p">:</span> <span class="kt">UIScene</span><span class="p">,</span> <span class="n">openURLContexts</span> <span class="kt">URLContexts</span><span class="p">:</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">UIOpenURLContext</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 카카오 로그인</span>
+    <span class="k">if</span> <span class="k">let</span> <span class="nv">url</span> <span class="o">=</span> <span class="kt">URLContexts</span><span class="o">.</span><span class="n">first</span><span class="p">?</span><span class="o">.</span><span class="n">url</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="kt">AuthApi</span><span class="o">.</span><span class="nf">isKakaoTalkLoginUrl</span><span class="p">(</span><span class="n">url</span><span class="p">))</span> <span class="p">{</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="kt">AuthController</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="nf">handleOpenUrl</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="n">url</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="mvcswift">MVC.swift</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+<span class="kd">import</span> <span class="kt">RxSwift</span>
+
+<span class="kd">import</span> <span class="kt">RxKakaoSDKAuth</span>
+<span class="kd">import</span> <span class="kt">KakaoSDKAuth</span>
+
+<span class="kd">import</span> <span class="kt">RxKakaoSDKUser</span>
+<span class="kd">import</span> <span class="kt">KakaoSDKUser</span>
+
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">LoginViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="k">let</span> <span class="nv">disposeBag</span> <span class="o">=</span> <span class="kt">DisposeBag</span><span class="p">()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">kakaoLoginButton</span><span class="p">:</span> <span class="kt">UIButton</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">button</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="o">.</span><span class="n">system</span><span class="p">)</span>
+        <span class="k">var</span> <span class="nv">config</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="o">.</span><span class="kt">Configuration</span><span class="o">.</span><span class="nf">filled</span><span class="p">()</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="kt">UIImage</span><span class="p">(</span><span class="nv">named</span><span class="p">:</span> <span class="s">"Logo Kakao"</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">red</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="nv">green</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="nv">blue</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">imagePlacement</span> <span class="o">=</span> <span class="o">.</span><span class="n">leading</span>    <span class="c1">// 이미지가 텍스트 왼쪽에 위치</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">imagePadding</span> <span class="o">=</span> <span class="mi">20</span>            <span class="c1">// 이미지와 텍스트 사이 간격</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">"카카오로 계속하기"</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">baseForegroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span>
+        <span class="c1">// 폰트 설정</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">titleTextAttributesTransformer</span> <span class="o">=</span> <span class="kt">UIConfigurationTextAttributesTransformer</span> <span class="p">{</span> <span class="n">incoming</span> <span class="k">in</span>
+            <span class="k">var</span> <span class="nv">outgoing</span> <span class="o">=</span> <span class="n">incoming</span>
+            <span class="n">outgoing</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">medium</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">outgoing</span>
+        <span class="p">}</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">clipsToBounds</span> <span class="o">=</span> <span class="kc">true</span>
+        <span class="c1">// 상태에 따라 배경색 바꾸기</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configurationUpdateHandler</span> <span class="o">=</span> <span class="p">{</span> <span class="n">button</span> <span class="k">in</span>
+            <span class="k">var</span> <span class="nv">config</span> <span class="o">=</span> <span class="n">button</span><span class="o">.</span><span class="n">configuration</span>
+            <span class="k">if</span> <span class="n">button</span><span class="o">.</span><span class="n">isHighlighted</span> <span class="p">{</span>
+                <span class="n">config</span><span class="p">?</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">red</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span> <span class="nv">green</span><span class="p">:</span> <span class="mf">0.72</span><span class="p">,</span> <span class="nv">blue</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">)</span> <span class="c1">// 눌렸을 때 진한 노랑</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="n">config</span><span class="p">?</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">red</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="nv">green</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="nv">blue</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">)</span> <span class="c1">// 기본 노랑</span>
+            <span class="p">}</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="p">}</span>
+        <span class="n">button</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="n">handleKakaoLogin</span><span class="p">),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">appleLoginButton</span><span class="p">:</span> <span class="kt">UIButton</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">button</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="o">.</span><span class="n">system</span><span class="p">)</span>
+        <span class="k">var</span> <span class="nv">config</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="o">.</span><span class="kt">Configuration</span><span class="o">.</span><span class="nf">filled</span><span class="p">()</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="kt">UIImage</span><span class="p">(</span><span class="nv">named</span><span class="p">:</span> <span class="s">"Logo Apple"</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">imagePlacement</span> <span class="o">=</span> <span class="o">.</span><span class="n">leading</span>    <span class="c1">// 이미지가 텍스트 왼쪽에 위치</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">imagePadding</span> <span class="o">=</span> <span class="mi">20</span>            <span class="c1">// 이미지와 텍스트 사이 간격</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">"Apple로 계속하기"</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">baseForegroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span>
+        <span class="c1">// 폰트 설정</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">titleTextAttributesTransformer</span> <span class="o">=</span> <span class="kt">UIConfigurationTextAttributesTransformer</span> <span class="p">{</span> <span class="n">incoming</span> <span class="k">in</span>
+            <span class="k">var</span> <span class="nv">outgoing</span> <span class="o">=</span> <span class="n">incoming</span>
+            <span class="n">outgoing</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">medium</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">outgoing</span>
+        <span class="p">}</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">clipsToBounds</span> <span class="o">=</span> <span class="kc">true</span>
+        <span class="c1">// 상태에 따라 배경색 바꾸기</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configurationUpdateHandler</span> <span class="o">=</span> <span class="p">{</span> <span class="n">button</span> <span class="k">in</span>
+            <span class="k">var</span> <span class="nv">config</span> <span class="o">=</span> <span class="n">button</span><span class="o">.</span><span class="n">configuration</span>
+            <span class="k">if</span> <span class="n">button</span><span class="o">.</span><span class="n">isHighlighted</span> <span class="p">{</span>
+                <span class="n">config</span><span class="p">?</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">white</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">)</span> <span class="c1">// 눌렀을 때 약간 회색</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="n">config</span><span class="p">?</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span> <span class="c1">// 원래 흰색</span>
+            <span class="p">}</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="p">}</span>
+        <span class="n">button</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="n">handleAppleLogin</span><span class="p">),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+    <span class="p">}()</span>
+    
+    <span class="c1">// 카카오로그인버튼, 애플로그이넙튼 -&gt; 스택뷰에 추가</span>
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">stackView</span><span class="p">:</span> <span class="kt">UIStackView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">st</span> <span class="o">=</span> <span class="kt">UIStackView</span><span class="p">(</span><span class="nv">arrangedSubviews</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">kakaoLoginButton</span><span class="p">,</span>
+            <span class="n">appleLoginButton</span>
+        <span class="p">])</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">spacing</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="o">.</span><span class="n">vertical</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">distribution</span> <span class="o">=</span> <span class="o">.</span><span class="n">fillEqually</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">alignment</span> <span class="o">=</span> <span class="o">.</span><span class="n">fill</span>
+        <span class="k">return</span> <span class="n">st</span>
+    <span class="p">}()</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="nf">makeUI</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// 배경 색상</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="k">#colorLiteral</span><span class="p">(</span><span class="nv">red</span><span class="p">:</span> <span class="mf">0.09411741048</span><span class="p">,</span> <span class="nv">green</span><span class="p">:</span> <span class="mf">0.09411782771</span><span class="p">,</span> <span class="nv">blue</span><span class="p">:</span> <span class="mf">0.102702044</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1">// 스택뷰 -&gt; 뷰에 추가</span>
+        <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="n">stackView</span><span class="p">)</span>
+        <span class="n">stackView</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        
+        <span class="c1">// 오토레이아웃 제약 추가</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">stackView</span><span class="o">.</span><span class="n">centerXAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">centerXAnchor</span><span class="p">),</span>
+            <span class="n">stackView</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">50</span><span class="p">),</span>
+            <span class="n">stackView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="n">stackView</span><span class="o">.</span><span class="n">heightAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalToConstant</span><span class="p">:</span> <span class="mi">130</span><span class="p">)</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@objc</span> <span class="kd">private</span> <span class="kd">func</span> <span class="nf">handleKakaoLogin</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"✅ 카카오 로그인 버튼 눌림"</span><span class="p">)</span>
+        <span class="nf">startKakaoLogin</span><span class="p">()</span>
+
+    <span class="p">}</span>
+    
+    <span class="kd">@objc</span> <span class="kd">private</span> <span class="kd">func</span> <span class="nf">handleAppleLogin</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"✅ Apple 로그인 버튼 눌림"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - Observable</span>
+<span class="kd">extension</span> <span class="kt">LoginViewController</span> <span class="p">{</span>
+    
+    <span class="kd">func</span> <span class="nf">startKakaoLogin</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">fetchKakaoOpenIdToken</span><span class="p">()</span>
+            <span class="o">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="n">token</span> <span class="k">in</span>
+                <span class="nf">print</span><span class="p">(</span><span class="s">"✅ 받은 토큰: </span><span class="se">\(</span><span class="n">token</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+            <span class="p">},</span> <span class="nv">onError</span><span class="p">:</span> <span class="p">{</span> <span class="n">error</span> <span class="k">in</span>
+                <span class="nf">print</span><span class="p">(</span><span class="s">"❌ 로그인 에러: </span><span class="se">\(</span><span class="n">error</span><span class="o">.</span><span class="n">localizedDescription</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+            <span class="p">})</span>
+            <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">fetchKakaoOpenIdToken</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="kt">UserApi</span><span class="o">.</span><span class="nf">isKakaoTalkLoginAvailable</span><span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UserApi</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="nf">loginWithKakaoTalk</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">oauthToken</span> <span class="k">in</span>
+                    <span class="k">guard</span> <span class="k">let</span> <span class="nv">idToken</span> <span class="o">=</span> <span class="n">oauthToken</span><span class="o">.</span><span class="n">idToken</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="c1">// print("⚠️ idToken이 없습니다")</span>
+                        <span class="k">throw</span> <span class="kt">NSError</span><span class="p">(</span><span class="nv">domain</span><span class="p">:</span> <span class="s">"TokenError"</span><span class="p">,</span> <span class="nv">code</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nv">userInfo</span><span class="p">:</span> <span class="p">[</span><span class="kt">NSLocalizedDescriptionKey</span><span class="p">:</span> <span class="s">"idToken이 없습니다."</span><span class="p">])</span>
+                    <span class="p">}</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"✅ idToken 추출 성공 (앱 로그인)"</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">idToken</span>
+                <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UserApi</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="nf">loginWithKakaoAccount</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">oauthToken</span> <span class="k">in</span>
+                    <span class="k">guard</span> <span class="k">let</span> <span class="nv">idToken</span> <span class="o">=</span> <span class="n">oauthToken</span><span class="o">.</span><span class="n">idToken</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="c1">// print("⚠️ idToken이 없습니다")</span>
+                        <span class="k">throw</span> <span class="kt">NSError</span><span class="p">(</span><span class="nv">domain</span><span class="p">:</span> <span class="s">"TokenError"</span><span class="p">,</span> <span class="nv">code</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nv">userInfo</span><span class="p">:</span> <span class="p">[</span><span class="kt">NSLocalizedDescriptionKey</span><span class="p">:</span> <span class="s">"idToken이 없습니다."</span><span class="p">])</span>
+                    <span class="p">}</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"✅ idToken 추출 성공 (웹 로그인)"</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">idToken</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cp">#Preview {</span>
+    <span class="kt">LoginViewController</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="viewcontroller--viewmodel">VIewController + ViewModel</h3>
+<h3 id="viewcontroller">ViewController</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+<span class="kd">import</span> <span class="kt">RxSwift</span>
+
+<span class="kd">import</span> <span class="kt">RxKakaoSDKAuth</span>
+<span class="kd">import</span> <span class="kt">KakaoSDKAuth</span>
+
+<span class="kd">import</span> <span class="kt">RxKakaoSDKUser</span>
+<span class="kd">import</span> <span class="kt">KakaoSDKUser</span>
+
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">LoginViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="k">let</span> <span class="nv">disposeBag</span> <span class="o">=</span> <span class="kt">DisposeBag</span><span class="p">()</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">viewModel</span> <span class="o">=</span> <span class="kt">LoginViewModel</span><span class="p">()</span>
+    
+
+    
+
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">bindViewModel</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">viewModel</span><span class="o">.</span><span class="n">loginSuccess</span>
+            <span class="o">.</span><span class="nf">observe</span><span class="p">(</span><span class="nv">on</span><span class="p">:</span> <span class="kt">MainScheduler</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">subscribe</span> <span class="p">{</span> <span class="n">token</span> <span class="k">in</span>
+                <span class="nf">print</span><span class="p">(</span><span class="s">"로그인 성공: </span><span class="se">\(</span><span class="n">token</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+        
+        <span class="n">viewModel</span><span class="o">.</span><span class="n">loginFailure</span>
+            <span class="o">.</span><span class="nf">observe</span><span class="p">(</span><span class="nv">on</span><span class="p">:</span> <span class="kt">MainScheduler</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">subscribe</span> <span class="p">{</span> <span class="n">errorMessage</span> <span class="k">in</span>
+                <span class="nf">print</span><span class="p">(</span><span class="s">"로그인 실패: </span><span class="se">\(</span><span class="n">errorMessage</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">kakaoLoginButton</span><span class="p">:</span> <span class="kt">UIButton</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">button</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="o">.</span><span class="n">system</span><span class="p">)</span>
+        <span class="k">var</span> <span class="nv">config</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="o">.</span><span class="kt">Configuration</span><span class="o">.</span><span class="nf">filled</span><span class="p">()</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="kt">UIImage</span><span class="p">(</span><span class="nv">named</span><span class="p">:</span> <span class="s">"Logo Kakao"</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">red</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="nv">green</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="nv">blue</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">imagePlacement</span> <span class="o">=</span> <span class="o">.</span><span class="n">leading</span>    <span class="c1">// 이미지가 텍스트 왼쪽에 위치</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">imagePadding</span> <span class="o">=</span> <span class="mi">20</span>            <span class="c1">// 이미지와 텍스트 사이 간격</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">"카카오로 계속하기"</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">baseForegroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span>
+        <span class="c1">// 폰트 설정</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">titleTextAttributesTransformer</span> <span class="o">=</span> <span class="kt">UIConfigurationTextAttributesTransformer</span> <span class="p">{</span> <span class="n">incoming</span> <span class="k">in</span>
+            <span class="k">var</span> <span class="nv">outgoing</span> <span class="o">=</span> <span class="n">incoming</span>
+            <span class="n">outgoing</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">medium</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">outgoing</span>
+        <span class="p">}</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">clipsToBounds</span> <span class="o">=</span> <span class="kc">true</span>
+        <span class="c1">// 상태에 따라 배경색 바꾸기</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configurationUpdateHandler</span> <span class="o">=</span> <span class="p">{</span> <span class="n">button</span> <span class="k">in</span>
+            <span class="k">var</span> <span class="nv">config</span> <span class="o">=</span> <span class="n">button</span><span class="o">.</span><span class="n">configuration</span>
+            <span class="k">if</span> <span class="n">button</span><span class="o">.</span><span class="n">isHighlighted</span> <span class="p">{</span>
+                <span class="n">config</span><span class="p">?</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">red</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span> <span class="nv">green</span><span class="p">:</span> <span class="mf">0.72</span><span class="p">,</span> <span class="nv">blue</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">)</span> <span class="c1">// 눌렸을 때 진한 노랑</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="n">config</span><span class="p">?</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">red</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="nv">green</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="nv">blue</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">)</span> <span class="c1">// 기본 노랑</span>
+            <span class="p">}</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="p">}</span>
+        <span class="n">button</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="n">handleKakaoLogin</span><span class="p">),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">appleLoginButton</span><span class="p">:</span> <span class="kt">UIButton</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">button</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="o">.</span><span class="n">system</span><span class="p">)</span>
+        <span class="k">var</span> <span class="nv">config</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="o">.</span><span class="kt">Configuration</span><span class="o">.</span><span class="nf">filled</span><span class="p">()</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="kt">UIImage</span><span class="p">(</span><span class="nv">named</span><span class="p">:</span> <span class="s">"Logo Apple"</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">imagePlacement</span> <span class="o">=</span> <span class="o">.</span><span class="n">leading</span>    <span class="c1">// 이미지가 텍스트 왼쪽에 위치</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">imagePadding</span> <span class="o">=</span> <span class="mi">20</span>            <span class="c1">// 이미지와 텍스트 사이 간격</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">"Apple로 계속하기"</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">baseForegroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span>
+        <span class="c1">// 폰트 설정</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">titleTextAttributesTransformer</span> <span class="o">=</span> <span class="kt">UIConfigurationTextAttributesTransformer</span> <span class="p">{</span> <span class="n">incoming</span> <span class="k">in</span>
+            <span class="k">var</span> <span class="nv">outgoing</span> <span class="o">=</span> <span class="n">incoming</span>
+            <span class="n">outgoing</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">medium</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">outgoing</span>
+        <span class="p">}</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">clipsToBounds</span> <span class="o">=</span> <span class="kc">true</span>
+        <span class="c1">// 상태에 따라 배경색 바꾸기</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configurationUpdateHandler</span> <span class="o">=</span> <span class="p">{</span> <span class="n">button</span> <span class="k">in</span>
+            <span class="k">var</span> <span class="nv">config</span> <span class="o">=</span> <span class="n">button</span><span class="o">.</span><span class="n">configuration</span>
+            <span class="k">if</span> <span class="n">button</span><span class="o">.</span><span class="n">isHighlighted</span> <span class="p">{</span>
+                <span class="n">config</span><span class="p">?</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">white</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">)</span> <span class="c1">// 눌렀을 때 약간 회색</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="n">config</span><span class="p">?</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span> <span class="c1">// 원래 흰색</span>
+            <span class="p">}</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="p">}</span>
+        <span class="n">button</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="n">handleAppleLogin</span><span class="p">),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+    <span class="p">}()</span>
+    
+    <span class="c1">// 카카오로그인버튼, 애플로그이넙튼 -&gt; 스택뷰에 추가</span>
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">stackView</span><span class="p">:</span> <span class="kt">UIStackView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">st</span> <span class="o">=</span> <span class="kt">UIStackView</span><span class="p">(</span><span class="nv">arrangedSubviews</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">kakaoLoginButton</span><span class="p">,</span>
+            <span class="n">appleLoginButton</span>
+        <span class="p">])</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">spacing</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="o">.</span><span class="n">vertical</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">distribution</span> <span class="o">=</span> <span class="o">.</span><span class="n">fillEqually</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">alignment</span> <span class="o">=</span> <span class="o">.</span><span class="n">fill</span>
+        <span class="k">return</span> <span class="n">st</span>
+    <span class="p">}()</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="nf">makeUI</span><span class="p">()</span>
+        <span class="nf">bindViewModel</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// 배경 색상</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="k">#colorLiteral</span><span class="p">(</span><span class="nv">red</span><span class="p">:</span> <span class="mf">0.09411741048</span><span class="p">,</span> <span class="nv">green</span><span class="p">:</span> <span class="mf">0.09411782771</span><span class="p">,</span> <span class="nv">blue</span><span class="p">:</span> <span class="mf">0.102702044</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1">// 스택뷰 -&gt; 뷰에 추가</span>
+        <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="n">stackView</span><span class="p">)</span>
+        <span class="n">stackView</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        
+        <span class="c1">// 오토레이아웃 제약 추가</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">stackView</span><span class="o">.</span><span class="n">centerXAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">centerXAnchor</span><span class="p">),</span>
+            <span class="n">stackView</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">50</span><span class="p">),</span>
+            <span class="n">stackView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="n">stackView</span><span class="o">.</span><span class="n">heightAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalToConstant</span><span class="p">:</span> <span class="mi">130</span><span class="p">)</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@objc</span> <span class="kd">private</span> <span class="kd">func</span> <span class="nf">handleKakaoLogin</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"✅ 카카오 로그인 버튼 눌림"</span><span class="p">)</span>
+        <span class="n">viewModel</span><span class="o">.</span><span class="nf">loginWithKakao</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@objc</span> <span class="kd">private</span> <span class="kd">func</span> <span class="nf">handleAppleLogin</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"✅ Apple 로그인 버튼 눌림"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - Observable</span>
+<span class="kd">extension</span> <span class="kt">LoginViewController</span> <span class="p">{</span>
+    
+    <span class="kd">func</span> <span class="nf">startKakaoLogin</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">fetchKakaoOpenIdToken</span><span class="p">()</span>
+            <span class="o">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="n">token</span> <span class="k">in</span>
+                <span class="nf">print</span><span class="p">(</span><span class="s">"✅ 받은 토큰: </span><span class="se">\(</span><span class="n">token</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+            <span class="p">},</span> <span class="nv">onError</span><span class="p">:</span> <span class="p">{</span> <span class="n">error</span> <span class="k">in</span>
+                <span class="nf">print</span><span class="p">(</span><span class="s">"❌ 로그인 에러: </span><span class="se">\(</span><span class="n">error</span><span class="o">.</span><span class="n">localizedDescription</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+            <span class="p">})</span>
+            <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">fetchKakaoOpenIdToken</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="kt">UserApi</span><span class="o">.</span><span class="nf">isKakaoTalkLoginAvailable</span><span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UserApi</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="nf">loginWithKakaoTalk</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">oauthToken</span> <span class="k">in</span>
+                    <span class="k">guard</span> <span class="k">let</span> <span class="nv">idToken</span> <span class="o">=</span> <span class="n">oauthToken</span><span class="o">.</span><span class="n">idToken</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="c1">// print("⚠️ idToken이 없습니다")</span>
+                        <span class="k">throw</span> <span class="kt">NSError</span><span class="p">(</span><span class="nv">domain</span><span class="p">:</span> <span class="s">"TokenError"</span><span class="p">,</span> <span class="nv">code</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nv">userInfo</span><span class="p">:</span> <span class="p">[</span><span class="kt">NSLocalizedDescriptionKey</span><span class="p">:</span> <span class="s">"idToken이 없습니다."</span><span class="p">])</span>
+                    <span class="p">}</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"✅ idToken 추출 성공 (앱 로그인)"</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">idToken</span>
+                <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UserApi</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="nf">loginWithKakaoAccount</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">oauthToken</span> <span class="k">in</span>
+                    <span class="k">guard</span> <span class="k">let</span> <span class="nv">idToken</span> <span class="o">=</span> <span class="n">oauthToken</span><span class="o">.</span><span class="n">idToken</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="c1">// print("⚠️ idToken이 없습니다")</span>
+                        <span class="k">throw</span> <span class="kt">NSError</span><span class="p">(</span><span class="nv">domain</span><span class="p">:</span> <span class="s">"TokenError"</span><span class="p">,</span> <span class="nv">code</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nv">userInfo</span><span class="p">:</span> <span class="p">[</span><span class="kt">NSLocalizedDescriptionKey</span><span class="p">:</span> <span class="s">"idToken이 없습니다."</span><span class="p">])</span>
+                    <span class="p">}</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"✅ idToken 추출 성공 (웹 로그인)"</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">idToken</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cp">#Preview {</span>
+    <span class="kt">LoginViewController</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="viewmodel">ViewModel</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Foundation</span>
+<span class="kd">import</span> <span class="kt">RxSwift</span>
+<span class="kd">import</span> <span class="kt">RxCocoa</span>
+<span class="kd">import</span> <span class="kt">KakaoSDKUser</span>
+<span class="kd">import</span> <span class="kt">RxKakaoSDKUser</span>
+<span class="kd">import</span> <span class="kt">RxKakaoSDKAuth</span>
+<span class="kd">import</span> <span class="kt">KakaoSDKAuth</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">LoginViewModel</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">disposeBag</span> <span class="o">=</span> <span class="kt">DisposeBag</span><span class="p">()</span>
+    
+     <span class="c1">// View에서 구독할 수 있도록 공개용 Subject</span>
+     <span class="k">let</span> <span class="nv">loginSuccess</span> <span class="o">=</span> <span class="kt">PublishSubject</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">()</span>
+     <span class="k">let</span> <span class="nv">loginFailure</span> <span class="o">=</span> <span class="kt">PublishSubject</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">()</span>
+    
+    <span class="kd">func</span> <span class="nf">loginWithKakao</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">fetchKakaoOpenIdToken</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">subscribe</span> <span class="p">{</span> <span class="n">token</span> <span class="k">in</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">loginSuccess</span><span class="o">.</span><span class="nf">onNext</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+            <span class="p">}</span> <span class="nv">onError</span><span class="p">:</span> <span class="p">{</span> <span class="n">error</span> <span class="k">in</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">loginFailure</span><span class="o">.</span><span class="nf">onNext</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">localizedDescription</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">fetchKakaoOpenIdToken</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="kt">UserApi</span><span class="o">.</span><span class="nf">isKakaoTalkLoginAvailable</span><span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UserApi</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="nf">loginWithKakaoTalk</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">oauthToken</span> <span class="k">in</span>
+                    <span class="k">guard</span> <span class="k">let</span> <span class="nv">idToken</span> <span class="o">=</span> <span class="n">oauthToken</span><span class="o">.</span><span class="n">idToken</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="c1">// print("⚠️ idToken이 없습니다")</span>
+                        <span class="k">throw</span> <span class="kt">NSError</span><span class="p">(</span><span class="nv">domain</span><span class="p">:</span> <span class="s">"TokenError"</span><span class="p">,</span> <span class="nv">code</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nv">userInfo</span><span class="p">:</span> <span class="p">[</span><span class="kt">NSLocalizedDescriptionKey</span><span class="p">:</span> <span class="s">"idToken이 없습니다."</span><span class="p">])</span>
+                    <span class="p">}</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"✅ idToken 추출 성공 (앱 로그인)"</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">idToken</span>
+                <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UserApi</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="nf">loginWithKakaoAccount</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">oauthToken</span> <span class="k">in</span>
+                    <span class="k">guard</span> <span class="k">let</span> <span class="nv">idToken</span> <span class="o">=</span> <span class="n">oauthToken</span><span class="o">.</span><span class="n">idToken</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="c1">// print("⚠️ idToken이 없습니다")</span>
+                        <span class="k">throw</span> <span class="kt">NSError</span><span class="p">(</span><span class="nv">domain</span><span class="p">:</span> <span class="s">"TokenError"</span><span class="p">,</span> <span class="nv">code</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nv">userInfo</span><span class="p">:</span> <span class="p">[</span><span class="kt">NSLocalizedDescriptionKey</span><span class="p">:</span> <span class="s">"idToken이 없습니다."</span><span class="p">])</span>
+                    <span class="p">}</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"✅ idToken 추출 성공 (웹 로그인)"</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">idToken</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="viewcontroller--viewmodel--results">VIewController + ViewModel + Results</h3>
+<h3 id="viewcontroller-1">ViewController</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+<span class="kd">import</span> <span class="kt">RxSwift</span>
+
+<span class="kd">import</span> <span class="kt">RxKakaoSDKAuth</span>
+<span class="kd">import</span> <span class="kt">KakaoSDKAuth</span>
+
+<span class="kd">import</span> <span class="kt">RxKakaoSDKUser</span>
+<span class="kd">import</span> <span class="kt">KakaoSDKUser</span>
+
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">LoginViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="k">let</span> <span class="nv">disposeBag</span> <span class="o">=</span> <span class="kt">DisposeBag</span><span class="p">()</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">viewModel</span> <span class="o">=</span> <span class="kt">LoginViewModel</span><span class="p">()</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">bindViewModel</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">viewModel</span><span class="o">.</span><span class="n">loginResult</span>
+            <span class="o">.</span><span class="nf">observe</span><span class="p">(</span><span class="nv">on</span><span class="p">:</span> <span class="kt">MainScheduler</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">subscribe</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span>
+                <span class="k">switch</span> <span class="n">result</span> <span class="p">{</span>
+                <span class="k">case</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="k">let</span> <span class="nv">token</span><span class="p">):</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"로그인 성공: </span><span class="se">\(</span><span class="n">token</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+                <span class="k">case</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="k">let</span> <span class="nv">error</span><span class="p">):</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"로그인 실패: </span><span class="se">\(</span><span class="n">error</span><span class="o">.</span><span class="n">localizedDescription</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">}</span><span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">kakaoLoginButton</span><span class="p">:</span> <span class="kt">UIButton</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">button</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="o">.</span><span class="n">system</span><span class="p">)</span>
+        <span class="k">var</span> <span class="nv">config</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="o">.</span><span class="kt">Configuration</span><span class="o">.</span><span class="nf">filled</span><span class="p">()</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="kt">UIImage</span><span class="p">(</span><span class="nv">named</span><span class="p">:</span> <span class="s">"Logo Kakao"</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">red</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="nv">green</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="nv">blue</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">imagePlacement</span> <span class="o">=</span> <span class="o">.</span><span class="n">leading</span>    <span class="c1">// 이미지가 텍스트 왼쪽에 위치</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">imagePadding</span> <span class="o">=</span> <span class="mi">20</span>            <span class="c1">// 이미지와 텍스트 사이 간격</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">"카카오로 계속하기"</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">baseForegroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span>
+        <span class="c1">// 폰트 설정</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">titleTextAttributesTransformer</span> <span class="o">=</span> <span class="kt">UIConfigurationTextAttributesTransformer</span> <span class="p">{</span> <span class="n">incoming</span> <span class="k">in</span>
+            <span class="k">var</span> <span class="nv">outgoing</span> <span class="o">=</span> <span class="n">incoming</span>
+            <span class="n">outgoing</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">medium</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">outgoing</span>
+        <span class="p">}</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">clipsToBounds</span> <span class="o">=</span> <span class="kc">true</span>
+        <span class="c1">// 상태에 따라 배경색 바꾸기</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configurationUpdateHandler</span> <span class="o">=</span> <span class="p">{</span> <span class="n">button</span> <span class="k">in</span>
+            <span class="k">var</span> <span class="nv">config</span> <span class="o">=</span> <span class="n">button</span><span class="o">.</span><span class="n">configuration</span>
+            <span class="k">if</span> <span class="n">button</span><span class="o">.</span><span class="n">isHighlighted</span> <span class="p">{</span>
+                <span class="n">config</span><span class="p">?</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">red</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span> <span class="nv">green</span><span class="p">:</span> <span class="mf">0.72</span><span class="p">,</span> <span class="nv">blue</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">)</span> <span class="c1">// 눌렸을 때 진한 노랑</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="n">config</span><span class="p">?</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">red</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="nv">green</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="nv">blue</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">)</span> <span class="c1">// 기본 노랑</span>
+            <span class="p">}</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="p">}</span>
+        <span class="n">button</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="n">handleKakaoLogin</span><span class="p">),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">appleLoginButton</span><span class="p">:</span> <span class="kt">UIButton</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">button</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="o">.</span><span class="n">system</span><span class="p">)</span>
+        <span class="k">var</span> <span class="nv">config</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="o">.</span><span class="kt">Configuration</span><span class="o">.</span><span class="nf">filled</span><span class="p">()</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="kt">UIImage</span><span class="p">(</span><span class="nv">named</span><span class="p">:</span> <span class="s">"Logo Apple"</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">imagePlacement</span> <span class="o">=</span> <span class="o">.</span><span class="n">leading</span>    <span class="c1">// 이미지가 텍스트 왼쪽에 위치</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">imagePadding</span> <span class="o">=</span> <span class="mi">20</span>            <span class="c1">// 이미지와 텍스트 사이 간격</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">"Apple로 계속하기"</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">baseForegroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span>
+        <span class="c1">// 폰트 설정</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">titleTextAttributesTransformer</span> <span class="o">=</span> <span class="kt">UIConfigurationTextAttributesTransformer</span> <span class="p">{</span> <span class="n">incoming</span> <span class="k">in</span>
+            <span class="k">var</span> <span class="nv">outgoing</span> <span class="o">=</span> <span class="n">incoming</span>
+            <span class="n">outgoing</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">medium</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">outgoing</span>
+        <span class="p">}</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">clipsToBounds</span> <span class="o">=</span> <span class="kc">true</span>
+        <span class="c1">// 상태에 따라 배경색 바꾸기</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configurationUpdateHandler</span> <span class="o">=</span> <span class="p">{</span> <span class="n">button</span> <span class="k">in</span>
+            <span class="k">var</span> <span class="nv">config</span> <span class="o">=</span> <span class="n">button</span><span class="o">.</span><span class="n">configuration</span>
+            <span class="k">if</span> <span class="n">button</span><span class="o">.</span><span class="n">isHighlighted</span> <span class="p">{</span>
+                <span class="n">config</span><span class="p">?</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">white</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">)</span> <span class="c1">// 눌렀을 때 약간 회색</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="n">config</span><span class="p">?</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span> <span class="c1">// 원래 흰색</span>
+            <span class="p">}</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="p">}</span>
+        <span class="n">button</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="n">handleAppleLogin</span><span class="p">),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+    <span class="p">}()</span>
+    
+    <span class="c1">// 카카오로그인버튼, 애플로그이넙튼 -&gt; 스택뷰에 추가</span>
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">stackView</span><span class="p">:</span> <span class="kt">UIStackView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">st</span> <span class="o">=</span> <span class="kt">UIStackView</span><span class="p">(</span><span class="nv">arrangedSubviews</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">kakaoLoginButton</span><span class="p">,</span>
+            <span class="n">appleLoginButton</span>
+        <span class="p">])</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">spacing</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="o">.</span><span class="n">vertical</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">distribution</span> <span class="o">=</span> <span class="o">.</span><span class="n">fillEqually</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">alignment</span> <span class="o">=</span> <span class="o">.</span><span class="n">fill</span>
+        <span class="k">return</span> <span class="n">st</span>
+    <span class="p">}()</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="nf">makeUI</span><span class="p">()</span>
+        <span class="nf">bindViewModel</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// 배경 색상</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="k">#colorLiteral</span><span class="p">(</span><span class="nv">red</span><span class="p">:</span> <span class="mf">0.09411741048</span><span class="p">,</span> <span class="nv">green</span><span class="p">:</span> <span class="mf">0.09411782771</span><span class="p">,</span> <span class="nv">blue</span><span class="p">:</span> <span class="mf">0.102702044</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1">// 스택뷰 -&gt; 뷰에 추가</span>
+        <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="n">stackView</span><span class="p">)</span>
+        <span class="n">stackView</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        
+        <span class="c1">// 오토레이아웃 제약 추가</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">stackView</span><span class="o">.</span><span class="n">centerXAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">centerXAnchor</span><span class="p">),</span>
+            <span class="n">stackView</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">50</span><span class="p">),</span>
+            <span class="n">stackView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="n">stackView</span><span class="o">.</span><span class="n">heightAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalToConstant</span><span class="p">:</span> <span class="mi">130</span><span class="p">)</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@objc</span> <span class="kd">private</span> <span class="kd">func</span> <span class="nf">handleKakaoLogin</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"✅ 카카오 로그인 버튼 눌림"</span><span class="p">)</span>
+        <span class="n">viewModel</span><span class="o">.</span><span class="nf">loginWithKakao</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@objc</span> <span class="kd">private</span> <span class="kd">func</span> <span class="nf">handleAppleLogin</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"✅ Apple 로그인 버튼 눌림"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - Observable</span>
+<span class="kd">extension</span> <span class="kt">LoginViewController</span> <span class="p">{</span>
+    
+    <span class="kd">func</span> <span class="nf">startKakaoLogin</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">fetchKakaoOpenIdToken</span><span class="p">()</span>
+            <span class="o">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="n">token</span> <span class="k">in</span>
+                <span class="nf">print</span><span class="p">(</span><span class="s">"✅ 받은 토큰: </span><span class="se">\(</span><span class="n">token</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+            <span class="p">},</span> <span class="nv">onError</span><span class="p">:</span> <span class="p">{</span> <span class="n">error</span> <span class="k">in</span>
+                <span class="nf">print</span><span class="p">(</span><span class="s">"❌ 로그인 에러: </span><span class="se">\(</span><span class="n">error</span><span class="o">.</span><span class="n">localizedDescription</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+            <span class="p">})</span>
+            <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">fetchKakaoOpenIdToken</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="kt">UserApi</span><span class="o">.</span><span class="nf">isKakaoTalkLoginAvailable</span><span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UserApi</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="nf">loginWithKakaoTalk</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">oauthToken</span> <span class="k">in</span>
+                    <span class="k">guard</span> <span class="k">let</span> <span class="nv">idToken</span> <span class="o">=</span> <span class="n">oauthToken</span><span class="o">.</span><span class="n">idToken</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="c1">// print("⚠️ idToken이 없습니다")</span>
+                        <span class="k">throw</span> <span class="kt">NSError</span><span class="p">(</span><span class="nv">domain</span><span class="p">:</span> <span class="s">"TokenError"</span><span class="p">,</span> <span class="nv">code</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nv">userInfo</span><span class="p">:</span> <span class="p">[</span><span class="kt">NSLocalizedDescriptionKey</span><span class="p">:</span> <span class="s">"idToken이 없습니다."</span><span class="p">])</span>
+                    <span class="p">}</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"✅ idToken 추출 성공 (앱 로그인)"</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">idToken</span>
+                <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UserApi</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="nf">loginWithKakaoAccount</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">oauthToken</span> <span class="k">in</span>
+                    <span class="k">guard</span> <span class="k">let</span> <span class="nv">idToken</span> <span class="o">=</span> <span class="n">oauthToken</span><span class="o">.</span><span class="n">idToken</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="c1">// print("⚠️ idToken이 없습니다")</span>
+                        <span class="k">throw</span> <span class="kt">NSError</span><span class="p">(</span><span class="nv">domain</span><span class="p">:</span> <span class="s">"TokenError"</span><span class="p">,</span> <span class="nv">code</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nv">userInfo</span><span class="p">:</span> <span class="p">[</span><span class="kt">NSLocalizedDescriptionKey</span><span class="p">:</span> <span class="s">"idToken이 없습니다."</span><span class="p">])</span>
+                    <span class="p">}</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"✅ idToken 추출 성공 (웹 로그인)"</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">idToken</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cp">#Preview {</span>
+    <span class="kt">LoginViewController</span><span class="p">()</span>
+<span class="p">}</span>  
+</code></pre></div></div>
+
+<h3 id="viewmodel-1">ViewModel</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Foundation</span>
+<span class="kd">import</span> <span class="kt">RxSwift</span>
+<span class="kd">import</span> <span class="kt">RxCocoa</span>
+<span class="kd">import</span> <span class="kt">KakaoSDKUser</span>
+<span class="kd">import</span> <span class="kt">RxKakaoSDKUser</span>
+<span class="kd">import</span> <span class="kt">RxKakaoSDKAuth</span>
+<span class="kd">import</span> <span class="kt">KakaoSDKAuth</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">LoginViewModel</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">disposeBag</span> <span class="o">=</span> <span class="kt">DisposeBag</span><span class="p">()</span>
+    
+    <span class="k">let</span> <span class="nv">loginResult</span> <span class="o">=</span> <span class="kt">PublishSubject</span><span class="o">&lt;</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;&gt;</span><span class="p">()</span>
+    
+    <span class="kd">func</span> <span class="nf">loginWithKakao</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">fetchKakaoOpenIdToken</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">subscribe</span> <span class="p">{</span> <span class="n">token</span> <span class="k">in</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">loginResult</span><span class="o">.</span><span class="nf">onNext</span><span class="p">(</span><span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="n">token</span><span class="p">))</span>
+            <span class="p">}</span> <span class="nv">onError</span><span class="p">:</span> <span class="p">{</span> <span class="n">error</span> <span class="k">in</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">loginResult</span><span class="o">.</span><span class="nf">onNext</span><span class="p">(</span><span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+            <span class="p">}</span>
+            <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">fetchKakaoOpenIdToken</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="kt">UserApi</span><span class="o">.</span><span class="nf">isKakaoTalkLoginAvailable</span><span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UserApi</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="nf">loginWithKakaoTalk</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">oauthToken</span> <span class="k">in</span>
+                    <span class="k">guard</span> <span class="k">let</span> <span class="nv">idToken</span> <span class="o">=</span> <span class="n">oauthToken</span><span class="o">.</span><span class="n">idToken</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="c1">// print("⚠️ idToken이 없습니다")</span>
+                        <span class="k">throw</span> <span class="kt">NSError</span><span class="p">(</span><span class="nv">domain</span><span class="p">:</span> <span class="s">"TokenError"</span><span class="p">,</span> <span class="nv">code</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nv">userInfo</span><span class="p">:</span> <span class="p">[</span><span class="kt">NSLocalizedDescriptionKey</span><span class="p">:</span> <span class="s">"idToken이 없습니다."</span><span class="p">])</span>
+                    <span class="p">}</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"✅ idToken 추출 성공 (앱 로그인)"</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">idToken</span>
+                <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UserApi</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="nf">loginWithKakaoAccount</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">oauthToken</span> <span class="k">in</span>
+                    <span class="k">guard</span> <span class="k">let</span> <span class="nv">idToken</span> <span class="o">=</span> <span class="n">oauthToken</span><span class="o">.</span><span class="n">idToken</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="c1">// print("⚠️ idToken이 없습니다")</span>
+                        <span class="k">throw</span> <span class="kt">NSError</span><span class="p">(</span><span class="nv">domain</span><span class="p">:</span> <span class="s">"TokenError"</span><span class="p">,</span> <span class="nv">code</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nv">userInfo</span><span class="p">:</span> <span class="p">[</span><span class="kt">NSLocalizedDescriptionKey</span><span class="p">:</span> <span class="s">"idToken이 없습니다."</span><span class="p">])</span>
+                    <span class="p">}</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"✅ idToken 추출 성공 (웹 로그인)"</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">idToken</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="viewcontroller--viewmodel--result--inputoutput">VIewController + ViewModel + Result + Input/Output</h3>
+<h3 id="viewcontroller-2">ViewController</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+<span class="kd">import</span> <span class="kt">RxSwift</span>
+
+<span class="kd">import</span> <span class="kt">RxKakaoSDKAuth</span>
+<span class="kd">import</span> <span class="kt">KakaoSDKAuth</span>
+
+<span class="kd">import</span> <span class="kt">RxKakaoSDKUser</span>
+<span class="kd">import</span> <span class="kt">KakaoSDKUser</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">LoginViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="k">let</span> <span class="nv">disposeBag</span> <span class="o">=</span> <span class="kt">DisposeBag</span><span class="p">()</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">viewModel</span> <span class="o">=</span> <span class="kt">LoginViewModel</span><span class="p">()</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">kakaoLoginTapped</span> <span class="o">=</span> <span class="kt">PublishSubject</span><span class="o">&lt;</span><span class="kt">Void</span><span class="o">&gt;</span><span class="p">()</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">bindViewModel</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">input</span> <span class="o">=</span> <span class="kt">LoginViewModel</span><span class="o">.</span><span class="kt">Input</span><span class="p">(</span><span class="nv">kakaoLoginTapped</span><span class="p">:</span> <span class="n">kakaoLoginTapped</span><span class="o">.</span><span class="nf">asObservable</span><span class="p">())</span>
+        <span class="k">let</span> <span class="nv">output</span> <span class="o">=</span> <span class="n">viewModel</span><span class="o">.</span><span class="nf">transform</span><span class="p">(</span><span class="nv">input</span><span class="p">:</span> <span class="n">input</span><span class="p">)</span>
+        
+        <span class="n">output</span><span class="o">.</span><span class="n">loginResult</span>
+            <span class="o">.</span><span class="nf">observe</span><span class="p">(</span><span class="nv">on</span><span class="p">:</span> <span class="kt">MainScheduler</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">subscribe</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span>
+                <span class="k">switch</span> <span class="n">result</span> <span class="p">{</span>
+                <span class="k">case</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="k">let</span> <span class="nv">token</span><span class="p">):</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"로그인 성공: </span><span class="se">\(</span><span class="n">token</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+                <span class="k">case</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="k">let</span> <span class="nv">error</span><span class="p">):</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"로그인 실패: </span><span class="se">\(</span><span class="n">error</span><span class="o">.</span><span class="n">localizedDescription</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">}</span><span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">kakaoLoginButton</span><span class="p">:</span> <span class="kt">UIButton</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">button</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="o">.</span><span class="n">system</span><span class="p">)</span>
+        <span class="k">var</span> <span class="nv">config</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="o">.</span><span class="kt">Configuration</span><span class="o">.</span><span class="nf">filled</span><span class="p">()</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="kt">UIImage</span><span class="p">(</span><span class="nv">named</span><span class="p">:</span> <span class="s">"Logo Kakao"</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">red</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="nv">green</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="nv">blue</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">imagePlacement</span> <span class="o">=</span> <span class="o">.</span><span class="n">leading</span>    <span class="c1">// 이미지가 텍스트 왼쪽에 위치</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">imagePadding</span> <span class="o">=</span> <span class="mi">20</span>            <span class="c1">// 이미지와 텍스트 사이 간격</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">"카카오로 계속하기"</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">baseForegroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span>
+        <span class="c1">// 폰트 설정</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">titleTextAttributesTransformer</span> <span class="o">=</span> <span class="kt">UIConfigurationTextAttributesTransformer</span> <span class="p">{</span> <span class="n">incoming</span> <span class="k">in</span>
+            <span class="k">var</span> <span class="nv">outgoing</span> <span class="o">=</span> <span class="n">incoming</span>
+            <span class="n">outgoing</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">medium</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">outgoing</span>
+        <span class="p">}</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">clipsToBounds</span> <span class="o">=</span> <span class="kc">true</span>
+        <span class="c1">// 상태에 따라 배경색 바꾸기</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configurationUpdateHandler</span> <span class="o">=</span> <span class="p">{</span> <span class="n">button</span> <span class="k">in</span>
+            <span class="k">var</span> <span class="nv">config</span> <span class="o">=</span> <span class="n">button</span><span class="o">.</span><span class="n">configuration</span>
+            <span class="k">if</span> <span class="n">button</span><span class="o">.</span><span class="n">isHighlighted</span> <span class="p">{</span>
+                <span class="n">config</span><span class="p">?</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">red</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span> <span class="nv">green</span><span class="p">:</span> <span class="mf">0.72</span><span class="p">,</span> <span class="nv">blue</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">)</span> <span class="c1">// 눌렸을 때 진한 노랑</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="n">config</span><span class="p">?</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">red</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="nv">green</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="nv">blue</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">)</span> <span class="c1">// 기본 노랑</span>
+            <span class="p">}</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="p">}</span>
+        <span class="n">button</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="n">handleKakaoLogin</span><span class="p">),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">appleLoginButton</span><span class="p">:</span> <span class="kt">UIButton</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">button</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="o">.</span><span class="n">system</span><span class="p">)</span>
+        <span class="k">var</span> <span class="nv">config</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="o">.</span><span class="kt">Configuration</span><span class="o">.</span><span class="nf">filled</span><span class="p">()</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="kt">UIImage</span><span class="p">(</span><span class="nv">named</span><span class="p">:</span> <span class="s">"Logo Apple"</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">imagePlacement</span> <span class="o">=</span> <span class="o">.</span><span class="n">leading</span>    <span class="c1">// 이미지가 텍스트 왼쪽에 위치</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">imagePadding</span> <span class="o">=</span> <span class="mi">20</span>            <span class="c1">// 이미지와 텍스트 사이 간격</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">"Apple로 계속하기"</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">baseForegroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span>
+        <span class="c1">// 폰트 설정</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">titleTextAttributesTransformer</span> <span class="o">=</span> <span class="kt">UIConfigurationTextAttributesTransformer</span> <span class="p">{</span> <span class="n">incoming</span> <span class="k">in</span>
+            <span class="k">var</span> <span class="nv">outgoing</span> <span class="o">=</span> <span class="n">incoming</span>
+            <span class="n">outgoing</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">medium</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">outgoing</span>
+        <span class="p">}</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">clipsToBounds</span> <span class="o">=</span> <span class="kc">true</span>
+        <span class="c1">// 상태에 따라 배경색 바꾸기</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configurationUpdateHandler</span> <span class="o">=</span> <span class="p">{</span> <span class="n">button</span> <span class="k">in</span>
+            <span class="k">var</span> <span class="nv">config</span> <span class="o">=</span> <span class="n">button</span><span class="o">.</span><span class="n">configuration</span>
+            <span class="k">if</span> <span class="n">button</span><span class="o">.</span><span class="n">isHighlighted</span> <span class="p">{</span>
+                <span class="n">config</span><span class="p">?</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">white</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">)</span> <span class="c1">// 눌렀을 때 약간 회색</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="n">config</span><span class="p">?</span><span class="o">.</span><span class="n">baseBackgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span> <span class="c1">// 원래 흰색</span>
+            <span class="p">}</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="p">}</span>
+        <span class="n">button</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="n">handleAppleLogin</span><span class="p">),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">stackView</span><span class="p">:</span> <span class="kt">UIStackView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="c1">// 카카오로그인버튼, 애플로그이넙튼 -&gt; 스택뷰에 추가</span>
+        <span class="k">let</span> <span class="nv">st</span> <span class="o">=</span> <span class="kt">UIStackView</span><span class="p">(</span><span class="nv">arrangedSubviews</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">kakaoLoginButton</span><span class="p">,</span>
+            <span class="n">appleLoginButton</span>
+        <span class="p">])</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">spacing</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="o">.</span><span class="n">vertical</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">distribution</span> <span class="o">=</span> <span class="o">.</span><span class="n">fillEqually</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">alignment</span> <span class="o">=</span> <span class="o">.</span><span class="n">fill</span>
+        <span class="k">return</span> <span class="n">st</span>
+    <span class="p">}()</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="nf">makeUI</span><span class="p">()</span>
+        <span class="nf">bindViewModel</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// 배경 색상</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="k">#colorLiteral</span><span class="p">(</span><span class="nv">red</span><span class="p">:</span> <span class="mf">0.09411741048</span><span class="p">,</span> <span class="nv">green</span><span class="p">:</span> <span class="mf">0.09411782771</span><span class="p">,</span> <span class="nv">blue</span><span class="p">:</span> <span class="mf">0.102702044</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1">// 스택뷰 -&gt; 뷰에 추가</span>
+        <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="n">stackView</span><span class="p">)</span>
+        <span class="n">stackView</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        
+        <span class="c1">// 오토레이아웃 제약 추가</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">stackView</span><span class="o">.</span><span class="n">centerXAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">centerXAnchor</span><span class="p">),</span>
+            <span class="n">stackView</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">50</span><span class="p">),</span>
+            <span class="n">stackView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="n">stackView</span><span class="o">.</span><span class="n">heightAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalToConstant</span><span class="p">:</span> <span class="mi">130</span><span class="p">)</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@objc</span> <span class="kd">private</span> <span class="kd">func</span> <span class="nf">handleKakaoLogin</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"✅ 카카오 로그인 버튼 눌림"</span><span class="p">)</span>
+        <span class="n">kakaoLoginTapped</span><span class="o">.</span><span class="nf">onNext</span><span class="p">(())</span>
+        <span class="c1">//viewModel.loginWithKakao()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@objc</span> <span class="kd">private</span> <span class="kd">func</span> <span class="nf">handleAppleLogin</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"✅ Apple 로그인 버튼 눌림"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cp">#Preview {</span>
+    <span class="kt">LoginViewController</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="viewmodel-2">ViewModel</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Foundation</span>
+<span class="kd">import</span> <span class="kt">RxSwift</span>
+<span class="kd">import</span> <span class="kt">RxCocoa</span>
+<span class="kd">import</span> <span class="kt">KakaoSDKUser</span>
+<span class="kd">import</span> <span class="kt">RxKakaoSDKUser</span>
+<span class="kd">import</span> <span class="kt">RxKakaoSDKAuth</span>
+<span class="kd">import</span> <span class="kt">KakaoSDKAuth</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">LoginViewModel</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">disposeBag</span> <span class="o">=</span> <span class="kt">DisposeBag</span><span class="p">()</span>
+    
+    <span class="c1">// let loginResult = PublishSubject&lt;Result&lt;String, Error&gt;&gt;()</span>
+    
+    <span class="kd">struct</span> <span class="kt">Input</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">kakaoLoginTapped</span><span class="p">:</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">Void</span><span class="o">&gt;</span>
+    <span class="p">}</span>
+    
+    <span class="kd">struct</span> <span class="kt">Output</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">loginResult</span><span class="p">:</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;&gt;</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">transform</span><span class="p">(</span><span class="nv">input</span><span class="p">:</span> <span class="kt">Input</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Output</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">result</span> <span class="o">=</span> <span class="kt">PublishSubject</span><span class="o">&lt;</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;&gt;</span><span class="p">()</span>
+        
+        <span class="n">input</span><span class="o">.</span><span class="n">kakaoLoginTapped</span>
+            <span class="o">.</span><span class="n">flatMapLatest</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">_</span> <span class="o">-&gt;</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;&gt;</span> <span class="k">in</span>
+                <span class="k">guard</span> <span class="k">let</span> <span class="nv">self</span> <span class="o">=</span> <span class="k">self</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="o">.</span><span class="nf">empty</span><span class="p">()</span> <span class="p">}</span>
+                <span class="k">return</span> <span class="k">self</span><span class="o">.</span><span class="nf">fetchKakaoOpenIdToken</span><span class="p">()</span>
+                    <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span>
+                    <span class="o">.</span><span class="k">catch</span> <span class="p">{</span> <span class="n">error</span> <span class="k">in</span>
+                            <span class="o">.</span><span class="nf">just</span><span class="p">(</span><span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+                    <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="o">.</span><span class="nf">bind</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="n">result</span><span class="p">)</span>
+            <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="kt">Output</span><span class="p">(</span><span class="nv">loginResult</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="nf">asObservable</span><span class="p">())</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">fetchKakaoOpenIdToken</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="kt">UserApi</span><span class="o">.</span><span class="nf">isKakaoTalkLoginAvailable</span><span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UserApi</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="nf">loginWithKakaoTalk</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">oauthToken</span> <span class="k">in</span>
+                    <span class="k">guard</span> <span class="k">let</span> <span class="nv">idToken</span> <span class="o">=</span> <span class="n">oauthToken</span><span class="o">.</span><span class="n">idToken</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="c1">// print("⚠️ idToken이 없습니다")</span>
+                        <span class="k">throw</span> <span class="kt">NSError</span><span class="p">(</span><span class="nv">domain</span><span class="p">:</span> <span class="s">"TokenError"</span><span class="p">,</span> <span class="nv">code</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nv">userInfo</span><span class="p">:</span> <span class="p">[</span><span class="kt">NSLocalizedDescriptionKey</span><span class="p">:</span> <span class="s">"idToken이 없습니다."</span><span class="p">])</span>
+                    <span class="p">}</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"✅ idToken 추출 성공 (앱 로그인)"</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">idToken</span>
+                <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UserApi</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="nf">loginWithKakaoAccount</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">oauthToken</span> <span class="k">in</span>
+                    <span class="k">guard</span> <span class="k">let</span> <span class="nv">idToken</span> <span class="o">=</span> <span class="n">oauthToken</span><span class="o">.</span><span class="n">idToken</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="c1">// print("⚠️ idToken이 없습니다")</span>
+                        <span class="k">throw</span> <span class="kt">NSError</span><span class="p">(</span><span class="nv">domain</span><span class="p">:</span> <span class="s">"TokenError"</span><span class="p">,</span> <span class="nv">code</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nv">userInfo</span><span class="p">:</span> <span class="p">[</span><span class="kt">NSLocalizedDescriptionKey</span><span class="p">:</span> <span class="s">"idToken이 없습니다."</span><span class="p">])</span>
+                    <span class="p">}</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"✅ idToken 추출 성공 (웹 로그인)"</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">idToken</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/CleanArchitecture-SOLID/" class="pagination--pager" title="[CleanArchitecture]-객체 지향 설계의 5원칙 SOLID
+">Previous</a>
+    
+    
+      <a href="/RxSwift-RxSwift-1/" class="pagination--pager" title="[RxSwift]-1. RxSwift란?
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

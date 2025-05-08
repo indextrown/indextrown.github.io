@@ -1,0 +1,62 @@
+<h1 id="클로저-closures">클로저 (Closures)</h1>
+
+<p><strong>명명된 함수 없이 실행할 수 있는 코드 블록이다.</strong><br />
+클로저(Closures)는 코드에서 주변의 값을 전달받아 사용할 수 있는 자체 포함된 기능 블록이다.  <br />
+Swift의 클로저는 다른 프로그래밍 언어에서 클로저, 익명함수, 람다, 블럭과 유사하다. <br />
+Swift의 클로저는 정의된 컨텍스트에서 모든 상수와 변수에 대한 참조를 <strong>캡처하고 저장</strong>할 수 있다. <br />
+이러한 방식으로 캡처된 상수와 변수를 <strong>폐쇄(closing over)</strong>한다고 한다.</p>
+
+<h2 id="클로저-3가지-형태">클로저 3가지 형태</h2>
+
+<ul>
+  <li>
+    <p><strong>전역 함수(Global Functions)</strong>: 이름을 가지며, 어떠한 값도 캡처하지 않는 클로저.</p>
+
+    <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">globalFunction</span> <span class="p">()</span> <span class="p">{</span>
+  	<span class="nf">print</span><span class="p">(</span><span class="s">"전역 함수 실행"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>중첩 함수(Nested Functions)</strong>: 이름을 가지며, 둘러싼 함수에서 값을 캡처할 수 있는 클로저.</p>
+
+    <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">outerFunction</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">number</span> <span class="o">=</span> <span class="mi">10</span>
+      
+    <span class="kd">func</span> <span class="nf">nestedFunction</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"캡처된 값: </span><span class="se">\(</span><span class="n">number</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nf">nestedFunction</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>클로저 표현식(Closure Expressions)</strong>: 주로 컨텍스트에서 값을 캡처할 수 있는 경량 구문으로 작성된, 이름이 없는 클로저.</p>
+
+    <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">closureException</span> <span class="o">=</span> <span class="p">{</span> <span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="k">in</span>
+		<span class="nf">print</span><span class="p">(</span><span class="s">"Hello, </span><span class="se">\(</span><span class="n">name</span><span class="se">)</span><span class="s">!"</span><span class="p">)</span>
+<span class="p">}</span>
+  
+<span class="nf">closureExpression</span><span class="p">(</span><span class="s">"Swift"</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>컨텍스트(context)</strong>: 클로저가 실행되는 환경을 의미한다. 즉 클로저가 정의된 위치에서 사용할 수 있는 변수, 상수, 함수, 객체 등의 <strong>범위(scope)와 상태(state)</strong> 를 포하마는 개념이다.</p>
+
+    <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">number</span> <span class="o">=</span> <span class="mi">10</span> <span class="c1">// 클로저가 캡처할 수 있는 컨텍스트(외부 변수)</span>
+  
+<span class="k">let</span> <span class="nv">closure</span> <span class="o">=</span> <span class="p">{</span>
+  	<span class="nf">print</span><span class="p">(</span><span class="s">"캡처된 값: </span><span class="se">\(</span><span class="n">number</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>	<span class="c1">// number를 컨텍스트에서 가져옴</span>
+<span class="p">}</span>
+  
+<span class="nf">closure</span><span class="p">()</span>		<span class="c1">// 출력: 캡처된 값: 10</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h1 id="reference">Reference</h1>
+
+<ul>
+  <li>https://bbiguduk.gitbook.io/swift/language-guide-1/closures#closure-expressions</li>
+</ul>
+

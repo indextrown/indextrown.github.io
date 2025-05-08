@@ -1,0 +1,709 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[Concurrency] async-await-3">
+    <meta itemprop="description" content="1. 에러 처리      에러를 던지는 비동기 함수 정의        에러를 던질 수 있는 비동기함수 실행시 try await        async 다음에 throws가 와야한다.        try 다음에 await이 와야한다.    // 1func throwingGetImage() async throws -&gt; UIImage? {    // 오래 걸리는 일.., 에러가 던질 수 있는 코드    try await Task.sleep(for: .seconds(2))    return UIImage(systemName: &quot;heart&quot;)}  // 에러를 던질 수 있는 비동기 함수 정의func asyncMethod() async throws -&gt; String {    let result = try await otherMethod()    return result}  // 원칙적 방법Task {    do {        let totalString = try await asyncMethod()        print(totalString)    } catch {        	    }}  let task = Task {    // 1. asyncMethod는 비동기 함수라서 await 붙혀준다    // 2. 에러를 던질 수 있으므로 try 키워드를 붙혀준다    // 3. 원칙적 처리로는 do-catch가 맞지만 처리하지 않아도 된다    // 이유: Task 자체가 에러를 던질 수 있다    let result = try await asyncMethod()    print(result)}  Task {    await task.result}        2. 비동기 함수 실행방법 2가지                  (1) Task 안에서 async 함수 호출        Task {    let image = await getImage()}                            (2) 다른 async 함수 안에서 async 함수 호출 가능(비동기 컨텍스트)        func getImages() async -&gt; [UIImage?] {    let image1 = await getImage()    let image2 = await getImage()    let image3 = await getImage()      	    return [image1, image2, image3]}    Task {    let images = await getImages()}                      3. 언제든지 비동기적인 컨텍스트 만드는 것 가능                  비동기함수는 비동기적인 컨텍스트에서 호출되야한다        func someSyncFunc() {    print(&quot;동기적인 작업 시작&quot;)    Task {        try await Task.sleep(for: .seconds(2))        print(&quot;비동기적인 작업내에서의 작업&quot;)    }    print(&quot;동기함수 작업 종료&quot;)}                      4. 비동기 함수 내에서 비동기 함수 호출          각각의 함수 자체가 중간에 멈췄다가 다시 실행할 수 있다.      순서대로 진행된다.      비동기 함수 내에서 다른 비동기 함수를 호출을 하는것은 현재의 실행 컨텍스트 내에서 실행을 시키는 것이다(취소 전파도 가능하고, 하위 작업을 만드는 것이 아니다).              즉 구조적 동시성이 아니다.        func parentFuncgion() async throws {    // async 함수 내에서 다른 async 함수 호출: 동일한 비동기 컨텍스트 내에서의 실행(작업의 입루)    try await asyncFunction()    try await asyncFunction()    // Task를 사용하여 명시적으로 다른 작업(Task) 생성 가능(구조적 동시성은 아니고 따로 작업을 만든다) 병렬 실행    // 자식 작업의 생성 방식은 아니다    Task {        try await asyncParentFunction()        try await asyncParentFunction()    }            print(&quot;비동기 함수 실행의 종료&quot;)}                    ">
+    <meta itemprop="datePublished" content="2025-02-12T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/Concurrency-async-await-3/" class="u-url" itemprop="url">[Concurrency] async-await-3
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=Concurrency">Concurrency</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-02-12T00:00:00+00:00">February 12, 2025</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <h2 id="1-에러-처리">1. 에러 처리</h2>
+
+<ul>
+  <li>
+    <p>에러를 던지는 비동기 함수 정의</p>
+  </li>
+  <li>
+    <p>에러를 던질 수 있는 비동기함수 실행시 try await</p>
+  </li>
+  <li>
+    <p>async 다음에 throws가 와야한다.</p>
+  </li>
+  <li>
+    <p>try 다음에 await이 와야한다.</p>
+
+    <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 1</span>
+<span class="kd">func</span> <span class="nf">throwingGetImage</span><span class="p">()</span> <span class="k">async</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">UIImage</span><span class="p">?</span> <span class="p">{</span>
+    <span class="c1">// 오래 걸리는 일.., 에러가 던질 수 있는 코드</span>
+    <span class="k">try</span> <span class="k">await</span> <span class="kt">Task</span><span class="o">.</span><span class="nf">sleep</span><span class="p">(</span><span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="nf">seconds</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+    <span class="k">return</span> <span class="kt">UIImage</span><span class="p">(</span><span class="nv">systemName</span><span class="p">:</span> <span class="s">"heart"</span><span class="p">)</span>
+<span class="p">}</span>
+  
+<span class="c1">// 에러를 던질 수 있는 비동기 함수 정의</span>
+<span class="kd">func</span> <span class="nf">asyncMethod</span><span class="p">()</span> <span class="k">async</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">String</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">result</span> <span class="o">=</span> <span class="k">try</span> <span class="k">await</span> <span class="nf">otherMethod</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">result</span>
+<span class="p">}</span>
+  
+<span class="c1">// 원칙적 방법</span>
+<span class="kt">Task</span> <span class="p">{</span>
+    <span class="k">do</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">totalString</span> <span class="o">=</span> <span class="k">try</span> <span class="k">await</span> <span class="nf">asyncMethod</span><span class="p">()</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">totalString</span><span class="p">)</span>
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">{</span>
+        	
+    <span class="p">}</span>
+<span class="p">}</span>
+  
+<span class="k">let</span> <span class="nv">task</span> <span class="o">=</span> <span class="kt">Task</span> <span class="p">{</span>
+    <span class="c1">// 1. asyncMethod는 비동기 함수라서 await 붙혀준다</span>
+    <span class="c1">// 2. 에러를 던질 수 있으므로 try 키워드를 붙혀준다</span>
+    <span class="c1">// 3. 원칙적 처리로는 do-catch가 맞지만 처리하지 않아도 된다</span>
+    <span class="c1">// 이유: Task 자체가 에러를 던질 수 있다</span>
+    <span class="k">let</span> <span class="nv">result</span> <span class="o">=</span> <span class="k">try</span> <span class="k">await</span> <span class="nf">asyncMethod</span><span class="p">()</span>
+    <span class="nf">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="p">}</span>
+  
+<span class="kt">Task</span> <span class="p">{</span>
+    <span class="k">await</span> <span class="n">task</span><span class="o">.</span><span class="n">result</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+
+    <h2 id="2-비동기-함수-실행방법-2가지">2. 비동기 함수 실행방법 2가지</h2>
+
+    <ul>
+      <li>
+        <p>(1) Task 안에서 async 함수 호출</p>
+
+        <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">Task</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">image</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">getImage</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>(2) 다른 async 함수 안에서 async 함수 호출 가능(비동기 컨텍스트)</p>
+
+        <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">getImages</span><span class="p">()</span> <span class="k">async</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">UIImage</span><span class="p">?]</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">image1</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">getImage</span><span class="p">()</span>
+    <span class="k">let</span> <span class="nv">image2</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">getImage</span><span class="p">()</span>
+    <span class="k">let</span> <span class="nv">image3</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">getImage</span><span class="p">()</span>
+      	
+    <span class="k">return</span> <span class="p">[</span><span class="n">image1</span><span class="p">,</span> <span class="n">image2</span><span class="p">,</span> <span class="n">image3</span><span class="p">]</span>
+<span class="p">}</span>
+    
+<span class="kt">Task</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">images</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">getImages</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+
+    <h2 id="3-언제든지-비동기적인-컨텍스트-만드는-것-가능">3. 언제든지 비동기적인 컨텍스트 만드는 것 가능</h2>
+
+    <ul>
+      <li>
+        <p>비동기함수는 비동기적인 컨텍스트에서 호출되야한다</p>
+
+        <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">someSyncFunc</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"동기적인 작업 시작"</span><span class="p">)</span>
+    <span class="kt">Task</span> <span class="p">{</span>
+        <span class="k">try</span> <span class="k">await</span> <span class="kt">Task</span><span class="o">.</span><span class="nf">sleep</span><span class="p">(</span><span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="nf">seconds</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"비동기적인 작업내에서의 작업"</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"동기함수 작업 종료"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+
+    <h2 id="4-비동기-함수-내에서-비동기-함수-호출">4. 비동기 함수 내에서 비동기 함수 호출</h2>
+
+    <ul>
+      <li>각각의 함수 자체가 중간에 멈췄다가 다시 실행할 수 있다.</li>
+      <li>순서대로 진행된다.</li>
+      <li>비동기 함수 내에서 다른 비동기 함수를 호출을 하는것은 현재의 실행 컨텍스트 내에서 실행을 시키는 것이다(취소 전파도 가능하고, 하위 작업을 만드는 것이 아니다).</li>
+      <li>
+        <p>즉 구조적 동시성이 아니다.</p>
+
+        <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">parentFuncgion</span><span class="p">()</span> <span class="k">async</span> <span class="k">throws</span> <span class="p">{</span>
+    <span class="c1">// async 함수 내에서 다른 async 함수 호출: 동일한 비동기 컨텍스트 내에서의 실행(작업의 입루)</span>
+    <span class="k">try</span> <span class="k">await</span> <span class="nf">asyncFunction</span><span class="p">()</span>
+    <span class="k">try</span> <span class="k">await</span> <span class="nf">asyncFunction</span><span class="p">()</span>
+
+    <span class="c1">// Task를 사용하여 명시적으로 다른 작업(Task) 생성 가능(구조적 동시성은 아니고 따로 작업을 만든다) 병렬 실행</span>
+    <span class="c1">// 자식 작업의 생성 방식은 아니다</span>
+    <span class="kt">Task</span> <span class="p">{</span>
+        <span class="k">try</span> <span class="k">await</span> <span class="nf">asyncParentFunction</span><span class="p">()</span>
+        <span class="k">try</span> <span class="k">await</span> <span class="nf">asyncParentFunction</span><span class="p">()</span>
+    <span class="p">}</span>
+        
+    <span class="nf">print</span><span class="p">(</span><span class="s">"비동기 함수 실행의 종료"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/Concurrency-async-await-2/" class="pagination--pager" title="[Concurrency] async-await-2
+">Previous</a>
+    
+    
+      <a href="/%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-%EC%9D%B8%EC%A0%91%ED%96%89%EB%A0%AC/" class="pagination--pager" title="[알고리즘] 인접행렬
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

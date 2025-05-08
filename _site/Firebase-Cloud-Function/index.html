@@ -1,0 +1,851 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[Firebase] cloud functions">
+    <meta itemprop="description" content="Cloud Functions  Cloud Functions는 Firebase의 기능과 HTTP 요청에 의해서 Trigger 되는 이벤트에 응답하여 백엔드 코드를 자동으로 실행시켜주는 서버리스 프레임워크✅ 1. Firebase Cloud Functions 설정  먼저 Firebase CLI를 설치하고 프로젝트에 Cloud Functions를 추가# Firebase CLI 설치 (설치 안 되어 있다면)brew install firebase-cli# 설치가 끝나면 아래 명령어로 정상적으로 설치되었는지 확인firebase --version# Firebase 로그인firebase login# Firebase Functions 초기화firebase init functions# 환경변수 추가 (필요할 경우)echo &#39;export PATH=&quot;/opt/homebrew/bin:$PATH&quot;&#39; &gt;&gt; ~/.zshrcsource ~/.zshrc✅ 2. (Gmail + Nodemailer 사용)  Google 앱 비밀번호에서 비밀번호를 생성  Gmail -&gt; 설정 -&gt; 전달 및 POP/IMAP -&gt; IMAP 사용✅ 3. Cloud Functions 코드 작성 (index.js)  Gmail + Nodemailer를 활용  ✅ 닉네임이 처음 생성될 때만 이메일 전송 + 구글 시트 추가  ✅ 닉네임이 변경되거나 다른 정보가 변경될 경우, 이메일 없이 시트만 업데이트  ✅ 유저가 삭제되면 ‘탈퇴’로 표시const { onValueUpdated, onValueDeleted } = require(&quot;firebase-functions/v2/database&quot;);const admin = require(&quot;firebase-admin&quot;);const { google } = require(&quot;googleapis&quot;);const nodemailer = require(&quot;nodemailer&quot;);admin.initializeApp();// ✅ Gmail 설정 (앱 비밀번호 사용)const GMAIL_EMAIL = &quot;indextrown@gmail.com&quot;;const GMAIL_PASSWORD = &quot;&quot;;// ✅ Nodemailer 설정const transporter = nodemailer.createTransport({    host: &quot;smtp.gmail.com&quot;,    port: 465,    secure: true,    auth: {        user: GMAIL_EMAIL,        pass: GMAIL_PASSWORD    },    tls: {        rejectUnauthorized: false    }});// ✅ Google Sheets API 설정const SHEET_ID = &quot;&quot;;const SCOPES = [&quot;https://www.googleapis.com/auth/spreadsheets&quot;];const keyFilePath = &quot;/workspace/codeloungeusers-a47a950f7b06.json&quot;;async function getGoogleSheetsClient() {    const auth = new google.auth.GoogleAuth({        keyFile: keyFilePath,        scopes: SCOPES    });    return google.sheets({ version: &quot;v4&quot;, auth });}// ✅ 유저 정보를 구글 시트에 업데이트 (닉네임 변경 시 이메일 전송 X)async function updateUserInGoogleSheet(userData) {    try {        const sheets = await getGoogleSheetsClient();                const readRes = await sheets.spreadsheets.values.get({            spreadsheetId: SHEET_ID,            range: &quot;Users!A:G&quot;        });        let values = readRes.data.values || [];        let userRowIndex = values.findIndex(row =&gt; row[1] === userData.id);        if (userRowIndex !== -1) {            // ✅ 기존 행 업데이트            values[userRowIndex] = [                userData.nickname,                userData.id,                userData.loginPlatform,                userData.gender,                userData.birthdayDate,                userData.registerDate,                &quot;&quot; // 탈퇴 여부 비움            ];            await sheets.spreadsheets.values.update({                spreadsheetId: SHEET_ID,                range: `Users!A${userRowIndex + 1}:G${userRowIndex + 1}`,                valueInputOption: &quot;RAW&quot;,                resource: { values: [values[userRowIndex]] }            });            console.log(`✅ 구글 시트 업데이트 완료: ${userData.id}`);        } else {            console.log(`⚠️ 업데이트할 유저를 찾을 수 없음: ${userData.id}`);        }    } catch (error) {        console.error(&quot;❌ 구글 시트 업데이트 오류:&quot;, error);    }}// ✅ 유저가 처음 닉네임을 설정할 때 이메일 전송 &amp; 시트에 추가async function addUserToGoogleSheet(userData) {    try {        const sheets = await getGoogleSheetsClient();        await sheets.spreadsheets.values.append({            spreadsheetId: SHEET_ID,            range: &quot;Users!A:G&quot;,            valueInputOption: &quot;RAW&quot;,            resource: { values: [[                userData.nickname,                userData.id,                userData.loginPlatform,                userData.gender,                userData.birthdayDate,                userData.registerDate,                &quot;&quot; // 신규 가입이므로 탈퇴 X            ]] }        });        console.log(`✅ 새로운 유저 추가: ${userData.id}`);        // ✅ 관리자에게 이메일 전송        const mailOptions = {            from: GMAIL_EMAIL,            to: &quot;indextrown@gmail.com&quot;,            subject: &quot;[코드라운지] 새 사용자가 가입했습니다.&quot;,            text: `📢 새 사용자 정보:닉네임: ${userData.nickname}ID: ${userData.id}플랫폼: ${userData.loginPlatform}성별: ${userData.gender}생일: ${userData.birthdayDate}가입 날짜: ${userData.registerDate}`        };        await transporter.sendMail(mailOptions);        console.log(&quot;✅ 관리자에게 메일 전송 성공!&quot;);    } catch (error) {        console.error(&quot;❌ 유저 추가 오류:&quot;, error);    }}// ✅ 유저 삭제 감지 → 구글 시트에서 &quot;탈퇴&quot;로 표시async function markUserAsDeleted(userId) {    try {        const sheets = await getGoogleSheetsClient();                const readRes = await sheets.spreadsheets.values.get({            spreadsheetId: SHEET_ID,            range: &quot;Users!A:G&quot;        });        let values = readRes.data.values || [];        let userRowIndex = values.findIndex(row =&gt; row[1] === userId);        if (userRowIndex !== -1) {            values[userRowIndex][6] = &quot;탈퇴&quot;;             await sheets.spreadsheets.values.update({                spreadsheetId: SHEET_ID,                range: `Users!A${userRowIndex + 1}:G${userRowIndex + 1}`,                valueInputOption: &quot;RAW&quot;,                resource: { values: [values[userRowIndex]] }            });            console.log(`🚨 유저 삭제 감지 - 탈퇴 처리 완료: ${userId}`);        } else {            console.log(`⚠️ 삭제된 유저를 찾을 수 없음: ${userId}`);        }    } catch (error) {        console.error(&quot;❌ 구글 시트 탈퇴 처리 오류:&quot;, error);    }}// ✅ 닉네임이 처음 생성될 때만 이메일 전송 &amp; 시트 추가exports.addNewUser = onValueUpdated(&quot;/Users/{userId}&quot;, async (event) =&gt; {    const beforeData = event.data.before.val();    const afterData = event.data.after.val();    if (!afterData) return console.error(&quot;❌ 오류: 데이터 없음&quot;);    // ✅ 닉네임이 처음 설정될 때만 이메일 발송    if ((!beforeData || !beforeData.nickname) &amp;&amp; afterData.nickname) {        console.log(`📢 새로운 닉네임 생성 감지: ${afterData.nickname}`);        await addUserToGoogleSheet(afterData);    } else {        console.log(`ℹ️ 기존 유저 정보 업데이트 감지: ${afterData.id}`);        await updateUserInGoogleSheet(afterData);    }});// ✅ 유저 삭제 감지 (삭제되면 &quot;탈퇴&quot;로 업데이트)exports.markUserDeletedInSheet = onValueDeleted(&quot;/Users/{userId}&quot;, async (event) =&gt; {    const userId = event.params.userId;    console.log(`🚨 유저 삭제 감지: ${userId}`);    await markUserAsDeleted(userId);});✅ 4. 버전 문제 해결  firebase –version  npm list firebase-functionsfunctions@ /Users/kimdonghyeon/functions└── firebase-functions@4.3.0// firebase-functions@4.3.0이면 2nd Gen (v4.x) 사용 중// firebase-functions@3.26.0이면 1st Gen (v3.x) 사용 중✅ 5. 구글 스프레드 시트5-1  googleapis 모듈 설치 필요# nvm을 사용하여 Node.js 22로 변경brew install nvm# 터미널 재시작 후 Node.js 22 설치nvm install 22# Node.js 22로 버전 변경nvm use 22# 현재 버전 확인node -v# googleapis 설치npm install googleapis📌 Firebase 환경 변수에 JSON 키 저장firebase functions:config:set google_sheets.service_account_json=&quot;$(cat service-account.json)&quot;  ⚠️ Firebase 환경 변수 업데이트 후 Functions를 다시 배포해야 함    firebase deploy --only functions        📌 설정이 정상적으로 저장되었는지 확인하는 방법:    firebase functions:config:get      ✅ 6. 구글 시트 연동 및 api(json)발급은 아래 링크 참고  https://velog.io/@junsugi/Google-Sheet-연동하기-feat.-Google-API">
+    <meta itemprop="datePublished" content="2025-01-30T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/Firebase-Cloud-Function/" class="u-url" itemprop="url">[Firebase] cloud functions
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=Firebase">Firebase</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-01-30T00:00:00+00:00">January 30, 2025</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <h1 id="cloud-functions">Cloud Functions</h1>
+<ul>
+  <li>Cloud Functions는 Firebase의 기능과 HTTP 요청에 의해서 Trigger 되는 이벤트에 응답하여 백엔드 코드를 자동으로 실행시켜주는 서버리스 프레임워크</li>
+</ul>
+
+<h2 id="-1-firebase-cloud-functions-설정">✅ 1. Firebase Cloud Functions 설정</h2>
+<ul>
+  <li>먼저 Firebase CLI를 설치하고 프로젝트에 Cloud Functions를 추가</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Firebase CLI 설치 (설치 안 되어 있다면)</span>
+brew <span class="nb">install </span>firebase-cli
+
+<span class="c"># 설치가 끝나면 아래 명령어로 정상적으로 설치되었는지 확인</span>
+firebase <span class="nt">--version</span>
+
+<span class="c"># Firebase 로그인</span>
+firebase login
+
+<span class="c"># Firebase Functions 초기화</span>
+firebase init functions
+
+<span class="c"># 환경변수 추가 (필요할 경우)</span>
+<span class="nb">echo</span> <span class="s1">'export PATH="/opt/homebrew/bin:$PATH"'</span> <span class="o">&gt;&gt;</span> ~/.zshrc
+<span class="nb">source</span> ~/.zshrc
+</code></pre></div></div>
+
+<h2 id="-2-gmail--nodemailer-사용">✅ 2. (Gmail + Nodemailer 사용)</h2>
+<ul>
+  <li>Google 앱 비밀번호에서 비밀번호를 생성</li>
+  <li>Gmail -&gt; 설정 -&gt; 전달 및 POP/IMAP -&gt; IMAP 사용</li>
+</ul>
+
+<h2 id="-3-cloud-functions-코드-작성-indexjs">✅ 3. Cloud Functions 코드 작성 (index.js)</h2>
+<ul>
+  <li>Gmail + Nodemailer를 활용</li>
+  <li>✅ 닉네임이 처음 생성될 때만 이메일 전송 + 구글 시트 추가</li>
+  <li>✅ 닉네임이 변경되거나 다른 정보가 변경될 경우, 이메일 없이 시트만 업데이트</li>
+  <li>✅ 유저가 삭제되면 ‘탈퇴’로 표시</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="p">{</span> <span class="nx">onValueUpdated</span><span class="p">,</span> <span class="nx">onValueDeleted</span> <span class="p">}</span> <span class="o">=</span> <span class="nf">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">firebase-functions/v2/database</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">admin</span> <span class="o">=</span> <span class="nf">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">firebase-admin</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">const</span> <span class="p">{</span> <span class="nx">google</span> <span class="p">}</span> <span class="o">=</span> <span class="nf">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">googleapis</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">nodemailer</span> <span class="o">=</span> <span class="nf">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">nodemailer</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="nx">admin</span><span class="p">.</span><span class="nf">initializeApp</span><span class="p">();</span>
+
+<span class="c1">// ✅ Gmail 설정 (앱 비밀번호 사용)</span>
+<span class="kd">const</span> <span class="nx">GMAIL_EMAIL</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">indextrown@gmail.com</span><span class="dl">"</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">GMAIL_PASSWORD</span> <span class="o">=</span> <span class="dl">""</span><span class="p">;</span>
+
+<span class="c1">// ✅ Nodemailer 설정</span>
+<span class="kd">const</span> <span class="nx">transporter</span> <span class="o">=</span> <span class="nx">nodemailer</span><span class="p">.</span><span class="nf">createTransport</span><span class="p">({</span>
+    <span class="na">host</span><span class="p">:</span> <span class="dl">"</span><span class="s2">smtp.gmail.com</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">port</span><span class="p">:</span> <span class="mi">465</span><span class="p">,</span>
+    <span class="na">secure</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="na">auth</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">user</span><span class="p">:</span> <span class="nx">GMAIL_EMAIL</span><span class="p">,</span>
+        <span class="na">pass</span><span class="p">:</span> <span class="nx">GMAIL_PASSWORD</span>
+    <span class="p">},</span>
+    <span class="na">tls</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">rejectUnauthorized</span><span class="p">:</span> <span class="kc">false</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="c1">// ✅ Google Sheets API 설정</span>
+<span class="kd">const</span> <span class="nx">SHEET_ID</span> <span class="o">=</span> <span class="dl">""</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">SCOPES</span> <span class="o">=</span> <span class="p">[</span><span class="dl">"</span><span class="s2">https://www.googleapis.com/auth/spreadsheets</span><span class="dl">"</span><span class="p">];</span>
+<span class="kd">const</span> <span class="nx">keyFilePath</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">/workspace/codeloungeusers-a47a950f7b06.json</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="k">async</span> <span class="kd">function</span> <span class="nf">getGoogleSheetsClient</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">auth</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nc">GoogleAuth</span><span class="p">({</span>
+        <span class="na">keyFile</span><span class="p">:</span> <span class="nx">keyFilePath</span><span class="p">,</span>
+        <span class="na">scopes</span><span class="p">:</span> <span class="nx">SCOPES</span>
+    <span class="p">});</span>
+    <span class="k">return</span> <span class="nx">google</span><span class="p">.</span><span class="nf">sheets</span><span class="p">({</span> <span class="na">version</span><span class="p">:</span> <span class="dl">"</span><span class="s2">v4</span><span class="dl">"</span><span class="p">,</span> <span class="nx">auth</span> <span class="p">});</span>
+<span class="p">}</span>
+
+<span class="c1">// ✅ 유저 정보를 구글 시트에 업데이트 (닉네임 변경 시 이메일 전송 X)</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nf">updateUserInGoogleSheet</span><span class="p">(</span><span class="nx">userData</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">try</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">sheets</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">getGoogleSheetsClient</span><span class="p">();</span>
+        
+        <span class="kd">const</span> <span class="nx">readRes</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">sheets</span><span class="p">.</span><span class="nx">spreadsheets</span><span class="p">.</span><span class="nx">values</span><span class="p">.</span><span class="nf">get</span><span class="p">({</span>
+            <span class="na">spreadsheetId</span><span class="p">:</span> <span class="nx">SHEET_ID</span><span class="p">,</span>
+            <span class="na">range</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Users!A:G</span><span class="dl">"</span>
+        <span class="p">});</span>
+
+        <span class="kd">let</span> <span class="nx">values</span> <span class="o">=</span> <span class="nx">readRes</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">values</span> <span class="o">||</span> <span class="p">[];</span>
+        <span class="kd">let</span> <span class="nx">userRowIndex</span> <span class="o">=</span> <span class="nx">values</span><span class="p">.</span><span class="nf">findIndex</span><span class="p">(</span><span class="nx">row</span> <span class="o">=&gt;</span> <span class="nx">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">===</span> <span class="nx">userData</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+
+        <span class="k">if </span><span class="p">(</span><span class="nx">userRowIndex</span> <span class="o">!==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// ✅ 기존 행 업데이트</span>
+            <span class="nx">values</span><span class="p">[</span><span class="nx">userRowIndex</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nx">userData</span><span class="p">.</span><span class="nx">nickname</span><span class="p">,</span>
+                <span class="nx">userData</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+                <span class="nx">userData</span><span class="p">.</span><span class="nx">loginPlatform</span><span class="p">,</span>
+                <span class="nx">userData</span><span class="p">.</span><span class="nx">gender</span><span class="p">,</span>
+                <span class="nx">userData</span><span class="p">.</span><span class="nx">birthdayDate</span><span class="p">,</span>
+                <span class="nx">userData</span><span class="p">.</span><span class="nx">registerDate</span><span class="p">,</span>
+                <span class="dl">""</span> <span class="c1">// 탈퇴 여부 비움</span>
+            <span class="p">];</span>
+
+            <span class="k">await</span> <span class="nx">sheets</span><span class="p">.</span><span class="nx">spreadsheets</span><span class="p">.</span><span class="nx">values</span><span class="p">.</span><span class="nf">update</span><span class="p">({</span>
+                <span class="na">spreadsheetId</span><span class="p">:</span> <span class="nx">SHEET_ID</span><span class="p">,</span>
+                <span class="na">range</span><span class="p">:</span> <span class="s2">`Users!A</span><span class="p">${</span><span class="nx">userRowIndex</span> <span class="o">+</span> <span class="mi">1</span><span class="p">}</span><span class="s2">:G</span><span class="p">${</span><span class="nx">userRowIndex</span> <span class="o">+</span> <span class="mi">1</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span>
+                <span class="na">valueInputOption</span><span class="p">:</span> <span class="dl">"</span><span class="s2">RAW</span><span class="dl">"</span><span class="p">,</span>
+                <span class="na">resource</span><span class="p">:</span> <span class="p">{</span> <span class="na">values</span><span class="p">:</span> <span class="p">[</span><span class="nx">values</span><span class="p">[</span><span class="nx">userRowIndex</span><span class="p">]]</span> <span class="p">}</span>
+            <span class="p">});</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="s2">`✅ 구글 시트 업데이트 완료: </span><span class="p">${</span><span class="nx">userData</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="s2">`⚠️ 업데이트할 유저를 찾을 수 없음: </span><span class="p">${</span><span class="nx">userData</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">catch </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nf">error</span><span class="p">(</span><span class="dl">"</span><span class="s2">❌ 구글 시트 업데이트 오류:</span><span class="dl">"</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// ✅ 유저가 처음 닉네임을 설정할 때 이메일 전송 &amp; 시트에 추가</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nf">addUserToGoogleSheet</span><span class="p">(</span><span class="nx">userData</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">try</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">sheets</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">getGoogleSheetsClient</span><span class="p">();</span>
+
+        <span class="k">await</span> <span class="nx">sheets</span><span class="p">.</span><span class="nx">spreadsheets</span><span class="p">.</span><span class="nx">values</span><span class="p">.</span><span class="nf">append</span><span class="p">({</span>
+            <span class="na">spreadsheetId</span><span class="p">:</span> <span class="nx">SHEET_ID</span><span class="p">,</span>
+            <span class="na">range</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Users!A:G</span><span class="dl">"</span><span class="p">,</span>
+            <span class="na">valueInputOption</span><span class="p">:</span> <span class="dl">"</span><span class="s2">RAW</span><span class="dl">"</span><span class="p">,</span>
+            <span class="na">resource</span><span class="p">:</span> <span class="p">{</span> <span class="na">values</span><span class="p">:</span> <span class="p">[[</span>
+                <span class="nx">userData</span><span class="p">.</span><span class="nx">nickname</span><span class="p">,</span>
+                <span class="nx">userData</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+                <span class="nx">userData</span><span class="p">.</span><span class="nx">loginPlatform</span><span class="p">,</span>
+                <span class="nx">userData</span><span class="p">.</span><span class="nx">gender</span><span class="p">,</span>
+                <span class="nx">userData</span><span class="p">.</span><span class="nx">birthdayDate</span><span class="p">,</span>
+                <span class="nx">userData</span><span class="p">.</span><span class="nx">registerDate</span><span class="p">,</span>
+                <span class="dl">""</span> <span class="c1">// 신규 가입이므로 탈퇴 X</span>
+            <span class="p">]]</span> <span class="p">}</span>
+        <span class="p">});</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="s2">`✅ 새로운 유저 추가: </span><span class="p">${</span><span class="nx">userData</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+
+        <span class="c1">// ✅ 관리자에게 이메일 전송</span>
+        <span class="kd">const</span> <span class="nx">mailOptions</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="na">from</span><span class="p">:</span> <span class="nx">GMAIL_EMAIL</span><span class="p">,</span>
+            <span class="na">to</span><span class="p">:</span> <span class="dl">"</span><span class="s2">indextrown@gmail.com</span><span class="dl">"</span><span class="p">,</span>
+            <span class="na">subject</span><span class="p">:</span> <span class="dl">"</span><span class="s2">[코드라운지] 새 사용자가 가입했습니다.</span><span class="dl">"</span><span class="p">,</span>
+            <span class="na">text</span><span class="p">:</span> <span class="s2">`📢 새 사용자 정보:
+닉네임: </span><span class="p">${</span><span class="nx">userData</span><span class="p">.</span><span class="nx">nickname</span><span class="p">}</span><span class="s2">
+ID: </span><span class="p">${</span><span class="nx">userData</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">
+플랫폼: </span><span class="p">${</span><span class="nx">userData</span><span class="p">.</span><span class="nx">loginPlatform</span><span class="p">}</span><span class="s2">
+성별: </span><span class="p">${</span><span class="nx">userData</span><span class="p">.</span><span class="nx">gender</span><span class="p">}</span><span class="s2">
+생일: </span><span class="p">${</span><span class="nx">userData</span><span class="p">.</span><span class="nx">birthdayDate</span><span class="p">}</span><span class="s2">
+가입 날짜: </span><span class="p">${</span><span class="nx">userData</span><span class="p">.</span><span class="nx">registerDate</span><span class="p">}</span><span class="s2">`</span>
+        <span class="p">};</span>
+
+        <span class="k">await</span> <span class="nx">transporter</span><span class="p">.</span><span class="nf">sendMail</span><span class="p">(</span><span class="nx">mailOptions</span><span class="p">);</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">✅ 관리자에게 메일 전송 성공!</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">catch </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nf">error</span><span class="p">(</span><span class="dl">"</span><span class="s2">❌ 유저 추가 오류:</span><span class="dl">"</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// ✅ 유저 삭제 감지 → 구글 시트에서 "탈퇴"로 표시</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nf">markUserAsDeleted</span><span class="p">(</span><span class="nx">userId</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">try</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">sheets</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">getGoogleSheetsClient</span><span class="p">();</span>
+        
+        <span class="kd">const</span> <span class="nx">readRes</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">sheets</span><span class="p">.</span><span class="nx">spreadsheets</span><span class="p">.</span><span class="nx">values</span><span class="p">.</span><span class="nf">get</span><span class="p">({</span>
+            <span class="na">spreadsheetId</span><span class="p">:</span> <span class="nx">SHEET_ID</span><span class="p">,</span>
+            <span class="na">range</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Users!A:G</span><span class="dl">"</span>
+        <span class="p">});</span>
+
+        <span class="kd">let</span> <span class="nx">values</span> <span class="o">=</span> <span class="nx">readRes</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">values</span> <span class="o">||</span> <span class="p">[];</span>
+        <span class="kd">let</span> <span class="nx">userRowIndex</span> <span class="o">=</span> <span class="nx">values</span><span class="p">.</span><span class="nf">findIndex</span><span class="p">(</span><span class="nx">row</span> <span class="o">=&gt;</span> <span class="nx">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">===</span> <span class="nx">userId</span><span class="p">);</span>
+
+        <span class="k">if </span><span class="p">(</span><span class="nx">userRowIndex</span> <span class="o">!==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">values</span><span class="p">[</span><span class="nx">userRowIndex</span><span class="p">][</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">탈퇴</span><span class="dl">"</span><span class="p">;</span> 
+
+            <span class="k">await</span> <span class="nx">sheets</span><span class="p">.</span><span class="nx">spreadsheets</span><span class="p">.</span><span class="nx">values</span><span class="p">.</span><span class="nf">update</span><span class="p">({</span>
+                <span class="na">spreadsheetId</span><span class="p">:</span> <span class="nx">SHEET_ID</span><span class="p">,</span>
+                <span class="na">range</span><span class="p">:</span> <span class="s2">`Users!A</span><span class="p">${</span><span class="nx">userRowIndex</span> <span class="o">+</span> <span class="mi">1</span><span class="p">}</span><span class="s2">:G</span><span class="p">${</span><span class="nx">userRowIndex</span> <span class="o">+</span> <span class="mi">1</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span>
+                <span class="na">valueInputOption</span><span class="p">:</span> <span class="dl">"</span><span class="s2">RAW</span><span class="dl">"</span><span class="p">,</span>
+                <span class="na">resource</span><span class="p">:</span> <span class="p">{</span> <span class="na">values</span><span class="p">:</span> <span class="p">[</span><span class="nx">values</span><span class="p">[</span><span class="nx">userRowIndex</span><span class="p">]]</span> <span class="p">}</span>
+            <span class="p">});</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="s2">`🚨 유저 삭제 감지 - 탈퇴 처리 완료: </span><span class="p">${</span><span class="nx">userId</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="s2">`⚠️ 삭제된 유저를 찾을 수 없음: </span><span class="p">${</span><span class="nx">userId</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">catch </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nf">error</span><span class="p">(</span><span class="dl">"</span><span class="s2">❌ 구글 시트 탈퇴 처리 오류:</span><span class="dl">"</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// ✅ 닉네임이 처음 생성될 때만 이메일 전송 &amp; 시트 추가</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">addNewUser</span> <span class="o">=</span> <span class="nf">onValueUpdated</span><span class="p">(</span><span class="dl">"</span><span class="s2">/Users/{userId}</span><span class="dl">"</span><span class="p">,</span> <span class="k">async </span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">beforeData</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">before</span><span class="p">.</span><span class="nf">val</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">afterData</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">after</span><span class="p">.</span><span class="nf">val</span><span class="p">();</span>
+
+    <span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="nx">afterData</span><span class="p">)</span> <span class="k">return</span> <span class="nx">console</span><span class="p">.</span><span class="nf">error</span><span class="p">(</span><span class="dl">"</span><span class="s2">❌ 오류: 데이터 없음</span><span class="dl">"</span><span class="p">);</span>
+
+    <span class="c1">// ✅ 닉네임이 처음 설정될 때만 이메일 발송</span>
+    <span class="k">if </span><span class="p">((</span><span class="o">!</span><span class="nx">beforeData</span> <span class="o">||</span> <span class="o">!</span><span class="nx">beforeData</span><span class="p">.</span><span class="nx">nickname</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">afterData</span><span class="p">.</span><span class="nx">nickname</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="s2">`📢 새로운 닉네임 생성 감지: </span><span class="p">${</span><span class="nx">afterData</span><span class="p">.</span><span class="nx">nickname</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+        <span class="k">await</span> <span class="nf">addUserToGoogleSheet</span><span class="p">(</span><span class="nx">afterData</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="s2">`ℹ️ 기존 유저 정보 업데이트 감지: </span><span class="p">${</span><span class="nx">afterData</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+        <span class="k">await</span> <span class="nf">updateUserInGoogleSheet</span><span class="p">(</span><span class="nx">afterData</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="c1">// ✅ 유저 삭제 감지 (삭제되면 "탈퇴"로 업데이트)</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">markUserDeletedInSheet</span> <span class="o">=</span> <span class="nf">onValueDeleted</span><span class="p">(</span><span class="dl">"</span><span class="s2">/Users/{userId}</span><span class="dl">"</span><span class="p">,</span> <span class="k">async </span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">userId</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">userId</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="s2">`🚨 유저 삭제 감지: </span><span class="p">${</span><span class="nx">userId</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+
+    <span class="k">await</span> <span class="nf">markUserAsDeleted</span><span class="p">(</span><span class="nx">userId</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h2 id="-4-버전-문제-해결">✅ 4. 버전 문제 해결</h2>
+<ul>
+  <li>firebase –version</li>
+  <li>npm list firebase-functions</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>functions@ /Users/kimdonghyeon/functions
+└── firebase-functions@4.3.0
+// firebase-functions@4.3.0이면 2nd Gen <span class="o">(</span>v4.x<span class="o">)</span> 사용 중
+// firebase-functions@3.26.0이면 1st Gen <span class="o">(</span>v3.x<span class="o">)</span> 사용 중
+</code></pre></div></div>
+
+<h2 id="-5-구글-스프레드-시트">✅ 5. 구글 스프레드 시트</h2>
+<h2 id="5-1">5-1</h2>
+<ul>
+  <li>googleapis 모듈 설치 필요</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># nvm을 사용하여 Node.js 22로 변경</span>
+brew <span class="nb">install </span>nvm
+
+<span class="c"># 터미널 재시작 후 Node.js 22 설치</span>
+nvm <span class="nb">install </span>22
+
+<span class="c"># Node.js 22로 버전 변경</span>
+nvm use 22
+
+<span class="c"># 현재 버전 확인</span>
+node <span class="nt">-v</span>
+
+<span class="c"># googleapis 설치</span>
+npm <span class="nb">install </span>googleapis
+</code></pre></div></div>
+
+<h2 id="-firebase-환경-변수에-json-키-저장">📌 Firebase 환경 변수에 JSON 키 저장</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>firebase functions:config:set google_sheets.service_account_json<span class="o">=</span><span class="s2">"</span><span class="si">$(</span><span class="nb">cat </span>service-account.json<span class="si">)</span><span class="s2">"</span>
+</code></pre></div></div>
+<ul>
+  <li>⚠️ Firebase 환경 변수 업데이트 후 Functions를 다시 배포해야 함
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>firebase deploy <span class="nt">--only</span> functions
+</code></pre></div>    </div>
+  </li>
+  <li>📌 설정이 정상적으로 저장되었는지 확인하는 방법:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>firebase functions:config:get
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="-6-구글-시트-연동-및-apijson발급은-아래-링크-참고">✅ 6. 구글 시트 연동 및 api(json)발급은 아래 링크 참고</h2>
+<ul>
+  <li>https://velog.io/@junsugi/Google-Sheet-연동하기-feat.-Google-API</li>
+</ul>
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/SwiftUI-TabView/" class="pagination--pager" title="[SwiftUI] TabView
+">Previous</a>
+    
+    
+      <a href="/%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-%EA%B7%B8%EB%9E%98%ED%94%84%EC%9D%B4%EB%A1%A0/" class="pagination--pager" title="[알고리즘] 그래프 이론
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

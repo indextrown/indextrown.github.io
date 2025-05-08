@@ -1,0 +1,704 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[CleanArchitecture]-클린 아키텍처">
+    <meta itemprop="description" content="Clean Architecture란?로버트 C 마틴(Robert C. Martin), 별명으로는 엉클 밥(Uncle Bob)이 제안한 아키텍처로 소프트웨어를 다양한 계층(Layer)으로 분리해서 다음과 같은 목표를 추구한다  아키텍처는 특정 소프트웨어 라이브러리에 의존하지 않는다.  비즈니스 로직은 UI, DB, 웹 또는 기타 외부 요소 없이 테스트 할 수 있다.  UI는 비즈니스 로직과 분리되어, 시스템 로직을 변경하지 않고도 UI를 교체할 수 있다.  비즈니스 로직은 데이터베이스와 바인딩되어 있지 않다.  비즈니스 로직은 외부 세계(입출력 등)에 대해 아무것도 알지 못한다.  요약하자면, 소프트웨어를 역할별로 레이어를 나누고   각 레이어를 완전히 분리하여 의존성을 낮추는 것  이 클린아키텍처의 핵심이다.  이를 통해 변화에 유연하고 테스트하기 쉬운 구조를 만들 수 있다.왜 아키텍처가 필요한가?개발자는 돈을 받고 코드를 만드는 사람이다.  회서에서 가장 즁요한 것은  낮은 인건비로  결함이 적은 소프트웨어를 빠르게 개발하는 것이다. 하지만 모든 개발자들이 적은 인력으로 유지보수가 가능하면서 결함율이 낮은 소프트웨어를 만들어낼 수 없다.  오히려 많은 인력을가지고도 유지보수도 못하고 버그는 많이 생기는 소프트웨어를 만든다.  소프트웨어를 만드는 건 누구나 할 수 있지만,  적은 인력으로 유지보수가 쉬운 ‘좋은 소프트웨어’를 만드는 건 어렵다.그렇기 떄문에 좋은 아키텍처 의 개념이 중요하다.  좋은 아키텍처는 변화에 강하고, 유지보수가 쉽고, 테스트가 쉬운 구조를 만드는 데 핵심이 된다.모바일에서의 클린아키텍처    엉클밥의 클린아키텍처 컨셉을 보면 계층을 4개로 분리하였다.  모바일 설계에서의 클린 아키텍처를 적용하기 위한 방법 중 하나로 3Layer 형태로 주로 사용한다.1.Domain Layer  Entity와 UseCase 계층을 묶어 Domain Layer 라고 부른다.  Entity          앱의 핵심 데이터구조이다.        UseCase          핵심 비즈니스 로직이다.      유저 리스트 불러오기      유저 상세 데이터 불러오기      유저를 내부 저장소에 저장하기        Repository 인터페이스          UseCase와 Data Layer(서버 API, 로컬 DB)를 연결해주는 중간 다리 역할이다.      Domain Layer에서 Repository는 인터페이스(Protocol)만 존재한다.      실제 구현은 Data Layer에서 한다.      2. Data Layer  통신 및 데이터 관리 로직을 담당하는 계층이다.  DB, API          실제 데이터의 입출력을 담당한다.        Repository 구현체          데이터를 조정하는데 UseCase가 필요로 하는 데이터 저장/수정하는 기능을 한다.      데이터소스(ex. DB)를 Protocol같은 인터페이스 형태로 참조하기 때문에 데이터 소스 객체를 갈아끼울 수 있는 형태로, 외부 API를 호출하거나 로컬 DB에 접근하거나 테스트를 위한 MockObject로 전환할 수 있다.      3. Presentation Layer  UI표시, 애니메이션, 이벤트 핸들링 같은 UI 관련 모든 처리를 담당하는 계층이다.  View(ViewConroller, View)          UI 화면 표시와 사용자의 터치 이벤트를 수신한다.      화면에 그리는게 어떤 의미인지는 모르고, 어떤 색으로 그리는지와 같은 View적인 요소만 결정한다.      단순히 Presentor(ViewModel)에서 받은 데이터나 상태에 따라 뷰의 표시를 전환한다.        Presenter(ViewModel)          MVP/VIPER라면 Presenter역할, MVVM이라면 ViewModel역할과 동일하다.      사용자의 이벤트에 대한 판단과 대응을 진행한다. 뷰에 그려지는게 어떤 의미인지, 무엇을 그려야하는지 알고 있다.      의존성 규칙클린 아키텍처에서 지켜야 할 규칙으로 의존성 규칙이 있다.  안쪽 원을 향하는 방향이 규칙이므로Data Layer와 Presentation Layer가 Domain Layer를 바라보는 방향으로 의존성 방향이 지켜져야 한다.Reference  https://sunny-maneg.tistory.com/entry/iOS-설계에서의-Clean-Architecture  https://yoojin99.github.io/app/클린-아키텍처/  https://mini-min-dev.tistory.com/284  https://velog.io/@woohm402/clean-architecture-short-summary">
+    <meta itemprop="datePublished" content="2025-03-25T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/CleanArchitecture-CleanArchitecture/" class="u-url" itemprop="url">[CleanArchitecture]-클린 아키텍처
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=CleanArchitecture">CleanArchitecture</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-03-25T00:00:00+00:00">March 25, 2025</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <!-- - 소프트웨어를 **유지보수**하기 쉽고, **테스트 가능**하며 **확장 가능한 구조**로 만드는 아키텍처 설계 원칙이다.
+- 클린 아키텍처의 목적은 더 적은 인력으로 더 결함율이 낮고 더 빠르게 개발할 수 있는 코드를 작성하는 것이다. -->
+
+<h2 id="clean-architecture란">Clean Architecture란?</h2>
+<p>로버트 C 마틴(Robert C. Martin), 별명으로는 엉클 밥(Uncle Bob)이 제안한 아키텍처로 소프트웨어를 다양한 계층(Layer)으로 분리해서 다음과 같은 목표를 추구한다</p>
+<ul>
+  <li>아키텍처는 특정 소프트웨어 라이브러리에 의존하지 않는다.</li>
+  <li><strong>비즈니스 로직</strong>은 UI, DB, 웹 또는 기타 외부 요소 없이 테스트 할 수 있다.</li>
+  <li><strong>UI는 비즈니스 로직과 분리되어</strong>, 시스템 로직을 변경하지 않고도 UI를 교체할 수 있다.</li>
+  <li>비즈니스 로직은 데이터베이스와 바인딩되어 있지 않다.</li>
+  <li>비즈니스 로직은 외부 세계(입출력 등)에 대해 아무것도 알지 못한다.</li>
+</ul>
+
+<blockquote>
+  <p>요약하자면, <strong>소프트웨어를 역할별로 레이어를 나누고</strong>   <br />
+각 레이어를 <strong>완전히 분리하여 의존성을 낮추는 것</strong>  이 클린아키텍처의 핵심이다.  <br />
+이를 통해 변화에 유연하고 테스트하기 쉬운 구조를 만들 수 있다.</p>
+</blockquote>
+
+<h2 id="왜-아키텍처가-필요한가">왜 아키텍처가 필요한가?</h2>
+<p>개발자는 돈을 받고 코드를 만드는 사람이다.  <br />
+회서에서 가장 즁요한 것은</p>
+<ol>
+  <li><strong>낮은 인건비로</strong></li>
+  <li><strong>결함이 적은 소프트웨어를 빠르게 개발</strong>하는 것</li>
+</ol>
+
+<p>이다. 하지만 모든 개발자들이 <strong>적은 인력으로 유지보수가 가능하면서 결함율이 낮은</strong> 소프트웨어를 만들어낼 수 없다.  <br />
+오히려 <strong>많은 인력을가지고도 유지보수도 못하고 버그는 많이 생기는</strong> 소프트웨어를 만든다.</p>
+
+<blockquote>
+  <p>소프트웨어를 만드는 건 누구나 할 수 있지만,  <br />
+<strong>적은 인력으로 유지보수가 쉬운 ‘좋은 소프트웨어’를 만드는 건 어렵다.</strong></p>
+</blockquote>
+
+<p>그렇기 떄문에 <strong>좋은 아키텍처</strong> 의 개념이 중요하다.  <br />
+좋은 아키텍처는 <strong>변화에 강하고, 유지보수가 쉽고, 테스트가 쉬운 구조</strong>를 만드는 데 핵심이 된다.</p>
+
+<h2 id="모바일에서의-클린아키텍처">모바일에서의 클린아키텍처</h2>
+<div style="display: flex; justify-content: space-between;">
+  <img src="/assets/img/2025-03-25-[CleanArchitecture]-CleanArchitecture/clean1.png" alt="clean1" style="width: 50%;" />
+  <img src="/assets/img/2025-03-25-[CleanArchitecture]-CleanArchitecture/clean3.png" alt="clean3" style="width: 50%;" />
+</div>
+
+<p>엉클밥의 클린아키텍처 컨셉을 보면 계층을 4개로 분리하였다.  <br />
+모바일 설계에서의 클린 아키텍처를 적용하기 위한 방법 중 하나로 3Layer 형태로 주로 사용한다.</p>
+
+<h3 id="1domain-layer">1.Domain Layer</h3>
+<ul>
+  <li>Entity와 UseCase 계층을 묶어 Domain Layer 라고 부른다.</li>
+  <li>Entity
+    <ul>
+      <li>앱의 핵심 데이터구조이다.</li>
+    </ul>
+  </li>
+  <li>UseCase
+    <ul>
+      <li>핵심 비즈니스 로직이다.</li>
+      <li>유저 리스트 불러오기</li>
+      <li>유저 상세 데이터 불러오기</li>
+      <li>유저를 내부 저장소에 저장하기</li>
+    </ul>
+  </li>
+  <li>Repository 인터페이스
+    <ul>
+      <li>UseCase와 Data Layer(서버 API, 로컬 DB)를 연결해주는 중간 다리 역할이다.</li>
+      <li>Domain Layer에서 Repository는 인터페이스(Protocol)만 존재한다.</li>
+      <li>실제 구현은 Data Layer에서 한다.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="2-data-layer">2. Data Layer</h3>
+<ul>
+  <li>통신 및 데이터 관리 로직을 담당하는 계층이다.</li>
+  <li>DB, API
+    <ul>
+      <li>실제 데이터의 입출력을 담당한다.</li>
+    </ul>
+  </li>
+  <li>Repository 구현체
+    <ul>
+      <li>데이터를 조정하는데 UseCase가 필요로 하는 데이터 저장/수정하는 기능을 한다.</li>
+      <li>데이터소스(ex. DB)를 Protocol같은 인터페이스 형태로 참조하기 때문에 데이터 소스 객체를 갈아끼울 수 있는 형태로, 외부 API를 호출하거나 로컬 DB에 접근하거나 테스트를 위한 MockObject로 전환할 수 있다.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="3-presentation-layer">3. Presentation Layer</h3>
+<ul>
+  <li>UI표시, 애니메이션, 이벤트 핸들링 같은 UI 관련 모든 처리를 담당하는 계층이다.</li>
+  <li>View(ViewConroller, View)
+    <ul>
+      <li>UI 화면 표시와 사용자의 터치 이벤트를 수신한다.</li>
+      <li>화면에 그리는게 어떤 의미인지는 모르고, 어떤 색으로 그리는지와 같은 View적인 요소만 결정한다.</li>
+      <li>단순히 Presentor(ViewModel)에서 받은 데이터나 상태에 따라 뷰의 표시를 전환한다.</li>
+    </ul>
+  </li>
+  <li>Presenter(ViewModel)
+    <ul>
+      <li>MVP/VIPER라면 Presenter역할, MVVM이라면 ViewModel역할과 동일하다.</li>
+      <li>사용자의 이벤트에 대한 판단과 대응을 진행한다. 뷰에 그려지는게 어떤 의미인지, 무엇을 그려야하는지 알고 있다.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="의존성-규칙">의존성 규칙</h2>
+<p>클린 아키텍처에서 지켜야 할 규칙으로 의존성 규칙이 있다.</p>
+<blockquote>
+  <p>안쪽 원을 향하는 방향이 규칙이므로<br />
+Data Layer와 Presentation Layer가 Domain Layer를 바라보는 방향으로 의존성 방향이 지켜져야 한다.</p>
+</blockquote>
+
+<p><img src="/assets/img/2025-03-25-[CleanArchitecture]-CleanArchitecture/clean4.png" alt="clean4" style="width: 50%;" /></p>
+
+<h2 id="reference">Reference</h2>
+<ul>
+  <li>https://sunny-maneg.tistory.com/entry/iOS-설계에서의-Clean-Architecture</li>
+  <li>https://yoojin99.github.io/app/클린-아키텍처/</li>
+  <li>https://mini-min-dev.tistory.com/284</li>
+  <li>https://velog.io/@woohm402/clean-architecture-short-summary</li>
+</ul>
+
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/AutoLayout-AutoLayout-1/" class="pagination--pager" title="[AutoLayout]-오토레이아웃-1
+">Previous</a>
+    
+    
+      <a href="/CleanArchitecture-SOLID/" class="pagination--pager" title="[CleanArchitecture]-객체 지향 설계의 5원칙 SOLID
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>
