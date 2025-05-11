@@ -4,7 +4,7 @@ tags:
 - RxSwift
 - Combine
 header: 
-  teaser: 
+  teaser: /assets/img/2025-03-25-[RxSwift]-RxSwift-1/image.png
 typora-root-url: ../
 ---
 
