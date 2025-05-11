@@ -1,5 +1,5 @@
 ---
-title: "[RxSwift]-1. RxSwift란?"
+title: "[RxSwift] 1. 반응형 프로그래밍이란?"
 tags: 
 - RxSwift
 header: 
@@ -7,7 +7,9 @@ header:
 typora-root-url: ../
 ---
 
-<img src="/assets/img/2025-03-25-[RxSwift]-RxSwift-1/image.png" alt="clean1" style="width: 70%;">
+<img src="{{ '/assets/img/2025-03-25-[RxSwift]-RxSwift-1/image.png
+
+' | relative_url }}" alt="커스텀셀" width="70%">
 
 
 ## 1. 반응형 프로그래밍이란?
@@ -28,7 +30,7 @@ typora-root-url: ../
 
 ## 2. RxSwift란?
 Reactive Extension/Programming + Swift로, 관찰 가능한 시퀀스를 사용하여 비동기 및 이벤트 기반 프로그램을 구성하기 위한 라이브러리다.  
-  
+
 Swift는 함수형 프로그래밍(Functional Programming) 패러다임을 강조하는 언어이다.   
 이에 RxSwift는 반응형 프로그래밍(Reactive Programming)을 더하여, Swift에서 FRP(Functional Reactive Programming)을 따를 수 있도록 한다.  
 즉 Swift를 반응형 프로그래밍 하는 것이다.
@@ -55,9 +57,35 @@ func doSomethingIncredible(forWho: String) throws -> IncredibleThing
 doSomethingIncredible("me")
     .retry(3)
 ```
-- API 통신을 하다보면, 성공할 때도 있지만 실패할 떄도 분명 존재한다.
+- API 통신을 하다보면, 성공할 때도 있지만 실패할 때도 분명 존재한다.
 - 실패시 단순히 끝나는게 아니라 3번 정도 재시도 할 수 있다면 좋겠지만 재시도 코드는 많이 복잡하고, 재사용하기도 어렵다.
 - RxSwift를 사용하면 retry연산자를 사용해 쉽게 재시도 코드를 작성할 수 있다.
+
+## 4. Combine도 같은 개념이다
+
+Swift에서 RxSwift와 동일한 반응형 프로그래밍을 지원하는 Apple 공식 프레임워크가 Combine이다.
+Cimbine은 iOS 13부터 내장되어 있으며, RxSwift와 거의 동일한 비동기 이벤트 스트림을 처리할 수 있다.
+
+| 개념               | RxSwift                                        | Combine                           |
+| ------------------ | ---------------------------------------------- | --------------------------------- |
+| 데이터 스트림      | `Observable`                                   | `Publisher`                       |
+| 구독               | `subscribe()`                                  | `sink()`                          |
+| 데이터 조작        | `map`, `filter`, `flatMap`, `combineLatest` 등 | 동일                              |
+| 메모리 해제        | `DisposeBag`                                   | `AnyCancellable` (store in `Set`) |
+| 비동기 이벤트 처리 | 가능                                           | 가능                              |
+
+```swift
+import Combine
+
+// 텍스트 필드 두 개를 결합해서 라벨에 표시
+Publishers.CombineLatest(firstNamePublisher, lastNamePublisher)
+    .map { "Greetings, \($0) \($1)" }
+    .sink { [weak self] in self?.greetingLabel.text = $0 }
+    .store(in: &cancellables)
+
+```
+
+
 
 ## Reference
 - https://velog.io/@gnwjd309/RxSwift-1

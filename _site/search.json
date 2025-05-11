@@ -49,7 +49,7 @@
         } ,
     
         {
-        "title"    : "[RxSwift2]-RxSwift개념",
+        "title"    : "[RxSwift] 2. RxSwift개념",
         "category" : "",
         "tags"     : "RxSwift",
         "url"      : "/RxSwift-RxSwift-2/",
@@ -57,7 +57,7 @@
         } ,
     
         {
-        "title"    : "[RxSwift]-1. RxSwift란?",
+        "title"    : "[RxSwift] 1. 반응형 프로그래밍이란?",
         "category" : "",
         "tags"     : "RxSwift",
         "url"      : "/RxSwift-RxSwift-1/",

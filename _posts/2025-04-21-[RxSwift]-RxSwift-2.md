@@ -1,5 +1,5 @@
 ---
-title: "[RxSwift2]-RxSwift개념"
+title: "[RxSwift] 2. RxSwift개념"
 tags: 
 - RxSwift
 header: 
@@ -34,6 +34,7 @@ typora-root-url: ../
     - 초기값 필수
     - 구독 시, 가장 최신값 1개를 즉시 전달받음
     - 이후에는 일반 Observable처럼 .onNext 이벤트를 수신
+    
   - PublishSubjcet - 단방향 이벤트
     - 구독 이후 이벤트만 받음(초기값 없음)
     - 주로 이벤트 전달용
@@ -81,6 +82,7 @@ viewModel.title
 ```
 
 4. 비교
+
 ```swift
 // 1. 자동 UI 업데이트 (bind to UI)
 viewModel.username // Observable<String>
