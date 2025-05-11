@@ -41,7 +41,7 @@
         } ,
     
         {
-        "title"    : "[UIKit]-Delegate Pattern란?",
+        "title"    : "[UIKit] Delegate Pattern란?",
         "category" : "",
         "tags"     : "UIKit",
         "url"      : "/UIKit-delegate/",
@@ -94,14 +94,6 @@
         "tags"     : "AutoLayout",
         "url"      : "/AutoLayout-AutoLayout-1/",
         "date"     : "2025-03-25 00:00:00 +0000"
-        } ,
-    
-        {
-        "title"    : "[Uikit] Rest Api앱 만들기-1",
-        "category" : "",
-        "tags"     : "Uikit",
-        "url"      : "/Uikit-RestApi/",
-        "date"     : "2025-03-24 00:00:00 +0000"
         } ,
     
         {

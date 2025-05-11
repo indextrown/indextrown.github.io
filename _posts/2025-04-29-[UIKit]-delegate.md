@@ -1,5 +1,5 @@
 ---
-title: "[UIKit]-Delegate Pattern란?"
+title: "[UIKit] Delegate Pattern란?"
 tags: 
 - UIKit
 header: 
