@@ -57,10 +57,10 @@
         } ,
     
         {
-        "title"    : "[RxSwift] 1. 반응형 프로그래밍이란?",
+        "title"    : "[ReactiveX] 1. 반응형 프로그래밍이란?",
         "category" : "",
-        "tags"     : "RxSwift",
-        "url"      : "/RxSwift-RxSwift-1/",
+        "tags"     : "RxSwift, Combine",
+        "url"      : "/ReactiveX-ReactiveX-1/",
         "date"     : "2025-03-25 00:00:00 +0000"
         } ,
     

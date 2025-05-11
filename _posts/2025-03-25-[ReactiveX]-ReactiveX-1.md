@@ -1,7 +1,8 @@
 ---
-title: "[RxSwift] 1. 반응형 프로그래밍이란?"
+title: "[ReactiveX] 1. 반응형 프로그래밍이란?"
 tags: 
 - RxSwift
+- Combine
 header: 
   teaser: 
 typora-root-url: ../
