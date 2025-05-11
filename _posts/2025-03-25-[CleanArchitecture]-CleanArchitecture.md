@@ -1,5 +1,5 @@
 ---
-title: "[CleanArchitecture]-클린 아키텍처"
+title: "[CleanArchitecture] 클린 아키텍처"
 tags: 
 - CleanArchitecture
 header: 
