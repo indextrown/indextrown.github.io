@@ -15,6 +15,17 @@ typora-root-url: ../
 
 ## Nib으로 커스텀 테이블뷰 구현하기
 
+<table>
+  <tr>
+    <td><img src="{{ '/assets/img/2025-05-08-[UIKit]-tableView3/image-20250509020704480.png' | relative_url }}" alt="커스텀셀1" width="100%"></td>
+    <td><img src="{{ '/assets/img/2025-05-08-[UIKit]-tableView4/image-20250511173004744.png' | relative_url }}" alt="커스텀셀" width="85%"></td>
+  </tr>
+  <tr>
+    <td style="text-align:center;">Storyboard 커스텀 셀</td>
+    <td style="text-align:center;">Nib 커스텀 셀</td>
+  </tr>
+</table>
+
 <img src="{{ '/assets/img/2025-05-08-[UIKit]-tableView4/image-20250511162051512.png' | relative_url }}" alt="커스텀셀" width="70%">
 
 파일만들기 -> Cocoa Toucn -> Nib파일이름, 체크박스 체크로 2개의 파일을 만든다. 그러면 Nib파일과, Swift파일이 생성된다.
