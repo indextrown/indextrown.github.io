@@ -68,8 +68,8 @@ Label 자체는 크기를 가지고 있지 않기 때문에 상단 Label을 늘�
 
 ### 🔚 정리
 
-- **Hugging**: "나는 커지기 싫어"
-- **Compression Resistance**: "나는 작아지기 싫어"
+- **Hugging**: "나는 커지기 싫어"(숫자 높을수록 안커짐)
+- **Compression Resistance**: "나는 작아지기 싫어"(숫자 높을수록 안작아짐)
 - 위 두 값을 적절히 조절해주면, Auto Layout이 충돌 없이 어떤 뷰가 늘어나거나 줄어들지 결정하게 된다.
     <br/>
 
