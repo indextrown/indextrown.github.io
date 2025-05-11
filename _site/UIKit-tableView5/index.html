@@ -396,8 +396,8 @@ checkbox.addEventListener('change', function() {
 
 
   <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="[TableView] 4. Nib으로 커스텀 테이블뷰 구현하기">
-    <meta itemprop="description" content="Nib으로 커스텀 테이블뷰 구현하기                  Storyboard 커스텀 셀    Nib 커스텀 셀  파일만들기 -&gt; Cocoa Toucn -&gt; Nib파일이름, 체크박스 체크로 2개의 파일을 만든다. 그러면 Nib파일과, Swift파일이 생성된다.TitleLabel만들고 ContentView로 드래그하여 Leading, Top, Trailing을 체크해준다. 그리고 이번에는 타이틀 Label의 number of lines를 1로 하자.BodyLabel을 TitleLabel로 드래그하여 Leading, Vertical Spacing 체크해준다. 그리고 BodyLabel을 ContentView로 드래그하여 Trailing을 채크해준다.(TitleLabel은 한줄이라서..?)Identifier, Class 설정해준다. import UIKitclass NibCell: UITableViewCell {    @IBOutlet weak var titleLabel: UILabel!    @IBOutlet weak var bodyLabel: UILabel!        override func awakeFromNib() {        super.awakeFromNib()        self.backgroundColor = .systemMint    }}IBOutlet 추가한다. NibListStoryboard에서 테이블만들고 My Table View 이름 지정.해준다. 그리고 이를 NibListViewController에 드래그하여 myTableView만들어준다. fileprivate func configureTableView() {    // storyboard에서는 테이블뷰에서 셀을 직접 드래그하기때문에 등록이 되지만 Nib 방식에서 등록을 시켜줘야한다.    let cellNib = UINib(nibName: &quot;NibCell&quot;, bundle: nil)    self.myTableView.register(cellNib, forCellReuseIdentifier: &quot;NibCell&quot;)    self.myTableView.dataSource = self    self.myTableView.delegate = self}이대로 실행하면 에러가난다. Storyboard 방식과 달리 Nib 방식으로 할때는 등록 절차를 직접 해줘야 한다. 전체코드NibCell.xibNibCell.swift////  NibCell.swift//  UITableViewTutorial////  Created by 김동현 on 5/11/25.//import UIKitclass NibCell: UITableViewCell {        @IBOutlet weak var titleLabel: UILabel!        @IBOutlet weak var bodyLabel: UILabel!        override func awakeFromNib() {        super.awakeFromNib()        self.backgroundColor = .systemMint    }    /*    override func setSelected(_ selected: Bool, animated: Bool) {        super.setSelected(selected, animated: animated)        // Configure the view for the selected state    }     */}NibListViewController////  NibListViewController.swift//  UITableViewTutorial////  Created by 김동현 on 5/8/25.//import UIKitclass NibListViewController: UIViewController {        @IBOutlet weak var myTableView: UITableView!    var dummySections: [DummySection] = DummySection.getDumies(10)        override func viewDidLoad() {        super.viewDidLoad()        configureTableView()    }        fileprivate func configureTableView() {                // storyboard에서는 테이블뷰에서 셀을 직접 드래그하기때문에 등록이 되지만 Nib 방식에서 등록을 시켜줘야한다.        let cellNib = UINib(nibName: &quot;NibCell&quot;, bundle: nil)        self.myTableView.register(cellNib, forCellReuseIdentifier: &quot;NibCell&quot;)                self.myTableView.dataSource = self        self.myTableView.delegate = self    }}/// UITableView의 데이터 관리 역할을 담당extension NibListViewController: UITableViewDataSource {        /// 섹션이 여러개일때만 사용    /// 섹션의 타이틀 설정    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -&gt; String? {        return &quot;헤더: &quot; + dummySections[section].title    }        func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -&gt; String? {        return &quot;푸터: &quot; + dummySections[section].title    }        /// 섹션이 여러개일때만 사용    /// 현재 섹션이 몇개인지    func numberOfSections(in tableView: UITableView) -&gt; Int {        return dummySections.count    }        /// 하나의 섹션에 몇개의 rows가 있냐    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int {        return dummySections[section].rows.count    }        /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라    /// - indexPath: 셀의 위치를 나타내는 인덱스 경로    /// - returns: 구성된 UITableViewCell 객체    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell {        /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함)        /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: &quot;MyCell&quot;)                // [guard let] 방식        guard let cell = tableView.dequeueReusableCell(withIdentifier: &quot;NibCell&quot;, for: indexPath) as? NibCell else {            return UITableViewCell()        }                let sectionData: DummySection = dummySections[indexPath.section]                let cellData: DummyData = sectionData.rows[indexPath.row]                /// 셀의 주 텍스트를 더미 데이터에서 가져오기        cell.titleLabel.text = cellData.title                /// 셀의 서브 타이틀 설정        cell.bodyLabel.text = cellData.body                //cell.detailTextLabel?.numberOfLines = 0        return cell                /*        [if let] 방식        if let cell = tableView.dequeueReusableCell(withIdentifier: &quot;StoryBoardCell&quot;, for: indexPath) as? StoryboardCell {            let sectionData: DummySection = dummySections[indexPath.section]                        let cellData: DummyData = sectionData.rows[indexPath.row]                        /// 셀의 주 텍스트를 더미 데이터에서 가져오기            cell.titleLabel.text = cellData.title                        /// 셀의 서브 타이틀 설정            cell.bodyLabel.text = cellData.body                        //cell.detailTextLabel?.numberOfLines = 0            return cell        } else {            return UITableViewCell()        }        */    }}/// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리extension NibListViewController: UITableViewDelegate {    /// 사용자가 특정 셀을 선택했을 때 호출되는 메서드    /// - Parameters:    ///   - tableView: 이벤트가 발생한 테이블 뷰    ///   - indexPath: 선택된 셀의 위치    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {        print(#fileID, #function, #line, &quot;- indexPath: \(indexPath.row)&quot;)    }}">
+    <meta itemprop="headline" content="[TableView] 5. 코드기반 커스텀 테이블뷰 구현하기">
+    <meta itemprop="description" content="코드기반 커스텀 테이블뷰 구현하기                        Storyboard 커스텀 셀    Nib 커스텀 셀      Code 커스텀 셀   CodeList.xiv파일로 와서 테이블뷰를 드래그해서 추가 후 제약조건을 상하좌우 전부 0으로 해준다. myTableView를 ViewController로 드래그해서 IBOutlet 추가한다. 이떄 추가가안되면 xib파일의 viewController가 연결되있는지 확인한다.CodeCell.swift////  CodeCell.swift//  UITableViewTutorial////  Created by 김동현 on 5/11/25.//import UIKitclass CodeCell: UITableViewCell {        lazy var titleLabel: UILabel = {        let label = UILabel()        label.translatesAutoresizingMaskIntoConstraints = false        label.text = &quot;타이틀 라벨타이틀 라벨타이틀 라벨타이틀 라벨타이틀 라벨&quot;        label.numberOfLines = 1        label.font = UIFont.systemFont(ofSize: 14, weight: .bold)        return label    }()        lazy var bodyLabel: UILabel = {        let label = UILabel()        label.translatesAutoresizingMaskIntoConstraints = false        label.text = &quot;바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨&quot;        label.numberOfLines = 0        label.font = UIFont.systemFont(ofSize: 12, weight: .regular)        return label    }()        fileprivate func configureUI() {        self.backgroundColor = .systemYellow                // 타이틀 라벨 설정        self.contentView.addSubview(self.titleLabel)        NSLayoutConstraint.activate([            titleLabel.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 10),            titleLabel.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 10),            titleLabel.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -10),        ])                // 바디 라벨 설정        self.contentView.addSubview(self.bodyLabel)        NSLayoutConstraint.activate([            bodyLabel.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor, constant: 10),            bodyLabel.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 10),            bodyLabel.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -10),            bodyLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -10)        ])    }        // 원래는 awakefromnib을 타지만 코드로 UI를 진행한다면 awakefromnib을 타지 않는다.    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {        super.init(style: style, reuseIdentifier: reuseIdentifier) /// 부모의 로직을 싱행시키는 의미        configureUI()    }        required init?(coder: NSCoder) {        super.init(coder: coder)    }        override func layoutSubviews() {        super.layoutSubviews()    }}#if DEBUGimport SwiftUIextension UIView {    private struct ViewRepresentable: UIViewRepresentable {        let uiView: UIView        func updateUIView(_ uiView: UIViewType, context: Context) {        }        func makeUIView(context: Context) -&gt; some UIView {            uiView        }    }        func getPreview() -&gt; some View {        ViewRepresentable(uiView: self)    }}#endif#if DEBUGimport SwiftUIstruct CodeCell_PreviewProvider_Previews: PreviewProvider {    static var previews: some View {        CodeCell().getPreview()            .previewLayout(.fixed(width: 200, height: 100))    }}#endifCodeListViewController////  CodeListViewController.swift//  UITableViewTutorial////  Created by 김동현 on 5/8/25.//import UIKitclass CodeListViewController: UIViewController {        @IBOutlet weak var myTableView: UITableView!    var dummySections: [DummySection] = DummySection.getDumies(10)       override func viewDidLoad() {        super.viewDidLoad()        configureTableView()    }        fileprivate func configureTableView() {                // CodeCell에서는 이 줄만 필요        self.myTableView.register(CodeCell.self, forCellReuseIdentifier: &quot;CodeCell&quot;)                self.myTableView.dataSource = self        self.myTableView.delegate = self    }}/// UITableView의 데이터 관리 역할을 담당extension CodeListViewController: UITableViewDataSource {        /// 섹션이 여러개일때만 사용    /// 섹션의 타이틀 설정    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -&gt; String? {        return &quot;헤더: &quot; + dummySections[section].title    }        func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -&gt; String? {        return &quot;푸터: &quot; + dummySections[section].title    }        /// 섹션이 여러개일때만 사용    /// 현재 섹션이 몇개인지    func numberOfSections(in tableView: UITableView) -&gt; Int {        return dummySections.count    }        /// 하나의 섹션에 몇개의 rows가 있냐    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int {        return dummySections[section].rows.count    }        /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라    /// - indexPath: 셀의 위치를 나타내는 인덱스 경로    /// - returns: 구성된 UITableViewCell 객체    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell {        /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함)        /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: &quot;MyCell&quot;)                // [guard let] 방식        guard let cell = tableView.dequeueReusableCell(withIdentifier: &quot;CodeCell&quot;, for: indexPath) as? CodeCell else {            return UITableViewCell()        }                let sectionData: DummySection = dummySections[indexPath.section]                let cellData: DummyData = sectionData.rows[indexPath.row]                /// 셀의 주 텍스트를 더미 데이터에서 가져오기        cell.titleLabel.text = cellData.title                /// 셀의 서브 타이틀 설정        cell.bodyLabel.text = cellData.body                //cell.detailTextLabel?.numberOfLines = 0        return cell                /*        [if let] 방식        if let cell = tableView.dequeueReusableCell(withIdentifier: &quot;StoryBoardCell&quot;, for: indexPath) as? StoryboardCell {            let sectionData: DummySection = dummySections[indexPath.section]                        let cellData: DummyData = sectionData.rows[indexPath.row]                        /// 셀의 주 텍스트를 더미 데이터에서 가져오기            cell.titleLabel.text = cellData.title                        /// 셀의 서브 타이틀 설정            cell.bodyLabel.text = cellData.body                        //cell.detailTextLabel?.numberOfLines = 0            return cell        } else {            return UITableViewCell()        }        */    }}/// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리extension CodeListViewController: UITableViewDelegate {    /// 사용자가 특정 셀을 선택했을 때 호출되는 메서드    /// - Parameters:    ///   - tableView: 이벤트가 발생한 테이블 뷰    ///   - indexPath: 선택된 셀의 위치    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {        print(#fileID, #function, #line, &quot;- indexPath: \(indexPath.row)&quot;)    }}">
     <meta itemprop="datePublished" content="2025-05-08T00:00:00+00:00">
     
 
@@ -405,7 +405,7 @@ checkbox.addEventListener('change', function() {
       
         <header>
           <h1 id="page-title" class="page__title p-name" itemprop="headline">
-            <a href="http://localhost:4000/UIKit-tableView4/" class="u-url" itemprop="url">[TableView] 4. Nib으로 커스텀 테이블뷰 구현하기
+            <a href="http://localhost:4000/UIKit-tableView5/" class="u-url" itemprop="url">[TableView] 5. 코드기반 커스텀 테이블뷰 구현하기
 </a>
           </h1>
           <footer class="page__meta">
@@ -448,98 +448,33 @@ checkbox.addEventListener('change', function() {
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="커스텀셀" width="30%"> -->
 
-<h2 id="nib으로-커스텀-테이블뷰-구현하기">Nib으로 커스텀 테이블뷰 구현하기</h2>
+<h2 id="코드기반-커스텀-테이블뷰-구현하기">코드기반 커스텀 테이블뷰 구현하기</h2>
 
 <table>
   <tr>
     <td><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView3/image-20250509020704480.png" alt="커스텀셀1" width="100%" /></td>
     <td><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView4/image-20250511173004744.png" alt="커스텀셀" width="85%" /></td>
+      <td><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView5/image-20250511181826302.png" alt="커스텀셀" width="85%" /></td>
   </tr>
   <tr>
     <td style="text-align:center;">Storyboard 커스텀 셀</td>
     <td style="text-align:center;">Nib 커스텀 셀</td>
+      <td style="text-align:center;">Code 커스텀 셀</td>
   </tr>
 </table>
 
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView4/image-20250511162051512.png" alt="커스텀셀" width="70%" /></p>
-
-<p>파일만들기 -&gt; Cocoa Toucn -&gt; Nib파일이름, 체크박스 체크로 2개의 파일을 만든다. 그러면 Nib파일과, Swift파일이 생성된다.<br />
-<br /><br />
+<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView5/image-20250511174809378.png" alt="커스텀셀" width="30%" /> <br />
+CodeList.xiv파일로 와서 테이블뷰를 드래그해서 추가 후 제약조건을 상하좌우 전부 0으로 해준다.<br />
 <br /></p>
 
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView4/image-20250511163641185.png" alt="커스텀셀" width="70%" /></p>
-
-<p>TitleLabel만들고 ContentView로 드래그하여 Leading, Top, Trailing을 체크해준다. 그리고 이번에는 타이틀 Label의 number of lines를 1로 하자.<br />
-<br /><br />
+<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView5/image-20250511175003817.png" alt="커스텀셀" width="70%" /> <br />
+myTableView를 ViewController로 드래그해서 IBOutlet 추가한다. 이떄 추가가안되면 xib파일의 viewController가 연결되있는지 확인한다.<br />
 <br /></p>
 
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView4/image-20250511164303585.png" alt="커스텀셀" width="70%" /></p>
-
-<p>BodyLabel을 TitleLabel로 드래그하여 Leading, Vertical Spacing 체크해준다. <br />
-그리고 BodyLabel을 ContentView로 드래그하여 Trailing을 채크해준다.(TitleLabel은 한줄이라서..?)<br />
-<br /><br />
-<br /></p>
-
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView4/image-20250511170258909.png" alt="커스텀셀" width="70%" /></p>
-
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView4/image-20250511170350423.png" alt="커스텀셀" width="70%" /></p>
-
-<p>Identifier, Class 설정해준다.<br />
- <br /><br />
-<br /></p>
-
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView4/image-20250511170649565.png" alt="커스텀셀" width="70%" /></p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
-
-<span class="kd">class</span> <span class="kt">NibCell</span><span class="p">:</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
-    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">titleLabel</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span>
-    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">bodyLabel</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span>
-    
-    <span class="k">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">super</span><span class="o">.</span><span class="nf">awakeFromNib</span><span class="p">()</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">systemMint</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-</code></pre></div></div>
-<p>IBOutlet 추가한다.<br />
- <br /><br />
-<br /></p>
-
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView4/image-20250511171224918.png" alt="커스텀셀" width="70%" /></p>
-
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView4/image-20250511171534370.png" alt="커스텀셀" width="70%" /></p>
-
-<p>NibListStoryboard에서 테이블만들고 My Table View 이름 지정.해준다. 그리고 이를 NibListViewController에 드래그하여 myTableView만들어준다.<br />
- <br /><br />
-<br /></p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">configureTableView</span><span class="p">()</span> <span class="p">{</span>
-
-    <span class="c1">// storyboard에서는 테이블뷰에서 셀을 직접 드래그하기때문에 등록이 되지만 Nib 방식에서 등록을 시켜줘야한다.</span>
-    <span class="k">let</span> <span class="nv">cellNib</span> <span class="o">=</span> <span class="kt">UINib</span><span class="p">(</span><span class="nv">nibName</span><span class="p">:</span> <span class="s">"NibCell"</span><span class="p">,</span> <span class="nv">bundle</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
-    <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="n">cellNib</span><span class="p">,</span> <span class="nv">forCellReuseIdentifier</span><span class="p">:</span> <span class="s">"NibCell"</span><span class="p">)</span>
-
-    <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="k">self</span>
-    <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>이대로 실행하면 에러가난다. Storyboard 방식과 달리 Nib 방식으로 할때는 등록 절차를 직접 해줘야 한다.<br />
- <br /><br />
-<br /></p>
-
-<h2 id="전체코드">전체코드</h2>
-
-<h3 id="nibcellxib">NibCell.xib</h3>
-
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView4/image-20250511172511582.png" alt="커스텀셀" width="70%" /></p>
-
-<h3 id="nibcellswift">NibCell.swift</h3>
+<h3 id="codecellswift">CodeCell.swift</h3>
 
 <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//</span>
-<span class="c1">//  NibCell.swift</span>
+<span class="c1">//  CodeCell.swift</span>
 <span class="c1">//  UITableViewTutorial</span>
 <span class="c1">//</span>
 <span class="c1">//  Created by 김동현 on 5/11/25.</span>
@@ -547,33 +482,100 @@ checkbox.addEventListener('change', function() {
 
 <span class="kd">import</span> <span class="kt">UIKit</span>
 
-<span class="kd">class</span> <span class="kt">NibCell</span><span class="p">:</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
-
+<span class="kd">class</span> <span class="kt">CodeCell</span><span class="p">:</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
     
-    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">titleLabel</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span>
+    <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">titleLabel</span><span class="p">:</span> <span class="kt">UILabel</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">label</span> <span class="o">=</span> <span class="kt">UILabel</span><span class="p">()</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">"타이틀 라벨타이틀 라벨타이틀 라벨타이틀 라벨타이틀 라벨"</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">numberOfLines</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">bold</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">label</span>
+    <span class="p">}()</span>
     
-    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">bodyLabel</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span>
+    <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">bodyLabel</span><span class="p">:</span> <span class="kt">UILabel</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">label</span> <span class="o">=</span> <span class="kt">UILabel</span><span class="p">()</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">"바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨바디 라벨"</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">numberOfLines</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">regular</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">label</span>
+    <span class="p">}()</span>
     
-    <span class="k">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">super</span><span class="o">.</span><span class="nf">awakeFromNib</span><span class="p">()</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">systemMint</span>
+    <span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">configureUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">systemYellow</span>
+        
+        <span class="c1">// 타이틀 라벨 설정</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">contentView</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="k">self</span><span class="o">.</span><span class="n">titleLabel</span><span class="p">)</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">titleLabel</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">contentView</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">10</span><span class="p">),</span>
+            <span class="n">titleLabel</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">contentView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">10</span><span class="p">),</span>
+            <span class="n">titleLabel</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">contentView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">10</span><span class="p">),</span>
+        <span class="p">])</span>
+        
+        <span class="c1">// 바디 라벨 설정</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">contentView</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="k">self</span><span class="o">.</span><span class="n">bodyLabel</span><span class="p">)</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">bodyLabel</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">10</span><span class="p">),</span>
+            <span class="n">bodyLabel</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">contentView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">10</span><span class="p">),</span>
+            <span class="n">bodyLabel</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">contentView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">10</span><span class="p">),</span>
+            <span class="n">bodyLabel</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">contentView</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">10</span><span class="p">)</span>
+        <span class="p">])</span>
     <span class="p">}</span>
-
-    <span class="cm">/*
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-     */</span>
+    
+    <span class="c1">// 원래는 awakefromnib을 타지만 코드로 UI를 진행한다면 awakefromnib을 타지 않는다.</span>
+    <span class="k">override</span> <span class="nf">init</span><span class="p">(</span><span class="nv">style</span><span class="p">:</span> <span class="kt">UITableViewCell</span><span class="o">.</span><span class="kt">CellStyle</span><span class="p">,</span> <span class="nv">reuseIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">?)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">style</span><span class="p">:</span> <span class="n">style</span><span class="p">,</span> <span class="nv">reuseIdentifier</span><span class="p">:</span> <span class="n">reuseIdentifier</span><span class="p">)</span> <span class="c1">/// 부모의 로직을 싱행시키는 의미</span>
+        <span class="nf">configureUI</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">required</span> <span class="nf">init</span><span class="p">?(</span><span class="nv">coder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">coder</span><span class="p">:</span> <span class="n">coder</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">layoutSubviews</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">layoutSubviews</span><span class="p">()</span>
+    <span class="p">}</span>
 <span class="p">}</span>
+
+
+
+<span class="cp">#if DEBUG</span>
+<span class="kd">import</span> <span class="kt">SwiftUI</span>
+
+<span class="kd">extension</span> <span class="kt">UIView</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="kd">struct</span> <span class="kt">ViewRepresentable</span><span class="p">:</span> <span class="kt">UIViewRepresentable</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">uiView</span><span class="p">:</span> <span class="kt">UIView</span>
+        <span class="kd">func</span> <span class="nf">updateUIView</span><span class="p">(</span><span class="n">_</span> <span class="nv">uiView</span><span class="p">:</span> <span class="kt">UIViewType</span><span class="p">,</span> <span class="nv">context</span><span class="p">:</span> <span class="kt">Context</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">}</span>
+        <span class="kd">func</span> <span class="nf">makeUIView</span><span class="p">(</span><span class="nv">context</span><span class="p">:</span> <span class="kt">Context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kd">some</span> <span class="kt">UIView</span> <span class="p">{</span>
+            <span class="n">uiView</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">getPreview</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kd">some</span> <span class="kt">View</span> <span class="p">{</span>
+        <span class="kt">ViewRepresentable</span><span class="p">(</span><span class="nv">uiView</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#if DEBUG</span>
+<span class="kd">import</span> <span class="kt">SwiftUI</span>
+
+<span class="kd">struct</span> <span class="kt">CodeCell_PreviewProvider_Previews</span><span class="p">:</span> <span class="kt">PreviewProvider</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="k">var</span> <span class="nv">previews</span><span class="p">:</span> <span class="kd">some</span> <span class="kt">View</span> <span class="p">{</span>
+        <span class="kt">CodeCell</span><span class="p">()</span><span class="o">.</span><span class="nf">getPreview</span><span class="p">()</span>
+            <span class="o">.</span><span class="nf">previewLayout</span><span class="p">(</span><span class="o">.</span><span class="nf">fixed</span><span class="p">(</span><span class="nv">width</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="nv">height</span><span class="p">:</span> <span class="mi">100</span><span class="p">))</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="cp">#endif</span>
 
 </code></pre></div></div>
 
-<h3 id="niblistviewcontroller">NibListViewController</h3>
+<h3 id="codelistviewcontroller">CodeListViewController</h3>
 
 <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//</span>
-<span class="c1">//  NibListViewController.swift</span>
+<span class="c1">//  CodeListViewController.swift</span>
 <span class="c1">//  UITableViewTutorial</span>
 <span class="c1">//</span>
 <span class="c1">//  Created by 김동현 on 5/8/25.</span>
@@ -581,12 +583,12 @@ checkbox.addEventListener('change', function() {
 
 <span class="kd">import</span> <span class="kt">UIKit</span>
 
-<span class="kd">class</span> <span class="kt">NibListViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+<span class="kd">class</span> <span class="kt">CodeListViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
 
     
     <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">myTableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="o">!</span>
     <span class="k">var</span> <span class="nv">dummySections</span><span class="p">:</span> <span class="p">[</span><span class="kt">DummySection</span><span class="p">]</span> <span class="o">=</span> <span class="kt">DummySection</span><span class="o">.</span><span class="nf">getDumies</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-    
+   
     <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
         <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
         <span class="nf">configureTableView</span><span class="p">()</span>
@@ -594,17 +596,17 @@ checkbox.addEventListener('change', function() {
     
     <span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">configureTableView</span><span class="p">()</span> <span class="p">{</span>
         
-        <span class="c1">// storyboard에서는 테이블뷰에서 셀을 직접 드래그하기때문에 등록이 되지만 Nib 방식에서 등록을 시켜줘야한다.</span>
-        <span class="k">let</span> <span class="nv">cellNib</span> <span class="o">=</span> <span class="kt">UINib</span><span class="p">(</span><span class="nv">nibName</span><span class="p">:</span> <span class="s">"NibCell"</span><span class="p">,</span> <span class="nv">bundle</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="n">cellNib</span><span class="p">,</span> <span class="nv">forCellReuseIdentifier</span><span class="p">:</span> <span class="s">"NibCell"</span><span class="p">)</span>
+        <span class="c1">// CodeCell에서는 이 줄만 필요</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="kt">CodeCell</span><span class="o">.</span><span class="k">self</span><span class="p">,</span> <span class="nv">forCellReuseIdentifier</span><span class="p">:</span> <span class="s">"CodeCell"</span><span class="p">)</span>
         
         <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="k">self</span>
         <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
     <span class="p">}</span>
 <span class="p">}</span>
 
+
 <span class="c1">/// UITableView의 데이터 관리 역할을 담당</span>
-<span class="kd">extension</span> <span class="kt">NibListViewController</span><span class="p">:</span> <span class="kt">UITableViewDataSource</span> <span class="p">{</span>
+<span class="kd">extension</span> <span class="kt">CodeListViewController</span><span class="p">:</span> <span class="kt">UITableViewDataSource</span> <span class="p">{</span>
     
     <span class="c1">/// 섹션이 여러개일때만 사용</span>
     <span class="c1">/// 섹션의 타이틀 설정</span>
@@ -635,7 +637,7 @@ checkbox.addEventListener('change', function() {
         <span class="c1">/// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell")</span>
         
         <span class="c1">// [guard let] 방식</span>
-        <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="s">"NibCell"</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">NibCell</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="s">"CodeCell"</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">CodeCell</span> <span class="k">else</span> <span class="p">{</span>
             <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
         <span class="p">}</span>
         
@@ -675,7 +677,7 @@ checkbox.addEventListener('change', function() {
 <span class="p">}</span>
 
 <span class="c1">/// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리</span>
-<span class="kd">extension</span> <span class="kt">NibListViewController</span><span class="p">:</span> <span class="kt">UITableViewDelegate</span> <span class="p">{</span>
+<span class="kd">extension</span> <span class="kt">CodeListViewController</span><span class="p">:</span> <span class="kt">UITableViewDelegate</span> <span class="p">{</span>
     <span class="c1">/// 사용자가 특정 셀을 선택했을 때 호출되는 메서드</span>
     <span class="c1">/// - Parameters:</span>
     <span class="c1">///   - tableView: 이벤트가 발생한 테이블 뷰</span>
@@ -696,12 +698,11 @@ checkbox.addEventListener('change', function() {
       
   <nav class="pagination">
     
-      <a href="/UIKit-tableView3/" class="pagination--pager" title="[TableView] 3. 스토리보드로 커스텀 테이블뷰 구현하기
+      <a href="/UIKit-tableView4/" class="pagination--pager" title="[TableView] 4. Nib으로 커스텀 테이블뷰 구현하기
 ">Previous</a>
     
     
-      <a href="/UIKit-tableView5/" class="pagination--pager" title="[TableView] 5. 코드기반 커스텀 테이블뷰 구현하기
-">Next</a>
+      <a href="#" class="pagination--pager disabled">Next</a>
     
   </nav>
 
