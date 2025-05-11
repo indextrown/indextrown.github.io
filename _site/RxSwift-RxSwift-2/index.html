@@ -397,7 +397,7 @@ checkbox.addEventListener('change', function() {
 
   <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
     <meta itemprop="headline" content="[RxSwift] 2. RxSwift개념">
-    <meta itemprop="description" content="1. Rx란?파이프라인 연결이다2. 구성  보내는 것 - Observable  연결 - subScribe  중간처리 - 연산자3. 큰 개념보내는 것 - 옴저버블(총알 = 구독 가능한 것)  Observable          가장 기본 베이스, 생성하자마자 이벤트를 전달한다      .onNext(), .onError(), .onCompleted()를 통해 이벤트를 받을 수 있다      .subscribe()를 통해 이벤트를 발행 가능      이벤트를 정의하고, 정적인 스트림 생성(한방향: 선언 -&gt; 구독)        Subject          Observable(구독 가능한 것)이면서 Observer(관찰자)      일단 연결을 해두고 원하는 시점에 이벤트를 보낸다.      외부에서 직접 값을 넣고, 동적인 스트림 생성(양방향)      BehaviorSubject - 상태              초기값 필수      구독 시, 가장 최신값 1개를 즉시 전달받음      이후에는 일반 Observable처럼 .onNext 이벤트를 수신        PublishSubjcet - 단방향 이벤트          구독 이후 이벤트만 받음(초기값 없음)      주로 이벤트 전달용        Relay          Subject의 변형으로, error가 없고 UI바인딩에 최적화      PublishRelay                  단방향 이벤트 전달(버튼 클릭)                    BehaviorRelay                  상태 저장, 초기값 필수 -&gt; accept() 사용                      Driver          메인스레드, share(1)      UI 바인딩 전용으로 사용되는 옵저버블      구독  subscribe(onNext:)          next, error, completed 시퀀스 이벤트를 받을 수 있다      직점 onError 처리 가능하다      viewModel 내부, 로직 처리, 이벤트 감지, 에러 대응      Disposable 반환해야한다      모든 Observable계열 구독 가능      bind(onNext:) 보다 범용적, 완료/에러 받을 수 있다        bind(to:)          UI 컴포넌트 프로퍼티에 바인딩할 때 사용      구독과 동시에 값이 특정 속성에 직접 들어가는 방식      값을 특정UI의 속성에 직접 구독해서 바인딩        // label.text = title처럼 자동으로 연결하는 직접 바인딩 방식viewModel.title .bind(to: label.rx.text) .disposed(by: disposeBag)                      bind(onNext:)          단순히 이벤트를 수신하고 구독 형태      내부에 명시적으로 처리 로직을 작성해야 함      값을 받아서 직접 처리(프린트, 로직 실행)하는 방식으로 구독        viewModel.title .bind(onNext: { text in   print(&quot;값 출력: \(text)&quot;) }) .disposed(by: disposeBag)                      비교// 1. 자동 UI 업데이트 (bind to UI)viewModel.username // Observable&lt;String&gt;    .bind(to: label.rx.text) // 📲 label.text = 값    .disposed(by: disposeBag)// 2. 내가 직접 프린트 (bind with closure)viewModel.username    .bind(onNext: { name in        print(&quot;유저 이름은 \(name)&quot;)    })    .disposed(by: disposeBag)">
+    <meta itemprop="description" content="1. Rx란?파이프라인 연결이다2. 구성  보내는 것 - Observable  연결 - subScribe  중간처리 - 연산자3. 큰 개념보내는 것 - 옴저버블(총알 = 구독 가능한 것)  Observable          가장 기본 베이스, 생성하자마자 이벤트를 전달한다      .onNext(), .onError(), .onCompleted()를 통해 이벤트를 받을 수 있다      .subscribe()를 통해 이벤트를 발행 가능      이벤트를 정의하고, 정적인 스트림 생성(한방향: 선언 -&gt; 구독)         // 1. Observable은 가장 기본적인 Rx 스트림 let observable = Observable&lt;Int&gt;.just(1)     // 2. subscribe를 통해 값을 받아 처리 observable     .subscribe(onNext: { value in         print(&quot;Received: \(value)&quot;)     })     .disposed(by: disposeBag)        Subject          Observable(구독 가능한 것)이면서 Observer(관찰자)      일단 연결을 해두고 원하는 시점에 이벤트를 보낸다.      외부에서 직접 값을 넣고, 동적인 스트림 생성(양방향)              BehaviorSubject - 상태                  초기값 필수          구독 시, 가장 최신값 1개를 즉시 전달받음          이후에는 일반 Observable처럼 .onNext 이벤트를 수신                // 1. BehaviorSubject는 초기값을 설정하고, 구독 시 가장 최근 값을 전달let behaviorSubject = BehaviorSubject&lt;String&gt;(value: &quot;초기값&quot;)      // 2. 구독 설정 → &quot;초기값&quot;이 바로 전달됨behaviorSubject    .subscribe(onNext: { print(&quot;BehaviorSubject:&quot;, $0) })    .disposed(by: disposeBag)      // 3. 새로운 이벤트 전달behaviorSubject.onNext(&quot;새로운 값&quot;)                    PublishSubjcet - 단방향 이벤트                  구독 이후 이벤트만 받음(초기값 없음)          주로 이벤트 전달용                // 1. PublishSubject는 구독 이후에 발생한 이벤트만 전달let publishSubject = PublishSubject&lt;String&gt;()// 2. 구독 설정publishSubject    .subscribe(onNext: { print(&quot;PublishSubject:&quot;, $0) })    .disposed(by: disposeBag)// 3. 이벤트 발생 (구독 이후라 전달됨)publishSubject.onNext(&quot;첫 번째 이벤트&quot;)                      Relay          Subject의 변형으로, error가 없고 UI바인딩에 최적화        PublishRelay          단방향 이벤트 전달(버튼 클릭)        // 1. PublishRelay는 error가 없고 UI에 최적화된 Subjectlet publishRelay = PublishRelay&lt;String&gt;()// 2. 구독 설정publishRelay    .subscribe(onNext: { print(&quot;PublishRelay:&quot;, $0) })    .disposed(by: disposeBag)// 3. 이벤트 발생 → accept()로 전달publishRelay.accept(&quot;이벤트 발생!&quot;)        BehaviorRelay          상태 저장, 초기값 필수 -&gt; accept() 사용        // 1. BehaviorRelay는 초기값이 필요하며, 상태 저장에 적합let behaviorRelay = BehaviorRelay&lt;String&gt;(value: &quot;기본값&quot;)// 2. 구독 설정 → &quot;기본값&quot;이 바로 전달됨behaviorRelay    .subscribe(onNext: { print(&quot;BehaviorRelay:&quot;, $0) })    .disposed(by: disposeBag)// 3. 값 업데이트 → accept() 사용behaviorRelay.accept(&quot;업데이트된 값&quot;)        Driver          메인스레드, share(1)      UI 바인딩 전용으로 사용되는 옵저버블           // 1. Relay에서 값을 가져와 Driver로 변환 let textRelay = BehaviorRelay&lt;String&gt;(value: &quot;Hello&quot;) // 2. Driver로 변환 (에러 없이, MainThread에서 작동) let textDriver = textRelay.asDriver() // 3. UI 요소에 drive (drive는 MainThread에서 UI 바인딩 시 사용) textDriver     .drive(label.rx.text)     .disposed(by: disposeBag)      구독  subscribe(onNext:)          next, error, completed 시퀀스 이벤트를 받을 수 있다      직점 onError 처리 가능하다      viewModel 내부, 로직 처리, 이벤트 감지, 에러 대응      Disposable 반환해야한다      모든 Observable계열 구독 가능      bind(onNext:) 보다 범용적, 완료/에러 받을 수 있다         // 1. onNext만 사용하는 기본적인 구독 let observable = Observable.just(&quot;Hello, RxSwift!&quot;) observable     .subscribe(onNext: { value in         print(&quot;onNext:&quot;, value)     })     .disposed(by: disposeBag) // 2. onNext, onError, onCompleted 모두 명시 let observable = Observable&lt;String&gt;.create { observer in     observer.onNext(&quot;첫 번째 이벤트&quot;)     observer.onCompleted()     return Disposables.create() } observable     .subscribe(         onNext: { print(&quot;onNext:&quot;, $0) },         onError: { print(&quot;onError:&quot;, $0.localizedDescription) },         onCompleted: { print(&quot;onCompleted&quot;) },         onDisposed: { print(&quot;onDisposed&quot;) }     )     .disposed(by: disposeBag)        bind(to:)          UI 컴포넌트 프로퍼티에 바인딩할 때 사용      구독과 동시에 값이 특정 속성에 직접 들어가는 방식      값을 특정UI의 속성에 직접 구독해서 바인딩          // label.text = title처럼 자동으로 연결하는 직접 바인딩 방식  viewModel.title   .bind(to: label.rx.text)   .disposed(by: disposeBag)                      bind(onNext:)          단순히 이벤트를 수신하고 구독 형태      내부에 명시적으로 처리 로직을 작성해야 함      값을 받아서 직접 처리(프린트, 로직 실행)하는 방식으로 구독          viewModel.title   .bind(onNext: { text in   print(&quot;값 출력: \(text)&quot;)   })   .disposed(by: disposeBag)                      비교  // 1. 자동 UI 업데이트 (bind to UI)  viewModel.username // Observable&lt;String&gt;      .bind(to: label.rx.text) // 📲 label.text = 값      .disposed(by: disposeBag)  // 2. 내가 직접 프린트 (bind with closure)  viewModel.username      .bind(onNext: { name in          print(&quot;유저 이름은 \(name)&quot;)      })      .disposed(by: disposeBag)">
     <meta itemprop="datePublished" content="2025-04-21T00:00:00+00:00">
     
 
@@ -461,52 +461,126 @@ checkbox.addEventListener('change', function() {
       <li>.subscribe()를 통해 이벤트를 발행 가능</li>
       <li>이벤트를 정의하고, 정적인 스트림 생성(한방향: 선언 -&gt; 구독)</li>
     </ul>
+
+    <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c1">// 1. Observable은 가장 기본적인 Rx 스트림</span>
+ <span class="k">let</span> <span class="nv">observable</span> <span class="o">=</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">Int</span><span class="o">&gt;.</span><span class="nf">just</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    
+ <span class="c1">// 2. subscribe를 통해 값을 받아 처리</span>
+ <span class="n">observable</span>
+     <span class="o">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
+         <span class="nf">print</span><span class="p">(</span><span class="s">"Received: </span><span class="se">\(</span><span class="n">value</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+     <span class="p">})</span>
+     <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+</code></pre></div>    </div>
   </li>
   <li>Subject
     <ul>
       <li>Observable(구독 가능한 것)이면서 Observer(관찰자)</li>
       <li>일단 연결을 해두고 원하는 시점에 이벤트를 보낸다.</li>
       <li>외부에서 직접 값을 넣고, 동적인 스트림 생성(양방향)</li>
-      <li>BehaviorSubject - 상태</li>
     </ul>
     <ul>
-      <li>초기값 필수</li>
-      <li>구독 시, 가장 최신값 1개를 즉시 전달받음</li>
-      <li>이후에는 일반 Observable처럼 .onNext 이벤트를 수신</li>
+      <li>BehaviorSubject - 상태
+        <ul>
+          <li>초기값 필수</li>
+          <li>구독 시, 가장 최신값 1개를 즉시 전달받음</li>
+          <li>이후에는 일반 Observable처럼 .onNext 이벤트를 수신</li>
+        </ul>
+
+        <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 1. BehaviorSubject는 초기값을 설정하고, 구독 시 가장 최근 값을 전달</span>
+<span class="k">let</span> <span class="nv">behaviorSubject</span> <span class="o">=</span> <span class="kt">BehaviorSubject</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">value</span><span class="p">:</span> <span class="s">"초기값"</span><span class="p">)</span>
+      
+<span class="c1">// 2. 구독 설정 → "초기값"이 바로 전달됨</span>
+<span class="n">behaviorSubject</span>
+    <span class="o">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="nf">print</span><span class="p">(</span><span class="s">"BehaviorSubject:"</span><span class="p">,</span> <span class="nv">$0</span><span class="p">)</span> <span class="p">})</span>
+    <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+      
+<span class="c1">// 3. 새로운 이벤트 전달</span>
+<span class="n">behaviorSubject</span><span class="o">.</span><span class="nf">onNext</span><span class="p">(</span><span class="s">"새로운 값"</span><span class="p">)</span>
+</code></pre></div>        </div>
+      </li>
+      <li>PublishSubjcet - 단방향 이벤트
+        <ul>
+          <li>구독 이후 이벤트만 받음(초기값 없음)</li>
+          <li>주로 이벤트 전달용</li>
+        </ul>
+
+        <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 1. PublishSubject는 구독 이후에 발생한 이벤트만 전달</span>
+<span class="k">let</span> <span class="nv">publishSubject</span> <span class="o">=</span> <span class="kt">PublishSubject</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">()</span>
+
+<span class="c1">// 2. 구독 설정</span>
+<span class="n">publishSubject</span>
+    <span class="o">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="nf">print</span><span class="p">(</span><span class="s">"PublishSubject:"</span><span class="p">,</span> <span class="nv">$0</span><span class="p">)</span> <span class="p">})</span>
+    <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+
+<span class="c1">// 3. 이벤트 발생 (구독 이후라 전달됨)</span>
+<span class="n">publishSubject</span><span class="o">.</span><span class="nf">onNext</span><span class="p">(</span><span class="s">"첫 번째 이벤트"</span><span class="p">)</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li>Relay
+    <ul>
+      <li>Subject의 변형으로, error가 없고 UI바인딩에 최적화</li>
     </ul>
   </li>
 </ol>
 
 <ul>
-  <li>PublishSubjcet - 단방향 이벤트
+  <li>PublishRelay
     <ul>
-      <li>구독 이후 이벤트만 받음(초기값 없음)</li>
-      <li>주로 이벤트 전달용</li>
+      <li>단방향 이벤트 전달(버튼 클릭)</li>
     </ul>
+
+    <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 1. PublishRelay는 error가 없고 UI에 최적화된 Subject</span>
+<span class="k">let</span> <span class="nv">publishRelay</span> <span class="o">=</span> <span class="kt">PublishRelay</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">()</span>
+
+<span class="c1">// 2. 구독 설정</span>
+<span class="n">publishRelay</span>
+    <span class="o">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="nf">print</span><span class="p">(</span><span class="s">"PublishRelay:"</span><span class="p">,</span> <span class="nv">$0</span><span class="p">)</span> <span class="p">})</span>
+    <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+
+<span class="c1">// 3. 이벤트 발생 → accept()로 전달</span>
+<span class="n">publishRelay</span><span class="o">.</span><span class="nf">accept</span><span class="p">(</span><span class="s">"이벤트 발생!"</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>BehaviorRelay
+    <ul>
+      <li>상태 저장, 초기값 필수 -&gt; accept() 사용</li>
+    </ul>
+
+    <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 1. BehaviorRelay는 초기값이 필요하며, 상태 저장에 적합</span>
+<span class="k">let</span> <span class="nv">behaviorRelay</span> <span class="o">=</span> <span class="kt">BehaviorRelay</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">value</span><span class="p">:</span> <span class="s">"기본값"</span><span class="p">)</span>
+
+<span class="c1">// 2. 구독 설정 → "기본값"이 바로 전달됨</span>
+<span class="n">behaviorRelay</span>
+    <span class="o">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="nf">print</span><span class="p">(</span><span class="s">"BehaviorRelay:"</span><span class="p">,</span> <span class="nv">$0</span><span class="p">)</span> <span class="p">})</span>
+    <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+
+<span class="c1">// 3. 값 업데이트 → accept() 사용</span>
+<span class="n">behaviorRelay</span><span class="o">.</span><span class="nf">accept</span><span class="p">(</span><span class="s">"업데이트된 값"</span><span class="p">)</span>
+</code></pre></div>    </div>
   </li>
 </ul>
 
 <ol>
-  <li>Relay
-    <ul>
-      <li>Subject의 변형으로, error가 없고 UI바인딩에 최적화</li>
-      <li>PublishRelay
-        <ul>
-          <li>단방향 이벤트 전달(버튼 클릭)</li>
-        </ul>
-      </li>
-      <li>BehaviorRelay
-        <ul>
-          <li>상태 저장, 초기값 필수 -&gt; accept() 사용</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
   <li>Driver
     <ul>
       <li>메인스레드, share(1)</li>
       <li>UI 바인딩 전용으로 사용되는 옵저버블</li>
     </ul>
+
+    <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   <span class="c1">// 1. Relay에서 값을 가져와 Driver로 변환</span>
+ <span class="k">let</span> <span class="nv">textRelay</span> <span class="o">=</span> <span class="kt">BehaviorRelay</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">value</span><span class="p">:</span> <span class="s">"Hello"</span><span class="p">)</span>
+
+ <span class="c1">// 2. Driver로 변환 (에러 없이, MainThread에서 작동)</span>
+ <span class="k">let</span> <span class="nv">textDriver</span> <span class="o">=</span> <span class="n">textRelay</span><span class="o">.</span><span class="nf">asDriver</span><span class="p">()</span>
+
+ <span class="c1">// 3. UI 요소에 drive (drive는 MainThread에서 UI 바인딩 시 사용)</span>
+ <span class="n">textDriver</span>
+     <span class="o">.</span><span class="nf">drive</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+     <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+</code></pre></div>    </div>
   </li>
 </ol>
 
@@ -521,16 +595,42 @@ checkbox.addEventListener('change', function() {
       <li>모든 Observable계열 구독 가능</li>
       <li>bind(onNext:) 보다 범용적, 완료/에러 받을 수 있다</li>
     </ul>
+
+    <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c1">// 1. onNext만 사용하는 기본적인 구독</span>
+ <span class="k">let</span> <span class="nv">observable</span> <span class="o">=</span> <span class="kt">Observable</span><span class="o">.</span><span class="nf">just</span><span class="p">(</span><span class="s">"Hello, RxSwift!"</span><span class="p">)</span>
+
+ <span class="n">observable</span>
+     <span class="o">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
+         <span class="nf">print</span><span class="p">(</span><span class="s">"onNext:"</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+     <span class="p">})</span>
+     <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+
+ <span class="c1">// 2. onNext, onError, onCompleted 모두 명시</span>
+ <span class="k">let</span> <span class="nv">observable</span> <span class="o">=</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;.</span><span class="n">create</span> <span class="p">{</span> <span class="n">observer</span> <span class="k">in</span>
+     <span class="n">observer</span><span class="o">.</span><span class="nf">onNext</span><span class="p">(</span><span class="s">"첫 번째 이벤트"</span><span class="p">)</span>
+     <span class="n">observer</span><span class="o">.</span><span class="nf">onCompleted</span><span class="p">()</span>
+     <span class="k">return</span> <span class="kt">Disposables</span><span class="o">.</span><span class="nf">create</span><span class="p">()</span>
+ <span class="p">}</span>
+
+ <span class="n">observable</span>
+     <span class="o">.</span><span class="nf">subscribe</span><span class="p">(</span>
+         <span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="nf">print</span><span class="p">(</span><span class="s">"onNext:"</span><span class="p">,</span> <span class="nv">$0</span><span class="p">)</span> <span class="p">},</span>
+         <span class="nv">onError</span><span class="p">:</span> <span class="p">{</span> <span class="nf">print</span><span class="p">(</span><span class="s">"onError:"</span><span class="p">,</span> <span class="nv">$0</span><span class="o">.</span><span class="n">localizedDescription</span><span class="p">)</span> <span class="p">},</span>
+         <span class="nv">onCompleted</span><span class="p">:</span> <span class="p">{</span> <span class="nf">print</span><span class="p">(</span><span class="s">"onCompleted"</span><span class="p">)</span> <span class="p">},</span>
+         <span class="nv">onDisposed</span><span class="p">:</span> <span class="p">{</span> <span class="nf">print</span><span class="p">(</span><span class="s">"onDisposed"</span><span class="p">)</span> <span class="p">}</span>
+     <span class="p">)</span>
+     <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+</code></pre></div>    </div>
   </li>
   <li>bind(to:)
     <ul>
       <li>UI 컴포넌트 프로퍼티에 바인딩할 때 사용</li>
       <li>구독과 동시에 값이 특정 속성에 직접 들어가는 방식</li>
       <li>값을 특정UI의 속성에 직접 구독해서 바인딩
-        <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// label.text = title처럼 자동으로 연결하는 직접 바인딩 방식</span>
-<span class="n">viewModel</span><span class="o">.</span><span class="n">title</span>
- <span class="o">.</span><span class="nf">bind</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="n">label</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
- <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+        <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1">// label.text = title처럼 자동으로 연결하는 직접 바인딩 방식</span>
+  <span class="n">viewModel</span><span class="o">.</span><span class="n">title</span>
+   <span class="o">.</span><span class="nf">bind</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="n">label</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+   <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
 </code></pre></div>        </div>
       </li>
     </ul>
@@ -540,11 +640,11 @@ checkbox.addEventListener('change', function() {
       <li>단순히 이벤트를 수신하고 구독 형태</li>
       <li>내부에 명시적으로 처리 로직을 작성해야 함</li>
       <li>값을 받아서 직접 처리(프린트, 로직 실행)하는 방식으로 구독
-        <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">viewModel</span><span class="o">.</span><span class="n">title</span>
- <span class="o">.</span><span class="nf">bind</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="n">text</span> <span class="k">in</span>
+        <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="n">viewModel</span><span class="o">.</span><span class="n">title</span>
+   <span class="o">.</span><span class="nf">bind</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="n">text</span> <span class="k">in</span>
    <span class="nf">print</span><span class="p">(</span><span class="s">"값 출력: </span><span class="se">\(</span><span class="n">text</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
- <span class="p">})</span>
- <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+   <span class="p">})</span>
+   <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
 </code></pre></div>        </div>
       </li>
     </ul>
@@ -552,17 +652,17 @@ checkbox.addEventListener('change', function() {
   <li>비교</li>
 </ol>
 
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 1. 자동 UI 업데이트 (bind to UI)</span>
-<span class="n">viewModel</span><span class="o">.</span><span class="n">username</span> <span class="c1">// Observable&lt;String&gt;</span>
-    <span class="o">.</span><span class="nf">bind</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="n">label</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="c1">// 📲 label.text = 값</span>
-    <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1">// 1. 자동 UI 업데이트 (bind to UI)</span>
+  <span class="n">viewModel</span><span class="o">.</span><span class="n">username</span> <span class="c1">// Observable&lt;String&gt;</span>
+      <span class="o">.</span><span class="nf">bind</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="n">label</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="c1">// 📲 label.text = 값</span>
+      <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
 
-<span class="c1">// 2. 내가 직접 프린트 (bind with closure)</span>
-<span class="n">viewModel</span><span class="o">.</span><span class="n">username</span>
-    <span class="o">.</span><span class="nf">bind</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="n">name</span> <span class="k">in</span>
-        <span class="nf">print</span><span class="p">(</span><span class="s">"유저 이름은 </span><span class="se">\(</span><span class="n">name</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
-    <span class="p">})</span>
-    <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+  <span class="c1">// 2. 내가 직접 프린트 (bind with closure)</span>
+  <span class="n">viewModel</span><span class="o">.</span><span class="n">username</span>
+      <span class="o">.</span><span class="nf">bind</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="n">name</span> <span class="k">in</span>
+          <span class="nf">print</span><span class="p">(</span><span class="s">"유저 이름은 </span><span class="se">\(</span><span class="n">name</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+      <span class="p">})</span>
+      <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
 </code></pre></div></div>
 
         
