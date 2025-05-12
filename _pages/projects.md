@@ -65,9 +65,9 @@ header:
 
 .project-image {
     width: 100%;
-    height: 330px;
+    /* height: 330px; */
     margin-bottom: 20px;
-    border-radius: 4px;
+    border-radius: 20px;
     overflow: hidden;
 }
 
@@ -75,6 +75,7 @@ header:
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 20px;
     transition: transform 0.3s ease;
 }
 
