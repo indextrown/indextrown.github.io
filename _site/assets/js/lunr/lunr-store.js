@@ -232,4 +232,22 @@ var store = [{
         "tags": ["UIKit","TableView"],
         "url": "/UIKit-tableView5/",
         "teaser": "/assets/logos/background.png"
+      },{
+        "title": "Star Bridge: 생일카페 알리미",
+        "excerpt":"소개      서비스 설명: K-pop 팬들을 위한 생일카페 정보를 자동으로 수집하고, 알림으로 제공하는 스케줄 앱   프로젝트 유형: 팀 프로젝트 (졸업작품)   개발 기간: 24.03 ~ 24.12   Github 링크: https://github.com/indextrown/senior-project   기술 스택: SwiftUI, Selenium, AWS EC2, Firebase   기여한 부분     SNS 기반 생일카페 스케줄 자동화 시스템 설계 및 구현   도입 배경  Swift를 배우기 시작하던 시기에 졸업 프로젝트에 합류하게 되어 앱 UI 구현보다는 시스템 개발 파트에 더 집중할 수 있었습니다.    크롤링 → GPT로 데이터 정제 → API 연동으로 백엔드 중심의 구조를 직접 설계하며, 정보를 어떻게 모으고, 걸러내고, 사용자에게 전달할지를 하나의 흐름으로 구현해보는 데 초점을 맞췄습니다.   해결 방법          크롤링 자동화            로그인 및 차단 문제 해결을 위해, 수동 로그인 후 발급한 쿠키를 저장하고 이를 크롤링 시 재사용하여 안정성 확보.           GPT 기반 정보 정제            크롤링된 게시물에서 연예인 이름, 날짜, 장소를 GPT API로 추출.           Google Maps API 장소 검증            GPT가 추출한 장소를 지도 API로 확인, 유효하지 않은 데이터는 자동 제외.           실시간 앱 연동            1~3단계 결과를 AWS EC2 서버에서 30분 주기로 자동화.       정제된 데이터를 MySQL에 저장하고, SwiftUI 앱에서 실시간 조회 가능하게 구성.           성과      2024 한국멀티미디어학회 Best Paper 수상.   SNS 크롤링 → GPT 정제 → 장소 검증 → 앱 연동까지 자동화 파이프라인 완성.   데이터 정확도 98.0%, 알림 98.5% 달성.   Swift 학습 초기였지만, 앱과 서버를 연동하고 데이터 흐름을 설계하며 실질적인 서비스 구축 경험 쌓음.  ","categories": [],
+        "tags": ["SwiftUI","Selenium","AWS EC2","Firebase"],
+        "url": "/projects/star-bridge/",
+        "teaser": "/assets/logos/background.png"
+      },{
+        "title": "반창고: 건강 관리 앱",
+        "excerpt":"소개      서비스 설명: 주변 약국 위치를 지도에서 확인하고, 걸음 수와 칼로리를 기록·조회할 수 있는 건강 관리 앱   프로젝트 유형: 개인 프로젝트   개발 기간: 24.11 ~ 24.12   Github 링크: https://github.com/indextrown/Ban-Chang-Go   기술 스택: SwiftUI, MapKit, CoreLocation, CoreMotion, Firebase   기여한 부분     약국 운영 여부 포함 리스트 구성 (async / await 기반 연쇄 API 흐름 구조)   도입 배경     위치 기반 약국 API는 약국명과 위치만 제공하고 실제 운영 중인지 알 수 없었습니다.   반면 운영 여부 API는 약국 이름만 검색이 가능해 단독으로는 사용할 수 없었습니다.   사용자에게 실시간으로 문을 연 약국만 보여주기 위해 두 API의 흐름을 연결하는 구조가 필요했습니다.   해결 방법      위치 API로 받은 약국 리스트를 기준으로, 운영 여부 API를 순차 호출하는 구조 설계.   지도 이동 시 과도한 호출은 DispatchWorkItem과 Debounce로 조정.   이미 조회한 약국은 Set에 저장해 중복 호출 방지.   성과      운영 중인 약국은 빨간 핀, 종료 약국은 회색 핀으로 표시해 직관성 향상.   지도 이동 시 API 중복 호출을 차단해, 핀 렌더링 속도를 평균 1.2초 → 0.4초로 단축.  ","categories": [],
+        "tags": ["SwiftUI","MapKit","CoreLocation","CoreMotion","Firebase"],
+        "url": "/projects/banchanggo/",
+        "teaser": "/assets/logos/background.png"
+      },{
+        "title": "코드라운지: 개발자 Q&A 학습 서비스",
+        "excerpt":"소개      서비스 설명: CS, iOS 면접 질문과 답변을 마크다운 형식으로 정리하여 제공하는 학습용 서비스   프로젝트 유형: 개인 프로젝트   개발 기간: 24.11 ~ 25.01   Github 링크: https://github.com/team-GitDeulida/CodeLounge-iOS   기술 스택: SwiftUI, Combine, fastlane, Firebase   기여한 부분     SwiftUI 기반 마크다운 렌더링 직접 구현   도입 배경     코드라운지는 CS·iOS 면접 질문과 답변을 제공하는 학습 앱입니다.   SwiftUI 기본 Text 컴포넌트는 표현과 커스터마이징에 한계가 있어, 고급 마크다운 처리가 가능한 파서를 직접 구현하게 되었습니다.   해결 방법      대학에서 배운 프로그래밍언어 과목의 EBNF 문법과 Top-Down, 재귀 하강 파싱 개념을 앱에 적용.   전체 문서를 EBNF 기반으로 문법적으로 정의한 후, Heading, ListItem, Paragraph 등 Top Down 방식의 블록 단위 파싱을 구현.   줄 내에 있는 Bold, Underline 등은 재귀 하강 파싱으로 중첩 구조까지 분석.   파싱된 결과는 SwiftUI에서 Text, HStack, VStack 등으로 동적으로 렌더링.   성과      텍스트 강조, 코드블럭, 밑줄 표현이 가능한 마크다운 메서드 구현.   긴 텍스트를 가독성 높게 표현할 수 있게 됨.   다양한 기기에서도 일관된 텍스트 크기와 여백을 자동으로 조정하는 라이브러리 구현.   기능을 범용 라이브러리 형태로 분리하여 프로젝트 간 재사용이 가능하도록 모듈화.  ","categories": [],
+        "tags": ["SwiftUI","Combine","fastlane","Firebase"],
+        "url": "/projects/codelounge/",
+        "teaser": "/assets/logos/background.png"
       }]

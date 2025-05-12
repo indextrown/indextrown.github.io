@@ -276,3 +276,27 @@ defaults:
     values:
       image: true
 
+  # _projects
+  - scope:
+      path: ""
+      type: projects
+    values:
+      layout: project
+      author_profile: false
+      read_time: false
+      show_date: true
+      comments: true
+      share: false
+      related: false
+      use_math: true
+      toc: false
+      toc_label: "Table of Contents"
+      toc_sticky: false
+
+collections:
+  projects:
+    output: true
+    permalink: /projects/:title/
+    sort_by: date
+    sort_order: reverse
+
