@@ -398,16 +398,16 @@ checkbox.addEventListener('change', function() {
 
 
   <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="반창고: 건강 관리 앱">
-    <meta itemprop="description" content="소개  서비스 설명: 주변 약국 위치를 지도에서 확인하고, 걸음 수와 칼로리를 기록·조회할 수 있는 건강 관리 앱  프로젝트 유형: 개인 프로젝트  개발 기간: 24.11 ~ 24.12  Github 링크: https://github.com/indextrown/Ban-Chang-Go  기술 스택: SwiftUI, MapKit, CoreLocation, CoreMotion, Firebase기여한 부분  약국 운영 여부 포함 리스트 구성 (async / await 기반 연쇄 API 흐름 구조)도입 배경  위치 기반 약국 API는 약국명과 위치만 제공하고 실제 운영 중인지 알 수 없었습니다.  반면 운영 여부 API는 약국 이름만 검색이 가능해 단독으로는 사용할 수 없었습니다.  사용자에게 실시간으로 문을 연 약국만 보여주기 위해 두 API의 흐름을 연결하는 구조가 필요했습니다.해결 방법  위치 API로 받은 약국 리스트를 기준으로, 운영 여부 API를 순차 호출하는 구조 설계.  지도 이동 시 과도한 호출은 DispatchWorkItem과 Debounce로 조정.  이미 조회한 약국은 Set에 저장해 중복 호출 방지.성과  운영 중인 약국은 빨간 핀, 종료 약국은 회색 핀으로 표시해 직관성 향상.  지도 이동 시 API 중복 호출을 차단해, 핀 렌더링 속도를 평균 1.2초 → 0.4초로 단축.">
-    <meta itemprop="datePublished" content="2024-11-01T00:00:00+00:00">
+    <meta itemprop="headline" content="음메요: 음성 메모 요약 서비스">
+    <meta itemprop="description" content="소개  서비스 설명: 음메요는 음성 메모 요약의 줄임말로, 음성 또는 텍스트를 메모로 남기면 GPT가 자동으로 핵심 내용을 요약해주는 메모 정리 알림 서비스입니다.  프로젝트 유형: 팀 프로젝트  개발 기간: 24.09 ~ 25.04  Github 링크: https://github.com/team-RETI/EUMMEYO  기술 스택: SwiftUI, Combine, OpenAI, MVVM + CleanArchitecture, Firebase기여한 부분  GPT 기반 음성 감정 기록 및 요약 처리 시스템 구현 (Whisper API + GPT API 연계)도입 배경  기존 메모 앱은 키보드 입력 중심이라 사용자의 기록 부담이 컸고, 음성 기록 기능이 있어도 단순 저장에 그쳐 단순 저장에 그치는 경우가 많았습니다.  음메요는 음성 또는 텍스트로 기록 → 핵심 요약 → 텍스트 저장으로 이어지는 연쇄적인 비동기 호출 구조가 요구되었습니다.해결 방법  Whisper API로 음성을 한국어 텍스트로 변환.  변환된 텍스트를 GPT-4o mini API로 보내 감정 요약.  Swift Combine flatMap으로 연동, 오류는 enum 기반 에러로 세분화 처리.성과  Whisper → GPT → 요약까지 이어지는 연쇄 비동기 흐름을 앱 내부에 안정적으로 구현.  음성 감정 기록을 자동 요약해 실제 사용자 최고 경험 향상.  클린 아키텍처로 프로젝트 구조 개선하기도입 배경  초기에는 대부분의 기능을 하나의 ViewModel에 구현하고, 모든 파일을 단일 폴더에 구성하는 방식으로 개발을 진행했습니다. 하지만 음성 인식, GPT 요약, 메모 저장 등 기능이 점차 늘어나면서 ViewModel이 비대해졌고, 수정 시 다른 화면이나 컴포넌트까지 영향이 미치는 문제가 발생했습니다. 이러한 복잡도를 해소하고, 코드 간 경계를 명확히 구분하기 위해 MVVM + Clean Architecture 구조로 전환하게 되었습니다.해결 방법  View → ViewModel → Service → Repository 계층 분리.  외부 의존성(Firebase, OpenAI 등)은 모두 Repository에서 관리하고, ViewModel은 비즈니스 로직에만 집중하도록 구조화.  DIP(의존성 역전 원칙)를 적용하여 인터페이스 기반 설계를 통해 각 계층 간 느슨한 결합을 유지.성과  ViewModel 크기가 줄고, 각 기능이 책임 기반으로 분리되어 유지보수성과 확장성이 크게 향상.  구조가 명확해짐에 따라 신규 기능 추가나 다른 기능에 영향을 주지 않는 독립적인 개발 구조 확보.  팀 프로젝트에서 책임 구분이 명확해져 코드 리뷰와 협업 효율 증가.">
+    <meta itemprop="datePublished" content="2025-05-12T00:00:00+00:00">
     
 
     <div class="page__inner-wrap">
       
         <header>
           <h1 id="page-title" class="page__title p-name" itemprop="headline">
-            <a href="http://localhost:4000/projects/banchanggo/" class="u-url" itemprop="url">반창고: 건강 관리 앱
+            <a href="http://localhost:4000/projects/eummeyo/" class="u-url" itemprop="url">음메요: 음성 메모 요약 서비스
 </a>
           </h1>
           <footer class="page__meta">
@@ -426,15 +426,16 @@ checkbox.addEventListener('change', function() {
     
     
     
-      <a class="posttag untagged">MapKit</a>
+    
+      <a class="posttag tagged" href="/posts/?tag=Combine">Combine</a>
     
     
     
-      <a class="posttag untagged">CoreLocation</a>
+      <a class="posttag untagged">OpenAI</a>
     
     
     
-      <a class="posttag untagged">CoreMotion</a>
+      <a class="posttag untagged">MVVM + CleanArchitecture</a>
     
     
     
@@ -450,7 +451,7 @@ checkbox.addEventListener('change', function() {
 <!--  -->
             
 
-  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2024-11-01T00:00:00+00:00">November 1, 2024</time></p>
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-05-12T00:00:00+00:00">May 12, 2025</time></p>
 
           </footer>
         </header>
@@ -461,51 +462,77 @@ checkbox.addEventListener('change', function() {
         <div class="project-item">
     
     <div class="project-image">
-        <img src="/assets/img/Projects/Banchango/banchango1.png" alt="반창고: 건강 관리 앱 이미지" onerror="this.parentElement.style.display='none'">
+        <img src="/assets/img/Projects/Eummeyo/eummeyo.png" alt="음메요: 음성 메모 요약 서비스 이미지" onerror="this.parentElement.style.display='none'">
     </div>
     
-    <h2>반창고: 건강 관리 앱</h2>
+    <h2>음메요: 음성 메모 요약 서비스</h2>
     <div class="project-content">
         <h2 id="소개">소개</h2>
 
 <ul>
-  <li><strong>서비스 설명</strong>: 주변 약국 위치를 지도에서 확인하고, 걸음 수와 칼로리를 기록·조회할 수 있는 건강 관리 앱</li>
-  <li><strong>프로젝트 유형</strong>: 개인 프로젝트</li>
-  <li><strong>개발 기간</strong>: 24.11 ~ 24.12</li>
-  <li><strong>Github 링크</strong>: <a href="https://github.com/indextrown/Ban-Chang-Go">https://github.com/indextrown/Ban-Chang-Go</a></li>
-  <li><strong>기술 스택</strong>: SwiftUI, MapKit, CoreLocation, CoreMotion, Firebase</li>
+  <li><strong>서비스 설명</strong>: 음메요는 음성 메모 요약의 줄임말로, 음성 또는 텍스트를 메모로 남기면 GPT가 자동으로 핵심 내용을 요약해주는 메모 정리 알림 서비스입니다.</li>
+  <li><strong>프로젝트 유형</strong>: 팀 프로젝트</li>
+  <li><strong>개발 기간</strong>: 24.09 ~ 25.04</li>
+  <li><strong>Github 링크</strong>: <a href="https://github.com/team-RETI/EUMMEYO">https://github.com/team-RETI/EUMMEYO</a></li>
+  <li><strong>기술 스택</strong>: SwiftUI, Combine, OpenAI, MVVM + CleanArchitecture, Firebase</li>
 </ul>
 
 <h2 id="기여한-부분">기여한 부분</h2>
 <ol>
-  <li>약국 운영 여부 포함 리스트 구성 (async / await 기반 연쇄 API 흐름 구조)</li>
+  <li>GPT 기반 음성 감정 기록 및 요약 처리 시스템 구현 (Whisper API + GPT API 연계)</li>
 </ol>
 
 <h2 id="도입-배경">도입 배경</h2>
 <ul>
-  <li>위치 기반 약국 API는 약국명과 위치만 제공하고 실제 운영 중인지 알 수 없었습니다.</li>
-  <li>반면 운영 여부 API는 약국 이름만 검색이 가능해 단독으로는 사용할 수 없었습니다.</li>
-  <li>사용자에게 실시간으로 문을 연 약국만 보여주기 위해 두 API의 흐름을 연결하는 구조가 필요했습니다.</li>
+  <li>기존 메모 앱은 키보드 입력 중심이라 사용자의 기록 부담이 컸고, 음성 기록 기능이 있어도 단순 저장에 그쳐 단순 저장에 그치는 경우가 많았습니다.</li>
+  <li>음메요는 음성 또는 텍스트로 기록 → 핵심 요약 → 텍스트 저장으로 이어지는 연쇄적인 비동기 호출 구조가 요구되었습니다.</li>
 </ul>
 
 <h2 id="해결-방법">해결 방법</h2>
 
 <ul>
-  <li>위치 API로 받은 약국 리스트를 기준으로, 운영 여부 API를 순차 호출하는 구조 설계.</li>
-  <li>지도 이동 시 과도한 호출은 DispatchWorkItem과 Debounce로 조정.</li>
-  <li>이미 조회한 약국은 Set에 저장해 중복 호출 방지.</li>
+  <li>Whisper API로 음성을 한국어 텍스트로 변환.</li>
+  <li>변환된 텍스트를 GPT-4o mini API로 보내 감정 요약.</li>
+  <li>Swift Combine flatMap으로 연동, 오류는 enum 기반 에러로 세분화 처리.</li>
 </ul>
 
 <h2 id="성과">성과</h2>
 
 <ul>
-  <li>운영 중인 약국은 빨간 핀, 종료 약국은 회색 핀으로 표시해 직관성 향상.</li>
-  <li>지도 이동 시 API 중복 호출을 차단해, 핀 렌더링 속도를 평균 1.2초 → 0.4초로 단축.</li>
+  <li>Whisper → GPT → 요약까지 이어지는 연쇄 비동기 흐름을 앱 내부에 안정적으로 구현.</li>
+  <li>음성 감정 기록을 자동 요약해 실제 사용자 최고 경험 향상.</li>
+</ul>
+
+<hr />
+
+<ol>
+  <li>클린 아키텍처로 프로젝트 구조 개선하기</li>
+</ol>
+
+<h3 id="도입-배경-1">도입 배경</h3>
+<ul>
+  <li>초기에는 대부분의 기능을 하나의 ViewModel에 구현하고, 모든 파일을 단일 폴더에 구성하는 방식으로 개발을 진행했습니다. 하지만 음성 인식, GPT 요약, 메모 저장 등 기능이 점차 늘어나면서 ViewModel이 비대해졌고, 수정 시 다른 화면이나 컴포넌트까지 영향이 미치는 문제가 발생했습니다. 이러한 복잡도를 해소하고, 코드 간 경계를 명확히 구분하기 위해 MVVM + Clean Architecture 구조로 전환하게 되었습니다.</li>
+</ul>
+
+<h3 id="해결-방법-1">해결 방법</h3>
+
+<ul>
+  <li>View → ViewModel → Service → Repository 계층 분리.</li>
+  <li>외부 의존성(Firebase, OpenAI 등)은 모두 Repository에서 관리하고, ViewModel은 비즈니스 로직에만 집중하도록 구조화.</li>
+  <li>DIP(의존성 역전 원칙)를 적용하여 인터페이스 기반 설계를 통해 각 계층 간 느슨한 결합을 유지.</li>
+</ul>
+
+<h3 id="성과-1">성과</h3>
+
+<ul>
+  <li>ViewModel 크기가 줄고, 각 기능이 책임 기반으로 분리되어 유지보수성과 확장성이 크게 향상.</li>
+  <li>구조가 명확해짐에 따라 신규 기능 추가나 다른 기능에 영향을 주지 않는 독립적인 개발 구조 확보.</li>
+  <li>팀 프로젝트에서 책임 구분이 명확해져 코드 리뷰와 협업 효율 증가.</li>
 </ul>
 
         <div class="project-links">
             
-            <a href="https://github.com/indextrown/Ban-Chang-Go" class="btn btn--primary" target="_blank">GitHub</a>
+            <a href="https://github.com/team-RETI/EUMMEYO" class="btn btn--primary" target="_blank">GitHub</a>
             
             
         </div>
@@ -585,12 +612,11 @@ checkbox.addEventListener('change', function() {
       
   <nav class="pagination">
     
-      <a href="/projects/star-bridge/" class="pagination--pager" title="Star Bridge: 생일카페 알리미
+      <a href="/projects/codelounge/" class="pagination--pager" title="코드라운지: 개발자 Q&amp;A 학습 서비스
 ">Previous</a>
     
     
-      <a href="/projects/codelounge/" class="pagination--pager" title="코드라운지: 개발자 Q&amp;A 학습 서비스
-">Next</a>
+      <a href="#" class="pagination--pager disabled">Next</a>
     
   </nav>
 

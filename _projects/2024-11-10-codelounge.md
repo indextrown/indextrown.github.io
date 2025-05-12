@@ -28,7 +28,8 @@ summary: "CS, iOS 면접 질문과 답변을 마크다운 형식으로 정리하
 - SwiftUI 기본 Text 컴포넌트는 표현과 커스터마이징에 한계가 있어, 고급 마크다운 처리가 가능한 파서를 직접 구현하게 되었습니다.
 
 ## 해결 방법
-
+<img src="{{ '/assets/img/Projects/CodeLounge/CodeLounge1.png' | relative_url }}" alt="커스텀셀" width="70%"> 
+<img src="{{ '/assets/img/Projects/CodeLounge/CodeLounge2.png' | relative_url }}" alt="커스텀셀" width="70%"> 
 - 대학에서 배운 프로그래밍언어 과목의 EBNF 문법과 Top-Down, 재귀 하강 파싱 개념을 앱에 적용.
 - 전체 문서를 EBNF 기반으로 문법적으로 정의한 후, Heading, ListItem, Paragraph 등 Top Down 방식의 블록 단위 파싱을 구현.
 - 줄 내에 있는 Bold, Underline 등은 재귀 하강 파싱으로 중첩 구조까지 분석.
