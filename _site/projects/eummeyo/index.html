@@ -399,7 +399,7 @@ checkbox.addEventListener('change', function() {
 
   <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
     <meta itemprop="headline" content="음메요: 음성 메모 요약 서비스">
-    <meta itemprop="description" content="소개  서비스 설명: 음메요는 음성 메모 요약의 줄임말로, 음성 또는 텍스트를 메모로 남기면 GPT가 자동으로 핵심 내용을 요약해주는 메모 정리 알림 서비스입니다.  프로젝트 유형: 팀 프로젝트  개발 기간: 24.09 ~ 25.04  Github 링크: https://github.com/team-RETI/EUMMEYO  기술 스택: SwiftUI, Combine, OpenAI, MVVM + CleanArchitecture, Firebase기여한 부분  GPT 기반 음성 감정 기록 및 요약 처리 시스템 구현 (Whisper API + GPT API 연계)도입 배경  기존 메모 앱은 키보드 입력 중심이라 사용자의 기록 부담이 컸고, 음성 기록 기능이 있어도 단순 저장에 그쳐 단순 저장에 그치는 경우가 많았습니다.  음메요는 음성 또는 텍스트로 기록 → 핵심 요약 → 텍스트 저장으로 이어지는 연쇄적인 비동기 호출 구조가 요구되었습니다.해결 방법  Whisper API로 음성을 한국어 텍스트로 변환.  변환된 텍스트를 GPT-4o mini API로 보내 감정 요약.  Swift Combine flatMap으로 연동, 오류는 enum 기반 에러로 세분화 처리.성과  Whisper → GPT → 요약까지 이어지는 연쇄 비동기 흐름을 앱 내부에 안정적으로 구현.  음성 감정 기록을 자동 요약해 실제 사용자 최고 경험 향상.  클린 아키텍처로 프로젝트 구조 개선하기도입 배경  초기에는 대부분의 기능을 하나의 ViewModel에 구현하고, 모든 파일을 단일 폴더에 구성하는 방식으로 개발을 진행했습니다. 하지만 음성 인식, GPT 요약, 메모 저장 등 기능이 점차 늘어나면서 ViewModel이 비대해졌고, 수정 시 다른 화면이나 컴포넌트까지 영향이 미치는 문제가 발생했습니다. 이러한 복잡도를 해소하고, 코드 간 경계를 명확히 구분하기 위해 MVVM + Clean Architecture 구조로 전환하게 되었습니다.해결 방법  View → ViewModel → Service → Repository 계층 분리.  외부 의존성(Firebase, OpenAI 등)은 모두 Repository에서 관리하고, ViewModel은 비즈니스 로직에만 집중하도록 구조화.  DIP(의존성 역전 원칙)를 적용하여 인터페이스 기반 설계를 통해 각 계층 간 느슨한 결합을 유지.성과  ViewModel 크기가 줄고, 각 기능이 책임 기반으로 분리되어 유지보수성과 확장성이 크게 향상.  구조가 명확해짐에 따라 신규 기능 추가나 다른 기능에 영향을 주지 않는 독립적인 개발 구조 확보.  팀 프로젝트에서 책임 구분이 명확해져 코드 리뷰와 협업 효율 증가.">
+    <meta itemprop="description" content="소개  서비스 설명: 음메요는 음성 메모 요약의 줄임말로, 음성 또는 텍스트를 메모로 남기면 GPT가 자동으로 핵심 내용을 요약해주는 메모 정리 알림 서비스입니다.  프로젝트 유형: 팀 프로젝트  개발 기간: 24.09 ~ 25.04  Github 링크: https://github.com/team-RETI/EUMMEYO  기술 스택: SwiftUI, Combine, OpenAI, MVVM + CleanArchitecture, Firebase기여한 부분  GPT 기반 음성 감정 기록 및 요약 처리 시스템 구현 (Whisper API + GPT API 연계)도입 배경  기존 메모 앱은 키보드 입력 중심이라 사용자의 기록 부담이 컸고, 음성 기록 기능이 있어도 단순 저장에 그치는 경우가 많았습니다.  음메요는 음성 또는 텍스트로 기록 → 핵심 요약 → 텍스트 저장으로 이어지는 연쇄적인 비동기 호출 구조가 요구되었습니다.해결 방법  Whisper API로 음성을 한국어 텍스트로 변환.  변환된 텍스트를 GPT-4o mini API로 보내 감정 요약.  Swift Combine flatMap으로 연동, 오류는 enum 기반 에러로 세분화 처리.성과  Whisper → GPT → 요약까지 이어지는 연쇄 비동기 흐름을 앱 내부에 안정적으로 구현.  음성 감정 기록을 자동 요약해 실제 사용자 최고 경험 향상.  클린 아키텍처로 프로젝트 구조 개선하기도입 배경  초기에는 대부분의 기능을 하나의 ViewModel에 구현하고, 모든 파일을 단일 폴더에 구성하는 방식으로 개발을 진행했습니다. 하지만 음성 인식, GPT 요약, 메모 저장 등 기능이 점차 늘어나면서 ViewModel이 비대해졌고, 수정 시 다른 화면이나 컴포넌트까지 영향이 미치는 문제가 발생했습니다. 이러한 복잡도를 해소하고, 코드 간 경계를 명확히 구분하기 위해 MVVM + Clean Architecture 구조로 전환하게 되었습니다.해결 방법  View → ViewModel → Service → Repository 계층 분리.  외부 의존성(Firebase, OpenAI 등)은 모두 Repository에서 관리하고, ViewModel은 비즈니스 로직에만 집중하도록 구조화.  DIP(의존성 역전 원칙)를 적용하여 인터페이스 기반 설계를 통해 각 계층 간 느슨한 결합을 유지.성과  ViewModel 크기가 줄고, 각 기능이 책임 기반으로 분리되어 유지보수성과 확장성이 크게 향상.  구조가 명확해짐에 따라 신규 기능 추가나 다른 기능에 영향을 주지 않는 독립적인 개발 구조 확보.  팀 프로젝트에서 책임 구분이 명확해져 코드 리뷰와 협업 효율 증가.">
     <meta itemprop="datePublished" content="2025-05-12T00:00:00+00:00">
     
 
@@ -484,7 +484,7 @@ checkbox.addEventListener('change', function() {
 
 <h2 id="도입-배경">도입 배경</h2>
 <ul>
-  <li>기존 메모 앱은 키보드 입력 중심이라 사용자의 기록 부담이 컸고, 음성 기록 기능이 있어도 단순 저장에 그쳐 단순 저장에 그치는 경우가 많았습니다.</li>
+  <li>기존 메모 앱은 키보드 입력 중심이라 사용자의 기록 부담이 컸고, 음성 기록 기능이 있어도 단순 저장에 그치는 경우가 많았습니다.</li>
   <li>음메요는 음성 또는 텍스트로 기록 → 핵심 요약 → 텍스트 저장으로 이어지는 연쇄적인 비동기 호출 구조가 요구되었습니다.</li>
 </ul>
 

@@ -1,11 +1,19 @@
 [
     
         {
+        "title"    : "[TableView] 6. Cell Configuration",
+        "category" : "",
+        "tags"     : "UIKit, TableView",
+        "url"      : "/UIKit-tableView6/",
+        "date"     : "2025-05-12 00:00:00 +0000"
+        } ,
+    
+        {
         "title"    : "[TableView] 5. 코드기반 커스텀 테이블뷰 구현하기",
         "category" : "",
         "tags"     : "UIKit, TableView",
         "url"      : "/UIKit-tableView5/",
-        "date"     : "2025-05-08 00:00:00 +0000"
+        "date"     : "2025-05-11 00:00:00 +0000"
         } ,
     
         {
@@ -13,7 +21,7 @@
         "category" : "",
         "tags"     : "UIKit, TableView",
         "url"      : "/UIKit-tableView4/",
-        "date"     : "2025-05-08 00:00:00 +0000"
+        "date"     : "2025-05-10 00:00:00 +0000"
         } ,
     
         {
