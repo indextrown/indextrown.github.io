@@ -1,7 +1,7 @@
 ---
 title: "Star Bridge: 생일카페 알리미"
 date: 2024-06-10
-image: /assets/img/Projects/Starbridge/starbridge.png
+image: /assets/img/Projects/Starbridge/Starbridge.png
 github: https://github.com/indextrown/senior-project
 tags:
   - SwiftUI
@@ -27,8 +27,8 @@ Swift를 배우기 시작하던 시기에 졸업 프로젝트에 합류하게 �
 크롤링 → GPT로 데이터 정제 → API 연동으로 백엔드 중심의 구조를 직접 설계하며, 정보를 어떻게 모으고, 걸러내고, 사용자에게 전달할지를 하나의 흐름으로 구현해보는 데 초점을 맞췄습니다.
 
 ## 해결 방법
-<img src="{{ '/assets/img/Projects/Starbridge/starbridge1.png' | relative_url }}" alt="커스텀셀" width="70%"> 
-<img src="{{ '/assets/img/Projects/Starbridge/starbridge2.png' | relative_url }}" alt="커스텀셀" width="70%"> 
+<img src="{{ '/assets/img/Projects/Starbridge/Starbridge1.png' | relative_url }}" alt="커스텀셀" width="70%"> 
+<img src="{{ '/assets/img/Projects/Starbridge/Starbridge2.png' | relative_url }}" alt="커스텀셀" width="70%"> 
 1. **크롤링 자동화**  
    - 로그인 및 차단 문제 해결을 위해, 수동 로그인 후 발급한 쿠키를 저장하고 이를 크롤링 시 재사용하여 안정성 확보.
 
