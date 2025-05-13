@@ -4,6 +4,38 @@
   xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
     <url>
+      <loc>http://localhost:4000/UIKit-tableView8/</loc>
+      
+        <lastmod>2025-05-13T00:00:00+00:00</lastmod>
+      
+
+      
+        <changefreq>weekly</changefreq>
+      
+
+      
+          <priority>0.5</priority>
+      
+
+    </url>
+  
+    <url>
+      <loc>http://localhost:4000/UIKit-tableView7/</loc>
+      
+        <lastmod>2025-05-13T00:00:00+00:00</lastmod>
+      
+
+      
+        <changefreq>weekly</changefreq>
+      
+
+      
+          <priority>0.5</priority>
+      
+
+    </url>
+  
+    <url>
       <loc>http://localhost:4000/UIKit-tableView6/</loc>
       
         <lastmod>2025-05-12T00:00:00+00:00</lastmod>
