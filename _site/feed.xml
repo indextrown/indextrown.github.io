@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-05-13T07:28:32+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[TableView] 7. UITableViewCell 확장을 통해 셀 식별자 코드 재사용</title><link href="http://localhost:4000/UIKit-tableView7/" rel="alternate" type="text/html" title="[TableView] 7. UITableViewCell 확장을 통해 셀 식별자 코드 재사용" /><published>2025-05-12T00:00:00+00:00</published><updated>2025-05-12T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView7</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView7/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-05-13T08:43:59+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[TableView] 7. UITableViewCell 확장을 통해 셀 식별자 코드 재사용</title><link href="http://localhost:4000/UIKit-tableView7/" rel="alternate" type="text/html" title="[TableView] 7. UITableViewCell 확장을 통해 셀 식별자 코드 재사용" /><published>2025-05-13T00:00:00+00:00</published><updated>2025-05-13T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView7</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView7/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="커스텀셀" width="30%"> -->
 
@@ -196,7 +196,789 @@ https://www.swift.org/documentation/api-design-guidelines/<br />
         <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[코드 재사용 /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // [guard let] 방식 guard let cell = tableView.dequeueReusableCell(withIdentifier: "StoryBoardCell", for: indexPath) as? StoryboardCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body //cell.detailTextLabel?.numberOfLines = 0 return cell } 지금까지 재사용되는 셀은 고유한 식별자를 상수로 넣어주는데 보통 클래스 명을 써주었다. 프로그래밍 하면서 상수가 있는 부분은 최대한 피하는게 좋다. 이유는 상수를 재사용할 수도 있고 오타가 발생할 수 있기 때문이다. class StoryboardCell: UITableViewCell { // 변수로 static let reuseIdentifier: String = "StoryboardCell" @IBOutlet weak var titleLabel: UILabel! @IBOutlet weak var bodyLabel: UILabel! /// 1. 셀을 스토리보드에 추가하거나 Nib파일에 추가하게 되면 이 자체의 라이프사이클이 생긴다. awakeFromNib override func awakeFromNib() { /// 2. 상속을 한것이기 때문에 부모에 있는 awakeFromNib 로직을 터트려줘야한다 super.awakeFromNib() print(#fileID, #function, #line, "- awakeFromNib()") self.backgroundColor = .systemYellow } } guard let cell = tableView.dequeueReusableCell(withIdentifier: StoryboardCell.reuseIdentifier, for: indexPath) as? StoryboardCell else { return UITableViewCell() } 그래서 셀에서 static으로 상수로 추가해둔다. 이 방법도 충분하지만 조금 더 편하게 할 수 있다. UITableviewCell 자체가 전부 reuseIdentifier라는 static변수를 가질 수 있게 하면 더 편리해질 수 있다. extension UITableViewCell { static var reuseIdentifier: String { return String(describing: Self.self) // 현재 타입.현재 타입의 타입 그자체, 현재 타입의 타입 객체(메타타입) } } 참고로 확장에서는 저장 속성을 정의할 수 없음으로 계산 속성으로 변경해준다. extension UITableViewCell { static var reuseIdentifier: String { return String(describing: Self.self) // 현재 타입.현재 타입의 타입 그자체, 현재 타입의 타입 객체(메타타입) } } extension UICollectionView { static var reuseIdentifier: String { return String(describing: Self.self) // 현재 타입.현재 타입의 타입 그자체, 현재 타입의 타입 객체(메타타입) } } 하지만 이 방식도 UItableView, UICollectionVIew각각마다 만들어줘야하는 불편함이 있다. 반복을 더 줄일 수 있다. protocol ReuseIdentifiable { // 프로토콜에서 로직을 정의할 수 없어서 가져올 수 있도록 설정 static var reuseIdentifier: String { get } } extension ReuseIdentifiable { // 로직에 대한 정의는 Extension에서 간능 static var reuseIdentifier: String { return String(describing: Self.self) } } // ReuseIdentifiable 채택 class StoryboardCell: UITableViewCell, ReuseIdentifiable { @IBOutlet weak var titleLabel: UILabel! @IBOutlet weak var bodyLabel: UILabel! override func awakeFromNib() { super.awakeFromNib() print(#fileID, #function, #line, "- awakeFromNib()") self.backgroundColor = .systemYellow } } 프로토콜을 활용해서 해결하자. 프로토콜 이름은 아래 컨벤션을 따르면 좋다. https://www.swift.org/documentation/api-design-guidelines/ class NibListViewController: UIViewController { @IBOutlet weak var myTableView: UITableView! var dummySections: [DummySection] = DummySection.getDumies(10) override func viewDidLoad() { super.viewDidLoad() configureTableView() } fileprivate func configureTableView() { // storyboard에서는 테이블뷰에서 셀을 직접 드래그하기때문에 등록이 되지만 Nib 방식에서 등록을 시켜줘야한다. let cellNib = UINib(nibName: "NibCell", bundle: nil) self.myTableView.register(cellNib, forCellReuseIdentifier: "NibCell") self.myTableView.dataSource = self self.myTableView.delegate = self } } 이를 활용하면 Nib파일을 등록할때도 적용할 수 있다. NibCell을 상수로 사용하지 않고 프로토로 해결해보자. 최종 코드 import UIKit protocol Nibbed { static var uinib: UINib { get } } extension Nibbed { static var uinib: UINib { return UINib(nibName: String(describing: Self.self), bundle: nil) } } protocol ReuseIdentifiable { // 프로토콜에서 로직을 정의할 수 없어서 가져올 수 있도록 설정 static var reuseIdentifier: String { get } } extension ReuseIdentifiable { // 로직에 대한 정의는 Extension에서 간능 static var reuseIdentifier: String { return String(describing: Self.self) } } extension UITableViewCell: Nibbed, ReuseIdentifiable {} class NibListViewController: UIViewController { @IBOutlet weak var myTableView: UITableView! var dummySections: [DummySection] = DummySection.getDumies(10) override func viewDidLoad() { super.viewDidLoad() configureTableView() } fileprivate func configureTableView() { // storyboard에서는 테이블뷰에서 셀을 직접 드래그하기때문에 등록이 되지만 Nib 방식에서 등록을 시켜줘야한다. // let cellNib = UINib(nibName: "NibCell", bundle: nil) // self.myTableView.register(cellNib, forCellReuseIdentifier: "NibCell") self.myTableView.register(NibCell.uinib, forCellReuseIdentifier: NibCell.reuseIdentifier) self.myTableView.dataSource = self self.myTableView.delegate = self } }]]></summary></entry><entry><title type="html">[TableView] 6. Cell Configuration</title><link href="http://localhost:4000/UIKit-tableView6/" rel="alternate" type="text/html" title="[TableView] 6. Cell Configuration" /><published>2025-05-12T00:00:00+00:00</published><updated>2025-05-12T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView6</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView6/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[코드 재사용 /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // [guard let] 방식 guard let cell = tableView.dequeueReusableCell(withIdentifier: "StoryBoardCell", for: indexPath) as? StoryboardCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body //cell.detailTextLabel?.numberOfLines = 0 return cell } 지금까지 재사용되는 셀은 고유한 식별자를 상수로 넣어주는데 보통 클래스 명을 써주었다. 프로그래밍 하면서 상수가 있는 부분은 최대한 피하는게 좋다. 이유는 상수를 재사용할 수도 있고 오타가 발생할 수 있기 때문이다. class StoryboardCell: UITableViewCell { // 변수로 static let reuseIdentifier: String = "StoryboardCell" @IBOutlet weak var titleLabel: UILabel! @IBOutlet weak var bodyLabel: UILabel! /// 1. 셀을 스토리보드에 추가하거나 Nib파일에 추가하게 되면 이 자체의 라이프사이클이 생긴다. awakeFromNib override func awakeFromNib() { /// 2. 상속을 한것이기 때문에 부모에 있는 awakeFromNib 로직을 터트려줘야한다 super.awakeFromNib() print(#fileID, #function, #line, "- awakeFromNib()") self.backgroundColor = .systemYellow } } guard let cell = tableView.dequeueReusableCell(withIdentifier: StoryboardCell.reuseIdentifier, for: indexPath) as? StoryboardCell else { return UITableViewCell() } 그래서 셀에서 static으로 상수로 추가해둔다. 이 방법도 충분하지만 조금 더 편하게 할 수 있다. UITableviewCell 자체가 전부 reuseIdentifier라는 static변수를 가질 수 있게 하면 더 편리해질 수 있다. extension UITableViewCell { static var reuseIdentifier: String { return String(describing: Self.self) // 현재 타입.현재 타입의 타입 그자체, 현재 타입의 타입 객체(메타타입) } } 참고로 확장에서는 저장 속성을 정의할 수 없음으로 계산 속성으로 변경해준다. extension UITableViewCell { static var reuseIdentifier: String { return String(describing: Self.self) // 현재 타입.현재 타입의 타입 그자체, 현재 타입의 타입 객체(메타타입) } } extension UICollectionView { static var reuseIdentifier: String { return String(describing: Self.self) // 현재 타입.현재 타입의 타입 그자체, 현재 타입의 타입 객체(메타타입) } } 하지만 이 방식도 UItableView, UICollectionVIew각각마다 만들어줘야하는 불편함이 있다. 반복을 더 줄일 수 있다. protocol ReuseIdentifiable { // 프로토콜에서 로직을 정의할 수 없어서 가져올 수 있도록 설정 static var reuseIdentifier: String { get } } extension ReuseIdentifiable { // 로직에 대한 정의는 Extension에서 간능 static var reuseIdentifier: String { return String(describing: Self.self) } } // ReuseIdentifiable 채택 class StoryboardCell: UITableViewCell, ReuseIdentifiable { @IBOutlet weak var titleLabel: UILabel! @IBOutlet weak var bodyLabel: UILabel! override func awakeFromNib() { super.awakeFromNib() print(#fileID, #function, #line, "- awakeFromNib()") self.backgroundColor = .systemYellow } } 프로토콜을 활용해서 해결하자. 프로토콜 이름은 아래 컨벤션을 따르면 좋다. https://www.swift.org/documentation/api-design-guidelines/ class NibListViewController: UIViewController { @IBOutlet weak var myTableView: UITableView! var dummySections: [DummySection] = DummySection.getDumies(10) override func viewDidLoad() { super.viewDidLoad() configureTableView() } fileprivate func configureTableView() { // storyboard에서는 테이블뷰에서 셀을 직접 드래그하기때문에 등록이 되지만 Nib 방식에서 등록을 시켜줘야한다. let cellNib = UINib(nibName: "NibCell", bundle: nil) self.myTableView.register(cellNib, forCellReuseIdentifier: "NibCell") self.myTableView.dataSource = self self.myTableView.delegate = self } } 이를 활용하면 Nib파일을 등록할때도 적용할 수 있다. NibCell을 상수로 사용하지 않고 프로토로 해결해보자. 최종 코드 import UIKit protocol Nibbed { static var uinib: UINib { get } } extension Nibbed { static var uinib: UINib { return UINib(nibName: String(describing: Self.self), bundle: nil) } } protocol ReuseIdentifiable { // 프로토콜에서 로직을 정의할 수 없어서 가져올 수 있도록 설정 static var reuseIdentifier: String { get } } extension ReuseIdentifiable { // 로직에 대한 정의는 Extension에서 간능 static var reuseIdentifier: String { return String(describing: Self.self) } } extension UITableViewCell: Nibbed, ReuseIdentifiable {} class NibListViewController: UIViewController { @IBOutlet weak var myTableView: UITableView! var dummySections: [DummySection] = DummySection.getDumies(10) override func viewDidLoad() { super.viewDidLoad() configureTableView() } fileprivate func configureTableView() { // storyboard에서는 테이블뷰에서 셀을 직접 드래그하기때문에 등록이 되지만 Nib 방식에서 등록을 시켜줘야한다. // let cellNib = UINib(nibName: "NibCell", bundle: nil) // self.myTableView.register(cellNib, forCellReuseIdentifier: "NibCell") self.myTableView.register(NibCell.uinib, forCellReuseIdentifier: NibCell.reuseIdentifier) self.myTableView.dataSource = self self.myTableView.delegate = self } }]]></summary></entry><entry><title type="html">[TableView] 8. 데이터 소스 이해, 따로써보기</title><link href="http://localhost:4000/UIKit-tableView8/" rel="alternate" type="text/html" title="[TableView] 8. 데이터 소스 이해, 따로써보기" /><published>2025-05-13T00:00:00+00:00</published><updated>2025-05-13T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView8</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView8/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="커스텀셀" width="30%"> -->
+
+<h2 id="8-데이터-소스-이해-따로써보기">8. 데이터 소스 이해, 따로써보기</h2>
+
+<h2 id="테이블-뷰-만들기list">테이블 뷰 만들기(List)</h2>
+
+<ul>
+  <li>테이블뷰 컨트롤러로 만들기(기능이 한정적) vs 일반 뷰 컨트롤러로 만들기</li>
+  <li>우리는 일반 뷰 컨트롤러를 주로 쓰자</li>
+  <li>구성
+    <ul>
+      <li>
+        <p>데이터 소스 - 데이터와 연관, 셀의 종류를 정하기, 보여줄 셀의 개수가 몇개인지 정하기</p>
+
+        <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="kd">class</span> <span class="nv">viewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{}</span>
+        
+  <span class="kd">extension</span> <span class="nv">viewController</span><span class="p">:</span> <span class="kt">UITableViewDataSource</span> <span class="p">{</span>
+      <span class="c1">/// 섹션 내의 셀 개수를 반환하는 메서드</span>
+      <span class="c1">/// - Parameters:</span>
+      <span class="c1">///   - tableView: 데이터를 표시할 테이블 뷰</span>
+      <span class="c1">///   - section: 현재 섹션 인덱스</span>
+      <span class="c1">/// - Returns: 해당 섹션에 표시할 행(row)의 개수</span>
+      <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">numberOfRowsInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+          <span class="c1">// 예: return items.count</span>
+      <span class="p">}</span>
+            
+      <span class="c1">/// 각 행에 표시될 셀을 반환하는 메서드</span>
+      <span class="c1">/// - Parameters:</span>
+      <span class="c1">///   - tableView: 셀을 표시할 테이블 뷰</span>
+      <span class="c1">///   - indexPath: 현재 행의 위치 정보 (섹션, row)</span>
+      <span class="c1">/// - Returns: 구성된 UITableViewCell 객체</span>
+      <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">cellForRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
+          <span class="c1">// 예:</span>
+          <span class="c1">// let cell = tableView.dequeueReusableCell(withIdentifier: "CellIdentifier", for: indexPath)</span>
+          <span class="c1">// cell.textLabel?.text = items[indexPath.row]</span>
+          <span class="c1">// return cell</span>
+      <span class="p">}</span>
+  <span class="p">}</span>
+</code></pre></div>        </div>
+      </li>
+      <li>델리겟 - 이벤트 처리(특정 셀 선택) = 테이블뷰에 대한 액션</li>
+      <li>셀 - 테이블뷰에 들어가는 알맹이</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="datasource를-따로-빼보기">DataSource를 따로 빼보기</h2>
+
+<h3 id="기존-코드">기존 코드</h3>
+
+<p>Cell 파일은 수정 x</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protocol</span> <span class="kt">Nibbed</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="k">var</span> <span class="nv">uinib</span><span class="p">:</span> <span class="kt">UINib</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">Nibbed</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="k">var</span> <span class="nv">uinib</span><span class="p">:</span> <span class="kt">UINib</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kt">UINib</span><span class="p">(</span><span class="nv">nibName</span><span class="p">:</span> <span class="kt">String</span><span class="p">(</span><span class="nv">describing</span><span class="p">:</span> <span class="k">Self</span><span class="o">.</span><span class="k">self</span><span class="p">),</span> <span class="nv">bundle</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">protocol</span> <span class="kt">ReuseIdentifiable</span> <span class="p">{</span>
+    <span class="c1">// 프로토콜에서 로직을 정의할 수 없어서 가져올 수 있도록 설정</span>
+    <span class="kd">static</span> <span class="k">var</span> <span class="nv">reuseIdentifier</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">ReuseIdentifiable</span> <span class="p">{</span>
+    <span class="c1">// 로직에 대한 정의는 Extension에서 간능</span>
+    <span class="kd">static</span> <span class="k">var</span> <span class="nv">reuseIdentifier</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kt">String</span><span class="p">(</span><span class="nv">describing</span><span class="p">:</span> <span class="k">Self</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">UITableViewCell</span><span class="p">:</span> <span class="kt">Nibbed</span> <span class="p">{}</span>
+<span class="kd">extension</span> <span class="kt">UITableViewCell</span> <span class="p">:</span> <span class="kt">ReuseIdentifiable</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kd">extension</span> <span class="kt">UITableViewHeaderFooterView</span> <span class="p">:</span> <span class="kt">ReuseIdentifiable</span> <span class="p">{}</span>
+
+<span class="kd">class</span> <span class="kt">StoryboardCell</span><span class="p">:</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
+    
+    <span class="c1">// 변수로</span>
+    <span class="c1">//static let reuseIdentifier: String = "StoryboardCell"</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">titleLabel</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span>
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">bodyLabel</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span>
+    
+    <span class="c1">/// 1. 셀을 스토리보드에 추가하거나 Nib파일에 추가하게 되면 이 자체의 라이프사이클이 생긴다. awakeFromNib</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">/// 2. 상속을 한것이기 때문에 부모에 있는 awakeFromNib 로직을 터트려줘야한다</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">awakeFromNib</span><span class="p">()</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- awakeFromNib()"</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">systemYellow</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">class</span> <span class="kt">StoryboardListViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">myTableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="o">!</span>
+    
+    <span class="k">var</span> <span class="nv">dummySections</span><span class="p">:</span> <span class="p">[</span><span class="kt">DummySection</span><span class="p">]</span> <span class="o">=</span> <span class="kt">DummySection</span><span class="o">.</span><span class="nf">getDummies</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="k">self</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">/// UITableView의 데이터 관리 역할을 담당</span>
+<span class="kd">extension</span> <span class="kt">StoryboardListViewController</span><span class="p">:</span> <span class="kt">UITableViewDataSource</span> <span class="p">{</span>
+    
+    <span class="c1">/// 섹션이 여러개일때만 사용</span>
+    <span class="c1">/// 섹션의 타이틀 설정</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">titleForHeaderInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"헤더: "</span> <span class="o">+</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">title</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">titleForFooterInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"푸터: "</span> <span class="o">+</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">title</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 섹션이 여러개일때만 사용</span>
+    <span class="c1">/// 현재 섹션이 몇개인지</span>
+    <span class="kd">func</span> <span class="nf">numberOfSections</span><span class="p">(</span><span class="k">in</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">dummySections</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 하나의 섹션에 몇개의 rows가 있냐</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">numberOfRowsInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라</span>
+    <span class="c1">/// - indexPath: 셀의 위치를 나타내는 인덱스 경로</span>
+    <span class="c1">/// - returns: 구성된 UITableViewCell 객체</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">cellForRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
+        <span class="c1">/// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함)</span>
+        <span class="c1">/// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell")</span>
+        
+        <span class="c1">// [guard let] 방식</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="kt">StoryboardCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">StoryboardCell</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
+        <span class="p">}</span>
+        
+        <span class="k">let</span> <span class="nv">sectionData</span><span class="p">:</span> <span class="kt">DummySection</span> <span class="o">=</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">section</span><span class="p">]</span>
+        
+        <span class="k">let</span> <span class="nv">cellData</span><span class="p">:</span> <span class="kt">DummyData</span> <span class="o">=</span> <span class="n">sectionData</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">]</span>
+        
+        <span class="c1">/// 셀의 주 텍스트를 더미 데이터에서 가져오기</span>
+        <span class="n">cell</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">title</span>
+        
+        <span class="c1">/// 셀의 서브 타이틀 설정</span>
+        <span class="n">cell</span><span class="o">.</span><span class="n">bodyLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">body</span>
+        
+        <span class="c1">//cell.detailTextLabel?.numberOfLines = 0</span>
+        <span class="k">return</span> <span class="n">cell</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">/// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리</span>
+<span class="kd">extension</span> <span class="kt">StoryboardListViewController</span><span class="p">:</span> <span class="kt">UITableViewDelegate</span> <span class="p">{</span>
+    <span class="c1">/// 사용자가 특정 셀을 선택했을 때 호출되는 메서드</span>
+    <span class="c1">/// - Parameters:</span>
+    <span class="c1">///   - tableView: 이벤트가 발생한 테이블 뷰</span>
+    <span class="c1">///   - indexPath: 선택된 셀의 위치</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">didSelectRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- indexPath: </span><span class="se">\(</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="수정된-코드">수정된 코드</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">class</span> <span class="kt">MyDataSource</span><span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">UITableViewDataSource</span> <span class="p">{</span>
+    
+    <span class="k">var</span> <span class="nv">dummySections</span><span class="p">:</span> <span class="p">[</span><span class="kt">DummySection</span><span class="p">]</span> <span class="o">=</span> <span class="kt">DummySection</span><span class="o">.</span><span class="nf">getDummies</span><span class="p">()</span>
+    
+    <span class="k">override</span> <span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 섹션이 여러개일때만 사용</span>
+    <span class="c1">/// 섹션의 타이틀 설정</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">titleForHeaderInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"헤더: "</span> <span class="o">+</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">title</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">titleForFooterInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"푸터: "</span> <span class="o">+</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">title</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 섹션이 여러개일때만 사용</span>
+    <span class="c1">/// 현재 섹션이 몇개인지</span>
+    <span class="kd">func</span> <span class="nf">numberOfSections</span><span class="p">(</span><span class="k">in</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">dummySections</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 하나의 섹션에 몇개의 rows가 있냐</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">numberOfRowsInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라</span>
+    <span class="c1">/// - indexPath: 셀의 위치를 나타내는 인덱스 경로</span>
+    <span class="c1">/// - returns: 구성된 UITableViewCell 객체</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">cellForRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
+        <span class="c1">/// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함)</span>
+        <span class="c1">/// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell")</span>
+        
+        <span class="c1">// [guard let] 방식</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="kt">StoryboardCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">StoryboardCell</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
+        <span class="p">}</span>
+        
+        <span class="k">let</span> <span class="nv">sectionData</span><span class="p">:</span> <span class="kt">DummySection</span> <span class="o">=</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">section</span><span class="p">]</span>
+        
+        <span class="k">let</span> <span class="nv">cellData</span><span class="p">:</span> <span class="kt">DummyData</span> <span class="o">=</span> <span class="n">sectionData</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">]</span>
+        
+        <span class="c1">/// 셀의 주 텍스트를 더미 데이터에서 가져오기</span>
+        <span class="n">cell</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">title</span>
+        
+        <span class="c1">/// 셀의 서브 타이틀 설정</span>
+        <span class="n">cell</span><span class="o">.</span><span class="n">bodyLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">body</span>
+        
+        <span class="c1">//cell.detailTextLabel?.numberOfLines = 0</span>
+        <span class="k">return</span> <span class="n">cell</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">class</span> <span class="kt">StoryboardListViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">myTableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="o">!</span>
+    
+    <span class="k">var</span> <span class="nv">dataSource</span><span class="p">:</span> <span class="kt">MyDataSource</span> <span class="o">=</span> <span class="kt">MyDataSource</span><span class="p">()</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="n">dataSource</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="c1">/// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리</span>
+<span class="kd">extension</span> <span class="kt">StoryboardListViewController</span><span class="p">:</span> <span class="kt">UITableViewDelegate</span> <span class="p">{</span>
+    <span class="c1">/// 사용자가 특정 셀을 선택했을 때 호출되는 메서드</span>
+    <span class="c1">/// - Parameters:</span>
+    <span class="c1">///   - tableView: 이벤트가 발생한 테이블 뷰</span>
+    <span class="c1">///   - indexPath: 선택된 셀의 위치</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">didSelectRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- indexPath: </span><span class="se">\(</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="niblistviewcontroller도-mydatasource로수정-가능">NibListViewController도 MyDataSource로수정 가능</h2>
+
+<h3 id="기존-코드-1">기존 코드</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">class</span> <span class="kt">NibListViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">myTableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="o">!</span>
+    <span class="k">var</span> <span class="nv">dummySections</span><span class="p">:</span> <span class="p">[</span><span class="kt">DummySection</span><span class="p">]</span> <span class="o">=</span> <span class="kt">DummySection</span><span class="o">.</span><span class="nf">getDummies</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="nf">configureTableView</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">configureTableView</span><span class="p">()</span> <span class="p">{</span>
+        
+        <span class="c1">// storyboard에서는 테이블뷰에서 셀을 직접 드래그하기때문에 등록이 되지만 Nib 방식에서 등록을 시켜줘야한다.</span>
+        <span class="c1">// let cellNib = UINib(nibName: "NibCell", bundle: nil)</span>
+        
+        <span class="c1">// self.myTableView.register(cellNib, forCellReuseIdentifier: "NibCell")</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="kt">NibCell</span><span class="o">.</span><span class="n">uinib</span><span class="p">,</span> <span class="nv">forCellReuseIdentifier</span><span class="p">:</span> <span class="kt">NibCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">)</span>
+        
+        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="k">self</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">/// UITableView의 데이터 관리 역할을 담당</span>
+<span class="kd">extension</span> <span class="kt">NibListViewController</span><span class="p">:</span> <span class="kt">UITableViewDataSource</span> <span class="p">{</span>
+    
+    <span class="c1">/// 섹션이 여러개일때만 사용</span>
+    <span class="c1">/// 섹션의 타이틀 설정</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">titleForHeaderInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"헤더: "</span> <span class="o">+</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">title</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">titleForFooterInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"푸터: "</span> <span class="o">+</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">title</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 섹션이 여러개일때만 사용</span>
+    <span class="c1">/// 현재 섹션이 몇개인지</span>
+    <span class="kd">func</span> <span class="nf">numberOfSections</span><span class="p">(</span><span class="k">in</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">dummySections</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 하나의 섹션에 몇개의 rows가 있냐</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">numberOfRowsInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라</span>
+    <span class="c1">/// - indexPath: 셀의 위치를 나타내는 인덱스 경로</span>
+    <span class="c1">/// - returns: 구성된 UITableViewCell 객체</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">cellForRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
+        <span class="c1">/// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함)</span>
+        <span class="c1">/// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell")</span>
+        
+        <span class="c1">// [guard let] 방식</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="s">"NibCell"</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">NibCell</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
+        <span class="p">}</span>
+        
+        <span class="k">let</span> <span class="nv">sectionData</span><span class="p">:</span> <span class="kt">DummySection</span> <span class="o">=</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">section</span><span class="p">]</span>
+        
+        <span class="k">let</span> <span class="nv">cellData</span><span class="p">:</span> <span class="kt">DummyData</span> <span class="o">=</span> <span class="n">sectionData</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">]</span>
+        
+        <span class="c1">/// 셀의 주 텍스트를 더미 데이터에서 가져오기</span>
+        <span class="n">cell</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">title</span>
+        
+        <span class="c1">/// 셀의 서브 타이틀 설정</span>
+        <span class="n">cell</span><span class="o">.</span><span class="n">bodyLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">body</span>
+        
+        <span class="c1">//cell.detailTextLabel?.numberOfLines = 0</span>
+        <span class="k">return</span> <span class="n">cell</span>
+        
+        <span class="cm">/*
+        [if let] 방식
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "StoryBoardCell", for: indexPath) as? StoryboardCell {
+            let sectionData: DummySection = dummySections[indexPath.section]
+            
+            let cellData: DummyData = sectionData.rows[indexPath.row]
+            
+            /// 셀의 주 텍스트를 더미 데이터에서 가져오기
+            cell.titleLabel.text = cellData.title
+            
+            /// 셀의 서브 타이틀 설정
+            cell.bodyLabel.text = cellData.body
+            
+            //cell.detailTextLabel?.numberOfLines = 0
+            return cell
+        } else {
+            return UITableViewCell()
+        }
+        */</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">/// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리</span>
+<span class="kd">extension</span> <span class="kt">NibListViewController</span><span class="p">:</span> <span class="kt">UITableViewDelegate</span> <span class="p">{</span>
+    <span class="c1">/// 사용자가 특정 셀을 선택했을 때 호출되는 메서드</span>
+    <span class="c1">/// - Parameters:</span>
+    <span class="c1">///   - tableView: 이벤트가 발생한 테이블 뷰</span>
+    <span class="c1">///   - indexPath: 선택된 셀의 위치</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">didSelectRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- indexPath: </span><span class="se">\(</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<h3 id="수정된-코드-1">수정된 코드</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">class</span> <span class="kt">MyDataSource</span><span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">UITableViewDataSource</span> <span class="p">{</span>
+    
+    <span class="kd">enum</span> <span class="kt">ListType</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="n">storyboard</span>
+        <span class="k">case</span> <span class="n">nib</span>
+        <span class="k">case</span> <span class="n">code</span>
+        <span class="k">case</span> <span class="n">cellConfig</span>
+    <span class="p">}</span>
+    
+    <span class="k">var</span> <span class="nv">listType</span><span class="p">:</span> <span class="kt">ListType</span> <span class="o">=</span> <span class="o">.</span><span class="n">storyboard</span>
+    
+    <span class="k">var</span> <span class="nv">dummySections</span><span class="p">:</span> <span class="p">[</span><span class="kt">DummySection</span><span class="p">]</span> <span class="o">=</span> <span class="kt">DummySection</span><span class="o">.</span><span class="nf">getDummies</span><span class="p">()</span>
+    
+    <span class="k">override</span> <span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">convenience</span> <span class="nf">init</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="kt">ListType</span> <span class="o">=</span> <span class="o">.</span><span class="n">storyboard</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">init</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">listType</span> <span class="o">=</span> <span class="n">type</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - 셀을 등록하는 소스 관련</span>
+    <span class="c1">/// 셀을 등록</span>
+    <span class="c1">/// 스토리보드에서 셀을 추가하면 Xcode가 내부적으로 셀을 자동 등록한다</span>
+    <span class="c1">/// 이코드가 자동 등록된다고 생각 tableView.dequeueReusableCell(withIdentifier: "StoryboardCell")</span>
+    <span class="c1">/// - Parameter tableView: 등록할 테이블뷰</span>
+    <span class="kd">func</span> <span class="nf">registerCells</span><span class="p">(</span><span class="n">with</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">tableView</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="kt">NibCell</span><span class="o">.</span><span class="n">uinib</span><span class="p">,</span> <span class="nv">forCellReuseIdentifier</span><span class="p">:</span> <span class="kt">NibCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: -  테이블뷰 데이터 소스 관련</span>
+    <span class="c1">/// 섹션이 여러개일때만 사용</span>
+    <span class="c1">/// 섹션의 타이틀 설정</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">titleForHeaderInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"헤더: "</span> <span class="o">+</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">title</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">titleForFooterInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"푸터: "</span> <span class="o">+</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">title</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 섹션이 여러개일때만 사용</span>
+    <span class="c1">/// 현재 섹션이 몇개인지</span>
+    <span class="kd">func</span> <span class="nf">numberOfSections</span><span class="p">(</span><span class="k">in</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">dummySections</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 하나의 섹션에 몇개의 rows가 있냐</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">numberOfRowsInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라</span>
+    <span class="c1">/// - indexPath: 셀의 위치를 나타내는 인덱스 경로</span>
+    <span class="c1">/// - returns: 구성된 UITableViewCell 객체</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">cellForRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
+        <span class="c1">/// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함)</span>
+        <span class="c1">/// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell")</span>
+        
+        <span class="c1">// [guard let] 방식</span>
+        
+        <span class="k">switch</span> <span class="n">listType</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">storyboard</span><span class="p">:</span>
+            <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="kt">StoryboardCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">StoryboardCell</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="k">let</span> <span class="nv">sectionData</span><span class="p">:</span> <span class="kt">DummySection</span> <span class="o">=</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">section</span><span class="p">]</span>
+            <span class="k">let</span> <span class="nv">cellData</span><span class="p">:</span> <span class="kt">DummyData</span> <span class="o">=</span> <span class="n">sectionData</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">]</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">title</span> <span class="c1">/// 셀의 주 텍스트를 더미 데이터에서 가져오기</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">bodyLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">body</span>   <span class="c1">/// 셀의 서브 타이틀 설정</span>
+            <span class="k">return</span> <span class="n">cell</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">nib</span><span class="p">:</span>
+            <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="kt">NibCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">NibCell</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="k">let</span> <span class="nv">sectionData</span><span class="p">:</span> <span class="kt">DummySection</span> <span class="o">=</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">section</span><span class="p">]</span>
+            <span class="k">let</span> <span class="nv">cellData</span><span class="p">:</span> <span class="kt">DummyData</span> <span class="o">=</span> <span class="n">sectionData</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">]</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">title</span> <span class="c1">/// 셀의 주 텍스트를 더미 데이터에서 가져오기</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">bodyLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">body</span>   <span class="c1">/// 셀의 서브 타이틀 설정</span>
+            <span class="k">return</span> <span class="n">cell</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">code</span><span class="p">:</span>
+            <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="kt">CodeCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">CodeCell</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="k">let</span> <span class="nv">sectionData</span><span class="p">:</span> <span class="kt">DummySection</span> <span class="o">=</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">section</span><span class="p">]</span>
+            <span class="k">let</span> <span class="nv">cellData</span><span class="p">:</span> <span class="kt">DummyData</span> <span class="o">=</span> <span class="n">sectionData</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">]</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">title</span> <span class="c1">/// 셀의 주 텍스트를 더미 데이터에서 가져오기</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">bodyLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">body</span>   <span class="c1">/// 셀의 서브 타이틀 설정</span>
+            <span class="k">return</span> <span class="n">cell</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">cellConfig</span><span class="p">:</span>
+            <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="kt">CellConfigTableViewCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">CellConfigTableViewCell</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="k">let</span> <span class="nv">sectionData</span><span class="p">:</span> <span class="kt">DummySection</span> <span class="o">=</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">section</span><span class="p">]</span>
+            <span class="k">let</span> <span class="nv">cellData</span><span class="p">:</span> <span class="kt">DummyData</span> <span class="o">=</span> <span class="n">sectionData</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">]</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">title</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">body</span>
+            <span class="k">return</span> <span class="n">cell</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">class</span> <span class="kt">NibListViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">myTableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="o">!</span>
+    
+    <span class="k">var</span> <span class="nv">dataSource</span><span class="p">:</span> <span class="kt">MyDataSource</span> <span class="o">=</span> <span class="kt">MyDataSource</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="o">.</span><span class="n">nib</span><span class="p">)</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="nf">configureTableView</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">configureTableView</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// self.myTableView.register(NibCell.uinib, forCellReuseIdentifier: NibCell.reuseIdentifier)</span>
+        
+        <span class="c1">// 셀을 등록</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">dataSource</span><span class="o">.</span><span class="nf">registerCells</span><span class="p">(</span><span class="nv">with</span><span class="p">:</span> <span class="n">myTableView</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="n">dataSource</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">/// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리</span>
+<span class="kd">extension</span> <span class="kt">NibListViewController</span><span class="p">:</span> <span class="kt">UITableViewDelegate</span> <span class="p">{</span>
+    <span class="c1">/// 사용자가 특정 셀을 선택했을 때 호출되는 메서드</span>
+    <span class="c1">/// - Parameters:</span>
+    <span class="c1">///   - tableView: 이벤트가 발생한 테이블 뷰</span>
+    <span class="c1">///   - indexPath: 선택된 셀의 위치</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">didSelectRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- indexPath: </span><span class="se">\(</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="cellconfigurationlistviewcontroller도-mydatasource로수정-가능">CellConfigurationListViewController도 MyDataSource로수정 가능</h2>
+
+<h3 id="기존-코드-2">기존 코드</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">class</span> <span class="kt">CellConfigurationListViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">myTableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="o">!</span>
+    <span class="k">var</span> <span class="nv">dummySections</span><span class="p">:</span> <span class="p">[</span><span class="kt">DummySection</span><span class="p">]</span> <span class="o">=</span> <span class="kt">DummySection</span><span class="o">.</span><span class="nf">getDummies</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">configureTableView</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">configureTableView</span><span class="p">()</span> <span class="p">{</span>
+        
+        <span class="c1">// CodeCell에서는 이 줄만 필요</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="kt">CellConfigTableViewCell</span><span class="o">.</span><span class="k">self</span><span class="p">,</span> <span class="nv">forCellReuseIdentifier</span><span class="p">:</span> <span class="s">"CellConfigTableViewCell"</span><span class="p">)</span>
+        
+        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="k">self</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="c1">/// UITableView의 데이터 관리 역할을 담당</span>
+<span class="kd">extension</span> <span class="kt">CellConfigurationListViewController</span><span class="p">:</span> <span class="kt">UITableViewDataSource</span> <span class="p">{</span>
+    
+    <span class="c1">/// 섹션이 여러개일때만 사용</span>
+    <span class="c1">/// 섹션의 타이틀 설정</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">titleForHeaderInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"헤더: "</span> <span class="o">+</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">title</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">titleForFooterInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"푸터: "</span> <span class="o">+</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">title</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 섹션이 여러개일때만 사용</span>
+    <span class="c1">/// 현재 섹션이 몇개인지</span>
+    <span class="kd">func</span> <span class="nf">numberOfSections</span><span class="p">(</span><span class="k">in</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">dummySections</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 하나의 섹션에 몇개의 rows가 있냐</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">numberOfRowsInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라</span>
+    <span class="c1">/// - indexPath: 셀의 위치를 나타내는 인덱스 경로</span>
+    <span class="c1">/// - returns: 구성된 UITableViewCell 객체</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">cellForRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
+        <span class="c1">/// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함)</span>
+        <span class="c1">/// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell")</span>
+        
+        <span class="c1">// [guard let] 방식</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="s">"CellConfigTableViewCell"</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">CellConfigTableViewCell</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
+        <span class="p">}</span>
+        
+        <span class="k">let</span> <span class="nv">sectionData</span><span class="p">:</span> <span class="kt">DummySection</span> <span class="o">=</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">section</span><span class="p">]</span>
+        
+        <span class="k">let</span> <span class="nv">cellData</span><span class="p">:</span> <span class="kt">DummyData</span> <span class="o">=</span> <span class="n">sectionData</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">]</span>
+        
+        <span class="c1">/// 셀의 주 텍스트를 더미 데이터에서 가져오기</span>
+        <span class="c1">// cell.titleLabel.text = cellData.title</span>
+        
+        <span class="c1">/// 셀의 서브 타이틀 설정</span>
+        <span class="c1">// cell.bodyLabel.text = cellData.body</span>
+        
+        <span class="c1">//cell.detailTextLabel?.numberOfLines = 0</span>
+        
+        <span class="c1">// 여기서는 UI에 접근하는게 아니라 Cell이 가지고 있는 멤버변수 데이터 자체에 접근</span>
+        <span class="n">cell</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">title</span>
+        <span class="n">cell</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">body</span>
+        <span class="k">return</span> <span class="n">cell</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">/// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리</span>
+<span class="kd">extension</span> <span class="kt">CellConfigurationListViewController</span><span class="p">:</span> <span class="kt">UITableViewDelegate</span> <span class="p">{</span>
+    <span class="c1">/// 사용자가 특정 셀을 선택했을 때 호출되는 메서드</span>
+    <span class="c1">/// - Parameters:</span>
+    <span class="c1">///   - tableView: 이벤트가 발생한 테이블 뷰</span>
+    <span class="c1">///   - indexPath: 선택된 셀의 위치</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">didSelectRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- indexPath: </span><span class="se">\(</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<h3 id="수정된-코드-2">수정된 코드</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">class</span> <span class="kt">MyDataSource</span><span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">UITableViewDataSource</span> <span class="p">{</span>
+    
+    <span class="kd">enum</span> <span class="kt">ListType</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="n">storyboard</span>
+        <span class="k">case</span> <span class="n">nib</span>
+        <span class="k">case</span> <span class="n">code</span>
+        <span class="k">case</span> <span class="n">cellConfig</span>
+    <span class="p">}</span>
+    
+    <span class="k">var</span> <span class="nv">listType</span><span class="p">:</span> <span class="kt">ListType</span> <span class="o">=</span> <span class="o">.</span><span class="n">storyboard</span>
+    
+    <span class="k">var</span> <span class="nv">dummySections</span><span class="p">:</span> <span class="p">[</span><span class="kt">DummySection</span><span class="p">]</span> <span class="o">=</span> <span class="kt">DummySection</span><span class="o">.</span><span class="nf">getDummies</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    
+    <span class="k">override</span> <span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">convenience</span> <span class="nf">init</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="kt">ListType</span> <span class="o">=</span> <span class="o">.</span><span class="n">storyboard</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">init</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">listType</span> <span class="o">=</span> <span class="n">type</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - 셀을 등록하는 소스 관련</span>
+    <span class="c1">/// 셀을 등록</span>
+    <span class="c1">/// 스토리보드에서 셀을 추가하면 Xcode가 내부적으로 셀을 자동 등록한다</span>
+    <span class="c1">/// 이코드가 자동 등록된다고 생각 tableView.dequeueReusableCell(withIdentifier: "StoryboardCell")</span>
+    <span class="c1">/// - Parameter tableView: 등록할 테이블뷰</span>
+    <span class="kd">func</span> <span class="nf">registerCells</span><span class="p">(</span><span class="n">with</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">/// Nib 방식으로 만든 셀(NibCell.xib 파일)을 테이블 뷰에 등록</span>
+        <span class="c1">/// - NibCell.uinib : UINib(nibName: "NibCell", bundle: nil) 을 반환</span>
+        <span class="c1">/// - NibCell.reuseIdentifier : "NibCell" 문자열을 반환 (보통 클래스명을 기반으로 자동 생성)</span>
+        <span class="c1">/// → 이후 dequeue 시 이 identifier로 셀을 재사용할 수 있게 됨</span>
+        <span class="c1">/// tableView.register(NibCell.uinib, forCellReuseIdentifier: NibCell.reuseIdentifier)</span>
+        
+        <span class="c1">/// 코드로만 구현된 셀 클래스를 테이블 뷰에 등록</span>
+        <span class="c1">/// - CellConfigTableViewCell.self : 클래스 자체를 등록</span>
+        <span class="c1">/// - reuseIdentifier : "CellConfigTableViewCell" 문자열</span>
+        <span class="c1">/// → register(class:) 방식은 .xib 없이 순수 코드로 UI 구성한 셀에 사용</span>
+        <span class="c1">/// tableView.register(CellConfigTableViewCell.self, forCellReuseIdentifier: CellConfigTableViewCell.reuseIdentifier)</span>
+        <span class="k">switch</span> <span class="n">listType</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">nib</span><span class="p">:</span>
+            <span class="n">tableView</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="kt">NibCell</span><span class="o">.</span><span class="n">uinib</span><span class="p">,</span> <span class="nv">forCellReuseIdentifier</span><span class="p">:</span> <span class="kt">NibCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">)</span>
+            
+        <span class="k">case</span> <span class="o">.</span><span class="nv">code</span><span class="p">:</span>
+            <span class="n">tableView</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="kt">CodeCell</span><span class="o">.</span><span class="k">self</span><span class="p">,</span> <span class="nv">forCellReuseIdentifier</span><span class="p">:</span> <span class="kt">CodeCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">)</span>
+            
+        <span class="k">case</span> <span class="o">.</span><span class="nv">cellConfig</span><span class="p">:</span>
+            <span class="n">tableView</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="kt">CellConfigTableViewCell</span><span class="o">.</span><span class="k">self</span><span class="p">,</span> <span class="nv">forCellReuseIdentifier</span><span class="p">:</span> <span class="kt">CellConfigTableViewCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">)</span>
+            
+        <span class="k">case</span> <span class="o">.</span><span class="nv">storyboard</span><span class="p">:</span>
+            <span class="c1">// ❌ 스토리보드는 register 필요 없음!</span>
+            <span class="k">break</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: -  테이블뷰 데이터 소스 관련</span>
+    <span class="c1">/// 섹션이 여러개일때만 사용</span>
+    <span class="c1">/// 섹션의 타이틀 설정</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">titleForHeaderInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"헤더: "</span> <span class="o">+</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">title</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">titleForFooterInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">"푸터: "</span> <span class="o">+</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">title</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 섹션이 여러개일때만 사용</span>
+    <span class="c1">/// 현재 섹션이 몇개인지</span>
+    <span class="kd">func</span> <span class="nf">numberOfSections</span><span class="p">(</span><span class="k">in</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">dummySections</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 하나의 섹션에 몇개의 rows가 있냐</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">numberOfRowsInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라</span>
+    <span class="c1">/// - indexPath: 셀의 위치를 나타내는 인덱스 경로</span>
+    <span class="c1">/// - returns: 구성된 UITableViewCell 객체</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">cellForRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
+        <span class="c1">/// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함)</span>
+        <span class="c1">/// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell")</span>
+        
+        <span class="c1">// [guard let] 방식</span>
+        
+        <span class="k">switch</span> <span class="n">listType</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">storyboard</span><span class="p">:</span>
+            <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="kt">StoryboardCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">StoryboardCell</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="k">let</span> <span class="nv">sectionData</span><span class="p">:</span> <span class="kt">DummySection</span> <span class="o">=</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">section</span><span class="p">]</span>
+            <span class="k">let</span> <span class="nv">cellData</span><span class="p">:</span> <span class="kt">DummyData</span> <span class="o">=</span> <span class="n">sectionData</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">]</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">title</span> <span class="c1">/// 셀의 주 텍스트를 더미 데이터에서 가져오기</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">bodyLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">body</span>   <span class="c1">/// 셀의 서브 타이틀 설정</span>
+            <span class="k">return</span> <span class="n">cell</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">nib</span><span class="p">:</span>
+            <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="kt">NibCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">NibCell</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="k">let</span> <span class="nv">sectionData</span><span class="p">:</span> <span class="kt">DummySection</span> <span class="o">=</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">section</span><span class="p">]</span>
+            <span class="k">let</span> <span class="nv">cellData</span><span class="p">:</span> <span class="kt">DummyData</span> <span class="o">=</span> <span class="n">sectionData</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">]</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">title</span> <span class="c1">/// 셀의 주 텍스트를 더미 데이터에서 가져오기</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">bodyLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">body</span>   <span class="c1">/// 셀의 서브 타이틀 설정</span>
+            <span class="k">return</span> <span class="n">cell</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">code</span><span class="p">:</span>
+            <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="kt">CodeCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">CodeCell</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="k">let</span> <span class="nv">sectionData</span><span class="p">:</span> <span class="kt">DummySection</span> <span class="o">=</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">section</span><span class="p">]</span>
+            <span class="k">let</span> <span class="nv">cellData</span><span class="p">:</span> <span class="kt">DummyData</span> <span class="o">=</span> <span class="n">sectionData</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">]</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">title</span> <span class="c1">/// 셀의 주 텍스트를 더미 데이터에서 가져오기</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">bodyLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">body</span>   <span class="c1">/// 셀의 서브 타이틀 설정</span>
+            <span class="k">return</span> <span class="n">cell</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">cellConfig</span><span class="p">:</span>
+            <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="kt">CellConfigTableViewCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">CellConfigTableViewCell</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="k">let</span> <span class="nv">sectionData</span><span class="p">:</span> <span class="kt">DummySection</span> <span class="o">=</span> <span class="n">dummySections</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">section</span><span class="p">]</span>
+            <span class="k">let</span> <span class="nv">cellData</span><span class="p">:</span> <span class="kt">DummyData</span> <span class="o">=</span> <span class="n">sectionData</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">]</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">title</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">body</span>
+            <span class="k">return</span> <span class="n">cell</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">class</span> <span class="kt">CellConfigurationListViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">myTableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="o">!</span>
+    <span class="k">var</span> <span class="nv">dummySections</span><span class="p">:</span> <span class="p">[</span><span class="kt">DummySection</span><span class="p">]</span> <span class="o">=</span> <span class="kt">DummySection</span><span class="o">.</span><span class="nf">getDummies</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="k">var</span> <span class="nv">dataSource</span><span class="p">:</span> <span class="kt">MyDataSource</span> <span class="o">=</span> <span class="kt">MyDataSource</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="o">.</span><span class="n">cellConfig</span><span class="p">)</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">configureTableView</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">configureTableView</span><span class="p">()</span> <span class="p">{</span>
+        
+        <span class="c1">// CodeCell에서는 이 줄만 필요</span>
+<span class="c1">//        self.myTableView.register(CellConfigTableViewCell.self, forCellReuseIdentifier: "CellConfigTableViewCell")</span>
+        
+        <span class="k">self</span><span class="o">.</span><span class="n">dataSource</span><span class="o">.</span><span class="nf">registerCells</span><span class="p">(</span><span class="nv">with</span><span class="p">:</span> <span class="n">myTableView</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="n">dataSource</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">/// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리</span>
+<span class="kd">extension</span> <span class="kt">CellConfigurationListViewController</span><span class="p">:</span> <span class="kt">UITableViewDelegate</span> <span class="p">{</span>
+    <span class="c1">/// 사용자가 특정 셀을 선택했을 때 호출되는 메서드</span>
+    <span class="c1">/// - Parameters:</span>
+    <span class="c1">///   - tableView: 이벤트가 발생한 테이블 뷰</span>
+    <span class="c1">///   - indexPath: 선택된 셀의 위치</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">didSelectRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- indexPath: </span><span class="se">\(</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[8. 데이터 소스 이해, 따로써보기 테이블 뷰 만들기(List) 테이블뷰 컨트롤러로 만들기(기능이 한정적) vs 일반 뷰 컨트롤러로 만들기 우리는 일반 뷰 컨트롤러를 주로 쓰자 구성 데이터 소스 - 데이터와 연관, 셀의 종류를 정하기, 보여줄 셀의 개수가 몇개인지 정하기 class viewController: UIViewController {} extension viewController: UITableViewDataSource { /// 섹션 내의 셀 개수를 반환하는 메서드 /// - Parameters: /// - tableView: 데이터를 표시할 테이블 뷰 /// - section: 현재 섹션 인덱스 /// - Returns: 해당 섹션에 표시할 행(row)의 개수 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { // 예: return items.count } /// 각 행에 표시될 셀을 반환하는 메서드 /// - Parameters: /// - tableView: 셀을 표시할 테이블 뷰 /// - indexPath: 현재 행의 위치 정보 (섹션, row) /// - Returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { // 예: // let cell = tableView.dequeueReusableCell(withIdentifier: "CellIdentifier", for: indexPath) // cell.textLabel?.text = items[indexPath.row] // return cell } } 델리겟 - 이벤트 처리(특정 셀 선택) = 테이블뷰에 대한 액션 셀 - 테이블뷰에 들어가는 알맹이 DataSource를 따로 빼보기 기존 코드 Cell 파일은 수정 x protocol Nibbed { static var uinib: UINib { get } } extension Nibbed { static var uinib: UINib { return UINib(nibName: String(describing: Self.self), bundle: nil) } } protocol ReuseIdentifiable { // 프로토콜에서 로직을 정의할 수 없어서 가져올 수 있도록 설정 static var reuseIdentifier: String { get } } extension ReuseIdentifiable { // 로직에 대한 정의는 Extension에서 간능 static var reuseIdentifier: String { return String(describing: Self.self) } } extension UITableViewCell: Nibbed {} extension UITableViewCell : ReuseIdentifiable { } extension UITableViewHeaderFooterView : ReuseIdentifiable {} class StoryboardCell: UITableViewCell { // 변수로 //static let reuseIdentifier: String = "StoryboardCell" @IBOutlet weak var titleLabel: UILabel! @IBOutlet weak var bodyLabel: UILabel! /// 1. 셀을 스토리보드에 추가하거나 Nib파일에 추가하게 되면 이 자체의 라이프사이클이 생긴다. awakeFromNib override func awakeFromNib() { /// 2. 상속을 한것이기 때문에 부모에 있는 awakeFromNib 로직을 터트려줘야한다 super.awakeFromNib() print(#fileID, #function, #line, "- awakeFromNib()") self.backgroundColor = .systemYellow } } import UIKit class StoryboardListViewController: UIViewController { @IBOutlet weak var myTableView: UITableView! var dummySections: [DummySection] = DummySection.getDummies(10) override func viewDidLoad() { super.viewDidLoad() self.myTableView.dataSource = self self.myTableView.delegate = self } } /// UITableView의 데이터 관리 역할을 담당 extension StoryboardListViewController: UITableViewDataSource { /// 섹션이 여러개일때만 사용 /// 섹션의 타이틀 설정 func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -&gt; String? { return "헤더: " + dummySections[section].title } func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -&gt; String? { return "푸터: " + dummySections[section].title } /// 섹션이 여러개일때만 사용 /// 현재 섹션이 몇개인지 func numberOfSections(in tableView: UITableView) -&gt; Int { return dummySections.count } /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return dummySections[section].rows.count } /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // [guard let] 방식 guard let cell = tableView.dequeueReusableCell(withIdentifier: StoryboardCell.reuseIdentifier, for: indexPath) as? StoryboardCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body //cell.detailTextLabel?.numberOfLines = 0 return cell } } /// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리 extension StoryboardListViewController: UITableViewDelegate { /// 사용자가 특정 셀을 선택했을 때 호출되는 메서드 /// - Parameters: /// - tableView: 이벤트가 발생한 테이블 뷰 /// - indexPath: 선택된 셀의 위치 func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { print(#fileID, #function, #line, "- indexPath: \(indexPath.row)") } } 수정된 코드 import UIKit class MyDataSource: NSObject, UITableViewDataSource { var dummySections: [DummySection] = DummySection.getDummies() override init() { super.init() } /// 섹션이 여러개일때만 사용 /// 섹션의 타이틀 설정 func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -&gt; String? { return "헤더: " + dummySections[section].title } func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -&gt; String? { return "푸터: " + dummySections[section].title } /// 섹션이 여러개일때만 사용 /// 현재 섹션이 몇개인지 func numberOfSections(in tableView: UITableView) -&gt; Int { return dummySections.count } /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return dummySections[section].rows.count } /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // [guard let] 방식 guard let cell = tableView.dequeueReusableCell(withIdentifier: StoryboardCell.reuseIdentifier, for: indexPath) as? StoryboardCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body //cell.detailTextLabel?.numberOfLines = 0 return cell } } import UIKit class StoryboardListViewController: UIViewController { @IBOutlet weak var myTableView: UITableView! var dataSource: MyDataSource = MyDataSource() override func viewDidLoad() { super.viewDidLoad() self.myTableView.dataSource = dataSource self.myTableView.delegate = self } } /// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리 extension StoryboardListViewController: UITableViewDelegate { /// 사용자가 특정 셀을 선택했을 때 호출되는 메서드 /// - Parameters: /// - tableView: 이벤트가 발생한 테이블 뷰 /// - indexPath: 선택된 셀의 위치 func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { print(#fileID, #function, #line, "- indexPath: \(indexPath.row)") } } NibListViewController도 MyDataSource로수정 가능 기존 코드 import UIKit class NibListViewController: UIViewController { @IBOutlet weak var myTableView: UITableView! var dummySections: [DummySection] = DummySection.getDummies(10) override func viewDidLoad() { super.viewDidLoad() configureTableView() } fileprivate func configureTableView() { // storyboard에서는 테이블뷰에서 셀을 직접 드래그하기때문에 등록이 되지만 Nib 방식에서 등록을 시켜줘야한다. // let cellNib = UINib(nibName: "NibCell", bundle: nil) // self.myTableView.register(cellNib, forCellReuseIdentifier: "NibCell") self.myTableView.register(NibCell.uinib, forCellReuseIdentifier: NibCell.reuseIdentifier) self.myTableView.dataSource = self self.myTableView.delegate = self } } /// UITableView의 데이터 관리 역할을 담당 extension NibListViewController: UITableViewDataSource { /// 섹션이 여러개일때만 사용 /// 섹션의 타이틀 설정 func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -&gt; String? { return "헤더: " + dummySections[section].title } func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -&gt; String? { return "푸터: " + dummySections[section].title } /// 섹션이 여러개일때만 사용 /// 현재 섹션이 몇개인지 func numberOfSections(in tableView: UITableView) -&gt; Int { return dummySections.count } /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return dummySections[section].rows.count } /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // [guard let] 방식 guard let cell = tableView.dequeueReusableCell(withIdentifier: "NibCell", for: indexPath) as? NibCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body //cell.detailTextLabel?.numberOfLines = 0 return cell /* [if let] 방식 if let cell = tableView.dequeueReusableCell(withIdentifier: "StoryBoardCell", for: indexPath) as? StoryboardCell { let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body //cell.detailTextLabel?.numberOfLines = 0 return cell } else { return UITableViewCell() } */ } } /// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리 extension NibListViewController: UITableViewDelegate { /// 사용자가 특정 셀을 선택했을 때 호출되는 메서드 /// - Parameters: /// - tableView: 이벤트가 발생한 테이블 뷰 /// - indexPath: 선택된 셀의 위치 func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { print(#fileID, #function, #line, "- indexPath: \(indexPath.row)") } } 수정된 코드 import UIKit class MyDataSource: NSObject, UITableViewDataSource { enum ListType { case storyboard case nib case code case cellConfig } var listType: ListType = .storyboard var dummySections: [DummySection] = DummySection.getDummies() override init() { super.init() } convenience init(type: ListType = .storyboard) { self.init() self.listType = type } // MARK: - 셀을 등록하는 소스 관련 /// 셀을 등록 /// 스토리보드에서 셀을 추가하면 Xcode가 내부적으로 셀을 자동 등록한다 /// 이코드가 자동 등록된다고 생각 tableView.dequeueReusableCell(withIdentifier: "StoryboardCell") /// - Parameter tableView: 등록할 테이블뷰 func registerCells(with tableView: UITableView) { tableView.register(NibCell.uinib, forCellReuseIdentifier: NibCell.reuseIdentifier) } // MARK: - 테이블뷰 데이터 소스 관련 /// 섹션이 여러개일때만 사용 /// 섹션의 타이틀 설정 func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -&gt; String? { return "헤더: " + dummySections[section].title } func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -&gt; String? { return "푸터: " + dummySections[section].title } /// 섹션이 여러개일때만 사용 /// 현재 섹션이 몇개인지 func numberOfSections(in tableView: UITableView) -&gt; Int { return dummySections.count } /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return dummySections[section].rows.count } /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // [guard let] 방식 switch listType { case .storyboard: guard let cell = tableView.dequeueReusableCell(withIdentifier: StoryboardCell.reuseIdentifier, for: indexPath) as? StoryboardCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] cell.titleLabel.text = cellData.title /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.bodyLabel.text = cellData.body /// 셀의 서브 타이틀 설정 return cell case .nib: guard let cell = tableView.dequeueReusableCell(withIdentifier: NibCell.reuseIdentifier, for: indexPath) as? NibCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] cell.titleLabel.text = cellData.title /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.bodyLabel.text = cellData.body /// 셀의 서브 타이틀 설정 return cell case .code: guard let cell = tableView.dequeueReusableCell(withIdentifier: CodeCell.reuseIdentifier, for: indexPath) as? CodeCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] cell.titleLabel.text = cellData.title /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.bodyLabel.text = cellData.body /// 셀의 서브 타이틀 설정 return cell case .cellConfig: guard let cell = tableView.dequeueReusableCell(withIdentifier: CellConfigTableViewCell.reuseIdentifier, for: indexPath) as? CellConfigTableViewCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] cell.title = cellData.title cell.body = cellData.body return cell } } } import UIKit class NibListViewController: UIViewController { @IBOutlet weak var myTableView: UITableView! var dataSource: MyDataSource = MyDataSource(type: .nib) override func viewDidLoad() { super.viewDidLoad() configureTableView() } fileprivate func configureTableView() { // self.myTableView.register(NibCell.uinib, forCellReuseIdentifier: NibCell.reuseIdentifier) // 셀을 등록 self.dataSource.registerCells(with: myTableView) self.myTableView.dataSource = dataSource self.myTableView.delegate = self } } /// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리 extension NibListViewController: UITableViewDelegate { /// 사용자가 특정 셀을 선택했을 때 호출되는 메서드 /// - Parameters: /// - tableView: 이벤트가 발생한 테이블 뷰 /// - indexPath: 선택된 셀의 위치 func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { print(#fileID, #function, #line, "- indexPath: \(indexPath.row)") } } CellConfigurationListViewController도 MyDataSource로수정 가능 기존 코드 import UIKit class CellConfigurationListViewController: UIViewController { @IBOutlet weak var myTableView: UITableView! var dummySections: [DummySection] = DummySection.getDummies(10) override func viewDidLoad() { configureTableView() } fileprivate func configureTableView() { // CodeCell에서는 이 줄만 필요 self.myTableView.register(CellConfigTableViewCell.self, forCellReuseIdentifier: "CellConfigTableViewCell") self.myTableView.dataSource = self self.myTableView.delegate = self } } /// UITableView의 데이터 관리 역할을 담당 extension CellConfigurationListViewController: UITableViewDataSource { /// 섹션이 여러개일때만 사용 /// 섹션의 타이틀 설정 func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -&gt; String? { return "헤더: " + dummySections[section].title } func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -&gt; String? { return "푸터: " + dummySections[section].title } /// 섹션이 여러개일때만 사용 /// 현재 섹션이 몇개인지 func numberOfSections(in tableView: UITableView) -&gt; Int { return dummySections.count } /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return dummySections[section].rows.count } /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // [guard let] 방식 guard let cell = tableView.dequeueReusableCell(withIdentifier: "CellConfigTableViewCell", for: indexPath) as? CellConfigTableViewCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 // cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 // cell.bodyLabel.text = cellData.body //cell.detailTextLabel?.numberOfLines = 0 // 여기서는 UI에 접근하는게 아니라 Cell이 가지고 있는 멤버변수 데이터 자체에 접근 cell.title = cellData.title cell.body = cellData.body return cell } } /// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리 extension CellConfigurationListViewController: UITableViewDelegate { /// 사용자가 특정 셀을 선택했을 때 호출되는 메서드 /// - Parameters: /// - tableView: 이벤트가 발생한 테이블 뷰 /// - indexPath: 선택된 셀의 위치 func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { print(#fileID, #function, #line, "- indexPath: \(indexPath.row)") } } 수정된 코드 import UIKit class MyDataSource: NSObject, UITableViewDataSource { enum ListType { case storyboard case nib case code case cellConfig } var listType: ListType = .storyboard var dummySections: [DummySection] = DummySection.getDummies(10) override init() { super.init() } convenience init(type: ListType = .storyboard) { self.init() self.listType = type } // MARK: - 셀을 등록하는 소스 관련 /// 셀을 등록 /// 스토리보드에서 셀을 추가하면 Xcode가 내부적으로 셀을 자동 등록한다 /// 이코드가 자동 등록된다고 생각 tableView.dequeueReusableCell(withIdentifier: "StoryboardCell") /// - Parameter tableView: 등록할 테이블뷰 func registerCells(with tableView: UITableView) { /// Nib 방식으로 만든 셀(NibCell.xib 파일)을 테이블 뷰에 등록 /// - NibCell.uinib : UINib(nibName: "NibCell", bundle: nil) 을 반환 /// - NibCell.reuseIdentifier : "NibCell" 문자열을 반환 (보통 클래스명을 기반으로 자동 생성) /// → 이후 dequeue 시 이 identifier로 셀을 재사용할 수 있게 됨 /// tableView.register(NibCell.uinib, forCellReuseIdentifier: NibCell.reuseIdentifier) /// 코드로만 구현된 셀 클래스를 테이블 뷰에 등록 /// - CellConfigTableViewCell.self : 클래스 자체를 등록 /// - reuseIdentifier : "CellConfigTableViewCell" 문자열 /// → register(class:) 방식은 .xib 없이 순수 코드로 UI 구성한 셀에 사용 /// tableView.register(CellConfigTableViewCell.self, forCellReuseIdentifier: CellConfigTableViewCell.reuseIdentifier) switch listType { case .nib: tableView.register(NibCell.uinib, forCellReuseIdentifier: NibCell.reuseIdentifier) case .code: tableView.register(CodeCell.self, forCellReuseIdentifier: CodeCell.reuseIdentifier) case .cellConfig: tableView.register(CellConfigTableViewCell.self, forCellReuseIdentifier: CellConfigTableViewCell.reuseIdentifier) case .storyboard: // ❌ 스토리보드는 register 필요 없음! break } } // MARK: - 테이블뷰 데이터 소스 관련 /// 섹션이 여러개일때만 사용 /// 섹션의 타이틀 설정 func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -&gt; String? { return "헤더: " + dummySections[section].title } func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -&gt; String? { return "푸터: " + dummySections[section].title } /// 섹션이 여러개일때만 사용 /// 현재 섹션이 몇개인지 func numberOfSections(in tableView: UITableView) -&gt; Int { return dummySections.count } /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return dummySections[section].rows.count } /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // [guard let] 방식 switch listType { case .storyboard: guard let cell = tableView.dequeueReusableCell(withIdentifier: StoryboardCell.reuseIdentifier, for: indexPath) as? StoryboardCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] cell.titleLabel.text = cellData.title /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.bodyLabel.text = cellData.body /// 셀의 서브 타이틀 설정 return cell case .nib: guard let cell = tableView.dequeueReusableCell(withIdentifier: NibCell.reuseIdentifier, for: indexPath) as? NibCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] cell.titleLabel.text = cellData.title /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.bodyLabel.text = cellData.body /// 셀의 서브 타이틀 설정 return cell case .code: guard let cell = tableView.dequeueReusableCell(withIdentifier: CodeCell.reuseIdentifier, for: indexPath) as? CodeCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] cell.titleLabel.text = cellData.title /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.bodyLabel.text = cellData.body /// 셀의 서브 타이틀 설정 return cell case .cellConfig: guard let cell = tableView.dequeueReusableCell(withIdentifier: CellConfigTableViewCell.reuseIdentifier, for: indexPath) as? CellConfigTableViewCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] cell.title = cellData.title cell.body = cellData.body return cell } } } import UIKit class CellConfigurationListViewController: UIViewController { @IBOutlet weak var myTableView: UITableView! var dummySections: [DummySection] = DummySection.getDummies(10) var dataSource: MyDataSource = MyDataSource(type: .cellConfig) override func viewDidLoad() { configureTableView() } fileprivate func configureTableView() { // CodeCell에서는 이 줄만 필요 // self.myTableView.register(CellConfigTableViewCell.self, forCellReuseIdentifier: "CellConfigTableViewCell") self.dataSource.registerCells(with: myTableView) self.myTableView.dataSource = dataSource self.myTableView.delegate = self } } /// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리 extension CellConfigurationListViewController: UITableViewDelegate { /// 사용자가 특정 셀을 선택했을 때 호출되는 메서드 /// - Parameters: /// - tableView: 이벤트가 발생한 테이블 뷰 /// - indexPath: 선택된 셀의 위치 func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { print(#fileID, #function, #line, "- indexPath: \(indexPath.row)") } }]]></summary></entry><entry><title type="html">[TableView] 6. Cell Configuration</title><link href="http://localhost:4000/UIKit-tableView6/" rel="alternate" type="text/html" title="[TableView] 6. Cell Configuration" /><published>2025-05-12T00:00:00+00:00</published><updated>2025-05-12T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView6</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView6/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="커스텀셀" width="30%"> -->
 
@@ -1271,7 +2053,82 @@ myTableView를 ViewController로 드래그해서 IBOutlet 추가한다. 이떄 �
     <span class="p">}</span>
 <span class="p">}</span>
 
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[Nib으로 커스텀 테이블뷰 구현하기 Storyboard 커스텀 셀 Nib 커스텀 셀 파일만들기 -&gt; Cocoa Toucn -&gt; Nib파일이름, 체크박스 체크로 2개의 파일을 만든다. 그러면 Nib파일과, Swift파일이 생성된다. TitleLabel만들고 ContentView로 드래그하여 Leading, Top, Trailing을 체크해준다. 그리고 이번에는 타이틀 Label의 number of lines를 1로 하자. BodyLabel을 TitleLabel로 드래그하여 Leading, Vertical Spacing 체크해준다. 그리고 BodyLabel을 ContentView로 드래그하여 Trailing을 채크해준다.(TitleLabel은 한줄이라서..?) Identifier, Class 설정해준다. import UIKit class NibCell: UITableViewCell { @IBOutlet weak var titleLabel: UILabel! @IBOutlet weak var bodyLabel: UILabel! override func awakeFromNib() { super.awakeFromNib() self.backgroundColor = .systemMint } } IBOutlet 추가한다. NibListStoryboard에서 테이블만들고 My Table View 이름 지정.해준다. 그리고 이를 NibListViewController에 드래그하여 myTableView만들어준다. fileprivate func configureTableView() { // storyboard에서는 테이블뷰에서 셀을 직접 드래그하기때문에 등록이 되지만 Nib 방식에서 등록을 시켜줘야한다. let cellNib = UINib(nibName: "NibCell", bundle: nil) self.myTableView.register(cellNib, forCellReuseIdentifier: "NibCell") self.myTableView.dataSource = self self.myTableView.delegate = self } 이대로 실행하면 에러가난다. Storyboard 방식과 달리 Nib 방식으로 할때는 등록 절차를 직접 해줘야 한다. 전체코드 NibCell.xib NibCell.swift // // NibCell.swift // UITableViewTutorial // // Created by 김동현 on 5/11/25. // import UIKit class NibCell: UITableViewCell { @IBOutlet weak var titleLabel: UILabel! @IBOutlet weak var bodyLabel: UILabel! override func awakeFromNib() { super.awakeFromNib() self.backgroundColor = .systemMint } /* override func setSelected(_ selected: Bool, animated: Bool) { super.setSelected(selected, animated: animated) // Configure the view for the selected state } */ } NibListViewController // // NibListViewController.swift // UITableViewTutorial // // Created by 김동현 on 5/8/25. // import UIKit class NibListViewController: UIViewController { @IBOutlet weak var myTableView: UITableView! var dummySections: [DummySection] = DummySection.getDumies(10) override func viewDidLoad() { super.viewDidLoad() configureTableView() } fileprivate func configureTableView() { // storyboard에서는 테이블뷰에서 셀을 직접 드래그하기때문에 등록이 되지만 Nib 방식에서 등록을 시켜줘야한다. let cellNib = UINib(nibName: "NibCell", bundle: nil) self.myTableView.register(cellNib, forCellReuseIdentifier: "NibCell") self.myTableView.dataSource = self self.myTableView.delegate = self } } /// UITableView의 데이터 관리 역할을 담당 extension NibListViewController: UITableViewDataSource { /// 섹션이 여러개일때만 사용 /// 섹션의 타이틀 설정 func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -&gt; String? { return "헤더: " + dummySections[section].title } func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -&gt; String? { return "푸터: " + dummySections[section].title } /// 섹션이 여러개일때만 사용 /// 현재 섹션이 몇개인지 func numberOfSections(in tableView: UITableView) -&gt; Int { return dummySections.count } /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return dummySections[section].rows.count } /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // [guard let] 방식 guard let cell = tableView.dequeueReusableCell(withIdentifier: "NibCell", for: indexPath) as? NibCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body //cell.detailTextLabel?.numberOfLines = 0 return cell /* [if let] 방식 if let cell = tableView.dequeueReusableCell(withIdentifier: "StoryBoardCell", for: indexPath) as? StoryboardCell { let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body //cell.detailTextLabel?.numberOfLines = 0 return cell } else { return UITableViewCell() } */ } } /// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리 extension NibListViewController: UITableViewDelegate { /// 사용자가 특정 셀을 선택했을 때 호출되는 메서드 /// - Parameters: /// - tableView: 이벤트가 발생한 테이블 뷰 /// - indexPath: 선택된 셀의 위치 func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { print(#fileID, #function, #line, "- indexPath: \(indexPath.row)") } }]]></summary></entry><entry><title type="html">[TableView] 1. 테이블뷰 예제</title><link href="http://localhost:4000/UIKit-tableView1/" rel="alternate" type="text/html" title="[TableView] 1. 테이블뷰 예제" /><published>2025-05-08T00:00:00+00:00</published><updated>2025-05-08T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView1</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView1/"><![CDATA[<h2 id="테이블-뷰">테이블 뷰</h2>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[Nib으로 커스텀 테이블뷰 구현하기 Storyboard 커스텀 셀 Nib 커스텀 셀 파일만들기 -&gt; Cocoa Toucn -&gt; Nib파일이름, 체크박스 체크로 2개의 파일을 만든다. 그러면 Nib파일과, Swift파일이 생성된다. TitleLabel만들고 ContentView로 드래그하여 Leading, Top, Trailing을 체크해준다. 그리고 이번에는 타이틀 Label의 number of lines를 1로 하자. BodyLabel을 TitleLabel로 드래그하여 Leading, Vertical Spacing 체크해준다. 그리고 BodyLabel을 ContentView로 드래그하여 Trailing을 채크해준다.(TitleLabel은 한줄이라서..?) Identifier, Class 설정해준다. import UIKit class NibCell: UITableViewCell { @IBOutlet weak var titleLabel: UILabel! @IBOutlet weak var bodyLabel: UILabel! override func awakeFromNib() { super.awakeFromNib() self.backgroundColor = .systemMint } } IBOutlet 추가한다. NibListStoryboard에서 테이블만들고 My Table View 이름 지정.해준다. 그리고 이를 NibListViewController에 드래그하여 myTableView만들어준다. fileprivate func configureTableView() { // storyboard에서는 테이블뷰에서 셀을 직접 드래그하기때문에 등록이 되지만 Nib 방식에서 등록을 시켜줘야한다. let cellNib = UINib(nibName: "NibCell", bundle: nil) self.myTableView.register(cellNib, forCellReuseIdentifier: "NibCell") self.myTableView.dataSource = self self.myTableView.delegate = self } 이대로 실행하면 에러가난다. Storyboard 방식과 달리 Nib 방식으로 할때는 등록 절차를 직접 해줘야 한다. 전체코드 NibCell.xib NibCell.swift // // NibCell.swift // UITableViewTutorial // // Created by 김동현 on 5/11/25. // import UIKit class NibCell: UITableViewCell { @IBOutlet weak var titleLabel: UILabel! @IBOutlet weak var bodyLabel: UILabel! override func awakeFromNib() { super.awakeFromNib() self.backgroundColor = .systemMint } /* override func setSelected(_ selected: Bool, animated: Bool) { super.setSelected(selected, animated: animated) // Configure the view for the selected state } */ } NibListViewController // // NibListViewController.swift // UITableViewTutorial // // Created by 김동현 on 5/8/25. // import UIKit class NibListViewController: UIViewController { @IBOutlet weak var myTableView: UITableView! var dummySections: [DummySection] = DummySection.getDumies(10) override func viewDidLoad() { super.viewDidLoad() configureTableView() } fileprivate func configureTableView() { // storyboard에서는 테이블뷰에서 셀을 직접 드래그하기때문에 등록이 되지만 Nib 방식에서 등록을 시켜줘야한다. let cellNib = UINib(nibName: "NibCell", bundle: nil) self.myTableView.register(cellNib, forCellReuseIdentifier: "NibCell") self.myTableView.dataSource = self self.myTableView.delegate = self } } /// UITableView의 데이터 관리 역할을 담당 extension NibListViewController: UITableViewDataSource { /// 섹션이 여러개일때만 사용 /// 섹션의 타이틀 설정 func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -&gt; String? { return "헤더: " + dummySections[section].title } func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -&gt; String? { return "푸터: " + dummySections[section].title } /// 섹션이 여러개일때만 사용 /// 현재 섹션이 몇개인지 func numberOfSections(in tableView: UITableView) -&gt; Int { return dummySections.count } /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return dummySections[section].rows.count } /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // [guard let] 방식 guard let cell = tableView.dequeueReusableCell(withIdentifier: "NibCell", for: indexPath) as? NibCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body //cell.detailTextLabel?.numberOfLines = 0 return cell /* [if let] 방식 if let cell = tableView.dequeueReusableCell(withIdentifier: "StoryBoardCell", for: indexPath) as? StoryboardCell { let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body //cell.detailTextLabel?.numberOfLines = 0 return cell } else { return UITableViewCell() } */ } } /// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리 extension NibListViewController: UITableViewDelegate { /// 사용자가 특정 셀을 선택했을 때 호출되는 메서드 /// - Parameters: /// - tableView: 이벤트가 발생한 테이블 뷰 /// - indexPath: 선택된 셀의 위치 func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { print(#fileID, #function, #line, "- indexPath: \(indexPath.row)") } }]]></summary></entry><entry><title type="html">[TableView] 2. 스토리보드로 여러 화면 분기하기</title><link href="http://localhost:4000/UIKit-tableView2/" rel="alternate" type="text/html" title="[TableView] 2. 스토리보드로 여러 화면 분기하기" /><published>2025-05-08T00:00:00+00:00</published><updated>2025-05-08T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView2</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView2/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="커스텀셀" width="30%"> -->
+
+<h2 id="스토리보드로-여러-화면-분기하기">스토리보드로 여러 화면 분기하기</h2>
+
+<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508214538806.png" alt="커스텀셀" width="70%" /></p>
+
+<h3 id="필요-파일">필요 파일</h3>
+
+<ul>
+  <li>MainViewController</li>
+  <li>Main.storyboard</li>
+</ul>
+
+<p>MainStoryboard에서 Command + Shift + L을 눌러서 Storyboard를 추가하고 우측 하단의 Embeded In을 눌러서 Navigation Controller(화면 이동 관할)을 추가한다.   <br />
+<br /></p>
+
+<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508215655099.png" alt="커스텀셀" width="70%" /><br />
+다음으로 현재 Main스토리보드에서 어떤 화변이 먼저 실행이 될 지 정해줘야 한다. Attribute Inspector에서 is Initial View Controller 클릭해서 첫 시작 뷰 컨트롤러를 설정해준다.<br />
+<br /></p>
+
+<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508220915956.png" alt="커스텀셀" width="70%" /><br />
+filled버튼들을 추가하고 전체 버튼들을 드래그하여 Embed In 클릭 후 Stack View를 눌러준다 그러면 버튼들이 StackView로 묶인다. 버튼들을 Stack에 같은 크기로 채우려면 alignment를 fill로 해주고 Distribution은 Fill Equally로 해준다. 그 이후 StackView를 SafeArea로 드래그하여 horizontal, vertical 각각 center 지정해준다. 주황색이 뜨면 새로고침 눌러준다.<br />
+<br /></p>
+
+<p>alignment(정렬)는 요소들이 한 축을 기준으로 어떻게 정렬될지를 결정한다.<br />
+<code class="language-plaintext highlighter-rouge">horizontal</code> stack view일 경우:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">.leading</code> → 왼쪽 정렬</li>
+  <li><code class="language-plaintext highlighter-rouge">.center</code> → 가운데 정렬</li>
+  <li><code class="language-plaintext highlighter-rouge">.trailing</code> → 오른쪽 정렬</li>
+  <li><code class="language-plaintext highlighter-rouge">.top</code>, <code class="language-plaintext highlighter-rouge">.bottom</code> → 요소들의 <strong>수직 위치</strong> 정렬 방식도 있음<br />
+<br /></li>
+</ul>
+
+<p>distribution(분배)는 여러 UI 요소를 Stack View 안에서 얼마나 넓게 어떻게 나눌지 결정한다.<br />
+<code class="language-plaintext highlighter-rouge">.fill</code> → 가능한 공간만큼 채움<br />
+<code class="language-plaintext highlighter-rouge">.fillEqually</code> → 모든 요소가 <strong>동일한 크기</strong>로 공간 분배<br />
+<code class="language-plaintext highlighter-rouge">.fillProportionally</code> → 각 요소의 <strong>원래 크기 비율</strong>에 따라 분배<br />
+<code class="language-plaintext highlighter-rouge">.equalSpacing</code> → 요소들 사이 간격을 <strong>동일하게 유지</strong><br />
+<code class="language-plaintext highlighter-rouge">.equalCentering</code> → 중심점 기준으로 <strong>균등하게 배치</strong><br />
+<br /></p>
+
+<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508222122754.png" alt="커스텀셀" width="70%" /><br />
+Default버튼을 우측 ViewController쪽으로 드래그하여 Show를 눌러준다 이때 ViewController는 CustomClass에서 Class설정을 해줘서 ViewController코드와 연결해둬야한다. 그러면 Default를 누르면 화면이동이 된다. 동일하게 나머지 버튼들도 ViewController를 만들어서 연결해준다.<br />
+<br /></p>
+
+<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202025-05-08%20%EC%98%A4%ED%9B%84%2010.56.48(2).png" alt="커스텀셀" width="70%" /><br />
+완성하면 이렇게 되는데 MainStoryBoard 파일 안에서 View가 많아지게 되면 상당히 무거워지기 때문에 작업이 힘들어 진다. 추천하는 방식은 Reference 방식이다.<br />
+<br /></p>
+
+<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508230321228.png" alt="커스텀셀" width="70%" /><br />
+StoryboardList.storyboard를 만들고 만들면 제공되는 ViewController를 없앤다. 그럼 이렇게 빈 화면이 나온다. 그리고 MainStoryboard에 있는 Storyboard 타이틀 VC를 Control + X로 잘라내어 StoryboardList.storyboard에 붙여넣는다<br />
+<br /></p>
+
+<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508230739196.png" alt="커스텀셀" width="70%" /><br />
+그리고 나서 타이틀을 설정해준다. 그리고 MainStoryboard로 가서 Command + Shift + L로 reference검색해서 드래그한다. 이는 스토리보드에 대한 참조(메모리 주소)이다. 즉 이로 서로 연걸이 되게끔 할 수 있다.<br />
+<br /></p>
+
+<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508231122558.png" alt="커스텀셀" width="70%" /><br />
+스토리보드Id를 설정한다 보통 클래스이름과 동일하게 적는다. 여기서 사진에는 표시 안되어 있지만 Use StoryboardId 체크 클릭해준다.<br />
+<br /></p>
+
+<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508231515586.png" alt="커스텀셀" width="70%" /><br />
+<img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508231740354.png" alt="커스텀셀" width="70%" /><br />
+스토리보드와 스토리보드Id를 적어준다. 그리고 Identifier도 동일하게 스토리보드Id를 적어준다.<br />
+<br /></p>
+
+<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508232019316.png" alt="커스텀셀" width="70%" /><br />
+최종적으로 참조에 드래그를 해서 show로 지정해준다. 이러면 이전의 방식과 동일한 방식이다. 이렇게 하면 작업이 용이해진다. 나머지 코드들도 동일하게 해주자. <br />
+<br /></p>
+
+<h2 id="최종화면">최종화면</h2>
+<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202025-05-08%20%EC%98%A4%ED%9B%84%2011.46.20(2).png" alt="커스텀셀" width="70%" /><br />
+<img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508234707587.png" alt="커스텀셀" width="30%" /></p>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[스토리보드로 여러 화면 분기하기 필요 파일 MainViewController Main.storyboard MainStoryboard에서 Command + Shift + L을 눌러서 Storyboard를 추가하고 우측 하단의 Embeded In을 눌러서 Navigation Controller(화면 이동 관할)을 추가한다. 다음으로 현재 Main스토리보드에서 어떤 화변이 먼저 실행이 될 지 정해줘야 한다. Attribute Inspector에서 is Initial View Controller 클릭해서 첫 시작 뷰 컨트롤러를 설정해준다. filled버튼들을 추가하고 전체 버튼들을 드래그하여 Embed In 클릭 후 Stack View를 눌러준다 그러면 버튼들이 StackView로 묶인다. 버튼들을 Stack에 같은 크기로 채우려면 alignment를 fill로 해주고 Distribution은 Fill Equally로 해준다. 그 이후 StackView를 SafeArea로 드래그하여 horizontal, vertical 각각 center 지정해준다. 주황색이 뜨면 새로고침 눌러준다. alignment(정렬)는 요소들이 한 축을 기준으로 어떻게 정렬될지를 결정한다. horizontal stack view일 경우: .leading → 왼쪽 정렬 .center → 가운데 정렬 .trailing → 오른쪽 정렬 .top, .bottom → 요소들의 수직 위치 정렬 방식도 있음 distribution(분배)는 여러 UI 요소를 Stack View 안에서 얼마나 넓게 어떻게 나눌지 결정한다. .fill → 가능한 공간만큼 채움 .fillEqually → 모든 요소가 동일한 크기로 공간 분배 .fillProportionally → 각 요소의 원래 크기 비율에 따라 분배 .equalSpacing → 요소들 사이 간격을 동일하게 유지 .equalCentering → 중심점 기준으로 균등하게 배치 Default버튼을 우측 ViewController쪽으로 드래그하여 Show를 눌러준다 이때 ViewController는 CustomClass에서 Class설정을 해줘서 ViewController코드와 연결해둬야한다. 그러면 Default를 누르면 화면이동이 된다. 동일하게 나머지 버튼들도 ViewController를 만들어서 연결해준다. 완성하면 이렇게 되는데 MainStoryBoard 파일 안에서 View가 많아지게 되면 상당히 무거워지기 때문에 작업이 힘들어 진다. 추천하는 방식은 Reference 방식이다. StoryboardList.storyboard를 만들고 만들면 제공되는 ViewController를 없앤다. 그럼 이렇게 빈 화면이 나온다. 그리고 MainStoryboard에 있는 Storyboard 타이틀 VC를 Control + X로 잘라내어 StoryboardList.storyboard에 붙여넣는다 그리고 나서 타이틀을 설정해준다. 그리고 MainStoryboard로 가서 Command + Shift + L로 reference검색해서 드래그한다. 이는 스토리보드에 대한 참조(메모리 주소)이다. 즉 이로 서로 연걸이 되게끔 할 수 있다. 스토리보드Id를 설정한다 보통 클래스이름과 동일하게 적는다. 여기서 사진에는 표시 안되어 있지만 Use StoryboardId 체크 클릭해준다. 스토리보드와 스토리보드Id를 적어준다. 그리고 Identifier도 동일하게 스토리보드Id를 적어준다. 최종적으로 참조에 드래그를 해서 show로 지정해준다. 이러면 이전의 방식과 동일한 방식이다. 이렇게 하면 작업이 용이해진다. 나머지 코드들도 동일하게 해주자. 최종화면]]></summary></entry><entry><title type="html">[TableView] 1. 테이블뷰 예제</title><link href="http://localhost:4000/UIKit-tableView1/" rel="alternate" type="text/html" title="[TableView] 1. 테이블뷰 예제" /><published>2025-05-08T00:00:00+00:00</published><updated>2025-05-08T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView1</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView1/"><![CDATA[<h2 id="테이블-뷰">테이블 뷰</h2>
 <p>테이블뷰는 dataSource와 delegate, Cell로 이루어져있다.</p>
 
 <h3 id="구성">구성</h3>
@@ -1870,82 +2727,7 @@ Label이 드래그안될때는 당황하지말고 직접 @IBOutlet weak var로 �
 
 <ul>
   <li>https://hanipsum.com</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[스토리보드로 커스텀 테이블뷰 구현하기 기존 셀 구현할 커스텀 셀 위 왼쪽 사진은 1. 테이블뷰 예제에서 구현한 방식이다. 사진처럼 셀 스타일이 기본 셀이라서 커스텀을 할 수 없다. 그래서 보통 UITableViewCell을 상속받아 커스텀 Cell Class를 만들어 입맛대로 만든다. 커스텀 Cell 적용 방식이 1. 스토리보드, 2. Nib파일, 3. 코드 방식 총 3가지가 있는데 이번 포스팅에서는 스토리보드 방식으로 커스템 셀 구현을 진행한다. Shift + Command + L을 눌러서 TableView를 추가하고 상하좌우 제약을 0을 주도록 설정한다. 삼각형 모양이 Size Inspector이다. Shift + Command + L을 눌러서 Table View Cell을 드래그해준다 이를 등록 과정(register)이라고 한다. ContentView가 핵심이다. 여기에 요소들 집어넣는다. 우측상단의 Raw Height로 셀 높이를 지정할 수 있다. 상단 Label은 Leading과 Top 걸어주고 하단 Label은 상단의 Leading, Vertical Spacing 설정, Bottom도 설정해준다. 이후 상단의 leading제약을 10으로 해준다. 그리고 상단 Label의 Top 제약을 10으로 걸면 빨간 에러가 뜬다. Label 자체는 크기를 가지고 있지 않기 때문에 상단 Label을 늘릴지 하단 Label이 늘릴지 정해줘야한다. 상단Label의 크기는 유지하고 하단 Label의 크기를 늘려서 하단 Label의 Content Hugging Priority의 Vertical을 줄이면 된다. 마무리로 모든 제약을 10으로 해준다. 긴 문장이 들어오면 number of lines가 1이라서 뒷부분이 잘린다. 해결하기 위해 상단 label의 trailing도 10 제약을 준다. 두번째 Label에도 긴문장을 넣으면 뒷부분이 잘린다. 해결을 위해 number of lines를 0으로 하고 trailing도 10 잡아준다. 이때 빨간색 줄이 생기는데 이유는 number of lines가 0이라서 계속 늘어나기 때문이다. 늘어났을 때 ContentView 사이즈공간이 모자라서 상단 Label을 밀어내려고 하기 떄문에 발생한다. 이를 해결하기 위해 Compression Resistance를 설정해야한다. 만약 하단 Label의 vertical을 751로 올리면 상단 Label이 없어진다. 그래서 상단Label을 누르고 Compression Resistance를 751로올려야한다. 항목 설명 효과 Content Hugging = 낮음 늘어나도 괜찮음 다른 뷰들이 먼저 자기 크기 유지 Compression Resistance = 낮음 줄어들어도 괜찮음 다른 뷰가 먼저 자기 크기 지킴 상단 Label Hugging 높음 상단 Label이 더 이상 안 늘어나려 함 하단 Label이 늘어남 상단 Label Resistance 높음 상단 Label이 안 줄어들고 버팀 하단 Label이 줄어듦 🔚 정리 Hugging: “나는 커지기 싫어”(숫자 높을수록 안커짐) Compression Resistance: “나는 작아지기 싫어”(숫자 높을수록 안작아짐) 위 두 값을 적절히 조절해주면, Auto Layout이 충돌 없이 어떤 뷰가 늘어나거나 줄어들지 결정하게 된다. import Foundation import UIKit class StoryboardCell: UITableViewCell { /// 1. 셀을 스토리보드에 추가하거나 Nib파일에 추가하게 되면 이 자체의 라이프사이클이 생긴다. awakeFromNib override class func awakeFromNib() { /// 2. 상속을 한것이기 때문에 부모에 있는 awakeFromNib 로직을 터트려줘야한다 super.awakeFromNib() } } 이제 커스텀 셀을 만들어야 한다. StoryboardCell.swift파일을 만들어준다. 셀을 스토리보드에 추가하거나 Nib파일에 추가하게 되면 이 자체의 라이프사이클이 생긴다. 이 라이프사이클을 awakeFromNib라고 한다. -&gt; Interface Builder같이 스토리보드로 추가되거나 Nib파일로 되었을 경우에 awakeFromNib()가 호출된다 ViewController의 ViewDidload랑 비슷한 역할이다. 상속을 한것이기 때문에 부모에 있는 awakeFromNib 로직을 터트려줘야한다. Label이 드래그안될때는 당황하지말고 직접 @IBOutlet weak var로 선언해준다. 그리고 반대로 드래그해서 Label로 연결시켜주면 된다. 알고보니 StoryboardList의 StoryboardCell의 CustomClass설정을 StoryboardCell로 해줘야하는데 안되있어서 연결이 안된 것이었다. 주의하자. 이까지 완료되면 등록 과정(Register) 완료이다. // 커스텀 셀 import Foundation import UIKit class StoryboardCell: UITableViewCell { @IBOutlet weak var titleLabel: UILabel! @IBOutlet weak var bodyLabel: UILabel! /// 1. 셀을 스토리보드에 추가하거나 Nib파일에 추가하게 되면 이 자체의 라이프사이클이 생긴다. awakeFromNib override func awakeFromNib() { /// 2. 상속을 한것이기 때문에 부모에 있는 awakeFromNib 로직을 터트려줘야한다 super.awakeFromNib() print(#fileID, #function, #line, "- awakeFromNib()") } } // // StoryboardListViewController.swift // UITableViewTutorial // // Created by 김동현 on 5/8/25. // import UIKit class StoryboardListViewController: UIViewController { @IBOutlet weak var MyTableView: UITableView! var dummySections: [DummySection] = DummySection.getDumies(10) override func viewDidLoad() { super.viewDidLoad() self.MyTableView.dataSource = self self.MyTableView.delegate = self } } /// UITableView의 데이터 관리 역할을 담당 extension StoryboardListViewController: UITableViewDataSource { /// 섹션이 여러개일때만 사용 /// 섹션의 타이틀 설정 func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -&gt; String? { return "헤더: " + dummySections[section].title } func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -&gt; String? { return "푸터: " + dummySections[section].title } /// 섹션이 여러개일때만 사용 /// 현재 섹션이 몇개인지 func numberOfSections(in tableView: UITableView) -&gt; Int { return dummySections.count } /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return dummySections[section].rows.count } /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // [guard let] 방식 guard let cell = tableView.dequeueReusableCell(withIdentifier: "StoryBoardCell", for: indexPath) as? StoryboardCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body //cell.detailTextLabel?.numberOfLines = 0 return cell /* [if let] 방식 if let cell = tableView.dequeueReusableCell(withIdentifier: "StoryBoardCell", for: indexPath) as? StoryboardCell { let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body //cell.detailTextLabel?.numberOfLines = 0 return cell } else { return UITableViewCell() } */ } } /// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리 extension StoryboardListViewController: UITableViewDelegate { /// 사용자가 특정 셀을 선택했을 때 호출되는 메서드 /// - Parameters: /// - tableView: 이벤트가 발생한 테이블 뷰 /// - indexPath: 선택된 셀의 위치 func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { print(#fileID, #function, #line, "- indexPath: \(indexPath.row)") } } 이제 StoryboardListViewController로 돌아와서 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) 여기서 수정한다. 기존의 let cell 부분을 주석처리하고 바로 셀을 생성하는게 아니라 테이블 뷰 자체는 메모리를 재사용한다고 했으니 재사용 셀을 설정하기 위해 dequeueReusableCell를 설정한다.현재 셀을 가져온다. Reference https://hanipsum.com]]></summary></entry><entry><title type="html">[TableView] 2. 스토리보드로 여러 화면 분기하기</title><link href="http://localhost:4000/UIKit-tableView2/" rel="alternate" type="text/html" title="[TableView] 2. 스토리보드로 여러 화면 분기하기" /><published>2025-05-08T00:00:00+00:00</published><updated>2025-05-08T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView2</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView2/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="커스텀셀" width="30%"> -->
-
-<h2 id="스토리보드로-여러-화면-분기하기">스토리보드로 여러 화면 분기하기</h2>
-
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508214538806.png" alt="커스텀셀" width="70%" /></p>
-
-<h3 id="필요-파일">필요 파일</h3>
-
-<ul>
-  <li>MainViewController</li>
-  <li>Main.storyboard</li>
-</ul>
-
-<p>MainStoryboard에서 Command + Shift + L을 눌러서 Storyboard를 추가하고 우측 하단의 Embeded In을 눌러서 Navigation Controller(화면 이동 관할)을 추가한다.   <br />
-<br /></p>
-
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508215655099.png" alt="커스텀셀" width="70%" /><br />
-다음으로 현재 Main스토리보드에서 어떤 화변이 먼저 실행이 될 지 정해줘야 한다. Attribute Inspector에서 is Initial View Controller 클릭해서 첫 시작 뷰 컨트롤러를 설정해준다.<br />
-<br /></p>
-
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508220915956.png" alt="커스텀셀" width="70%" /><br />
-filled버튼들을 추가하고 전체 버튼들을 드래그하여 Embed In 클릭 후 Stack View를 눌러준다 그러면 버튼들이 StackView로 묶인다. 버튼들을 Stack에 같은 크기로 채우려면 alignment를 fill로 해주고 Distribution은 Fill Equally로 해준다. 그 이후 StackView를 SafeArea로 드래그하여 horizontal, vertical 각각 center 지정해준다. 주황색이 뜨면 새로고침 눌러준다.<br />
-<br /></p>
-
-<p>alignment(정렬)는 요소들이 한 축을 기준으로 어떻게 정렬될지를 결정한다.<br />
-<code class="language-plaintext highlighter-rouge">horizontal</code> stack view일 경우:</p>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">.leading</code> → 왼쪽 정렬</li>
-  <li><code class="language-plaintext highlighter-rouge">.center</code> → 가운데 정렬</li>
-  <li><code class="language-plaintext highlighter-rouge">.trailing</code> → 오른쪽 정렬</li>
-  <li><code class="language-plaintext highlighter-rouge">.top</code>, <code class="language-plaintext highlighter-rouge">.bottom</code> → 요소들의 <strong>수직 위치</strong> 정렬 방식도 있음<br />
-<br /></li>
-</ul>
-
-<p>distribution(분배)는 여러 UI 요소를 Stack View 안에서 얼마나 넓게 어떻게 나눌지 결정한다.<br />
-<code class="language-plaintext highlighter-rouge">.fill</code> → 가능한 공간만큼 채움<br />
-<code class="language-plaintext highlighter-rouge">.fillEqually</code> → 모든 요소가 <strong>동일한 크기</strong>로 공간 분배<br />
-<code class="language-plaintext highlighter-rouge">.fillProportionally</code> → 각 요소의 <strong>원래 크기 비율</strong>에 따라 분배<br />
-<code class="language-plaintext highlighter-rouge">.equalSpacing</code> → 요소들 사이 간격을 <strong>동일하게 유지</strong><br />
-<code class="language-plaintext highlighter-rouge">.equalCentering</code> → 중심점 기준으로 <strong>균등하게 배치</strong><br />
-<br /></p>
-
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508222122754.png" alt="커스텀셀" width="70%" /><br />
-Default버튼을 우측 ViewController쪽으로 드래그하여 Show를 눌러준다 이때 ViewController는 CustomClass에서 Class설정을 해줘서 ViewController코드와 연결해둬야한다. 그러면 Default를 누르면 화면이동이 된다. 동일하게 나머지 버튼들도 ViewController를 만들어서 연결해준다.<br />
-<br /></p>
-
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202025-05-08%20%EC%98%A4%ED%9B%84%2010.56.48(2).png" alt="커스텀셀" width="70%" /><br />
-완성하면 이렇게 되는데 MainStoryBoard 파일 안에서 View가 많아지게 되면 상당히 무거워지기 때문에 작업이 힘들어 진다. 추천하는 방식은 Reference 방식이다.<br />
-<br /></p>
-
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508230321228.png" alt="커스텀셀" width="70%" /><br />
-StoryboardList.storyboard를 만들고 만들면 제공되는 ViewController를 없앤다. 그럼 이렇게 빈 화면이 나온다. 그리고 MainStoryboard에 있는 Storyboard 타이틀 VC를 Control + X로 잘라내어 StoryboardList.storyboard에 붙여넣는다<br />
-<br /></p>
-
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508230739196.png" alt="커스텀셀" width="70%" /><br />
-그리고 나서 타이틀을 설정해준다. 그리고 MainStoryboard로 가서 Command + Shift + L로 reference검색해서 드래그한다. 이는 스토리보드에 대한 참조(메모리 주소)이다. 즉 이로 서로 연걸이 되게끔 할 수 있다.<br />
-<br /></p>
-
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508231122558.png" alt="커스텀셀" width="70%" /><br />
-스토리보드Id를 설정한다 보통 클래스이름과 동일하게 적는다. 여기서 사진에는 표시 안되어 있지만 Use StoryboardId 체크 클릭해준다.<br />
-<br /></p>
-
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508231515586.png" alt="커스텀셀" width="70%" /><br />
-<img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508231740354.png" alt="커스텀셀" width="70%" /><br />
-스토리보드와 스토리보드Id를 적어준다. 그리고 Identifier도 동일하게 스토리보드Id를 적어준다.<br />
-<br /></p>
-
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508232019316.png" alt="커스텀셀" width="70%" /><br />
-최종적으로 참조에 드래그를 해서 show로 지정해준다. 이러면 이전의 방식과 동일한 방식이다. 이렇게 하면 작업이 용이해진다. 나머지 코드들도 동일하게 해주자. <br />
-<br /></p>
-
-<h2 id="최종화면">최종화면</h2>
-<p><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202025-05-08%20%EC%98%A4%ED%9B%84%2011.46.20(2).png" alt="커스텀셀" width="70%" /><br />
-<img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/image-20250508234707587.png" alt="커스텀셀" width="30%" /></p>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[스토리보드로 여러 화면 분기하기 필요 파일 MainViewController Main.storyboard MainStoryboard에서 Command + Shift + L을 눌러서 Storyboard를 추가하고 우측 하단의 Embeded In을 눌러서 Navigation Controller(화면 이동 관할)을 추가한다. 다음으로 현재 Main스토리보드에서 어떤 화변이 먼저 실행이 될 지 정해줘야 한다. Attribute Inspector에서 is Initial View Controller 클릭해서 첫 시작 뷰 컨트롤러를 설정해준다. filled버튼들을 추가하고 전체 버튼들을 드래그하여 Embed In 클릭 후 Stack View를 눌러준다 그러면 버튼들이 StackView로 묶인다. 버튼들을 Stack에 같은 크기로 채우려면 alignment를 fill로 해주고 Distribution은 Fill Equally로 해준다. 그 이후 StackView를 SafeArea로 드래그하여 horizontal, vertical 각각 center 지정해준다. 주황색이 뜨면 새로고침 눌러준다. alignment(정렬)는 요소들이 한 축을 기준으로 어떻게 정렬될지를 결정한다. horizontal stack view일 경우: .leading → 왼쪽 정렬 .center → 가운데 정렬 .trailing → 오른쪽 정렬 .top, .bottom → 요소들의 수직 위치 정렬 방식도 있음 distribution(분배)는 여러 UI 요소를 Stack View 안에서 얼마나 넓게 어떻게 나눌지 결정한다. .fill → 가능한 공간만큼 채움 .fillEqually → 모든 요소가 동일한 크기로 공간 분배 .fillProportionally → 각 요소의 원래 크기 비율에 따라 분배 .equalSpacing → 요소들 사이 간격을 동일하게 유지 .equalCentering → 중심점 기준으로 균등하게 배치 Default버튼을 우측 ViewController쪽으로 드래그하여 Show를 눌러준다 이때 ViewController는 CustomClass에서 Class설정을 해줘서 ViewController코드와 연결해둬야한다. 그러면 Default를 누르면 화면이동이 된다. 동일하게 나머지 버튼들도 ViewController를 만들어서 연결해준다. 완성하면 이렇게 되는데 MainStoryBoard 파일 안에서 View가 많아지게 되면 상당히 무거워지기 때문에 작업이 힘들어 진다. 추천하는 방식은 Reference 방식이다. StoryboardList.storyboard를 만들고 만들면 제공되는 ViewController를 없앤다. 그럼 이렇게 빈 화면이 나온다. 그리고 MainStoryboard에 있는 Storyboard 타이틀 VC를 Control + X로 잘라내어 StoryboardList.storyboard에 붙여넣는다 그리고 나서 타이틀을 설정해준다. 그리고 MainStoryboard로 가서 Command + Shift + L로 reference검색해서 드래그한다. 이는 스토리보드에 대한 참조(메모리 주소)이다. 즉 이로 서로 연걸이 되게끔 할 수 있다. 스토리보드Id를 설정한다 보통 클래스이름과 동일하게 적는다. 여기서 사진에는 표시 안되어 있지만 Use StoryboardId 체크 클릭해준다. 스토리보드와 스토리보드Id를 적어준다. 그리고 Identifier도 동일하게 스토리보드Id를 적어준다. 최종적으로 참조에 드래그를 해서 show로 지정해준다. 이러면 이전의 방식과 동일한 방식이다. 이렇게 하면 작업이 용이해진다. 나머지 코드들도 동일하게 해주자. 최종화면]]></summary></entry><entry><title type="html">[UIKit] Delegate Pattern란?</title><link href="http://localhost:4000/UIKit-delegate/" rel="alternate" type="text/html" title="[UIKit] Delegate Pattern란?" /><published>2025-04-29T00:00:00+00:00</published><updated>2025-04-29T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-delegate</id><content type="html" xml:base="http://localhost:4000/UIKit-delegate/"><![CDATA[<h2 id="1-delegate-조건">1. Delegate 조건</h2>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[스토리보드로 커스텀 테이블뷰 구현하기 기존 셀 구현할 커스텀 셀 위 왼쪽 사진은 1. 테이블뷰 예제에서 구현한 방식이다. 사진처럼 셀 스타일이 기본 셀이라서 커스텀을 할 수 없다. 그래서 보통 UITableViewCell을 상속받아 커스텀 Cell Class를 만들어 입맛대로 만든다. 커스텀 Cell 적용 방식이 1. 스토리보드, 2. Nib파일, 3. 코드 방식 총 3가지가 있는데 이번 포스팅에서는 스토리보드 방식으로 커스템 셀 구현을 진행한다. Shift + Command + L을 눌러서 TableView를 추가하고 상하좌우 제약을 0을 주도록 설정한다. 삼각형 모양이 Size Inspector이다. Shift + Command + L을 눌러서 Table View Cell을 드래그해준다 이를 등록 과정(register)이라고 한다. ContentView가 핵심이다. 여기에 요소들 집어넣는다. 우측상단의 Raw Height로 셀 높이를 지정할 수 있다. 상단 Label은 Leading과 Top 걸어주고 하단 Label은 상단의 Leading, Vertical Spacing 설정, Bottom도 설정해준다. 이후 상단의 leading제약을 10으로 해준다. 그리고 상단 Label의 Top 제약을 10으로 걸면 빨간 에러가 뜬다. Label 자체는 크기를 가지고 있지 않기 때문에 상단 Label을 늘릴지 하단 Label이 늘릴지 정해줘야한다. 상단Label의 크기는 유지하고 하단 Label의 크기를 늘려서 하단 Label의 Content Hugging Priority의 Vertical을 줄이면 된다. 마무리로 모든 제약을 10으로 해준다. 긴 문장이 들어오면 number of lines가 1이라서 뒷부분이 잘린다. 해결하기 위해 상단 label의 trailing도 10 제약을 준다. 두번째 Label에도 긴문장을 넣으면 뒷부분이 잘린다. 해결을 위해 number of lines를 0으로 하고 trailing도 10 잡아준다. 이때 빨간색 줄이 생기는데 이유는 number of lines가 0이라서 계속 늘어나기 때문이다. 늘어났을 때 ContentView 사이즈공간이 모자라서 상단 Label을 밀어내려고 하기 떄문에 발생한다. 이를 해결하기 위해 Compression Resistance를 설정해야한다. 만약 하단 Label의 vertical을 751로 올리면 상단 Label이 없어진다. 그래서 상단Label을 누르고 Compression Resistance를 751로올려야한다. 항목 설명 효과 Content Hugging = 낮음 늘어나도 괜찮음 다른 뷰들이 먼저 자기 크기 유지 Compression Resistance = 낮음 줄어들어도 괜찮음 다른 뷰가 먼저 자기 크기 지킴 상단 Label Hugging 높음 상단 Label이 더 이상 안 늘어나려 함 하단 Label이 늘어남 상단 Label Resistance 높음 상단 Label이 안 줄어들고 버팀 하단 Label이 줄어듦 🔚 정리 Hugging: “나는 커지기 싫어”(숫자 높을수록 안커짐) Compression Resistance: “나는 작아지기 싫어”(숫자 높을수록 안작아짐) 위 두 값을 적절히 조절해주면, Auto Layout이 충돌 없이 어떤 뷰가 늘어나거나 줄어들지 결정하게 된다. import Foundation import UIKit class StoryboardCell: UITableViewCell { /// 1. 셀을 스토리보드에 추가하거나 Nib파일에 추가하게 되면 이 자체의 라이프사이클이 생긴다. awakeFromNib override class func awakeFromNib() { /// 2. 상속을 한것이기 때문에 부모에 있는 awakeFromNib 로직을 터트려줘야한다 super.awakeFromNib() } } 이제 커스텀 셀을 만들어야 한다. StoryboardCell.swift파일을 만들어준다. 셀을 스토리보드에 추가하거나 Nib파일에 추가하게 되면 이 자체의 라이프사이클이 생긴다. 이 라이프사이클을 awakeFromNib라고 한다. -&gt; Interface Builder같이 스토리보드로 추가되거나 Nib파일로 되었을 경우에 awakeFromNib()가 호출된다 ViewController의 ViewDidload랑 비슷한 역할이다. 상속을 한것이기 때문에 부모에 있는 awakeFromNib 로직을 터트려줘야한다. Label이 드래그안될때는 당황하지말고 직접 @IBOutlet weak var로 선언해준다. 그리고 반대로 드래그해서 Label로 연결시켜주면 된다. 알고보니 StoryboardList의 StoryboardCell의 CustomClass설정을 StoryboardCell로 해줘야하는데 안되있어서 연결이 안된 것이었다. 주의하자. 이까지 완료되면 등록 과정(Register) 완료이다. // 커스텀 셀 import Foundation import UIKit class StoryboardCell: UITableViewCell { @IBOutlet weak var titleLabel: UILabel! @IBOutlet weak var bodyLabel: UILabel! /// 1. 셀을 스토리보드에 추가하거나 Nib파일에 추가하게 되면 이 자체의 라이프사이클이 생긴다. awakeFromNib override func awakeFromNib() { /// 2. 상속을 한것이기 때문에 부모에 있는 awakeFromNib 로직을 터트려줘야한다 super.awakeFromNib() print(#fileID, #function, #line, "- awakeFromNib()") } } // // StoryboardListViewController.swift // UITableViewTutorial // // Created by 김동현 on 5/8/25. // import UIKit class StoryboardListViewController: UIViewController { @IBOutlet weak var MyTableView: UITableView! var dummySections: [DummySection] = DummySection.getDumies(10) override func viewDidLoad() { super.viewDidLoad() self.MyTableView.dataSource = self self.MyTableView.delegate = self } } /// UITableView의 데이터 관리 역할을 담당 extension StoryboardListViewController: UITableViewDataSource { /// 섹션이 여러개일때만 사용 /// 섹션의 타이틀 설정 func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -&gt; String? { return "헤더: " + dummySections[section].title } func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -&gt; String? { return "푸터: " + dummySections[section].title } /// 섹션이 여러개일때만 사용 /// 현재 섹션이 몇개인지 func numberOfSections(in tableView: UITableView) -&gt; Int { return dummySections.count } /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return dummySections[section].rows.count } /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // [guard let] 방식 guard let cell = tableView.dequeueReusableCell(withIdentifier: "StoryBoardCell", for: indexPath) as? StoryboardCell else { return UITableViewCell() } let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body //cell.detailTextLabel?.numberOfLines = 0 return cell /* [if let] 방식 if let cell = tableView.dequeueReusableCell(withIdentifier: "StoryBoardCell", for: indexPath) as? StoryboardCell { let sectionData: DummySection = dummySections[indexPath.section] let cellData: DummyData = sectionData.rows[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body //cell.detailTextLabel?.numberOfLines = 0 return cell } else { return UITableViewCell() } */ } } /// 이벤트 관련 부분 - 셀 선택 등 사용자 인터랙션(이벤트) 관련 처리 extension StoryboardListViewController: UITableViewDelegate { /// 사용자가 특정 셀을 선택했을 때 호출되는 메서드 /// - Parameters: /// - tableView: 이벤트가 발생한 테이블 뷰 /// - indexPath: 선택된 셀의 위치 func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { print(#fileID, #function, #line, "- indexPath: \(indexPath.row)") } } 이제 StoryboardListViewController로 돌아와서 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) 여기서 수정한다. 기존의 let cell 부분을 주석처리하고 바로 셀을 생성하는게 아니라 테이블 뷰 자체는 메모리를 재사용한다고 했으니 재사용 셀을 설정하기 위해 dequeueReusableCell를 설정한다.현재 셀을 가져온다. Reference https://hanipsum.com]]></summary></entry><entry><title type="html">[UIKit] Delegate Pattern란?</title><link href="http://localhost:4000/UIKit-delegate/" rel="alternate" type="text/html" title="[UIKit] Delegate Pattern란?" /><published>2025-04-29T00:00:00+00:00</published><updated>2025-04-29T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-delegate</id><content type="html" xml:base="http://localhost:4000/UIKit-delegate/"><![CDATA[<h2 id="1-delegate-조건">1. Delegate 조건</h2>
 <p>UIKit 클론코딩을 하다 보면 여러가지 상황에서 Delegate Protocol을 채택하고 Protocol 내부에서 제공하는 method를 사용하게 된다. UITextField, UITableView에서도 기능을 구현할 때 흔하게 사용되는 방식이다. Apple에서 우리가 유용하게 사용할 만한 기능들을 함수에 담아 미리 구현해두고 우리가 추가적인 코드를 작성함으로서 우리가 원하는 방식대로 앱이 동작하게 할 수 있다.</p>
 
 <h3 id="delegate-pattern-은-아래의-조건을-총족함으로서-사용할-수-있다">Delegate Pattern 은 아래의 조건을 총족함으로서 사용할 수 있다.</h3>
@@ -2463,117 +3245,4 @@ Protocol 이 채택되고 나면 경고창이 뜨면서 필수 함수를 구현�
           <span class="nf">print</span><span class="p">(</span><span class="s">"유저 이름은 </span><span class="se">\(</span><span class="n">name</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
       <span class="p">})</span>
       <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="RxSwift" /><summary type="html"><![CDATA[1. Rx란? 파이프라인 연결이다 2. 구성 보내는 것 - Observable 연결 - subScribe 중간처리 - 연산자 3. 큰 개념 보내는 것 - 옴저버블(총알 = 구독 가능한 것) Observable 가장 기본 베이스, 생성하자마자 이벤트를 전달한다 .onNext(), .onError(), .onCompleted()를 통해 이벤트를 받을 수 있다 .subscribe()를 통해 이벤트를 발행 가능 이벤트를 정의하고, 정적인 스트림 생성(한방향: 선언 -&gt; 구독) // 1. Observable은 가장 기본적인 Rx 스트림 let observable = Observable&lt;Int&gt;.just(1) // 2. subscribe를 통해 값을 받아 처리 observable .subscribe(onNext: { value in print("Received: \(value)") }) .disposed(by: disposeBag) Subject Observable(구독 가능한 것)이면서 Observer(관찰자) 일단 연결을 해두고 원하는 시점에 이벤트를 보낸다. 외부에서 직접 값을 넣고, 동적인 스트림 생성(양방향) BehaviorSubject - 상태 초기값 필수 구독 시, 가장 최신값 1개를 즉시 전달받음 이후에는 일반 Observable처럼 .onNext 이벤트를 수신 // 1. BehaviorSubject는 초기값을 설정하고, 구독 시 가장 최근 값을 전달 let behaviorSubject = BehaviorSubject&lt;String&gt;(value: "초기값") // 2. 구독 설정 → "초기값"이 바로 전달됨 behaviorSubject .subscribe(onNext: { print("BehaviorSubject:", $0) }) .disposed(by: disposeBag) // 3. 새로운 이벤트 전달 behaviorSubject.onNext("새로운 값") PublishSubjcet - 단방향 이벤트 구독 이후 이벤트만 받음(초기값 없음) 주로 이벤트 전달용 // 1. PublishSubject는 구독 이후에 발생한 이벤트만 전달 let publishSubject = PublishSubject&lt;String&gt;() // 2. 구독 설정 publishSubject .subscribe(onNext: { print("PublishSubject:", $0) }) .disposed(by: disposeBag) // 3. 이벤트 발생 (구독 이후라 전달됨) publishSubject.onNext("첫 번째 이벤트") Relay Subject의 변형으로, error가 없고 UI바인딩에 최적화 PublishRelay 단방향 이벤트 전달(버튼 클릭) // 1. PublishRelay는 error가 없고 UI에 최적화된 Subject let publishRelay = PublishRelay&lt;String&gt;() // 2. 구독 설정 publishRelay .subscribe(onNext: { print("PublishRelay:", $0) }) .disposed(by: disposeBag) // 3. 이벤트 발생 → accept()로 전달 publishRelay.accept("이벤트 발생!") BehaviorRelay 상태 저장, 초기값 필수 -&gt; accept() 사용 // 1. BehaviorRelay는 초기값이 필요하며, 상태 저장에 적합 let behaviorRelay = BehaviorRelay&lt;String&gt;(value: "기본값") // 2. 구독 설정 → "기본값"이 바로 전달됨 behaviorRelay .subscribe(onNext: { print("BehaviorRelay:", $0) }) .disposed(by: disposeBag) // 3. 값 업데이트 → accept() 사용 behaviorRelay.accept("업데이트된 값") Driver 메인스레드, share(1) UI 바인딩 전용으로 사용되는 옵저버블 // 1. Relay에서 값을 가져와 Driver로 변환 let textRelay = BehaviorRelay&lt;String&gt;(value: "Hello") // 2. Driver로 변환 (에러 없이, MainThread에서 작동) let textDriver = textRelay.asDriver() // 3. UI 요소에 drive (drive는 MainThread에서 UI 바인딩 시 사용) textDriver .drive(label.rx.text) .disposed(by: disposeBag) 구독 subscribe(onNext:) next, error, completed 시퀀스 이벤트를 받을 수 있다 직점 onError 처리 가능하다 viewModel 내부, 로직 처리, 이벤트 감지, 에러 대응 Disposable 반환해야한다 모든 Observable계열 구독 가능 bind(onNext:) 보다 범용적, 완료/에러 받을 수 있다 // 1. onNext만 사용하는 기본적인 구독 let observable = Observable.just("Hello, RxSwift!") observable .subscribe(onNext: { value in print("onNext:", value) }) .disposed(by: disposeBag) // 2. onNext, onError, onCompleted 모두 명시 let observable = Observable&lt;String&gt;.create { observer in observer.onNext("첫 번째 이벤트") observer.onCompleted() return Disposables.create() } observable .subscribe( onNext: { print("onNext:", $0) }, onError: { print("onError:", $0.localizedDescription) }, onCompleted: { print("onCompleted") }, onDisposed: { print("onDisposed") } ) .disposed(by: disposeBag) bind(to:) UI 컴포넌트 프로퍼티에 바인딩할 때 사용 구독과 동시에 값이 특정 속성에 직접 들어가는 방식 값을 특정UI의 속성에 직접 구독해서 바인딩 // label.text = title처럼 자동으로 연결하는 직접 바인딩 방식 viewModel.title .bind(to: label.rx.text) .disposed(by: disposeBag) bind(onNext:) 단순히 이벤트를 수신하고 구독 형태 내부에 명시적으로 처리 로직을 작성해야 함 값을 받아서 직접 처리(프린트, 로직 실행)하는 방식으로 구독 viewModel.title .bind(onNext: { text in print("값 출력: \(text)") }) .disposed(by: disposeBag) 비교 // 1. 자동 UI 업데이트 (bind to UI) viewModel.username // Observable&lt;String&gt; .bind(to: label.rx.text) // 📲 label.text = 값 .disposed(by: disposeBag) // 2. 내가 직접 프린트 (bind with closure) viewModel.username .bind(onNext: { name in print("유저 이름은 \(name)") }) .disposed(by: disposeBag)]]></summary></entry><entry><title type="html">[ReactiveX] 1. 반응형 프로그래밍이란?</title><link href="http://localhost:4000/ReactiveX-ReactiveX-1/" rel="alternate" type="text/html" title="[ReactiveX] 1. 반응형 프로그래밍이란?" /><published>2025-03-25T00:00:00+00:00</published><updated>2025-03-25T00:00:00+00:00</updated><id>http://localhost:4000/%5BReactiveX%5D-ReactiveX-1</id><content type="html" xml:base="http://localhost:4000/ReactiveX-ReactiveX-1/"><![CDATA[<p><img src="/assets/img/2025-03-25-%5BRxSwift%5D-RxSwift-1/image.png" alt="커스텀셀" width="70%" /></p>
-
-<h2 id="1-반응형-프로그래밍이란">1. 반응형 프로그래밍이란?</h2>
-<p>데이터의 흐름 및 변경사항을 전파하는 데 중점을 둔 프로그래밍 패러다임이다.   <br />
-이 패러다임을 사용할 경우, 주변 환경/데이터 변화가 생길 때 연결된 실행 모델들이 이 이벤트를 받아 동작하도록 설계하는 방식이다.</p>
-
-<ul>
-  <li><strong>선(→)</strong> : 데이터가 흐르는 경로이며, <strong>Observable</strong>이라고 부른다.</li>
-  <li><strong>점(●)</strong> : 시간에 따라 발생하는 <strong>이벤트(Event)</strong> 하나를 의미한다.</li>
-  <li><strong>debounce 박스</strong> : 이벤트를 필터링하는 <strong>Operator(연산자)</strong>로, 너무 잦은 이벤트를 제어한다.</li>
-  <li><strong>아래쪽 선</strong> : <code class="language-plaintext highlighter-rouge">debounce</code> 이후 실제로 <strong>구독자에게 전달되는 결과 흐름</strong>을 보여준다.</li>
-</ul>
-
-<h3 id="비유로-설명">비유로 설명</h3>
-<p>자동차(Event)들이 도로(Ovservable)를 따라 달리고 있을 때,<br />
-교통경찰 역할을 하는 debounce가 너무 많은 차를 제어해준다.  <br />
-지나치게 빠르게 지나가는 차들은 걸러내고, 일정 시간 동안 마지막으로 지나간 차(이벤트)만 통과시킨다.  <br />
-즉 이벤트가 여러 번 발생하더라도 debounce를 통과한 이벤트만 최종적으로 전달한다.</p>
-
-<h2 id="2-rxswift란">2. RxSwift란?</h2>
-<p>Reactive Extension/Programming + Swift로, 관찰 가능한 시퀀스를 사용하여 비동기 및 이벤트 기반 프로그램을 구성하기 위한 라이브러리다.</p>
-
-<p>Swift는 함수형 프로그래밍(Functional Programming) 패러다임을 강조하는 언어이다.   <br />
-이에 RxSwift는 반응형 프로그래밍(Reactive Programming)을 더하여, Swift에서 FRP(Functional Reactive Programming)을 따를 수 있도록 한다.  <br />
-즉 Swift를 반응형 프로그래밍 하는 것이다.</p>
-
-<h3 id="예시">예시</h3>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">Observable</span>
-    <span class="o">.</span><span class="nf">combineLatest</span><span class="p">(</span><span class="n">firstName</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">lastName</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="p">{</span>  <span class="nv">$0</span> <span class="o">+</span> <span class="s">" "</span> <span class="nv">$1</span> <span class="p">}</span>
-    <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="s">"Greetings, </span><span class="se">\(</span><span class="err">#</span><span class="mi">0</span><span class="se">)</span><span class="s">"</span> <span class="p">}</span>
-    <span class="o">.</span><span class="nf">bind</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="n">greetingLabel</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-    <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="kt">DisposeBag</span><span class="p">)</span>
-</code></pre></div></div>
-<ul>
-  <li>comBineLatest나 map을 RxSwift에서 Operator라고 부른다.</li>
-  <li>이러한 연산자를 사용해서 이벤트의 값을 여러 형태로 조합하거나 변경할 수 있다.</li>
-  <li>또한 MVVM패턴을 적용할 때 View와 ViewModel을 연결해주는, 데이터 바인딩을 수행해야 한다.  <br />
-이때 bind(정확히 말하자면 bind는 RxCocoa이다) 연산자를 사용하여 쉽게 바인딩이 가능하다.   <br />
-DisoatchQueue에서 직접 조정해야 했던 작업들을 자동으로 처리해준다.</li>
-</ul>
-
-<h2 id="3-rxswift-사용-목적">3. RxSwift 사용 목적</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">doSomethingIncredible</span><span class="p">(</span><span class="nv">forWho</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">IncredibleThing</span>
-
-<span class="c1">// 재시도</span>
-<span class="nf">doSomethingIncredible</span><span class="p">(</span><span class="s">"me"</span><span class="p">)</span>
-    <span class="o">.</span><span class="nf">retry</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-</code></pre></div></div>
-<ul>
-  <li>API 통신을 하다보면, 성공할 때도 있지만 실패할 때도 분명 존재한다.</li>
-  <li>실패시 단순히 끝나는게 아니라 3번 정도 재시도 할 수 있다면 좋겠지만 재시도 코드는 많이 복잡하고, 재사용하기도 어렵다.</li>
-  <li>RxSwift를 사용하면 retry연산자를 사용해 쉽게 재시도 코드를 작성할 수 있다.</li>
-</ul>
-
-<h2 id="4-combine도-같은-개념이다">4. Combine도 같은 개념이다</h2>
-
-<p>Swift에서 RxSwift와 동일한 반응형 프로그래밍을 지원하는 Apple 공식 프레임워크가 Combine이다.<br />
-Cimbine은 iOS 13부터 내장되어 있으며, RxSwift와 거의 동일한 비동기 이벤트 스트림을 처리할 수 있다.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>개념</th>
-      <th>RxSwift</th>
-      <th>Combine</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>데이터 스트림</td>
-      <td><code class="language-plaintext highlighter-rouge">Observable</code></td>
-      <td><code class="language-plaintext highlighter-rouge">Publisher</code></td>
-    </tr>
-    <tr>
-      <td>구독</td>
-      <td><code class="language-plaintext highlighter-rouge">subscribe()</code></td>
-      <td><code class="language-plaintext highlighter-rouge">sink()</code></td>
-    </tr>
-    <tr>
-      <td>데이터 조작</td>
-      <td><code class="language-plaintext highlighter-rouge">map</code>, <code class="language-plaintext highlighter-rouge">filter</code>, <code class="language-plaintext highlighter-rouge">flatMap</code>, <code class="language-plaintext highlighter-rouge">combineLatest</code> 등</td>
-      <td>동일</td>
-    </tr>
-    <tr>
-      <td>메모리 해제</td>
-      <td><code class="language-plaintext highlighter-rouge">DisposeBag</code></td>
-      <td><code class="language-plaintext highlighter-rouge">AnyCancellable</code> (store in <code class="language-plaintext highlighter-rouge">Set</code>)</td>
-    </tr>
-    <tr>
-      <td>비동기 이벤트 처리</td>
-      <td>가능</td>
-      <td>가능</td>
-    </tr>
-  </tbody>
-</table>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Combine</span>
-
-<span class="c1">// 텍스트 필드 두 개를 결합해서 라벨에 표시</span>
-<span class="kt">Publishers</span><span class="o">.</span><span class="kt">CombineLatest</span><span class="p">(</span><span class="n">firstNamePublisher</span><span class="p">,</span> <span class="n">lastNamePublisher</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="s">"Greetings, </span><span class="se">\(</span><span class="nv">$0</span><span class="se">)</span><span class="s"> </span><span class="se">\(</span><span class="nv">$1</span><span class="se">)</span><span class="s">"</span> <span class="p">}</span>
-    <span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="k">in</span> <span class="k">self</span><span class="p">?</span><span class="o">.</span><span class="n">greetingLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nv">$0</span> <span class="p">}</span>
-    <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">cancellables</span><span class="p">)</span>
-
-</code></pre></div></div>
-
-<h2 id="reference">Reference</h2>
-<ul>
-  <li>https://velog.io/@gnwjd309/RxSwift-1</li>
-  <li>https://reactivex.io/intro.html</li>
-  <li>https://github.com/ReactiveX/RxSwift</li>
-  <li>https://babbab2.tistory.com/182</li>
-  <li>https://ios-development.tistory.com/95</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="RxSwift" /><category term="Combine" /><summary type="html"><![CDATA[1. 반응형 프로그래밍이란? 데이터의 흐름 및 변경사항을 전파하는 데 중점을 둔 프로그래밍 패러다임이다. 이 패러다임을 사용할 경우, 주변 환경/데이터 변화가 생길 때 연결된 실행 모델들이 이 이벤트를 받아 동작하도록 설계하는 방식이다. 선(→) : 데이터가 흐르는 경로이며, Observable이라고 부른다. 점(●) : 시간에 따라 발생하는 이벤트(Event) 하나를 의미한다. debounce 박스 : 이벤트를 필터링하는 Operator(연산자)로, 너무 잦은 이벤트를 제어한다. 아래쪽 선 : debounce 이후 실제로 구독자에게 전달되는 결과 흐름을 보여준다. 비유로 설명 자동차(Event)들이 도로(Ovservable)를 따라 달리고 있을 때, 교통경찰 역할을 하는 debounce가 너무 많은 차를 제어해준다. 지나치게 빠르게 지나가는 차들은 걸러내고, 일정 시간 동안 마지막으로 지나간 차(이벤트)만 통과시킨다. 즉 이벤트가 여러 번 발생하더라도 debounce를 통과한 이벤트만 최종적으로 전달한다. 2. RxSwift란? Reactive Extension/Programming + Swift로, 관찰 가능한 시퀀스를 사용하여 비동기 및 이벤트 기반 프로그램을 구성하기 위한 라이브러리다. Swift는 함수형 프로그래밍(Functional Programming) 패러다임을 강조하는 언어이다. 이에 RxSwift는 반응형 프로그래밍(Reactive Programming)을 더하여, Swift에서 FRP(Functional Reactive Programming)을 따를 수 있도록 한다. 즉 Swift를 반응형 프로그래밍 하는 것이다. 예시 Observable .combineLatest(firstName.rx.text, lastName.rx.text) { $0 + " " $1 } .map { "Greetings, \(#0)" } .bind(to: greetingLabel.rx.text) .disposed(by: DisposeBag) comBineLatest나 map을 RxSwift에서 Operator라고 부른다. 이러한 연산자를 사용해서 이벤트의 값을 여러 형태로 조합하거나 변경할 수 있다. 또한 MVVM패턴을 적용할 때 View와 ViewModel을 연결해주는, 데이터 바인딩을 수행해야 한다. 이때 bind(정확히 말하자면 bind는 RxCocoa이다) 연산자를 사용하여 쉽게 바인딩이 가능하다. DisoatchQueue에서 직접 조정해야 했던 작업들을 자동으로 처리해준다. 3. RxSwift 사용 목적 func doSomethingIncredible(forWho: String) throws -&gt; IncredibleThing // 재시도 doSomethingIncredible("me") .retry(3) API 통신을 하다보면, 성공할 때도 있지만 실패할 때도 분명 존재한다. 실패시 단순히 끝나는게 아니라 3번 정도 재시도 할 수 있다면 좋겠지만 재시도 코드는 많이 복잡하고, 재사용하기도 어렵다. RxSwift를 사용하면 retry연산자를 사용해 쉽게 재시도 코드를 작성할 수 있다. 4. Combine도 같은 개념이다 Swift에서 RxSwift와 동일한 반응형 프로그래밍을 지원하는 Apple 공식 프레임워크가 Combine이다. Cimbine은 iOS 13부터 내장되어 있으며, RxSwift와 거의 동일한 비동기 이벤트 스트림을 처리할 수 있다. 개념 RxSwift Combine 데이터 스트림 Observable Publisher 구독 subscribe() sink() 데이터 조작 map, filter, flatMap, combineLatest 등 동일 메모리 해제 DisposeBag AnyCancellable (store in Set) 비동기 이벤트 처리 가능 가능 import Combine // 텍스트 필드 두 개를 결합해서 라벨에 표시 Publishers.CombineLatest(firstNamePublisher, lastNamePublisher) .map { "Greetings, \($0) \($1)" } .sink { [weak self] in self?.greetingLabel.text = $0 } .store(in: &amp;cancellables) Reference https://velog.io/@gnwjd309/RxSwift-1 https://reactivex.io/intro.html https://github.com/ReactiveX/RxSwift https://babbab2.tistory.com/182 https://ios-development.tistory.com/95]]></summary></entry></feed>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="RxSwift" /><summary type="html"><![CDATA[1. Rx란? 파이프라인 연결이다 2. 구성 보내는 것 - Observable 연결 - subScribe 중간처리 - 연산자 3. 큰 개념 보내는 것 - 옴저버블(총알 = 구독 가능한 것) Observable 가장 기본 베이스, 생성하자마자 이벤트를 전달한다 .onNext(), .onError(), .onCompleted()를 통해 이벤트를 받을 수 있다 .subscribe()를 통해 이벤트를 발행 가능 이벤트를 정의하고, 정적인 스트림 생성(한방향: 선언 -&gt; 구독) // 1. Observable은 가장 기본적인 Rx 스트림 let observable = Observable&lt;Int&gt;.just(1) // 2. subscribe를 통해 값을 받아 처리 observable .subscribe(onNext: { value in print("Received: \(value)") }) .disposed(by: disposeBag) Subject Observable(구독 가능한 것)이면서 Observer(관찰자) 일단 연결을 해두고 원하는 시점에 이벤트를 보낸다. 외부에서 직접 값을 넣고, 동적인 스트림 생성(양방향) BehaviorSubject - 상태 초기값 필수 구독 시, 가장 최신값 1개를 즉시 전달받음 이후에는 일반 Observable처럼 .onNext 이벤트를 수신 // 1. BehaviorSubject는 초기값을 설정하고, 구독 시 가장 최근 값을 전달 let behaviorSubject = BehaviorSubject&lt;String&gt;(value: "초기값") // 2. 구독 설정 → "초기값"이 바로 전달됨 behaviorSubject .subscribe(onNext: { print("BehaviorSubject:", $0) }) .disposed(by: disposeBag) // 3. 새로운 이벤트 전달 behaviorSubject.onNext("새로운 값") PublishSubjcet - 단방향 이벤트 구독 이후 이벤트만 받음(초기값 없음) 주로 이벤트 전달용 // 1. PublishSubject는 구독 이후에 발생한 이벤트만 전달 let publishSubject = PublishSubject&lt;String&gt;() // 2. 구독 설정 publishSubject .subscribe(onNext: { print("PublishSubject:", $0) }) .disposed(by: disposeBag) // 3. 이벤트 발생 (구독 이후라 전달됨) publishSubject.onNext("첫 번째 이벤트") Relay Subject의 변형으로, error가 없고 UI바인딩에 최적화 PublishRelay 단방향 이벤트 전달(버튼 클릭) // 1. PublishRelay는 error가 없고 UI에 최적화된 Subject let publishRelay = PublishRelay&lt;String&gt;() // 2. 구독 설정 publishRelay .subscribe(onNext: { print("PublishRelay:", $0) }) .disposed(by: disposeBag) // 3. 이벤트 발생 → accept()로 전달 publishRelay.accept("이벤트 발생!") BehaviorRelay 상태 저장, 초기값 필수 -&gt; accept() 사용 // 1. BehaviorRelay는 초기값이 필요하며, 상태 저장에 적합 let behaviorRelay = BehaviorRelay&lt;String&gt;(value: "기본값") // 2. 구독 설정 → "기본값"이 바로 전달됨 behaviorRelay .subscribe(onNext: { print("BehaviorRelay:", $0) }) .disposed(by: disposeBag) // 3. 값 업데이트 → accept() 사용 behaviorRelay.accept("업데이트된 값") Driver 메인스레드, share(1) UI 바인딩 전용으로 사용되는 옵저버블 // 1. Relay에서 값을 가져와 Driver로 변환 let textRelay = BehaviorRelay&lt;String&gt;(value: "Hello") // 2. Driver로 변환 (에러 없이, MainThread에서 작동) let textDriver = textRelay.asDriver() // 3. UI 요소에 drive (drive는 MainThread에서 UI 바인딩 시 사용) textDriver .drive(label.rx.text) .disposed(by: disposeBag) 구독 subscribe(onNext:) next, error, completed 시퀀스 이벤트를 받을 수 있다 직점 onError 처리 가능하다 viewModel 내부, 로직 처리, 이벤트 감지, 에러 대응 Disposable 반환해야한다 모든 Observable계열 구독 가능 bind(onNext:) 보다 범용적, 완료/에러 받을 수 있다 // 1. onNext만 사용하는 기본적인 구독 let observable = Observable.just("Hello, RxSwift!") observable .subscribe(onNext: { value in print("onNext:", value) }) .disposed(by: disposeBag) // 2. onNext, onError, onCompleted 모두 명시 let observable = Observable&lt;String&gt;.create { observer in observer.onNext("첫 번째 이벤트") observer.onCompleted() return Disposables.create() } observable .subscribe( onNext: { print("onNext:", $0) }, onError: { print("onError:", $0.localizedDescription) }, onCompleted: { print("onCompleted") }, onDisposed: { print("onDisposed") } ) .disposed(by: disposeBag) bind(to:) UI 컴포넌트 프로퍼티에 바인딩할 때 사용 구독과 동시에 값이 특정 속성에 직접 들어가는 방식 값을 특정UI의 속성에 직접 구독해서 바인딩 // label.text = title처럼 자동으로 연결하는 직접 바인딩 방식 viewModel.title .bind(to: label.rx.text) .disposed(by: disposeBag) bind(onNext:) 단순히 이벤트를 수신하고 구독 형태 내부에 명시적으로 처리 로직을 작성해야 함 값을 받아서 직접 처리(프린트, 로직 실행)하는 방식으로 구독 viewModel.title .bind(onNext: { text in print("값 출력: \(text)") }) .disposed(by: disposeBag) 비교 // 1. 자동 UI 업데이트 (bind to UI) viewModel.username // Observable&lt;String&gt; .bind(to: label.rx.text) // 📲 label.text = 값 .disposed(by: disposeBag) // 2. 내가 직접 프린트 (bind with closure) viewModel.username .bind(onNext: { name in print("유저 이름은 \(name)") }) .disposed(by: disposeBag)]]></summary></entry></feed>
