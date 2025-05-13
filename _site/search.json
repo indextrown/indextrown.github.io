@@ -1,6 +1,14 @@
 [
     
         {
+        "title"    : "[TableView] 9. 테이블뷰 콤바인 적용",
+        "category" : "",
+        "tags"     : "UIKit, TableView",
+        "url"      : "/UIKit-tableView9/",
+        "date"     : "2025-05-13 00:00:00 +0000"
+        } ,
+    
+        {
         "title"    : "[TableView] 8. 데이터 소스 이해, 따로써보기",
         "category" : "",
         "tags"     : "UIKit, TableView",
