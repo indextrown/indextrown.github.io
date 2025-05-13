@@ -179,9 +179,6 @@
           async>
         </script>
       </section>
-    <!-- {% when "utterances" %}
-      <h4 class="page__comments-title">{{ comments_label }}</h4>
-      <section id="utterances-comments"></section> -->
     {% when "giscus" %}
       <h4 class="page__comments-title">{{ comments_label }}</h4>
       <section id="giscus-comments"></section>
@@ -190,14 +187,17 @@
   {% endcase %}
 </div>
 
-    <!-- {% when "utterances" %}
+<!-- {% when "utterances" %}
       <h4 class="page__comments-title">{{ comments_label }}</h4>
-      <section id="utterances-comments">
-        <script src="https://utteranc.es/client.js"
-          repo="indextrown/indextrown.github.io"
-          issue-term="pathname"
-          theme="github-light"
-          crossorigin="anonymous"
-          async>
-        </script>
-      </section> -->
+      <section id="utterances-comments"></section> -->
+<!-- {% when "utterances" %}
+  <h4 class="page__comments-title">{{ comments_label }}</h4>
+  <section id="utterances-comments">
+    <script src="https://utteranc.es/client.js"
+      repo="indextrown/indextrown.github.io"
+      issue-term="pathname"
+      theme="github-light"
+      crossorigin="anonymous"
+      async>
+    </script>
+  </section> -->
