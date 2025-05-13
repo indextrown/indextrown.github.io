@@ -1,6 +1,14 @@
 [
     
         {
+        "title"    : "[TableView] 7. UITableViewCell 확장을 통해 셀 식별자 코드 재사용",
+        "category" : "",
+        "tags"     : "UIKit, TableView",
+        "url"      : "/UIKit-tableView7/",
+        "date"     : "2025-05-12 00:00:00 +0000"
+        } ,
+    
+        {
         "title"    : "[TableView] 6. Cell Configuration",
         "category" : "",
         "tags"     : "UIKit, TableView",
