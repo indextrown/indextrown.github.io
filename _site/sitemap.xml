@@ -4,6 +4,54 @@
   xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
     <url>
+      <loc>http://localhost:4000/Recommendation-System-Section1/</loc>
+      
+        <lastmod>2025-05-14T00:00:00+00:00</lastmod>
+      
+
+      
+        <changefreq>weekly</changefreq>
+      
+
+      
+          <priority>0.5</priority>
+      
+
+    </url>
+  
+    <url>
+      <loc>http://localhost:4000/Docker-docker1/</loc>
+      
+        <lastmod>2025-05-14T00:00:00+00:00</lastmod>
+      
+
+      
+        <changefreq>weekly</changefreq>
+      
+
+      
+          <priority>0.5</priority>
+      
+
+    </url>
+  
+    <url>
+      <loc>http://localhost:4000/CodeLounge-Admob/</loc>
+      
+        <lastmod>2025-05-14T00:00:00+00:00</lastmod>
+      
+
+      
+        <changefreq>weekly</changefreq>
+      
+
+      
+          <priority>0.5</priority>
+      
+
+    </url>
+  
+    <url>
       <loc>http://localhost:4000/UIKit-tableView9/</loc>
       
         <lastmod>2025-05-13T00:00:00+00:00</lastmod>
