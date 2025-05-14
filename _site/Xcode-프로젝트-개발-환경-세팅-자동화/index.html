@@ -1,0 +1,825 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li><li class="masthead__menu-item">
+              <a href="/projects/">Projects</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[Xcode] 프로젝트 개발 환경 세팅 자동화">
+    <meta itemprop="description" content="1. 프로젝트 개발 환경 자동화 배경팀 프로젝트르를 진행하면서 *.xcconfig, *.plist와 와 같은 숨겨야 하는 파일들이 생기게 된다. 이러한 파일들은 .gitignore에 추가하여 Git에 포함하지 않도록 한다. 이러한 Git의 관리를 받지 않는 파일은 팀원간 파일 공유를 수작업으로 진행해야 한다. 초기에는 카톡으로 주고 받았는데 수정하고 공유하는 과정이 매번 번거로웠다. 팀원에게 공유하는 것을 까먹게 되면 서로 다른 환경 속에서 프로젝트를 빌드, 개발하는 불상사가 발생할 수 있다.2. 개발 환경 세팅을 한줄로 끝내는 명령어를 완성해보자필요 기능  private files 다운로드  Homebrew 설치 자동화  fastlane 설치 인증서 다운로드  모든 작업 통합  make로 명령어 실행1. private files 다운로드우선 Private Repository를 만들어준다.echo &quot;# CodeLounge-Private&quot; &gt;&gt; README.mdgit initgit add README.mdgit commit -m &quot;first commit&quot;git branch -M maingit remote add origin https://github.com/team-GitDeulida/CodeLounge-Private.gitgit push -u origin mainVScode에서 프로젝트 생성후 방금 만든 레포지토리를 설정한다.// Config.xcconfig파일 생성 후 Hello World 작성git add .git commit -m &quot;upload&quot;git push origin mainConfig.xcconfig 테스트 파일을 생성하고 push 해준다. 그러면 레포지토리에서 Config.xcconfig가 업로드된것이 보인다.# Makefile# -----------------------------# 📁 Privates 파일 다운로드 설정# -----------------------------# GitHub에서 private 파일을 가져올 repository 경로 (팀명/저장소명/브랜치)Private_Repository=team-GitDeulida/CodeLounge-Private/main# GitHub Raw URL 기본 경로BASE_URL=https://raw.githubusercontent.com/$(Private_Repository)# ✅ 파일 다운로드 함수 정의# $(1): 디렉토리 경로# $(2): GitHub Access Token# $(3): 파일 이름define download_file	mkdir -p $(1)	curl -H &quot;Authorization: token $(2)&quot; -o $(1)/$(3) $(BASE_URL)/$(1)/$(3)endef# 🏁 진입 지점: download-privates 명령 실행 시 동작download-privates:	# .env 파일이 없으면 GitHub Access Token을 사용자에게 입력받아 저장	# Get GitHub Access Token	@if [ ! -f .env ]; then \		read -p &quot;Enter your GitHub access token: &quot; token; \		echo &quot;GITHUB_ACCESS_TOKEN=$$token&quot; &gt; .env; \	else \		/bin/bash -c &quot;source .env; make _download-privates&quot;; \		exit 0; \	fi	# 실제 다운로드 수행	make _download-privates# 🔽 내부 명령: 다운로드 로직 수행_download-privates:	# .env 파일에서 GITHUB_ACCESS_TOKEN을 읽어 환경 변수로 설정	$(eval export $(shell cat .env))	# 레포지토리의 최상위 디렉토리에서 Config.xcconfig 다운로드	$(call download_file,.,$$GITHUB_ACCESS_TOKEN,Config.xcconfig)최초 코드를 실행하면 .env파일이 없기 때문에 GitHub Access Token을 입력하라고 요청한다. 입력해주자. GitHub Access Token은 Personal access tokens -&gt; Fine-grained tokens에서 생성할 수 있다.실제 프로젝트에서 실행시 Config.xcconfig 파일이 다운로드된것을 확인할 수 있다. 이를 활용하여 여러 파일을 Private 레포지토리에 두고 make 명령어 한줄로 ignore 파일들을 가져올 수 있다.2. Homebrew 설치 자동화# -------------------------# Homebrew 설치 확인 및 설치# -------------------------install_homebrew:	@if ! command -v brew &gt;/dev/null 2&gt;&amp;1; then \		echo &quot;Homebrew가 설치되어 있지 않습니다. 설치를 진행합니다...&quot;; \		/bin/bash -c &quot;$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot;; \	else \		echo &quot;Homebrew가 이미 설치되어 있습니다.&quot;; \	fi3. fastlane 및 인증서 관련 작업(추가작업 진행예정)이제 Private 레포지토리에 프로비저닝 프로파일을 저장해두고 팀원이 쉽게 가져올 수 있게 해보자.fastlane match init         // git 선택 -&gt; Private레포지토리 주소 입력	fastlane match appstore	    // Apple Id 입력 -&gt; 앱 번들Id 입력fastlane match development	// Apple Id 입력 -&gt; 앱 번들Id 입력이렇게 하게 되면 Private 레포지토리에 master브랜치가 생성되고 프로비저닝 관련 파일들이 생성된다.# -------------------------# fastlane 및 인증서 관련 작업# -------------------------# Automatically manage signing 체크 해제해야함!!# Homebrew로 fastlane 설치 (설치되어 있으면 업데이트)install_fastlane: install_homebrew	@echo &quot;Updating Homebrew...&quot;	@brew update	@echo &quot;Installing fastlane via Homebrew...&quot;	@brew install fastlane || true	@echo &quot;✅ fastlane 설치 완료 (Homebrew 사용)&quot;	# 인증서 다운로드 (readonly 모드)fetch_certs: install_fastlane	@echo &quot;Fetching development certificates...&quot;	@fastlane match development --readonly	@echo &quot;Fetching appstore certificates...&quot;	@fastlane match appstore --readonly	@echo &quot;✅ 인증서 가져오기 완료&quot;fastlane match로 인증서를 다운로드 한 후, Xcode에서 Automatically manage signing”이 꺼져 있다면, 해당 팀 ID와 Bundle ID에 맞는 프로비저닝 프로파일을 수동으로 선택할 수 있다.최종 Makefile# 터미널에 make 입력시 실행됨.DEFAULT_GOAL := all# -----------------------------# 📁 Privates 파일 다운로드 설정# -----------------------------# GitHub에서 private 파일을 가져올 repository 경로 (팀명/저장소명/브랜치)Private_Repository=team-GitDeulida/CodeLounge-Private/main# GitHub Raw URL 기본 경로BASE_URL=https://raw.githubusercontent.com/$(Private_Repository)# ✅ 파일 다운로드 함수 정의# $(1): 디렉토리 경로# $(2): GitHub Access Token# $(3): 파일 이름define download_file	mkdir -p $(1)	curl -H &quot;Authorization: token $(2)&quot; -o $(1)/$(3) $(BASE_URL)/$(1)/$(3)endef# 🏁 진입 지점: download-privates 명령 실행 시 동작download-privates:	# .env 파일이 없으면 GitHub Access Token을 사용자에게 입력받아 저장	# Get GitHub Access Token	@if [ ! -f .env ]; then \		read -p &quot;Enter your GitHub access token: &quot; token; \		echo &quot;GITHUB_ACCESS_TOKEN=$$token&quot; &gt; .env; \	else \		echo &quot;Homebrew가 이미 설치되어 있습니다.&quot;; \	fi	# 실제 다운로드 수행	make _download-privates# 🔽 내부 명령: 다운로드 로직 수행_download-privates:	# .env 파일에서 GITHUB_ACCESS_TOKEN을 읽어 환경 변수로 설정	$(eval export $(shell cat .env))	# 레포지토리의 최상위 디렉토리에서 Config.xcconfig 다운로드	$(call download_file,.,$$GITHUB_ACCESS_TOKEN,Config.xcconfig)# -------------------------# Homebrew 설치 확인 및 설치# -------------------------install_homebrew:	@if ! command -v brew &gt;/dev/null 2&gt;&amp;1; then \		echo &quot;Homebrew가 설치되어 있지 않습니다. 설치를 진행합니다...&quot;; \		/bin/bash -c &quot;$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot;; \	else \		echo &quot;Homebrew가 이미 설치되어 있습니다.&quot;; \	fi# -------------------------# fastlane 및 인증서 관련 작업# -------------------------# Automatically manage signing 체크 해제해야함!!# Homebrew로 fastlane 설치 (설치되어 있으면 업데이트)install_fastlane: install_homebrew	@echo &quot;Updating Homebrew...&quot;	@brew update	@echo &quot;Installing fastlane via Homebrew...&quot;	@brew install fastlane || true	@echo &quot;✅ fastlane 설치 완료 (Homebrew 사용)&quot;	# 인증서 다운로드 (readonly 모드)fetch_certs: install_fastlane	@echo &quot;Fetching development certificates...&quot;	@fastlane match development --readonly	@echo &quot;Fetching appstore certificates...&quot;	@fastlane match appstore --readonly	@echo &quot;✅ 인증서 가져오기 완료&quot;# -------------------------# 통합 기본 타겟: 필요한 경우 Private 파일과 인증서 모두 다운로드# -------------------------all: download-privates fetch_certs	@echo &quot;✅ 모든 작업 완료&quot;실행시 Private 레포지토리 2~3번 주소 요청시 입력해준다.그리고 Xcode 재실행하면 사진처럼 프로비저닝 파일이 보이게 된다.이제 팀원이 프로비저닝 관련 해서 문제가 생긴다면 make명령어 실행해주세요~ 라고 멋있게 말해주면 된다.">
+    <meta itemprop="datePublished" content="2025-05-14T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/Xcode-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B0%9C%EB%B0%9C-%ED%99%98%EA%B2%BD-%EC%84%B8%ED%8C%85-%EC%9E%90%EB%8F%99%ED%99%94/" class="u-url" itemprop="url">[Xcode] 프로젝트 개발 환경 세팅 자동화
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=Recommendation_System">Recommendation System</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-05-14T00:00:00+00:00">May 14, 2025</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h2 id="1-프로젝트-개발-환경-자동화-배경">1. 프로젝트 개발 환경 자동화 배경</h2>
+<p>팀 프로젝트르를 진행하면서 *.xcconfig, *.plist와 와 같은 숨겨야 하는 파일들이 생기게 된다. 이러한 파일들은 .gitignore에 추가하여 Git에 포함하지 않도록 한다. 이러한 Git의 관리를 받지 않는 파일은 팀원간 파일 공유를 수작업으로 진행해야 한다. 초기에는 카톡으로 주고 받았는데 수정하고 공유하는 과정이 매번 번거로웠다. 팀원에게 공유하는 것을 까먹게 되면 서로 다른 환경 속에서 프로젝트를 빌드, 개발하는 불상사가 발생할 수 있다.</p>
+
+<h2 id="2-개발-환경-세팅을-한줄로-끝내는-명령어를-완성해보자">2. 개발 환경 세팅을 한줄로 끝내는 명령어를 완성해보자</h2>
+<h3 id="필요-기능">필요 기능</h3>
+<ol>
+  <li>private files 다운로드</li>
+  <li>Homebrew 설치 자동화</li>
+  <li>fastlane 설치 인증서 다운로드</li>
+  <li>모든 작업 통합</li>
+  <li>make로 명령어 실행</li>
+</ol>
+
+<h3 id="1-private-files-다운로드">1. private files 다운로드</h3>
+<p><img src="/assets/img/2025-05-14-%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94/image-20250515011923853.png" alt="이미지" width="100%" /><br />
+우선 Private Repository를 만들어준다.</p>
+
+<p><img src="/assets/img/2025-05-14-%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94/image-20250515012312124.png" alt="이미지" width="100%" /></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="s2">"# CodeLounge-Private"</span> <span class="o">&gt;&gt;</span> README.md
+git init
+git add README.md
+git commit <span class="nt">-m</span> <span class="s2">"first commit"</span>
+git branch <span class="nt">-M</span> main
+git remote add origin https://github.com/team-GitDeulida/CodeLounge-Private.git
+git push <span class="nt">-u</span> origin main
+</code></pre></div></div>
+
+<p>VScode에서 프로젝트 생성후 방금 만든 레포지토리를 설정한다.</p>
+
+<p><img src="/assets/img/2025-05-14-%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94/image-20250515012700826.png" alt="이미지" width="100%" /></p>
+
+<p><img src="/assets/img/2025-05-14-%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94/image-20250515012737339.png" alt="이미지" width="100%" /></p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Config.xcconfig파일 생성 후 Hello World 작성</span>
+<span class="n">git</span> <span class="n">add</span> <span class="o">.</span>
+<span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s">"upload"</span>
+<span class="n">git</span> <span class="n">push</span> <span class="n">origin</span> <span class="n">main</span>
+</code></pre></div></div>
+
+<p>Config.xcconfig 테스트 파일을 생성하고 push 해준다. 그러면 레포지토리에서 Config.xcconfig가 업로드된것이 보인다.</p>
+
+<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Makefile
+</span>
+<span class="c"># -----------------------------
+# 📁 Privates 파일 다운로드 설정
+# -----------------------------
+</span>
+<span class="c"># GitHub에서 private 파일을 가져올 repository 경로 (팀명/저장소명/브랜치)
+</span><span class="nv">Private_Repository</span><span class="o">=</span>team-GitDeulida/CodeLounge-Private/main
+
+<span class="c"># GitHub Raw URL 기본 경로
+</span><span class="nv">BASE_URL</span><span class="o">=</span>https://raw.githubusercontent.com/<span class="p">$(</span>Private_Repository<span class="p">)</span>
+
+<span class="c"># ✅ 파일 다운로드 함수 정의
+# $(1): 디렉토리 경로
+# $(2): GitHub Access Token
+# $(3): 파일 이름
+</span><span class="k">define</span> <span class="nv">download_file</span>
+	<span class="err">mkdir</span> <span class="err">-p</span> <span class="err">$(1)</span>
+	<span class="nl">curl -H "Authorization</span><span class="o">:</span> <span class="nf">token $(2)" -o $(1)/$(3) $(BASE_URL)/$(1)/$(3)</span>
+<span class="k">endef</span>
+
+<span class="c"># 🏁 진입 지점: download-privates 명령 실행 시 동작
+</span><span class="nl">download-privates</span><span class="o">:</span>
+
+	<span class="c"># .env 파일이 없으면 GitHub Access Token을 사용자에게 입력받아 저장
+</span>	<span class="c"># Get GitHub Access Token
+</span>	<span class="err">@if</span> <span class="err">[</span> <span class="err">!</span> <span class="err">-f</span> <span class="err">.env</span> <span class="err">];</span> <span class="err">then</span> <span class="err">\</span>
+		<span class="nl">read -p "Enter your GitHub access token</span><span class="o">:</span> <span class="nf">" token; </span>\
+<span class="nf">		echo "GITHUB_ACCESS_TOKEN=$$token" &gt; .env; </span>\
+<span class="nf">	else </span>\
+<span class="nf">		/bin/bash -c "source .env; make _download-privates"; </span>\
+<span class="nf">		exit 0; </span>\
+<span class="nf">	fi</span>
+
+	<span class="c"># 실제 다운로드 수행
+</span>	<span class="err">make</span> <span class="err">_download-privates</span>
+
+<span class="c"># 🔽 내부 명령: 다운로드 로직 수행
+</span><span class="nl">_download-privates</span><span class="o">:</span>
+
+	<span class="c"># .env 파일에서 GITHUB_ACCESS_TOKEN을 읽어 환경 변수로 설정
+</span>	<span class="nf">$(</span><span class="nb">eval</span> <span class="nb">export</span> <span class="p">$(</span>shell <span class="nb">cat</span> .env<span class="p">))</span>
+
+	<span class="c"># 레포지토리의 최상위 디렉토리에서 Config.xcconfig 다운로드
+</span>	<span class="nf">$(</span><span class="nb">call</span> download_file,.,<span class="nv">$$</span>GITHUB_ACCESS_TOKEN,Config.xcconfig<span class="p">)</span>
+</code></pre></div></div>
+
+<p>최초 코드를 실행하면 .env파일이 없기 때문에 GitHub Access Token을 입력하라고 요청한다. 입력해주자. GitHub Access Token은 Personal access tokens -&gt; Fine-grained tokens에서 생성할 수 있다.</p>
+
+<p><img src="/assets/img/2025-05-14-%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94/image-20250515014155060.png" alt="이미지" width="100%" /><br />
+실제 프로젝트에서 실행시 Config.xcconfig 파일이 다운로드된것을 확인할 수 있다. 이를 활용하여 여러 파일을 Private 레포지토리에 두고 make 명령어 한줄로 ignore 파일들을 가져올 수 있다.</p>
+
+<h3 id="2-homebrew-설치-자동화">2. Homebrew 설치 자동화</h3>
+
+<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># -------------------------
+# Homebrew 설치 확인 및 설치
+# -------------------------
+</span>
+<span class="nl">install_homebrew</span><span class="o">:</span>
+	<span class="p">@</span><span class="k">if</span> <span class="o">!</span> <span class="nb">command</span> <span class="nt">-v</span> brew <span class="o">&gt;</span>/dev/null 2&gt;&amp;1<span class="p">;</span> <span class="k">then</span> <span class="se">\</span>
+		<span class="nb">echo</span> <span class="s2">"Homebrew가 설치되어 있지 않습니다. 설치를 진행합니다..."</span><span class="p">;</span> <span class="se">\</span>
+		/bin/bash <span class="nt">-c</span> <span class="s2">"</span><span class="p">$$(</span><span class="s2">curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh</span><span class="p">)</span><span class="s2">"</span><span class="p">;</span> <span class="se">\</span>
+	<span class="k">else</span> <span class="se">\</span>
+		<span class="nb">echo</span> <span class="s2">"Homebrew가 이미 설치되어 있습니다."</span><span class="p">;</span> <span class="se">\</span>
+	<span class="k">fi</span>
+</code></pre></div></div>
+
+<h3 id="3-fastlane-및-인증서-관련-작업추가작업-진행예정">3. fastlane 및 인증서 관련 작업(추가작업 진행예정)</h3>
+
+<p>이제 Private 레포지토리에 프로비저닝 프로파일을 저장해두고 팀원이 쉽게 가져올 수 있게 해보자.<br />
+<img src="/assets/img/2025-05-14-%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94/image-20250515020058955.png" alt="이미지" width="100%" /></p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fastlane</span> <span class="n">match</span> <span class="kd">init</span>         <span class="c1">// git 선택 -&gt; Private레포지토리 주소 입력	</span>
+<span class="n">fastlane</span> <span class="n">match</span> <span class="n">appstore</span>	    <span class="c1">// Apple Id 입력 -&gt; 앱 번들Id 입력</span>
+<span class="n">fastlane</span> <span class="n">match</span> <span class="n">development</span>	<span class="c1">// Apple Id 입력 -&gt; 앱 번들Id 입력</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/2025-05-14-%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94/image-20250515020458828.png" alt="이미지" width="100%" /><br />
+이렇게 하게 되면 Private 레포지토리에 master브랜치가 생성되고 프로비저닝 관련 파일들이 생성된다.</p>
+
+<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># -------------------------
+# fastlane 및 인증서 관련 작업
+# -------------------------
+</span>
+<span class="c"># Automatically manage signing 체크 해제해야함!!
+# Homebrew로 fastlane 설치 (설치되어 있으면 업데이트)
+</span><span class="nl">install_fastlane</span><span class="o">:</span> <span class="nf">install_homebrew</span>
+	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"Updating Homebrew..."</span>
+	<span class="p">@</span>brew update
+	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"Installing fastlane via Homebrew..."</span>
+	<span class="p">@</span>brew <span class="nb">install </span>fastlane <span class="o">||</span> <span class="nb">true</span>
+	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"✅ fastlane 설치 완료 (Homebrew 사용)"</span>
+	
+<span class="c"># 인증서 다운로드 (readonly 모드)
+</span><span class="nl">fetch_certs</span><span class="o">:</span> <span class="nf">install_fastlane</span>
+	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"Fetching development certificates..."</span>
+	<span class="p">@</span>fastlane match development <span class="nt">--readonly</span>
+	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"Fetching appstore certificates..."</span>
+	<span class="p">@</span>fastlane match appstore <span class="nt">--readonly</span>
+	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"✅ 인증서 가져오기 완료"</span>
+</code></pre></div></div>
+
+<p>fastlane match로 인증서를 다운로드 한 후, Xcode에서 Automatically manage signing”이 꺼져 있다면, 해당 팀 ID와 Bundle ID에 맞는 프로비저닝 프로파일을 수동으로 선택할 수 있다.</p>
+
+<h2 id="최종-makefile">최종 Makefile</h2>
+
+<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 터미널에 make 입력시 실행됨
+</span><span class="nv">.DEFAULT_GOAL</span> <span class="o">:=</span> all
+
+<span class="c"># -----------------------------
+# 📁 Privates 파일 다운로드 설정
+# -----------------------------
+</span>
+<span class="c"># GitHub에서 private 파일을 가져올 repository 경로 (팀명/저장소명/브랜치)
+</span><span class="nv">Private_Repository</span><span class="o">=</span>team-GitDeulida/CodeLounge-Private/main
+
+<span class="c"># GitHub Raw URL 기본 경로
+</span><span class="nv">BASE_URL</span><span class="o">=</span>https://raw.githubusercontent.com/<span class="p">$(</span>Private_Repository<span class="p">)</span>
+
+<span class="c"># ✅ 파일 다운로드 함수 정의
+# $(1): 디렉토리 경로
+# $(2): GitHub Access Token
+# $(3): 파일 이름
+</span><span class="k">define</span> <span class="nv">download_file</span>
+	<span class="err">mkdir</span> <span class="err">-p</span> <span class="err">$(1)</span>
+	<span class="nl">curl -H "Authorization</span><span class="o">:</span> <span class="nf">token $(2)" -o $(1)/$(3) $(BASE_URL)/$(1)/$(3)</span>
+<span class="k">endef</span>
+
+<span class="c"># 🏁 진입 지점: download-privates 명령 실행 시 동작
+</span><span class="nl">download-privates</span><span class="o">:</span>
+
+	<span class="c"># .env 파일이 없으면 GitHub Access Token을 사용자에게 입력받아 저장
+</span>	<span class="c"># Get GitHub Access Token
+</span>	<span class="err">@if</span> <span class="err">[</span> <span class="err">!</span> <span class="err">-f</span> <span class="err">.env</span> <span class="err">];</span> <span class="err">then</span> <span class="err">\</span>
+		<span class="nl">read -p "Enter your GitHub access token</span><span class="o">:</span> <span class="nf">" token; </span>\
+<span class="nf">		echo "GITHUB_ACCESS_TOKEN=$$token" &gt; .env; </span>\
+<span class="nf">	else </span>\
+<span class="nf">		echo "Homebrew가 이미 설치되어 있습니다."; </span>\
+<span class="nf">	fi</span>
+
+	<span class="c"># 실제 다운로드 수행
+</span>	<span class="err">make</span> <span class="err">_download-privates</span>
+
+<span class="c"># 🔽 내부 명령: 다운로드 로직 수행
+</span><span class="nl">_download-privates</span><span class="o">:</span>
+
+	<span class="c"># .env 파일에서 GITHUB_ACCESS_TOKEN을 읽어 환경 변수로 설정
+</span>	<span class="nf">$(</span><span class="nb">eval</span> <span class="nb">export</span> <span class="p">$(</span>shell <span class="nb">cat</span> .env<span class="p">))</span>
+
+	<span class="c"># 레포지토리의 최상위 디렉토리에서 Config.xcconfig 다운로드
+</span>	<span class="nf">$(</span><span class="nb">call</span> download_file,.,<span class="nv">$$</span>GITHUB_ACCESS_TOKEN,Config.xcconfig<span class="p">)</span>
+
+<span class="c"># -------------------------
+# Homebrew 설치 확인 및 설치
+# -------------------------
+</span>
+<span class="nl">install_homebrew</span><span class="o">:</span>
+	<span class="p">@</span><span class="k">if</span> <span class="o">!</span> <span class="nb">command</span> <span class="nt">-v</span> brew <span class="o">&gt;</span>/dev/null 2&gt;&amp;1<span class="p">;</span> <span class="k">then</span> <span class="se">\</span>
+		<span class="nb">echo</span> <span class="s2">"Homebrew가 설치되어 있지 않습니다. 설치를 진행합니다..."</span><span class="p">;</span> <span class="se">\</span>
+		/bin/bash <span class="nt">-c</span> <span class="s2">"</span><span class="p">$$(</span><span class="s2">curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh</span><span class="p">)</span><span class="s2">"</span><span class="p">;</span> <span class="se">\</span>
+	<span class="k">else</span> <span class="se">\</span>
+		<span class="nb">echo</span> <span class="s2">"Homebrew가 이미 설치되어 있습니다."</span><span class="p">;</span> <span class="se">\</span>
+	<span class="k">fi</span>
+
+<span class="c"># -------------------------
+# fastlane 및 인증서 관련 작업
+# -------------------------
+</span>
+<span class="c"># Automatically manage signing 체크 해제해야함!!
+# Homebrew로 fastlane 설치 (설치되어 있으면 업데이트)
+</span><span class="nl">install_fastlane</span><span class="o">:</span> <span class="nf">install_homebrew</span>
+	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"Updating Homebrew..."</span>
+	<span class="p">@</span>brew update
+	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"Installing fastlane via Homebrew..."</span>
+	<span class="p">@</span>brew <span class="nb">install </span>fastlane <span class="o">||</span> <span class="nb">true</span>
+	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"✅ fastlane 설치 완료 (Homebrew 사용)"</span>
+	
+<span class="c"># 인증서 다운로드 (readonly 모드)
+</span><span class="nl">fetch_certs</span><span class="o">:</span> <span class="nf">install_fastlane</span>
+	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"Fetching development certificates..."</span>
+	<span class="p">@</span>fastlane match development <span class="nt">--readonly</span>
+	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"Fetching appstore certificates..."</span>
+	<span class="p">@</span>fastlane match appstore <span class="nt">--readonly</span>
+	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"✅ 인증서 가져오기 완료"</span>
+
+<span class="c"># -------------------------
+# 통합 기본 타겟: 필요한 경우 Private 파일과 인증서 모두 다운로드
+# -------------------------
+</span><span class="nl">all</span><span class="o">:</span> <span class="nf">download-privates fetch_certs</span>
+	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"✅ 모든 작업 완료"</span>
+</code></pre></div></div>
+
+<p>실행시 Private 레포지토리 2~3번 주소 요청시 입력해준다.<br />
+그리고 Xcode 재실행하면 사진처럼 프로비저닝 파일이 보이게 된다.</p>
+
+<p><img src="/assets/img/2025-05-14-%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94/image-20250515022743846.png" alt="이미지" width="100%" /><br />
+이제 팀원이 프로비저닝 관련 해서 문제가 생긴다면 make명령어 실행해주세요~ 라고 멋있게 말해주면 된다.</p>
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/Recommendation-System-Section1/" class="pagination--pager" title="[Recommendation System] 1. 추천시스템 소개
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>
