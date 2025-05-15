@@ -197,4 +197,4 @@ class CombineListViewController: UIViewController {
     }
 }
 ```
-결국 Combine 데이터 변경되었을 때 즉 Publisher가 들어올 때 바로 tableview의 dataSource도 설정하고, 바로 데이터를 꽂아줄 수 있다. 하지만 지금 customItems() 형태가 DummyData로 고정되어있기 때문에 제네릭으로 변환하는 포스팅을 작성할 예정이다.
+결국 Combine 데이터 변경되었을 때 즉 Publisher가 들어올 때 바로 tableview의 dataSource도 설정하고, 바로 데이터를 꽂아줄 수 있다. 하지만 지금 customItems() 형태가 DummyData로 고정되어있기 때문에 서버에서 받을 수 있는 여러 타입을 모두 반영하기 위해 제네릭으로 변환하는 포스팅을 작성할 예정이다.
