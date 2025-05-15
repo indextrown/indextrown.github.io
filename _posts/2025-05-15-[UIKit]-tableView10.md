@@ -1,5 +1,5 @@
 ---
-title: "[TableView] 10. 테이블뷰 콤바인 커스텀 데이터 소스"
+title: "[TableView] 10. 테이블뷰 Combine CustomDataSource"
 tags: 
 - UIKit
 - TableView

@@ -1,5 +1,5 @@
 ---
-title: "[Swift] 클로저"
+title: "[Swift] Closure"
 tags: 
 - Swift
 header: 
