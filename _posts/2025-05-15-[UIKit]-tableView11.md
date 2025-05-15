@@ -1,5 +1,5 @@
 ---
-title: "[TableView] 10. 테이블뷰 제네릭 CustomCombineDataSource"
+title: "[TableView] 11. 테이블뷰 제네릭 CustomCombineDataSource"
 tags: 
 - UIKit
 - TableView
