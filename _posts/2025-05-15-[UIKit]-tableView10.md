@@ -82,6 +82,8 @@ typora-root-url: ../
  }
  ```
 
+커스텀 데이터소스를 만든다. 멤버변수로 데이터리스트를 보유하도록 하자. 지금은 DummyData이지만 다음 포스팅에서 제네릭으로 변경할 예정이다.  DataSource에서 변경이 된 데이터와 테이블뷰 리로드를 위한 테이블뷰 접근을 관리하기 위해 pushDataList()를 만들어주자. 그리고 기존 ViewController에서 관리하던 UITableViewDataSource 관련 프로토콜 로직을 CustomCombineDataSource로 그대로 옮겨준다.  왜냐하면 원래 dataSource의 주요 역할이 어떤 셀의 종류를 보여줄지, 리스트 개수가 몇개일지를 관여하기 때문이다. 즉 기존 ViewController의 비즈니스 로직을 CustomDataSource로 옮긴 것이다. 이제 CustomDataSource를 만들었으니 적용하기 위해 클로저를 만들어주자.
+
 
 
 ### UITableView+Combine.swift
@@ -112,6 +114,13 @@ extension UITableView {
     }
 }
 ```
+
+기존 ViewController에서 sink로 받는 것을 보면 제네릭 형태인데 Sink로 이벤트(Publisker)가 들어온 데이터를 매개변수로 가지고 반환이 없는 형태의 클로저이다. (Self.Output) -> Void)
+
+이 (Self.Output) -> Void) 형태로 반환을 만족하는 함수를 만들어주자. 지금은 들어오는 형태가 [DummyData] 이므로 func customItems() -> ([DummyData]) -> Void로 해주면 된다.
+
+SInk를 통해 들어오는게 [DummyData]로 들어오게 되고 return { input in } 에 input 부분으로 들어오게 된다.
+그럼 pushDataList를 통해 변경이 된 이벤트를 나자신에게 넣어준다.
 
 
 
@@ -188,4 +197,4 @@ class CombineListViewController: UIViewController {
     }
 }
 ```
-
+결국 Combine 데이터 변경되었을 때 즉 Publisher가 들어올 때 바로 tableview의 dataSource도 설정하고, 바로 데이터를 꽂아줄 수 있다. 하지만 지금 customItems() 형태가 DummyData로 고정되어있기 때문에 제네릭으로 변환하는 포스팅을 작성할 예정이다.
