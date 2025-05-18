@@ -305,6 +305,18 @@ var store = [{
         "url": "/UIKit-tableView12/",
         "teaser": "/assets/logos/background.png"
       },{
+        "title": "[TableView] UITextView vs UITextField",
+        "excerpt":"    UITextView UITextField  차이  TextField는 placeholder를 사용할 수 있으나 TextView는 안되는것을 알게 되어 두 컴포넌트의 차이에 대해 알아보고자 정리하게 되었다.   UITextView  공식문서를 살펴보면  A scrollable, multiline text region  1줄 이상으로 이루어진 스크롤 가능한 텍스트 영역    placeholder는 제공하지 않기 때문에 직접 구현해야 한다.   placeholder 구현 방법  UITextView는 UITextViewDeleagate 프로토콜을 채택하고 있다.   그 중 textViewDidBeginEditing method를 사용해서 구현해보자.   // init 시 상태를 lazy로 지정 private lazy var textView: UITextView = {     let tv = UITextView()     tv.text = \"입력하세요..\"     tv.textColor = .secondaryLabel     tv.delegate = self     return textView }()  init 시 상태를 lazy로 지정해주면서 layout 세팅을 진행하였다.   textViewDidBeginEditing  Tells the delegate when editing of the specified text view begins.  Optional 설정으로 textView의 수정이 일어나면 실행되는 메서드   extension UploadViewController: UITextViewDelegate {     func textViewDidBeginEditing(_ textView: UITextView) {         guard textView.textColor == .secondaryLabel else { return }         textView.text = nil         textView.textColor = .label     } }  textColor가 .secondaryLabel라는 기본값으로 세팅되어 있으면 return 시키고, 아니라면 text를 비우고 Color도 검정색으로 바꾸어준다.   UITextField  ","categories": [],
+        "tags": ["UIKit","UIComponent"],
+        "url": "/UIKit-UItextField-UITextView/",
+        "teaser": "/assets/logos/background.png"
+      },{
+        "title": "[TableView] 13. RxTableView",
+        "excerpt":"   ","categories": [],
+        "tags": ["UIKit","TableView"],
+        "url": "/UIKit-tableView13/",
+        "teaser": "/assets/logos/background.png"
+      },{
         "title": "Star Bridge: 생일카페 알리미",
         "excerpt":"소개      서비스 설명: K-pop 팬들을 위한 생일카페 정보를 자동으로 수집하고, 알림으로 제공하는 스케줄 앱   프로젝트 유형: 팀 프로젝트 (졸업작품)   개발 기간: 24.03 ~ 24.12   Github 링크: https://github.com/indextrown/senior-project   기술 스택: SwiftUI, Selenium, AWS EC2, Firebase   기여한 부분     SNS 기반 생일카페 스케줄 자동화 시스템 설계 및 구현   도입 배경  Swift를 배우기 시작하던 시기에 졸업 프로젝트에 합류하게 되어 앱 UI 구현보다는 시스템 개발 파트에 더 집중할 수 있었습니다.    크롤링 → GPT로 데이터 정제 → API 연동으로 백엔드 중심의 구조를 직접 설계하며, 정보를 어떻게 모으고, 걸러내고, 사용자에게 전달할지를 하나의 흐름으로 구현해보는 데 초점을 맞췄습니다.   해결 방법          크롤링 자동화            로그인 및 차단 문제 해결을 위해, 수동 로그인 후 발급한 쿠키를 저장하고 이를 크롤링 시 재사용하여 안정성 확보.           GPT 기반 정보 정제            크롤링된 게시물에서 연예인 이름, 날짜, 장소를 GPT API로 추출.           Google Maps API 장소 검증            GPT가 추출한 장소를 지도 API로 확인, 유효하지 않은 데이터는 자동 제외.           실시간 앱 연동            1~3단계 결과를 AWS EC2 서버에서 30분 주기로 자동화.       정제된 데이터를 MySQL에 저장하고, SwiftUI 앱에서 실시간 조회 가능하게 구성.           성과      2024 한국멀티미디어학회 Best Paper 수상.   SNS 크롤링 → GPT 정제 → 장소 검증 → 앱 연동까지 자동화 파이프라인 완성.   데이터 정확도 98.0%, 알림 98.5% 달성.   Swift 학습 초기였지만, 앱과 서버를 연동하고 데이터 흐름을 설계하며 실질적인 서비스 구축 경험 쌓음.  ","categories": [],
         "tags": ["SwiftUI","Selenium","AWS EC2","Firebase"],
