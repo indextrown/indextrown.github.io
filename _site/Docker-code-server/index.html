@@ -398,16 +398,16 @@ checkbox.addEventListener('change', function() {
 
 
   <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="[TableView] 13. RxTableView">
-    <meta itemprop="description" content="">
-    <meta itemprop="datePublished" content="2025-05-18T00:00:00+00:00">
+    <meta itemprop="headline" content="[Docker] code-server">
+    <meta itemprop="description" content="# DockerfileFROM ubuntu:latest# ----- 기본 패키지 설치 -----RUN apt-get update &amp;&amp; \    apt-get install -y \        curl sudo python3 python3-pip default-jdk \        git wget nano locales \        libpython3.10 libicu-dev libxml2-dev clang \        unzip gnupg2 libcurl4-openssl-dev pkg-config \    &amp;&amp; apt-get clean# ----- 로케일 설정 -----RUN locale-gen en_US.UTF-8ENV LANG=en_US.UTF-8ENV LANGUAGE=en_US:enENV LC_ALL=en_US.UTF-8# ----- ARG로 외부에서 변수 받기 -----ARG USERARG PASSWORD# ----- 사용자 생성 및 sudo 권한 부여 -----RUN useradd -m ${USER} &amp;&amp; echo &quot;${USER}:${PASSWORD}&quot; | chpasswd &amp;&amp; adduser ${USER} sudo# ----- code-server 설치 및 작업 디렉토리 생성 -----ENV WORKINGDIR=&quot;/home/${USER}/vscode&quot;RUN curl -fsSL https://code-server.dev/install.sh | sh &amp;&amp; \    mkdir -p ${WORKINGDIR} &amp;&amp; chown -R ${USER}:${USER} ${WORKINGDIR}# ----- 컨테이너 환경변수로도 유지 -----ENV PASSWORD=${PASSWORD}ENV USER=${USER}# ----- 사용자 전환 -----USER ${USER}WORKDIR ${WORKINGDIR}# ----- VSCode 확장 설치 -----RUN code-server --install-extension ms-python.python &amp;&amp; \    code-server --install-extension ms-azuretools.vscode-docker &amp;&amp; \    code-server --install-extension formulahendry.code-runner# ----- 포트 오픈 -----EXPOSE 8080# ----- code-server 실행 -----CMD [&quot;code-server&quot;, &quot;--bind-addr&quot;, &quot;0.0.0.0:8080&quot;, &quot;--auth&quot;, &quot;password&quot;, &quot;.&quot;]# 컨테이너 터미널로 진입docker exec -it vscode-container bash# 이동cd /home/ec2-user/.local/share/code-server/Usernano settings.json{  &quot;code-runner.executorMap&quot;: {    &quot;python&quot;: &quot;python3 -u&quot;,    &quot;swift&quot;: &quot;/home/ec2-user/.local/share/swiftly/bin/swift&quot;  },  &quot;code-runner.showExecutionMessage&quot;: false,  &quot;code-runner.clearPreviousOutput&quot;: true}# 저장ctrl + oenterctrl x# 나가고 재빌드exitdocker compose up -d --buildswift 추가# 컨테이너 터미널로 진입docker exec -it vscode-container bash# 1. 기존 swiftly 완전 삭제rm -rf ~/.local/share/swiftlyrm -f ~/swiftly# 2. 필수 패키지 설치sudo apt-get updatesudo apt-get install -y clang libicu-dev wget libpython3-dev# 3. 최신 swiftly 설치curl -O &quot;https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz&quot;tar zxf &quot;swiftly-$(uname -m).tar.gz&quot;chmod +x swiftly./swiftly init --quiet-shell-followup --assume-yes# 4. 환경 변수 적용source ~/.local/share/swiftly/env.shecho &#39;source ~/.local/share/swiftly/env.sh&#39; &gt;&gt; ~/.bashrc# 5. Swift 6.1.0 설치 (실제 toolchain 다운로드)~/.local/share/swiftly/bin/swiftly install 6.1.0 --assume-yes --verify# 6. swift 실행 확인find ~/.local/share/swiftly/toolchains -name swift -type f -executableswift --version">
+    <meta itemprop="datePublished" content="2025-05-19T00:00:00+00:00">
     
 
     <div class="page__inner-wrap">
       
         <header>
           <h1 id="page-title" class="page__title p-name" itemprop="headline">
-            <a href="http://localhost:4000/UIKit-tableView13/" class="u-url" itemprop="url">[TableView] 13. RxTableView
+            <a href="http://localhost:4000/Docker-code-server/" class="u-url" itemprop="url">[Docker] code-server
 </a>
           </h1>
           <footer class="page__meta">
@@ -427,7 +427,7 @@ checkbox.addEventListener('change', function() {
     
     
     
-      <a class="posttag tagged" href="/posts/?tag=TableView">TableView</a>
+      <a class="posttag tagged" href="/posts/?tag=UIComponent">UIComponent</a>
     
     
     </span>  
@@ -438,7 +438,7 @@ checkbox.addEventListener('change', function() {
 <!--  -->
             
 
-  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-05-18T00:00:00+00:00">May 18, 2025</time></p>
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-05-19T00:00:00+00:00">May 19, 2025</time></p>
 
           </footer>
         </header>
@@ -450,6 +450,115 @@ checkbox.addEventListener('change', function() {
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Dockerfile</span>
+
+FROM ubuntu:latest
+
+<span class="c"># ----- 기본 패키지 설치 -----</span>
+RUN apt-get update <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    apt-get <span class="nb">install</span> <span class="nt">-y</span> <span class="se">\</span>
+        curl <span class="nb">sudo </span>python3 python3-pip default-jdk <span class="se">\</span>
+        git wget nano locales <span class="se">\</span>
+        libpython3.10 libicu-dev libxml2-dev clang <span class="se">\</span>
+        unzip gnupg2 libcurl4-openssl-dev pkg-config <span class="se">\</span>
+    <span class="o">&amp;&amp;</span> apt-get clean
+
+<span class="c"># ----- 로케일 설정 -----</span>
+RUN locale-gen en_US.UTF-8
+ENV <span class="nv">LANG</span><span class="o">=</span>en_US.UTF-8
+ENV <span class="nv">LANGUAGE</span><span class="o">=</span>en_US:en
+ENV <span class="nv">LC_ALL</span><span class="o">=</span>en_US.UTF-8
+
+<span class="c"># ----- ARG로 외부에서 변수 받기 -----</span>
+ARG USER
+ARG PASSWORD
+
+<span class="c"># ----- 사용자 생성 및 sudo 권한 부여 -----</span>
+RUN useradd <span class="nt">-m</span> <span class="k">${</span><span class="nv">USER</span><span class="k">}</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"</span><span class="k">${</span><span class="nv">USER</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span><span class="s2">"</span> | chpasswd <span class="o">&amp;&amp;</span> adduser <span class="k">${</span><span class="nv">USER</span><span class="k">}</span> <span class="nb">sudo</span>
+
+<span class="c"># ----- code-server 설치 및 작업 디렉토리 생성 -----</span>
+ENV <span class="nv">WORKINGDIR</span><span class="o">=</span><span class="s2">"/home/</span><span class="k">${</span><span class="nv">USER</span><span class="k">}</span><span class="s2">/vscode"</span>
+RUN curl <span class="nt">-fsSL</span> https://code-server.dev/install.sh | sh <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">mkdir</span> <span class="nt">-p</span> <span class="k">${</span><span class="nv">WORKINGDIR</span><span class="k">}</span> <span class="o">&amp;&amp;</span> <span class="nb">chown</span> <span class="nt">-R</span> <span class="k">${</span><span class="nv">USER</span><span class="k">}</span>:<span class="k">${</span><span class="nv">USER</span><span class="k">}</span> <span class="k">${</span><span class="nv">WORKINGDIR</span><span class="k">}</span>
+
+<span class="c"># ----- 컨테이너 환경변수로도 유지 -----</span>
+ENV <span class="nv">PASSWORD</span><span class="o">=</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span>
+ENV <span class="nv">USER</span><span class="o">=</span><span class="k">${</span><span class="nv">USER</span><span class="k">}</span>
+
+<span class="c"># ----- 사용자 전환 -----</span>
+USER <span class="k">${</span><span class="nv">USER</span><span class="k">}</span>
+WORKDIR <span class="k">${</span><span class="nv">WORKINGDIR</span><span class="k">}</span>
+
+<span class="c"># ----- VSCode 확장 설치 -----</span>
+RUN code-server <span class="nt">--install-extension</span> ms-python.python <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    code-server <span class="nt">--install-extension</span> ms-azuretools.vscode-docker <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    code-server <span class="nt">--install-extension</span> formulahendry.code-runner
+
+<span class="c"># ----- 포트 오픈 -----</span>
+EXPOSE 8080
+
+<span class="c"># ----- code-server 실행 -----</span>
+CMD <span class="o">[</span><span class="s2">"code-server"</span>, <span class="s2">"--bind-addr"</span>, <span class="s2">"0.0.0.0:8080"</span>, <span class="s2">"--auth"</span>, <span class="s2">"password"</span>, <span class="s2">"."</span><span class="o">]</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 컨테이너 터미널로 진입</span>
+docker <span class="nb">exec</span> <span class="nt">-it</span> vscode-container bash
+
+<span class="c"># 이동</span>
+<span class="nb">cd</span> /home/ec2-user/.local/share/code-server/User
+
+nano settings.json
+
+<span class="o">{</span>
+  <span class="s2">"code-runner.executorMap"</span>: <span class="o">{</span>
+    <span class="s2">"python"</span>: <span class="s2">"python3 -u"</span>,
+    <span class="s2">"swift"</span>: <span class="s2">"/home/ec2-user/.local/share/swiftly/bin/swift"</span>
+  <span class="o">}</span>,
+  <span class="s2">"code-runner.showExecutionMessage"</span>: <span class="nb">false</span>,
+  <span class="s2">"code-runner.clearPreviousOutput"</span>: <span class="nb">true</span>
+<span class="o">}</span>
+
+<span class="c"># 저장</span>
+ctrl + o
+enter
+ctrl x
+
+<span class="c"># 나가고 재빌드</span>
+<span class="nb">exit
+</span>docker compose up <span class="nt">-d</span> <span class="nt">--build</span>
+</code></pre></div></div>
+
+<h1 id="swift-추가">swift 추가</h1>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 컨테이너 터미널로 진입</span>
+docker <span class="nb">exec</span> <span class="nt">-it</span> vscode-container bash
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 기존 swiftly 완전 삭제</span>
+<span class="nb">rm</span> <span class="nt">-rf</span> ~/.local/share/swiftly
+<span class="nb">rm</span> <span class="nt">-f</span> ~/swiftly
+
+<span class="c"># 2. 필수 패키지 설치</span>
+<span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> clang libicu-dev wget libpython3-dev
+
+<span class="c"># 3. 최신 swiftly 설치</span>
+curl <span class="nt">-O</span> <span class="s2">"https://download.swift.org/swiftly/linux/swiftly-</span><span class="si">$(</span><span class="nb">uname</span> <span class="nt">-m</span><span class="si">)</span><span class="s2">.tar.gz"</span>
+<span class="nb">tar </span>zxf <span class="s2">"swiftly-</span><span class="si">$(</span><span class="nb">uname</span> <span class="nt">-m</span><span class="si">)</span><span class="s2">.tar.gz"</span>
+<span class="nb">chmod</span> +x swiftly
+./swiftly init <span class="nt">--quiet-shell-followup</span> <span class="nt">--assume-yes</span>
+
+<span class="c"># 4. 환경 변수 적용</span>
+<span class="nb">source</span> ~/.local/share/swiftly/env.sh
+<span class="nb">echo</span> <span class="s1">'source ~/.local/share/swiftly/env.sh'</span> <span class="o">&gt;&gt;</span> ~/.bashrc
+
+<span class="c"># 5. Swift 6.1.0 설치 (실제 toolchain 다운로드)</span>
+~/.local/share/swiftly/bin/swiftly <span class="nb">install </span>6.1.0 <span class="nt">--assume-yes</span> <span class="nt">--verify</span>
+
+<span class="c"># 6. swift 실행 확인</span>
+find ~/.local/share/swiftly/toolchains <span class="nt">-name</span> swift <span class="nt">-type</span> f <span class="nt">-executable</span>
+swift <span class="nt">--version</span>
+</code></pre></div></div>
+
         
       </section>
 
@@ -458,11 +567,11 @@ checkbox.addEventListener('change', function() {
       
   <nav class="pagination">
     
-      <a href="/UIKit-UItextField-UITextView/" class="pagination--pager" title="[TableView] UITextView vs UITextField
+      <a href="/UIKit-tableView13/" class="pagination--pager" title="[TableView] 13. RxTableView
 ">Previous</a>
     
     
-      <a href="/Docker-code-server/" class="pagination--pager" title="[Docker] code-server
+      <a href="/Baekjoon-1992/" class="pagination--pager" title="[Baekjoon] 백준 1992 쿼드트리
 ">Next</a>
     
   </nav>

@@ -1,6 +1,174 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-05-18T05:02:06+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[TableView] 13. RxTableView</title><link href="http://localhost:4000/UIKit-tableView13/" rel="alternate" type="text/html" title="[TableView] 13. RxTableView" /><published>2025-05-18T00:00:00+00:00</published><updated>2025-05-18T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView13</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView13/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-05-21T03:44:54+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[Baekjoon] 백준 1992 쿼드트리</title><link href="http://localhost:4000/Baekjoon-1992/" rel="alternate" type="text/html" title="[Baekjoon] 백준 1992 쿼드트리" /><published>2025-05-21T00:00:00+00:00</published><updated>2025-05-21T00:00:00+00:00</updated><id>http://localhost:4000/%5BBaekjoon%5D-1992</id><content type="html" xml:base="http://localhost:4000/Baekjoon-1992/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">[TableView] UITextView vs UITextField</title><link href="http://localhost:4000/UIKit-UItextField-UITextView/" rel="alternate" type="text/html" title="[TableView] UITextView vs UITextField" /><published>2025-05-18T00:00:00+00:00</published><updated>2025-05-18T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-UItextField-UITextView</id><content type="html" xml:base="http://localhost:4000/UIKit-UItextField-UITextView/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<h2 id="문제">문제</h2>
+<p><a href="https://www.acmicpc.net/problem/1992">쿼드트리</a></p>
+
+<p><img src="/assets/img/2025-05-21-%5BBaekjoon%5D-1992/image-20250521124353945.png" alt="이미지" width="100%" /><br />
+주어진 영상이 0으로만 이루어져 있다면 결과는 0이 되고 혹은 그 반대면 결과가 1이 된다.  <br />
+만약 0과 1이 섞여 있으면 전체를 한번에 나타내지 못하고 4개의 영역으로 나누어 각 영역을 압축한 결과를 차례로 괄호 안에서 묶어서 표현한다.</p>
+
+<h2 id="풀이">풀이</h2>
+<p>분할 정복 알고리즘을 사용하여 해결할 수 있다.  <br />
+분할 정복은 재귀적으로 큰 문제를 하위 문제로 쪼개어 상위 문제를 해결하는 방식이다.  <br />
+2차원 배열을 같은 숫자로 구성된 4등분 단위로 압축 및 재귀적츠로 처리하여 괄호로 묶는다. Stack으로도 구현 가능하다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+┌───┬───┐
+│ 1 │ 2 │
+├───┼───┤
+│ 3 │ 4 │
+└───┴───┘
+*/</span>
+<span class="k">let</span> <span class="nv">n</span> <span class="o">=</span> <span class="kt">Int</span><span class="p">(</span><span class="nf">readLine</span><span class="p">()</span><span class="o">!</span><span class="p">)</span><span class="o">!</span>
+<span class="k">var</span> <span class="nv">graph</span><span class="p">:</span> <span class="p">[[</span><span class="kt">String</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mi">0</span><span class="o">..&lt;</span><span class="n">n</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">row</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span><span class="o">!.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span>
+    <span class="n">graph</span><span class="o">.</span><span class="nf">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// 분할정복 함수 - (y, x) 위치에서 size 크기의 정사각형 영역 처리</span>
+<span class="kd">func</span> <span class="nf">go</span><span class="p">(</span><span class="n">_</span> <span class="nv">y</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="n">_</span> <span class="nv">x</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="n">_</span> <span class="nv">size</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">base</span> <span class="o">=</span> <span class="n">graph</span><span class="p">[</span><span class="n">y</span><span class="p">][</span><span class="n">x</span><span class="p">]</span>
+    <span class="k">var</span> <span class="nv">ret</span> <span class="o">=</span> <span class="s">""</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="k">in</span> <span class="n">y</span><span class="o">..&lt;</span><span class="n">y</span><span class="o">+</span><span class="n">size</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="k">in</span> <span class="n">x</span><span class="o">..&lt;</span><span class="n">x</span><span class="o">+</span><span class="n">size</span> <span class="p">{</span>
+            <span class="c1">// 입력 조건이 2^k 이므로 0이하로 들어올 가능성이 없기 때문에 기저 사례 필요 x</span>
+            <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span> <span class="k">return</span> <span class="n">graph</span><span class="p">[</span><span class="n">y</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="p">}</span>
+
+            <span class="c1">// 하나라도 값이 다르다면 4분할하여 재귀적으로 검사</span>
+            <span class="k">if</span> <span class="n">base</span> <span class="o">!=</span> <span class="n">graph</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="p">{</span>
+                <span class="n">ret</span> <span class="o">+=</span> <span class="s">"("</span>
+                <span class="n">ret</span> <span class="o">+=</span> <span class="nf">go</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">size</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">ret</span> <span class="o">+=</span> <span class="nf">go</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">+</span><span class="n">size</span><span class="sr">/2, size/</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">ret</span> <span class="o">+=</span> <span class="nf">go</span><span class="p">(</span><span class="n">y</span><span class="o">+</span><span class="n">size</span><span class="sr">/2, x, size/</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">ret</span> <span class="o">+=</span> <span class="nf">go</span><span class="p">(</span><span class="n">y</span><span class="o">+</span><span class="n">size</span><span class="sr">/2, x+size/2, size/</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">ret</span> <span class="o">+=</span> <span class="s">")"</span>
+                <span class="k">return</span> <span class="n">ret</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 모두 같은 값이면 해당 값 반환</span>
+    <span class="k">return</span> <span class="n">base</span>
+<span class="p">}</span>
+
+<span class="c1">// (0, 0)부터 분할정복 시작</span>
+<span class="nf">print</span><span class="p">(</span><span class="nf">go</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Baekjoon" /><summary type="html"><![CDATA[문제 쿼드트리 주어진 영상이 0으로만 이루어져 있다면 결과는 0이 되고 혹은 그 반대면 결과가 1이 된다. 만약 0과 1이 섞여 있으면 전체를 한번에 나타내지 못하고 4개의 영역으로 나누어 각 영역을 압축한 결과를 차례로 괄호 안에서 묶어서 표현한다. 풀이 분할 정복 알고리즘을 사용하여 해결할 수 있다. 분할 정복은 재귀적으로 큰 문제를 하위 문제로 쪼개어 상위 문제를 해결하는 방식이다. 2차원 배열을 같은 숫자로 구성된 4등분 단위로 압축 및 재귀적츠로 처리하여 괄호로 묶는다. Stack으로도 구현 가능하다. /* ┌───┬───┐ │ 1 │ 2 │ ├───┼───┤ │ 3 │ 4 │ └───┴───┘ */ let n = Int(readLine()!)! var graph: [[String]] = [] for _ in 0..&lt;n { let row = readLine()!.map { String($0) } graph.append(row) } // 분할정복 함수 - (y, x) 위치에서 size 크기의 정사각형 영역 처리 func go(_ y: Int, _ x: Int, _ size: Int) -&gt; String { let base = graph[y][x] var ret = "" for row in y..&lt;y+size { for col in x..&lt;x+size { // 입력 조건이 2^k 이므로 0이하로 들어올 가능성이 없기 때문에 기저 사례 필요 x if size == 1 { return graph[y][x] } // 하나라도 값이 다르다면 4분할하여 재귀적으로 검사 if base != graph[row][col] { ret += "(" ret += go(y, x, size/2) ret += go(y, x+size/2, size/2) ret += go(y+size/2, x, size/2) ret += go(y+size/2, x+size/2, size/2) ret += ")" return ret } } } // 모두 같은 값이면 해당 값 반환 return base } // (0, 0)부터 분할정복 시작 print(go(0, 0, n))]]></summary></entry><entry><title type="html">[Docker] code-server</title><link href="http://localhost:4000/Docker-code-server/" rel="alternate" type="text/html" title="[Docker] code-server" /><published>2025-05-19T00:00:00+00:00</published><updated>2025-05-19T00:00:00+00:00</updated><id>http://localhost:4000/%5BDocker%5D-code-server</id><content type="html" xml:base="http://localhost:4000/Docker-code-server/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Dockerfile</span>
+
+FROM ubuntu:latest
+
+<span class="c"># ----- 기본 패키지 설치 -----</span>
+RUN apt-get update <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    apt-get <span class="nb">install</span> <span class="nt">-y</span> <span class="se">\</span>
+        curl <span class="nb">sudo </span>python3 python3-pip default-jdk <span class="se">\</span>
+        git wget nano locales <span class="se">\</span>
+        libpython3.10 libicu-dev libxml2-dev clang <span class="se">\</span>
+        unzip gnupg2 libcurl4-openssl-dev pkg-config <span class="se">\</span>
+    <span class="o">&amp;&amp;</span> apt-get clean
+
+<span class="c"># ----- 로케일 설정 -----</span>
+RUN locale-gen en_US.UTF-8
+ENV <span class="nv">LANG</span><span class="o">=</span>en_US.UTF-8
+ENV <span class="nv">LANGUAGE</span><span class="o">=</span>en_US:en
+ENV <span class="nv">LC_ALL</span><span class="o">=</span>en_US.UTF-8
+
+<span class="c"># ----- ARG로 외부에서 변수 받기 -----</span>
+ARG USER
+ARG PASSWORD
+
+<span class="c"># ----- 사용자 생성 및 sudo 권한 부여 -----</span>
+RUN useradd <span class="nt">-m</span> <span class="k">${</span><span class="nv">USER</span><span class="k">}</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"</span><span class="k">${</span><span class="nv">USER</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span><span class="s2">"</span> | chpasswd <span class="o">&amp;&amp;</span> adduser <span class="k">${</span><span class="nv">USER</span><span class="k">}</span> <span class="nb">sudo</span>
+
+<span class="c"># ----- code-server 설치 및 작업 디렉토리 생성 -----</span>
+ENV <span class="nv">WORKINGDIR</span><span class="o">=</span><span class="s2">"/home/</span><span class="k">${</span><span class="nv">USER</span><span class="k">}</span><span class="s2">/vscode"</span>
+RUN curl <span class="nt">-fsSL</span> https://code-server.dev/install.sh | sh <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">mkdir</span> <span class="nt">-p</span> <span class="k">${</span><span class="nv">WORKINGDIR</span><span class="k">}</span> <span class="o">&amp;&amp;</span> <span class="nb">chown</span> <span class="nt">-R</span> <span class="k">${</span><span class="nv">USER</span><span class="k">}</span>:<span class="k">${</span><span class="nv">USER</span><span class="k">}</span> <span class="k">${</span><span class="nv">WORKINGDIR</span><span class="k">}</span>
+
+<span class="c"># ----- 컨테이너 환경변수로도 유지 -----</span>
+ENV <span class="nv">PASSWORD</span><span class="o">=</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span>
+ENV <span class="nv">USER</span><span class="o">=</span><span class="k">${</span><span class="nv">USER</span><span class="k">}</span>
+
+<span class="c"># ----- 사용자 전환 -----</span>
+USER <span class="k">${</span><span class="nv">USER</span><span class="k">}</span>
+WORKDIR <span class="k">${</span><span class="nv">WORKINGDIR</span><span class="k">}</span>
+
+<span class="c"># ----- VSCode 확장 설치 -----</span>
+RUN code-server <span class="nt">--install-extension</span> ms-python.python <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    code-server <span class="nt">--install-extension</span> ms-azuretools.vscode-docker <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    code-server <span class="nt">--install-extension</span> formulahendry.code-runner
+
+<span class="c"># ----- 포트 오픈 -----</span>
+EXPOSE 8080
+
+<span class="c"># ----- code-server 실행 -----</span>
+CMD <span class="o">[</span><span class="s2">"code-server"</span>, <span class="s2">"--bind-addr"</span>, <span class="s2">"0.0.0.0:8080"</span>, <span class="s2">"--auth"</span>, <span class="s2">"password"</span>, <span class="s2">"."</span><span class="o">]</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 컨테이너 터미널로 진입</span>
+docker <span class="nb">exec</span> <span class="nt">-it</span> vscode-container bash
+
+<span class="c"># 이동</span>
+<span class="nb">cd</span> /home/ec2-user/.local/share/code-server/User
+
+nano settings.json
+
+<span class="o">{</span>
+  <span class="s2">"code-runner.executorMap"</span>: <span class="o">{</span>
+    <span class="s2">"python"</span>: <span class="s2">"python3 -u"</span>,
+    <span class="s2">"swift"</span>: <span class="s2">"/home/ec2-user/.local/share/swiftly/bin/swift"</span>
+  <span class="o">}</span>,
+  <span class="s2">"code-runner.showExecutionMessage"</span>: <span class="nb">false</span>,
+  <span class="s2">"code-runner.clearPreviousOutput"</span>: <span class="nb">true</span>
+<span class="o">}</span>
+
+<span class="c"># 저장</span>
+ctrl + o
+enter
+ctrl x
+
+<span class="c"># 나가고 재빌드</span>
+<span class="nb">exit
+</span>docker compose up <span class="nt">-d</span> <span class="nt">--build</span>
+</code></pre></div></div>
+
+<h1 id="swift-추가">swift 추가</h1>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 컨테이너 터미널로 진입</span>
+docker <span class="nb">exec</span> <span class="nt">-it</span> vscode-container bash
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 기존 swiftly 완전 삭제</span>
+<span class="nb">rm</span> <span class="nt">-rf</span> ~/.local/share/swiftly
+<span class="nb">rm</span> <span class="nt">-f</span> ~/swiftly
+
+<span class="c"># 2. 필수 패키지 설치</span>
+<span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> clang libicu-dev wget libpython3-dev
+
+<span class="c"># 3. 최신 swiftly 설치</span>
+curl <span class="nt">-O</span> <span class="s2">"https://download.swift.org/swiftly/linux/swiftly-</span><span class="si">$(</span><span class="nb">uname</span> <span class="nt">-m</span><span class="si">)</span><span class="s2">.tar.gz"</span>
+<span class="nb">tar </span>zxf <span class="s2">"swiftly-</span><span class="si">$(</span><span class="nb">uname</span> <span class="nt">-m</span><span class="si">)</span><span class="s2">.tar.gz"</span>
+<span class="nb">chmod</span> +x swiftly
+./swiftly init <span class="nt">--quiet-shell-followup</span> <span class="nt">--assume-yes</span>
+
+<span class="c"># 4. 환경 변수 적용</span>
+<span class="nb">source</span> ~/.local/share/swiftly/env.sh
+<span class="nb">echo</span> <span class="s1">'source ~/.local/share/swiftly/env.sh'</span> <span class="o">&gt;&gt;</span> ~/.bashrc
+
+<span class="c"># 5. Swift 6.1.0 설치 (실제 toolchain 다운로드)</span>
+~/.local/share/swiftly/bin/swiftly <span class="nb">install </span>6.1.0 <span class="nt">--assume-yes</span> <span class="nt">--verify</span>
+
+<span class="c"># 6. swift 실행 확인</span>
+find ~/.local/share/swiftly/toolchains <span class="nt">-name</span> swift <span class="nt">-type</span> f <span class="nt">-executable</span>
+swift <span class="nt">--version</span>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="UIComponent" /><summary type="html"><![CDATA[# Dockerfile FROM ubuntu:latest # ----- 기본 패키지 설치 ----- RUN apt-get update &amp;&amp; \ apt-get install -y \ curl sudo python3 python3-pip default-jdk \ git wget nano locales \ libpython3.10 libicu-dev libxml2-dev clang \ unzip gnupg2 libcurl4-openssl-dev pkg-config \ &amp;&amp; apt-get clean # ----- 로케일 설정 ----- RUN locale-gen en_US.UTF-8 ENV LANG=en_US.UTF-8 ENV LANGUAGE=en_US:en ENV LC_ALL=en_US.UTF-8 # ----- ARG로 외부에서 변수 받기 ----- ARG USER ARG PASSWORD # ----- 사용자 생성 및 sudo 권한 부여 ----- RUN useradd -m ${USER} &amp;&amp; echo "${USER}:${PASSWORD}" | chpasswd &amp;&amp; adduser ${USER} sudo # ----- code-server 설치 및 작업 디렉토리 생성 ----- ENV WORKINGDIR="/home/${USER}/vscode" RUN curl -fsSL https://code-server.dev/install.sh | sh &amp;&amp; \ mkdir -p ${WORKINGDIR} &amp;&amp; chown -R ${USER}:${USER} ${WORKINGDIR} # ----- 컨테이너 환경변수로도 유지 ----- ENV PASSWORD=${PASSWORD} ENV USER=${USER} # ----- 사용자 전환 ----- USER ${USER} WORKDIR ${WORKINGDIR} # ----- VSCode 확장 설치 ----- RUN code-server --install-extension ms-python.python &amp;&amp; \ code-server --install-extension ms-azuretools.vscode-docker &amp;&amp; \ code-server --install-extension formulahendry.code-runner # ----- 포트 오픈 ----- EXPOSE 8080 # ----- code-server 실행 ----- CMD ["code-server", "--bind-addr", "0.0.0.0:8080", "--auth", "password", "."] # 컨테이너 터미널로 진입 docker exec -it vscode-container bash # 이동 cd /home/ec2-user/.local/share/code-server/User nano settings.json { "code-runner.executorMap": { "python": "python3 -u", "swift": "/home/ec2-user/.local/share/swiftly/bin/swift" }, "code-runner.showExecutionMessage": false, "code-runner.clearPreviousOutput": true } # 저장 ctrl + o enter ctrl x # 나가고 재빌드 exit docker compose up -d --build swift 추가 # 컨테이너 터미널로 진입 docker exec -it vscode-container bash # 1. 기존 swiftly 완전 삭제 rm -rf ~/.local/share/swiftly rm -f ~/swiftly # 2. 필수 패키지 설치 sudo apt-get update sudo apt-get install -y clang libicu-dev wget libpython3-dev # 3. 최신 swiftly 설치 curl -O "https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz" tar zxf "swiftly-$(uname -m).tar.gz" chmod +x swiftly ./swiftly init --quiet-shell-followup --assume-yes # 4. 환경 변수 적용 source ~/.local/share/swiftly/env.sh echo 'source ~/.local/share/swiftly/env.sh' &gt;&gt; ~/.bashrc # 5. Swift 6.1.0 설치 (실제 toolchain 다운로드) ~/.local/share/swiftly/bin/swiftly install 6.1.0 --assume-yes --verify # 6. swift 실행 확인 find ~/.local/share/swiftly/toolchains -name swift -type f -executable swift --version]]></summary></entry><entry><title type="html">[TableView] UITextView vs UITextField</title><link href="http://localhost:4000/UIKit-UItextField-UITextView/" rel="alternate" type="text/html" title="[TableView] UITextView vs UITextField" /><published>2025-05-18T00:00:00+00:00</published><updated>2025-05-18T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-UItextField-UITextView</id><content type="html" xml:base="http://localhost:4000/UIKit-UItextField-UITextView/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
@@ -44,7 +212,9 @@ placeholder는 제공하지 않기 때문에 직접 구현해야 한다.</p>
 </code></pre></div></div>
 <p>textColor가 .secondaryLabel라는 기본값으로 세팅되어 있으면 return 시키고, 아니라면 text를 비우고 Color도 검정색으로 바꾸어준다.</p>
 
-<h1 id="uitextfield">UITextField</h1>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="UIComponent" /><summary type="html"><![CDATA[UITextView UITextField 차이 TextField는 placeholder를 사용할 수 있으나 TextView는 안되는것을 알게 되어 두 컴포넌트의 차이에 대해 알아보고자 정리하게 되었다. UITextView 공식문서를 살펴보면 A scrollable, multiline text region 1줄 이상으로 이루어진 스크롤 가능한 텍스트 영역 placeholder는 제공하지 않기 때문에 직접 구현해야 한다. placeholder 구현 방법 UITextView는 UITextViewDeleagate 프로토콜을 채택하고 있다. 그 중 textViewDidBeginEditing method를 사용해서 구현해보자. // init 시 상태를 lazy로 지정 private lazy var textView: UITextView = { let tv = UITextView() tv.text = "입력하세요.." tv.textColor = .secondaryLabel tv.delegate = self return textView }() init 시 상태를 lazy로 지정해주면서 layout 세팅을 진행하였다. textViewDidBeginEditing Tells the delegate when editing of the specified text view begins. Optional 설정으로 textView의 수정이 일어나면 실행되는 메서드 extension UploadViewController: UITextViewDelegate { func textViewDidBeginEditing(_ textView: UITextView) { guard textView.textColor == .secondaryLabel else { return } textView.text = nil textView.textColor = .label } } textColor가 .secondaryLabel라는 기본값으로 세팅되어 있으면 return 시키고, 아니라면 text를 비우고 Color도 검정색으로 바꾸어준다. UITextField]]></summary></entry><entry><title type="html">[TableView] 12. 테이블뷰 제네릭 CustomCombineDataSource</title><link href="http://localhost:4000/UIKit-tableView12/" rel="alternate" type="text/html" title="[TableView] 12. 테이블뷰 제네릭 CustomCombineDataSource" /><published>2025-05-15T00:00:00+00:00</published><updated>2025-05-15T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView12</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView12/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<h1 id="uitextfield">UITextField</h1>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="UIComponent" /><summary type="html"><![CDATA[UITextView UITextField 차이 TextField는 placeholder를 사용할 수 있으나 TextView는 안되는것을 알게 되어 두 컴포넌트의 차이에 대해 알아보고자 정리하게 되었다. UITextView 공식문서를 살펴보면 A scrollable, multiline text region 1줄 이상으로 이루어진 스크롤 가능한 텍스트 영역 placeholder는 제공하지 않기 때문에 직접 구현해야 한다. placeholder 구현 방법 UITextView는 UITextViewDeleagate 프로토콜을 채택하고 있다. 그 중 textViewDidBeginEditing method를 사용해서 구현해보자. // init 시 상태를 lazy로 지정 private lazy var textView: UITextView = { let tv = UITextView() tv.text = "입력하세요.." tv.textColor = .secondaryLabel tv.delegate = self return textView }() init 시 상태를 lazy로 지정해주면서 layout 세팅을 진행하였다. textViewDidBeginEditing Tells the delegate when editing of the specified text view begins. Optional 설정으로 textView의 수정이 일어나면 실행되는 메서드 extension UploadViewController: UITextViewDelegate { func textViewDidBeginEditing(_ textView: UITextView) { guard textView.textColor == .secondaryLabel else { return } textView.text = nil textView.textColor = .label } } textColor가 .secondaryLabel라는 기본값으로 세팅되어 있으면 return 시키고, 아니라면 text를 비우고 Color도 검정색으로 바꾸어준다. UITextField]]></summary></entry><entry><title type="html">[TableView] 13. RxTableView</title><link href="http://localhost:4000/UIKit-tableView13/" rel="alternate" type="text/html" title="[TableView] 13. RxTableView" /><published>2025-05-18T00:00:00+00:00</published><updated>2025-05-18T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView13</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView13/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">[TableView] 12. 테이블뷰 제네릭 CustomCombineDataSource</title><link href="http://localhost:4000/UIKit-tableView12/" rel="alternate" type="text/html" title="[TableView] 12. 테이블뷰 제네릭 CustomCombineDataSource" /><published>2025-05-15T00:00:00+00:00</published><updated>2025-05-15T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView12</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView12/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
@@ -864,536 +1034,7 @@ placeholder는 제공하지 않기 때문에 직접 구현해야 한다.</p>
 <p>위 코드에서 CustomCombineDataSource.swift에서 셀이 추가될 때마다 항상 if let dataList를 하면 불편하다고 생각되기 때문에 이를 해결하기 위해 다음 포스팅을 작성하겠다.</p>
 
 <h2 id="정리">정리</h2>
-<p>데이터소스는 데이터와 관련되어 있고, 셀의 종류를 정하고 어떤 데이터인지에 따라 어떤 셀을 보여줄지 정하고, 리스트 갯수가 몇개인지를 관여한다.</p>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[테이블뷰 제네릭 CustomCombineDataSource 제네릭 어떠한 자료형을 받을 수 있다. IndexData를 만들어서 해당 타입도 받을 수 있도록 해보자. IndexData구조체 추가 // // DummyData.swift // UITableViewTutorial // // Created by 김동현 on 5/8/25. // import Foundation import Fakery struct DummySection { let uuid: UUID let title: String let body: String let rows: [DummyData] init() { self.uuid = UUID() self.title = "섹션 타이틀입니다: \(uuid)" self.body = "섹션 바디입니다: \(uuid)" self.rows = DummyData.getDumies(10) } static func getDummies(_ count: Int = 100) -&gt; [DummySection] { return (1...count).map { _ in DummySection() } } } struct DummyData { let uuid: UUID let title: String let body: String init() { self.uuid = UUID() let faker = Faker(locale: "ko") let firstName = faker.name.firstName() //=&gt; "Emilie" let lastName = faker.name.lastName() //=&gt; "Hansen" let body = faker.lorem.paragraphs(amount: 10) self.title = "타이틀입니다: \(lastName) \(firstName)" self.body = "바디입니다: \(body)" } static func getDumies(_ count: Int = 100) -&gt; [DummyData] { return (1...count).map { _ in DummyData() } } } struct IndexData { let uuid: UUID let title: String let body: String init() { self.uuid = UUID() let faker = Faker(locale: "ko") let firstName = faker.name.firstName() //=&gt; "Emilie" let lastName = faker.name.lastName() //=&gt; "Hansen" let body = faker.lorem.paragraphs(amount: 10) self.title = "타이틀입니다: \(lastName) \(firstName)" self.body = "바디입니다: \(body)" } static func getDumies(_ count: Int = 100) -&gt; [IndexData] { return (1...count).map { _ in IndexData() } } } CustomCombineDataSource.swift // // CustomCombineDataSource.swift // UITableViewTutorial // // Created by 김동현 on 5/15/25. // import UIKit /* class CustomCombineDataSource&lt;T, G&gt;: NSObject, UITableViewDataSource { // 멤버 변수 var dataList: [T] = [] var testDataList: [G] = [] */ class CustomCombineDataSource&lt;Item&gt;: NSObject, UITableViewDataSource { // 멤버 변수 var dataList: [Item] = [] override init() { super.init() } // MARK: - Combine 이벤트로 들어온 데이터랑 테이블뷰랑 연결시켜주는 지점 /// 변경된 데이터를 받아서 테이블뷰에 적용한다 /// - Parameters: /// - updatedDataList: 외부에서 변경된 Combine Publisher로 들어온 데이터를 내 DataSource가 가진 data로 변경하기 위한 매개변수 /// - tableView: 리로드 대상 테이블뷰 func pushDataList(_ updatedDataList: [Item], to tableView: UITableView) { tableView.dataSource = self self.dataList = updatedDataList tableView.reloadData() } // MARK: - 테이블뷰 데이터 소스 관련(변경이 된 데이터를 데이터소스로 넘겨받아서 reloadData를 하는 목적 /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return dataList.count } // 어떤 셀을 보여줄 지 /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 - 몇번째인지 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // [guard let] 방식 guard let cell = tableView.dequeueReusableCell(withIdentifier: CodeCell.reuseIdentifier, for: indexPath) as? CodeCell else { return UITableViewCell() } if let dataList = dataList as? [DummyData] { let cellData: DummyData = dataList[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body cell.detailTextLabel?.numberOfLines = 0 } if let dataList = dataList as? [IndexData] { let cellData: IndexData = dataList[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body cell.detailTextLabel?.numberOfLines = 0 } return cell } } 셀의 종류가 추가될때마다 항상 if let dataList를 하면 불편하다고 생각된다. UITableView+Combine.swift // // UITableView+Combine.swift // UITableViewTutorial // // Created by 김동현 on 5/15/25. // import UIKit import Combine // MARK: - Sink 정의를 보면 매개변수로 (Self.Output) -&gt; Void) 형태의 클로저를 받는다. 이 형태를 만족하는 로직 함수를 만들자. // public func sink(receiveValue: @escaping ((Self.Output) -&gt; Void)) -&gt; AnyCancellable extension UITableView { // 고차함수 - 클로저를 매개변수로 가지거나 반환을 가지는 함수 자체 // (Self.Output) -&gt; Void) // ([DummyData]) -&gt; Void // 데이터소스 바인딩 func customItems&lt;Item&gt;() -&gt; ([Item]) -&gt; Void { let dataSource = CustomCombineDataSource&lt;Item&gt;() return { (updatedDateLisst: [Item]) in dataSource.pushDataList(updatedDateLisst, to: self) // 리로드 } } } CombineListViewController.swift // // CombineListViewController.swift // UITableViewTutorial // // Created by 김동현 on 5/13/25. // import UIKit import Combine class CombineListViewController: UIViewController { // Combine 메모리 처리를 위해 생성 var subscriptions = Set&lt;AnyCancellable&gt;() // Published를 하게 되면 dummies 데이터가 추가나 값 변경시 이벤트를 받을 수 있다. // @Published var dummies: [DummyData] = [] @Published var indexDatas: [IndexData] = [] @IBOutlet weak var myTableView: UITableView! override func viewDidLoad() { super.viewDidLoad() configureTableView() /* - sink는 @Published가 수정된 스레드에서 실행된다 - 그래서 Published변수 수정시 메인 스레드에서 수정해주자 - @Published 값을 메인 스레드에서 수정하든, 백그라운드에서 수정하든, .receive(on: .main)만 붙이면 sink는 메인에서 실행되고reloadData()도 안전하게 실행된다 */ // MARK: - 기존의 데이터를 받는 거를 CombineListViewController에서 다했더라면 이제는 customDataSource으로 따로 뺴두고, 로직은 extension으로 빼서 처리를 한 것이다. // $ 붙이면 데이터 이벤트를 받을 수 있는 상태가 됨 // sink는 구독하는 것이다. // AnyCancellable 구독한다고 한다. // store: 구독했던거에 대한 메모리 참조가 들어오게 되는데 이를 관리하기 위해 subscriptions에 넣어준다. $indexDatas .receive(on: DispatchQueue.main) .sink(receiveValue: self.myTableView.customItems()) .store(in: &amp;subscriptions) /* 기존 방식 $dummies .receive(on: DispatchQueue.main) // 데이터 변경시마다 동작 .sink(receiveValue: { (changedDummies: [DummyData]) in print("changedDummies: \(changedDummies.count)") // sink는 메인스레드에서 동작해서 Dispatch안해도된다 self.myTableView.reloadData() }) .store(in: &amp;subscriptions) */ // 2초 뒤에 더미데이터 10개 추가 DispatchQueue.global().asyncAfter(deadline: .now() + 2, execute: { // self.dummies += DummyData.getDumies(10) self.indexDatas += IndexData.getDumies(10) }) } fileprivate func configureTableView() { // CodeCell에서는 이 줄만 필요 self.myTableView.register(CodeCell.self, forCellReuseIdentifier: CodeCell.reuseIdentifier) // self.myTableView.delegate = self } } 위 코드에서 CustomCombineDataSource.swift에서 셀이 추가될 때마다 항상 if let dataList를 하면 불편하다고 생각되기 때문에 이를 해결하기 위해 다음 포스팅을 작성하겠다. 정리 데이터소스는 데이터와 관련되어 있고, 셀의 종류를 정하고 어떤 데이터인지에 따라 어떤 셀을 보여줄지 정하고, 리스트 갯수가 몇개인지를 관여한다.]]></summary></entry><entry><title type="html">[Xcode] 프로젝트 개발 환경 세팅 자동화</title><link href="http://localhost:4000/Xcode-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B0%9C%EB%B0%9C-%ED%99%98%EA%B2%BD-%EC%84%B8%ED%8C%85-%EC%9E%90%EB%8F%99%ED%99%94/" rel="alternate" type="text/html" title="[Xcode] 프로젝트 개발 환경 세팅 자동화" /><published>2025-05-14T00:00:00+00:00</published><updated>2025-05-14T00:00:00+00:00</updated><id>http://localhost:4000/%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94</id><content type="html" xml:base="http://localhost:4000/Xcode-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B0%9C%EB%B0%9C-%ED%99%98%EA%B2%BD-%EC%84%B8%ED%8C%85-%EC%9E%90%EB%8F%99%ED%99%94/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h2 id="1-프로젝트-개발-환경-자동화-배경">1. 프로젝트 개발 환경 자동화 배경</h2>
-<p>팀 프로젝트르를 진행하면서 *.xcconfig, *.plist와 와 같은 숨겨야 하는 파일들이 생기게 된다. 이러한 파일들은 .gitignore에 추가하여 Git에 포함하지 않도록 한다. 이러한 Git의 관리를 받지 않는 파일은 팀원간 파일 공유를 수작업으로 진행해야 한다. 초기에는 카톡으로 주고 받았는데 수정하고 공유하는 과정이 매번 번거로웠다. 팀원에게 공유하는 것을 까먹게 되면 서로 다른 환경 속에서 프로젝트를 빌드, 개발하는 불상사가 발생할 수 있다.</p>
-
-<h2 id="2-개발-환경-세팅을-한줄로-끝내는-명령어를-완성해보자">2. 개발 환경 세팅을 한줄로 끝내는 명령어를 완성해보자</h2>
-<h3 id="필요-기능">필요 기능</h3>
-<ol>
-  <li>private files 다운로드</li>
-  <li>Homebrew 설치 자동화</li>
-  <li>fastlane 설치 인증서 다운로드</li>
-  <li>모든 작업 통합</li>
-  <li>make로 명령어 실행</li>
-</ol>
-
-<h3 id="1-private-files-다운로드">1. private files 다운로드</h3>
-<p><img src="/assets/img/2025-05-14-%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94/image-20250515011923853.png" alt="이미지" width="100%" /><br />
-우선 Private Repository를 만들어준다.</p>
-
-<p><img src="/assets/img/2025-05-14-%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94/image-20250515012312124.png" alt="이미지" width="100%" /></p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="s2">"# CodeLounge-Private"</span> <span class="o">&gt;&gt;</span> README.md
-git init
-git add README.md
-git commit <span class="nt">-m</span> <span class="s2">"first commit"</span>
-git branch <span class="nt">-M</span> main
-git remote add origin https://github.com/team-GitDeulida/CodeLounge-Private.git
-git push <span class="nt">-u</span> origin main
-</code></pre></div></div>
-
-<p>VScode에서 프로젝트 생성후 방금 만든 레포지토리를 설정한다.</p>
-
-<p><img src="/assets/img/2025-05-14-%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94/image-20250515012700826.png" alt="이미지" width="100%" /></p>
-
-<p><img src="/assets/img/2025-05-14-%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94/image-20250515012737339.png" alt="이미지" width="100%" /></p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Config.xcconfig파일 생성 후 Hello World 작성</span>
-<span class="n">git</span> <span class="n">add</span> <span class="o">.</span>
-<span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s">"upload"</span>
-<span class="n">git</span> <span class="n">push</span> <span class="n">origin</span> <span class="n">main</span>
-</code></pre></div></div>
-
-<p>Config.xcconfig 테스트 파일을 생성하고 push 해준다. 그러면 레포지토리에서 Config.xcconfig가 업로드된것이 보인다.</p>
-
-<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Makefile
-</span>
-<span class="c"># -----------------------------
-# 📁 Privates 파일 다운로드 설정
-# -----------------------------
-</span>
-<span class="c"># GitHub에서 private 파일을 가져올 repository 경로 (팀명/저장소명/브랜치)
-</span><span class="nv">Private_Repository</span><span class="o">=</span>team-GitDeulida/CodeLounge-Private/main
-
-<span class="c"># GitHub Raw URL 기본 경로
-</span><span class="nv">BASE_URL</span><span class="o">=</span>https://raw.githubusercontent.com/<span class="p">$(</span>Private_Repository<span class="p">)</span>
-
-<span class="c"># ✅ 파일 다운로드 함수 정의
-# $(1): 디렉토리 경로
-# $(2): GitHub Access Token
-# $(3): 파일 이름
-</span><span class="k">define</span> <span class="nv">download_file</span>
-	<span class="err">mkdir</span> <span class="err">-p</span> <span class="err">$(1)</span>
-	<span class="nl">curl -H "Authorization</span><span class="o">:</span> <span class="nf">token $(2)" -o $(1)/$(3) $(BASE_URL)/$(1)/$(3)</span>
-<span class="k">endef</span>
-
-<span class="c"># 🏁 진입 지점: download-privates 명령 실행 시 동작
-</span><span class="nl">download-privates</span><span class="o">:</span>
-
-	<span class="c"># .env 파일이 없으면 GitHub Access Token을 사용자에게 입력받아 저장
-</span>	<span class="c"># Get GitHub Access Token
-</span>	<span class="err">@if</span> <span class="err">[</span> <span class="err">!</span> <span class="err">-f</span> <span class="err">.env</span> <span class="err">];</span> <span class="err">then</span> <span class="err">\</span>
-		<span class="nl">read -p "Enter your GitHub access token</span><span class="o">:</span> <span class="nf">" token; </span>\
-<span class="nf">		echo "GITHUB_ACCESS_TOKEN=$$token" &gt; .env; </span>\
-<span class="nf">	else </span>\
-<span class="nf">		/bin/bash -c "source .env; make _download-privates"; </span>\
-<span class="nf">		exit 0; </span>\
-<span class="nf">	fi</span>
-
-	<span class="c"># 실제 다운로드 수행
-</span>	<span class="err">make</span> <span class="err">_download-privates</span>
-
-<span class="c"># 🔽 내부 명령: 다운로드 로직 수행
-</span><span class="nl">_download-privates</span><span class="o">:</span>
-
-	<span class="c"># .env 파일에서 GITHUB_ACCESS_TOKEN을 읽어 환경 변수로 설정
-</span>	<span class="nf">$(</span><span class="nb">eval</span> <span class="nb">export</span> <span class="p">$(</span>shell <span class="nb">cat</span> .env<span class="p">))</span>
-
-	<span class="c"># 레포지토리의 최상위 디렉토리에서 Config.xcconfig 다운로드
-</span>	<span class="nf">$(</span><span class="nb">call</span> download_file,.,<span class="nv">$$</span>GITHUB_ACCESS_TOKEN,Config.xcconfig<span class="p">)</span>
-</code></pre></div></div>
-
-<p>최초 코드를 실행하면 .env파일이 없기 때문에 GitHub Access Token을 입력하라고 요청한다. 입력해주자. GitHub Access Token은 Personal access tokens -&gt; Fine-grained tokens에서 생성할 수 있다.</p>
-
-<p><img src="/assets/img/2025-05-14-%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94/image-20250515014155060.png" alt="이미지" width="100%" /><br />
-실제 프로젝트에서 실행시 Config.xcconfig 파일이 다운로드된것을 확인할 수 있다. 이를 활용하여 여러 파일을 Private 레포지토리에 두고 make 명령어 한줄로 ignore 파일들을 가져올 수 있다.</p>
-
-<h3 id="2-homebrew-설치-자동화">2. Homebrew 설치 자동화</h3>
-
-<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># -------------------------
-# Homebrew 설치 확인 및 설치
-# -------------------------
-</span>
-<span class="nl">install_homebrew</span><span class="o">:</span>
-	<span class="p">@</span><span class="k">if</span> <span class="o">!</span> <span class="nb">command</span> <span class="nt">-v</span> brew <span class="o">&gt;</span>/dev/null 2&gt;&amp;1<span class="p">;</span> <span class="k">then</span> <span class="se">\</span>
-		<span class="nb">echo</span> <span class="s2">"Homebrew가 설치되어 있지 않습니다. 설치를 진행합니다..."</span><span class="p">;</span> <span class="se">\</span>
-		/bin/bash <span class="nt">-c</span> <span class="s2">"</span><span class="p">$$(</span><span class="s2">curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh</span><span class="p">)</span><span class="s2">"</span><span class="p">;</span> <span class="se">\</span>
-	<span class="k">else</span> <span class="se">\</span>
-		<span class="nb">echo</span> <span class="s2">"Homebrew가 이미 설치되어 있습니다."</span><span class="p">;</span> <span class="se">\</span>
-	<span class="k">fi</span>
-</code></pre></div></div>
-
-<h3 id="3-fastlane-및-인증서-관련-작업추가작업-진행예정">3. fastlane 및 인증서 관련 작업(추가작업 진행예정)</h3>
-
-<p>이제 Private 레포지토리에 프로비저닝 프로파일을 저장해두고 팀원이 쉽게 가져올 수 있게 해보자.<br />
-<img src="/assets/img/2025-05-14-%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94/image-20250515020058955.png" alt="이미지" width="100%" /></p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fastlane</span> <span class="n">match</span> <span class="kd">init</span>         <span class="c1">// git 선택 -&gt; Private레포지토리 주소 입력	</span>
-<span class="n">fastlane</span> <span class="n">match</span> <span class="n">appstore</span>	    <span class="c1">// Apple Id 입력 -&gt; 앱 번들Id 입력</span>
-<span class="n">fastlane</span> <span class="n">match</span> <span class="n">development</span>	<span class="c1">// Apple Id 입력 -&gt; 앱 번들Id 입력</span>
-</code></pre></div></div>
-
-<p><img src="/assets/img/2025-05-14-%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94/image-20250515020458828.png" alt="이미지" width="100%" /><br />
-이렇게 하게 되면 Private 레포지토리에 master브랜치가 생성되고 프로비저닝 관련 파일들이 생성된다.</p>
-
-<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># -------------------------
-# fastlane 및 인증서 관련 작업
-# -------------------------
-</span>
-<span class="c"># Automatically manage signing 체크 해제해야함!!
-# Homebrew로 fastlane 설치 (설치되어 있으면 업데이트)
-</span><span class="nl">install_fastlane</span><span class="o">:</span> <span class="nf">install_homebrew</span>
-	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"Updating Homebrew..."</span>
-	<span class="p">@</span>brew update
-	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"Installing fastlane via Homebrew..."</span>
-	<span class="p">@</span>brew <span class="nb">install </span>fastlane <span class="o">||</span> <span class="nb">true</span>
-	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"✅ fastlane 설치 완료 (Homebrew 사용)"</span>
-	
-<span class="c"># 인증서 다운로드 (readonly 모드)
-</span><span class="nl">fetch_certs</span><span class="o">:</span> <span class="nf">install_fastlane</span>
-	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"Fetching development certificates..."</span>
-	<span class="p">@</span>fastlane match development <span class="nt">--readonly</span>
-	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"Fetching appstore certificates..."</span>
-	<span class="p">@</span>fastlane match appstore <span class="nt">--readonly</span>
-	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"✅ 인증서 가져오기 완료"</span>
-</code></pre></div></div>
-
-<p>fastlane match로 인증서를 다운로드 한 후, Xcode에서 Automatically manage signing”이 꺼져 있다면, 해당 팀 ID와 Bundle ID에 맞는 프로비저닝 프로파일을 수동으로 선택할 수 있다.</p>
-
-<h2 id="최종-makefile">최종 Makefile</h2>
-
-<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 터미널에 make 입력시 실행됨
-</span><span class="nv">.DEFAULT_GOAL</span> <span class="o">:=</span> all
-
-<span class="c"># -----------------------------
-# 📁 Privates 파일 다운로드 설정
-# -----------------------------
-</span>
-<span class="c"># GitHub에서 private 파일을 가져올 repository 경로 (팀명/저장소명/브랜치)
-</span><span class="nv">Private_Repository</span><span class="o">=</span>team-GitDeulida/CodeLounge-Private/main
-
-<span class="c"># GitHub Raw URL 기본 경로
-</span><span class="nv">BASE_URL</span><span class="o">=</span>https://raw.githubusercontent.com/<span class="p">$(</span>Private_Repository<span class="p">)</span>
-
-<span class="c"># ✅ 파일 다운로드 함수 정의
-# $(1): 디렉토리 경로
-# $(2): GitHub Access Token
-# $(3): 파일 이름
-</span><span class="k">define</span> <span class="nv">download_file</span>
-	<span class="err">mkdir</span> <span class="err">-p</span> <span class="err">$(1)</span>
-	<span class="nl">curl -H "Authorization</span><span class="o">:</span> <span class="nf">token $(2)" -o $(1)/$(3) $(BASE_URL)/$(1)/$(3)</span>
-<span class="k">endef</span>
-
-<span class="c"># 🏁 진입 지점: download-privates 명령 실행 시 동작
-</span><span class="nl">download-privates</span><span class="o">:</span>
-
-	<span class="c"># .env 파일이 없으면 GitHub Access Token을 사용자에게 입력받아 저장
-</span>	<span class="c"># Get GitHub Access Token
-</span>	<span class="err">@if</span> <span class="err">[</span> <span class="err">!</span> <span class="err">-f</span> <span class="err">.env</span> <span class="err">];</span> <span class="err">then</span> <span class="err">\</span>
-		<span class="nl">read -p "Enter your GitHub access token</span><span class="o">:</span> <span class="nf">" token; </span>\
-<span class="nf">		echo "GITHUB_ACCESS_TOKEN=$$token" &gt; .env; </span>\
-<span class="nf">	else </span>\
-<span class="nf">		echo "Homebrew가 이미 설치되어 있습니다."; </span>\
-<span class="nf">	fi</span>
-
-	<span class="c"># 실제 다운로드 수행
-</span>	<span class="err">make</span> <span class="err">_download-privates</span>
-
-<span class="c"># 🔽 내부 명령: 다운로드 로직 수행
-</span><span class="nl">_download-privates</span><span class="o">:</span>
-
-	<span class="c"># .env 파일에서 GITHUB_ACCESS_TOKEN을 읽어 환경 변수로 설정
-</span>	<span class="nf">$(</span><span class="nb">eval</span> <span class="nb">export</span> <span class="p">$(</span>shell <span class="nb">cat</span> .env<span class="p">))</span>
-
-	<span class="c"># 레포지토리의 최상위 디렉토리에서 Config.xcconfig 다운로드
-</span>	<span class="nf">$(</span><span class="nb">call</span> download_file,.,<span class="nv">$$</span>GITHUB_ACCESS_TOKEN,Config.xcconfig<span class="p">)</span>
-
-<span class="c"># -------------------------
-# Homebrew 설치 확인 및 설치
-# -------------------------
-</span>
-<span class="nl">install_homebrew</span><span class="o">:</span>
-	<span class="p">@</span><span class="k">if</span> <span class="o">!</span> <span class="nb">command</span> <span class="nt">-v</span> brew <span class="o">&gt;</span>/dev/null 2&gt;&amp;1<span class="p">;</span> <span class="k">then</span> <span class="se">\</span>
-		<span class="nb">echo</span> <span class="s2">"Homebrew가 설치되어 있지 않습니다. 설치를 진행합니다..."</span><span class="p">;</span> <span class="se">\</span>
-		/bin/bash <span class="nt">-c</span> <span class="s2">"</span><span class="p">$$(</span><span class="s2">curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh</span><span class="p">)</span><span class="s2">"</span><span class="p">;</span> <span class="se">\</span>
-	<span class="k">else</span> <span class="se">\</span>
-		<span class="nb">echo</span> <span class="s2">"Homebrew가 이미 설치되어 있습니다."</span><span class="p">;</span> <span class="se">\</span>
-	<span class="k">fi</span>
-
-<span class="c"># -------------------------
-# fastlane 및 인증서 관련 작업
-# -------------------------
-</span>
-<span class="c"># Automatically manage signing 체크 해제해야함!!
-# Homebrew로 fastlane 설치 (설치되어 있으면 업데이트)
-</span><span class="nl">install_fastlane</span><span class="o">:</span> <span class="nf">install_homebrew</span>
-	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"Updating Homebrew..."</span>
-	<span class="p">@</span>brew update
-	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"Installing fastlane via Homebrew..."</span>
-	<span class="p">@</span>brew <span class="nb">install </span>fastlane <span class="o">||</span> <span class="nb">true</span>
-	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"✅ fastlane 설치 완료 (Homebrew 사용)"</span>
-	
-<span class="c"># 인증서 다운로드 (readonly 모드)
-</span><span class="nl">fetch_certs</span><span class="o">:</span> <span class="nf">install_fastlane</span>
-	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"Fetching development certificates..."</span>
-	<span class="p">@</span>fastlane match development <span class="nt">--readonly</span>
-	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"Fetching appstore certificates..."</span>
-	<span class="p">@</span>fastlane match appstore <span class="nt">--readonly</span>
-	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"✅ 인증서 가져오기 완료"</span>
-
-<span class="c"># -------------------------
-# 통합 기본 타겟: 필요한 경우 Private 파일과 인증서 모두 다운로드
-# -------------------------
-</span><span class="nl">all</span><span class="o">:</span> <span class="nf">download-privates fetch_certs</span>
-	<span class="p">@</span><span class="nb">echo</span> <span class="s2">"✅ 모든 작업 완료"</span>
-</code></pre></div></div>
-
-<p>실행시 Private 레포지토리 2~3번 주소 요청시 입력해준다.<br />
-그리고 Xcode 재실행하면 사진처럼 프로비저닝 파일이 보이게 된다.</p>
-
-<p><img src="/assets/img/2025-05-14-%5BXcode%5D-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B0%9C%EB%B0%9C%20%ED%99%98%EA%B2%BD%20%EC%84%B8%ED%8C%85%20%EC%9E%90%EB%8F%99%ED%99%94/image-20250515022743846.png" alt="이미지" width="100%" /><br />
-이제 팀원이 프로비저닝 관련 해서 문제가 생긴다면 make명령어 실행해주세요~ 라고 멋있게 말해주면 된다.</p>]]></content><author><name>Dong Hyeon</name></author><category term="Xcode" /><summary type="html"><![CDATA[1. 프로젝트 개발 환경 자동화 배경 팀 프로젝트르를 진행하면서 *.xcconfig, *.plist와 와 같은 숨겨야 하는 파일들이 생기게 된다. 이러한 파일들은 .gitignore에 추가하여 Git에 포함하지 않도록 한다. 이러한 Git의 관리를 받지 않는 파일은 팀원간 파일 공유를 수작업으로 진행해야 한다. 초기에는 카톡으로 주고 받았는데 수정하고 공유하는 과정이 매번 번거로웠다. 팀원에게 공유하는 것을 까먹게 되면 서로 다른 환경 속에서 프로젝트를 빌드, 개발하는 불상사가 발생할 수 있다. 2. 개발 환경 세팅을 한줄로 끝내는 명령어를 완성해보자 필요 기능 private files 다운로드 Homebrew 설치 자동화 fastlane 설치 인증서 다운로드 모든 작업 통합 make로 명령어 실행 1. private files 다운로드 우선 Private Repository를 만들어준다. echo "# CodeLounge-Private" &gt;&gt; README.md git init git add README.md git commit -m "first commit" git branch -M main git remote add origin https://github.com/team-GitDeulida/CodeLounge-Private.git git push -u origin main VScode에서 프로젝트 생성후 방금 만든 레포지토리를 설정한다. // Config.xcconfig파일 생성 후 Hello World 작성 git add . git commit -m "upload" git push origin main Config.xcconfig 테스트 파일을 생성하고 push 해준다. 그러면 레포지토리에서 Config.xcconfig가 업로드된것이 보인다. # Makefile # ----------------------------- # 📁 Privates 파일 다운로드 설정 # ----------------------------- # GitHub에서 private 파일을 가져올 repository 경로 (팀명/저장소명/브랜치) Private_Repository=team-GitDeulida/CodeLounge-Private/main # GitHub Raw URL 기본 경로 BASE_URL=https://raw.githubusercontent.com/$(Private_Repository) # ✅ 파일 다운로드 함수 정의 # $(1): 디렉토리 경로 # $(2): GitHub Access Token # $(3): 파일 이름 define download_file mkdir -p $(1) curl -H "Authorization: token $(2)" -o $(1)/$(3) $(BASE_URL)/$(1)/$(3) endef # 🏁 진입 지점: download-privates 명령 실행 시 동작 download-privates: # .env 파일이 없으면 GitHub Access Token을 사용자에게 입력받아 저장 # Get GitHub Access Token @if [ ! -f .env ]; then \ read -p "Enter your GitHub access token: " token; \ echo "GITHUB_ACCESS_TOKEN=$$token" &gt; .env; \ else \ /bin/bash -c "source .env; make _download-privates"; \ exit 0; \ fi # 실제 다운로드 수행 make _download-privates # 🔽 내부 명령: 다운로드 로직 수행 _download-privates: # .env 파일에서 GITHUB_ACCESS_TOKEN을 읽어 환경 변수로 설정 $(eval export $(shell cat .env)) # 레포지토리의 최상위 디렉토리에서 Config.xcconfig 다운로드 $(call download_file,.,$$GITHUB_ACCESS_TOKEN,Config.xcconfig) 최초 코드를 실행하면 .env파일이 없기 때문에 GitHub Access Token을 입력하라고 요청한다. 입력해주자. GitHub Access Token은 Personal access tokens -&gt; Fine-grained tokens에서 생성할 수 있다. 실제 프로젝트에서 실행시 Config.xcconfig 파일이 다운로드된것을 확인할 수 있다. 이를 활용하여 여러 파일을 Private 레포지토리에 두고 make 명령어 한줄로 ignore 파일들을 가져올 수 있다. 2. Homebrew 설치 자동화 # ------------------------- # Homebrew 설치 확인 및 설치 # ------------------------- install_homebrew: @if ! command -v brew &gt;/dev/null 2&gt;&amp;1; then \ echo "Homebrew가 설치되어 있지 않습니다. 설치를 진행합니다..."; \ /bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; \ else \ echo "Homebrew가 이미 설치되어 있습니다."; \ fi 3. fastlane 및 인증서 관련 작업(추가작업 진행예정) 이제 Private 레포지토리에 프로비저닝 프로파일을 저장해두고 팀원이 쉽게 가져올 수 있게 해보자. fastlane match init // git 선택 -&gt; Private레포지토리 주소 입력 fastlane match appstore // Apple Id 입력 -&gt; 앱 번들Id 입력 fastlane match development // Apple Id 입력 -&gt; 앱 번들Id 입력 이렇게 하게 되면 Private 레포지토리에 master브랜치가 생성되고 프로비저닝 관련 파일들이 생성된다. # ------------------------- # fastlane 및 인증서 관련 작업 # ------------------------- # Automatically manage signing 체크 해제해야함!! # Homebrew로 fastlane 설치 (설치되어 있으면 업데이트) install_fastlane: install_homebrew @echo "Updating Homebrew..." @brew update @echo "Installing fastlane via Homebrew..." @brew install fastlane || true @echo "✅ fastlane 설치 완료 (Homebrew 사용)" # 인증서 다운로드 (readonly 모드) fetch_certs: install_fastlane @echo "Fetching development certificates..." @fastlane match development --readonly @echo "Fetching appstore certificates..." @fastlane match appstore --readonly @echo "✅ 인증서 가져오기 완료" fastlane match로 인증서를 다운로드 한 후, Xcode에서 Automatically manage signing”이 꺼져 있다면, 해당 팀 ID와 Bundle ID에 맞는 프로비저닝 프로파일을 수동으로 선택할 수 있다. 최종 Makefile # 터미널에 make 입력시 실행됨 .DEFAULT_GOAL := all # ----------------------------- # 📁 Privates 파일 다운로드 설정 # ----------------------------- # GitHub에서 private 파일을 가져올 repository 경로 (팀명/저장소명/브랜치) Private_Repository=team-GitDeulida/CodeLounge-Private/main # GitHub Raw URL 기본 경로 BASE_URL=https://raw.githubusercontent.com/$(Private_Repository) # ✅ 파일 다운로드 함수 정의 # $(1): 디렉토리 경로 # $(2): GitHub Access Token # $(3): 파일 이름 define download_file mkdir -p $(1) curl -H "Authorization: token $(2)" -o $(1)/$(3) $(BASE_URL)/$(1)/$(3) endef # 🏁 진입 지점: download-privates 명령 실행 시 동작 download-privates: # .env 파일이 없으면 GitHub Access Token을 사용자에게 입력받아 저장 # Get GitHub Access Token @if [ ! -f .env ]; then \ read -p "Enter your GitHub access token: " token; \ echo "GITHUB_ACCESS_TOKEN=$$token" &gt; .env; \ else \ echo "Homebrew가 이미 설치되어 있습니다."; \ fi # 실제 다운로드 수행 make _download-privates # 🔽 내부 명령: 다운로드 로직 수행 _download-privates: # .env 파일에서 GITHUB_ACCESS_TOKEN을 읽어 환경 변수로 설정 $(eval export $(shell cat .env)) # 레포지토리의 최상위 디렉토리에서 Config.xcconfig 다운로드 $(call download_file,.,$$GITHUB_ACCESS_TOKEN,Config.xcconfig) # ------------------------- # Homebrew 설치 확인 및 설치 # ------------------------- install_homebrew: @if ! command -v brew &gt;/dev/null 2&gt;&amp;1; then \ echo "Homebrew가 설치되어 있지 않습니다. 설치를 진행합니다..."; \ /bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; \ else \ echo "Homebrew가 이미 설치되어 있습니다."; \ fi # ------------------------- # fastlane 및 인증서 관련 작업 # ------------------------- # Automatically manage signing 체크 해제해야함!! # Homebrew로 fastlane 설치 (설치되어 있으면 업데이트) install_fastlane: install_homebrew @echo "Updating Homebrew..." @brew update @echo "Installing fastlane via Homebrew..." @brew install fastlane || true @echo "✅ fastlane 설치 완료 (Homebrew 사용)" # 인증서 다운로드 (readonly 모드) fetch_certs: install_fastlane @echo "Fetching development certificates..." @fastlane match development --readonly @echo "Fetching appstore certificates..." @fastlane match appstore --readonly @echo "✅ 인증서 가져오기 완료" # ------------------------- # 통합 기본 타겟: 필요한 경우 Private 파일과 인증서 모두 다운로드 # ------------------------- all: download-privates fetch_certs @echo "✅ 모든 작업 완료" 실행시 Private 레포지토리 2~3번 주소 요청시 입력해준다. 그리고 Xcode 재실행하면 사진처럼 프로비저닝 파일이 보이게 된다. 이제 팀원이 프로비저닝 관련 해서 문제가 생긴다면 make명령어 실행해주세요~ 라고 멋있게 말해주면 된다.]]></summary></entry><entry><title type="html">[Docker] Docker?</title><link href="http://localhost:4000/Docker-docker1/" rel="alternate" type="text/html" title="[Docker] Docker?" /><published>2025-05-14T00:00:00+00:00</published><updated>2025-05-14T00:00:00+00:00</updated><id>http://localhost:4000/%5BDocker%5D-docker1</id><content type="html" xml:base="http://localhost:4000/Docker-docker1/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h2 id="docker">Docker</h2>
-<p>이식성 - 명령어 한 줄로 어떤 컴퓨터에서든 동일한 환경설정이 가능해 에러를 피할 수 있다.</p>]]></content><author><name>Dong Hyeon</name></author><category term="Docker" /><summary type="html"><![CDATA[Docker 이식성 - 명령어 한 줄로 어떤 컴퓨터에서든 동일한 환경설정이 가능해 에러를 피할 수 있다.]]></summary></entry><entry><title type="html">[CodeLounge] Admob</title><link href="http://localhost:4000/CodeLounge-Admob/" rel="alternate" type="text/html" title="[CodeLounge] Admob" /><published>2025-05-14T00:00:00+00:00</published><updated>2025-05-14T00:00:00+00:00</updated><id>http://localhost:4000/%5BCodeLounge%5D-Admob</id><content type="html" xml:base="http://localhost:4000/CodeLounge-Admob/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h2 id="swiftui에-admob-광고-적용하기">SwiftUI에 Admob 광고 적용하기</h2>
-
-<h2 id="1-admob-설정-및-테스트-광고-id">1. Admob 설정 및 테스트 광고 ID</h2>
-
-<h3 id="httpsadmobgooglecomv2home">https://admob.google.com/v2/home</h3>
-
-<ul>
-  <li>Admob 계정 생성(필수)</li>
-  <li>애플 앱스토어 등록(선택)
-    <ul>
-      <li>어플을 앱스토어에 등록 후 Admob 작업을 진행하는 게 훨 씬 수월하다.</li>
-    </ul>
-  </li>
-</ul>
-
-<p><img src="/assets/img/2025-05-14-%5BCodeLounge%5D-Admob/image-20250514222826541.png" alt="이미지" width="100%" /></p>
-
-<p><img src="/assets/img/2025-05-14-%5BCodeLounge%5D-Admob/image-20250514223016444.png" alt="이미지" width="100%" /></p>
-
-<p><img src="/assets/img/2025-05-14-%5BCodeLounge%5D-Admob/image-20250514223225011.png" alt="이미지" width="100%" /></p>
-
-<p><img src="/assets/img/2025-05-14-%5BCodeLounge%5D-Admob/image-20250514223435839.png" alt="이미지" width="100%" /></p>
-
-<p><img src="/assets/img/2025-05-14-%5BCodeLounge%5D-Admob/image-20250514223505826.png" alt="이미지" width="100%" /></p>
-
-<p><img src="/assets/img/2025-05-14-%5BCodeLounge%5D-Admob/image-20250514223554014.png" alt="이미지" width="100%" /></p>
-
-<p><img src="/assets/img/2025-05-14-%5BCodeLounge%5D-Admob/image-20250514223724779.png" alt="이미지" width="100%" /><br />
-ca-app-pub-xxxxx와 같은 형태의 App ID가 발급된다.</p>
-
-<p><img src="/assets/img/2025-05-14-%5BCodeLounge%5D-Admob/image-20250514223858027.png" alt="이미지" width="100%" /></p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// SKAdNetworkItems - IDFA 없이도 광고 성과 추적 (Apple 정책 대응)</span>
-<span class="c1">// NSUserTrackingUsageDescription - 사용자에게 추적 허용 요청 팝업 표시</span>
-<span class="c1">// requestTrackingAuthorization() - 실제로 권한 요청하는 코드</span>
-<span class="c1">// 기타 옵션들 - 광고 관련 기능(예: SKOverlay 등) 자동 지원 목적</span>
-
-<span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">GADApplicationIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">ca</span><span class="o">-</span><span class="n">app</span><span class="o">-</span><span class="n">pub</span><span class="o">-</span><span class="n">xxxxxxxxxxxxxxxx</span><span class="o">~</span><span class="n">yyyyyyyyyy</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkItems</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">array</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">cstr6suwn9</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">4</span><span class="n">fzdc2evr5</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">4</span><span class="n">pfyvq9l8r</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">2</span><span class="n">fnua5tdw4</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">ydx93a7ass</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">5</span><span class="n">a6flpkh64</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">p78axxw29g</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">v72qych5uu</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">ludvb6z3bs</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">cp8zw746q7</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">3</span><span class="n">sh42y64q3</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">c6k4g5qg8m</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">s39g8k73mm</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">3</span><span class="n">qy4746246</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">f38h382jlk</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">hs6bdukanm</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">v4nxqhlyqp</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">wzmmz9fp6w</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">yclnxrl5pm</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">t38b2kh725</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">7</span><span class="n">ug5zh24hu</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">gta9lk7p23</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">vutu7akeur</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">y5ghdn5j9k</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">n6fk4nfna4</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">v9wttpbfk9</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">n38lu8286q</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">47</span><span class="n">vhws6wlr</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">kbd757ywx3</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">9</span><span class="n">t245vhmpl</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">eh6m2bh4zr</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">a2p9lx4jpn</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">22</span><span class="n">mmun2rn5</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">4468</span><span class="n">km3ulz</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">2</span><span class="n">u9pt9hc89</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">8</span><span class="n">s468mfl3y</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">klf5c3l5u5</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">ppxm28t8ap</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">ecpz2srf59</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">uw77j35x4d</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">pwa73g5rt2</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">mlmmfzh3r3</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">578</span><span class="n">prtvx9j</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">4</span><span class="n">dzt52r2t5</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">e5fvkxwrpn</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">8</span><span class="n">c4e2ghe7u</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="n">zq492l623r</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">3</span><span class="n">rd42ekr43</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dict</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">SKAdNetworkIdentifier</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="mi">3</span><span class="n">qcr597p9d</span><span class="o">.</span><span class="n">skadnetwork</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">dict</span><span class="o">&gt;</span>
-<span class="o">&lt;/</span><span class="n">array</span><span class="o">&gt;</span>
-</code></pre></div></div>
-
-<p>발급된 App ID를 Info.plist에 추가한다.</p>
-
-<h2 id="2-google-mobile-ads-설치spm">2. Google Mobile Ads 설치(SPM)</h2>
-
-<ol>
-  <li>Xcode -&gt; File -&gt; Add Package</li>
-  <li>입력 URL
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> https://github.com/googleads/swift-package-manager-google-mobile-ads.git
-</code></pre></div>    </div>
-  </li>
-  <li>버전: 최신 선택</li>
-  <li>메인 앱 타겟만 체크 -&gt; Extension이 포함된 앱이더라도, 메인 앱에만 적용이 가능하다고 한다.</li>
-</ol>
-
-<h2 id="3-appdelegate설정광고-초기화">3. AppDelegate설정(광고 초기화)</h2>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// AppDelegate.swift</span>
-<span class="kd">import</span> <span class="kt">GoogleMobileAds</span>
-
-<span class="kd">class</span> <span class="kt">AppDelegate</span><span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">UIApplicationDelegate</span> <span class="p">{</span>
-    <span class="kd">func</span> <span class="nf">application</span><span class="p">(</span><span class="n">_</span> <span class="nv">application</span><span class="p">:</span> <span class="kt">UIApplication</span><span class="p">,</span>
-                     <span class="n">didFinishLaunchingWithOptions</span> <span class="nv">launchOptions</span><span class="p">:</span> <span class="p">[</span><span class="kt">UIApplication</span><span class="o">.</span><span class="kt">LaunchOptionsKey</span> <span class="p">:</span> <span class="kt">Any</span><span class="p">]?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
-		<span class="kt">MobileAds</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">start</span><span class="p">(</span><span class="nv">completionHandler</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span> <span class="c1">// 추가</span>
-        <span class="k">return</span> <span class="kc">true</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<h2 id="reference">Reference</h2>
-
-<ul>
-  <li>https://royzero.tistory.com/entry/SwiftUI-AdMob-적용하기</li>
-  <li>https://velog.io/@heejin62/SwiftUI-앱에-AdMob-적용하기-근데-이제-Trouble-Shooting을-곁들인</li>
-  <li>https://developers.google.com/admob/ios/test-ads?hl=ko</li>
-  <li>https://actumn.tistory.com/99</li>
-  <li>https://developers.google.com/admob/ios/privacy/strategies?hl=ko#skadnetwork</li>
-  <li>https://dev-apple.tistory.com/30</li>
-  <li>https://developers.google.com/admob/ios/test-ads?hl=ko#swift</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="CodeLounge" /><summary type="html"><![CDATA[SwiftUI에 Admob 광고 적용하기 1. Admob 설정 및 테스트 광고 ID https://admob.google.com/v2/home Admob 계정 생성(필수) 애플 앱스토어 등록(선택) 어플을 앱스토어에 등록 후 Admob 작업을 진행하는 게 훨 씬 수월하다. ca-app-pub-xxxxx와 같은 형태의 App ID가 발급된다. // SKAdNetworkItems - IDFA 없이도 광고 성과 추적 (Apple 정책 대응) // NSUserTrackingUsageDescription - 사용자에게 추적 허용 요청 팝업 표시 // requestTrackingAuthorization() - 실제로 권한 요청하는 코드 // 기타 옵션들 - 광고 관련 기능(예: SKOverlay 등) 자동 지원 목적 &lt;key&gt;GADApplicationIdentifier&lt;/key&gt; &lt;string&gt;ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy&lt;/string&gt; &lt;key&gt;SKAdNetworkItems&lt;/key&gt; &lt;array&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;cstr6suwn9.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;4fzdc2evr5.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;4pfyvq9l8r.skadnetwork&lt;/string&gt; &lt;/dict &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;2fnua5tdw4.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;ydx93a7ass.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;5a6flpkh64.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;p78axxw29g.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;v72qych5uu.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;ludvb6z3bs.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;cp8zw746q7.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;3sh42y64q3.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;c6k4g5qg8m.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;s39g8k73mm.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;3qy4746246.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;f38h382jlk.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;hs6bdukanm.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;v4nxqhlyqp.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;wzmmz9fp6w.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;yclnxrl5pm.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;t38b2kh725.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;7ug5zh24hu.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;gta9lk7p23.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;vutu7akeur.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;y5ghdn5j9k.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;n6fk4nfna4.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;v9wttpbfk9.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;n38lu8286q.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;47vhws6wlr.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;kbd757ywx3.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;9t245vhmpl.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;eh6m2bh4zr.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;a2p9lx4jpn.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;22mmun2rn5.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;4468km3ulz.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;2u9pt9hc89.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;8s468mfl3y.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;klf5c3l5u5.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;ppxm28t8ap.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;ecpz2srf59.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;uw77j35x4d.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;pwa73g5rt2.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;mlmmfzh3r3.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;578prtvx9j.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;4dzt52r2t5.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;e5fvkxwrpn.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;8c4e2ghe7u.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;zq492l623r.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;3rd42ekr43.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;dict&gt; &lt;key&gt;SKAdNetworkIdentifier&lt;/key&gt; &lt;string&gt;3qcr597p9d.skadnetwork&lt;/string&gt; &lt;/dict&gt; &lt;/array&gt; 발급된 App ID를 Info.plist에 추가한다. 2. Google Mobile Ads 설치(SPM) Xcode -&gt; File -&gt; Add Package 입력 URL https://github.com/googleads/swift-package-manager-google-mobile-ads.git 버전: 최신 선택 메인 앱 타겟만 체크 -&gt; Extension이 포함된 앱이더라도, 메인 앱에만 적용이 가능하다고 한다. 3. AppDelegate설정(광고 초기화) // AppDelegate.swift import GoogleMobileAds class AppDelegate: NSObject, UIApplicationDelegate { func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -&gt; Bool { MobileAds.shared.start(completionHandler: nil) // 추가 return true } } Reference https://royzero.tistory.com/entry/SwiftUI-AdMob-적용하기 https://velog.io/@heejin62/SwiftUI-앱에-AdMob-적용하기-근데-이제-Trouble-Shooting을-곁들인 https://developers.google.com/admob/ios/test-ads?hl=ko https://actumn.tistory.com/99 https://developers.google.com/admob/ios/privacy/strategies?hl=ko#skadnetwork https://dev-apple.tistory.com/30 https://developers.google.com/admob/ios/test-ads?hl=ko#swift]]></summary></entry><entry><title type="html">[Recommendation System] 1. 추천시스템 소개</title><link href="http://localhost:4000/Recommendation-System-Section1/" rel="alternate" type="text/html" title="[Recommendation System] 1. 추천시스템 소개" /><published>2025-05-14T00:00:00+00:00</published><updated>2025-05-14T00:00:00+00:00</updated><id>http://localhost:4000/%5BRecommendation%20System%5D-Section1</id><content type="html" xml:base="http://localhost:4000/Recommendation-System-Section1/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<p>데이터소스는 데이터와 관련되어 있고, 셀의 종류를 정하고 어떤 데이터인지에 따라 어떤 셀을 보여줄지 정하고, 리스트 갯수가 몇개인지를 관여한다.</p>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[테이블뷰 제네릭 CustomCombineDataSource 제네릭 어떠한 자료형을 받을 수 있다. IndexData를 만들어서 해당 타입도 받을 수 있도록 해보자. IndexData구조체 추가 // // DummyData.swift // UITableViewTutorial // // Created by 김동현 on 5/8/25. // import Foundation import Fakery struct DummySection { let uuid: UUID let title: String let body: String let rows: [DummyData] init() { self.uuid = UUID() self.title = "섹션 타이틀입니다: \(uuid)" self.body = "섹션 바디입니다: \(uuid)" self.rows = DummyData.getDumies(10) } static func getDummies(_ count: Int = 100) -&gt; [DummySection] { return (1...count).map { _ in DummySection() } } } struct DummyData { let uuid: UUID let title: String let body: String init() { self.uuid = UUID() let faker = Faker(locale: "ko") let firstName = faker.name.firstName() //=&gt; "Emilie" let lastName = faker.name.lastName() //=&gt; "Hansen" let body = faker.lorem.paragraphs(amount: 10) self.title = "타이틀입니다: \(lastName) \(firstName)" self.body = "바디입니다: \(body)" } static func getDumies(_ count: Int = 100) -&gt; [DummyData] { return (1...count).map { _ in DummyData() } } } struct IndexData { let uuid: UUID let title: String let body: String init() { self.uuid = UUID() let faker = Faker(locale: "ko") let firstName = faker.name.firstName() //=&gt; "Emilie" let lastName = faker.name.lastName() //=&gt; "Hansen" let body = faker.lorem.paragraphs(amount: 10) self.title = "타이틀입니다: \(lastName) \(firstName)" self.body = "바디입니다: \(body)" } static func getDumies(_ count: Int = 100) -&gt; [IndexData] { return (1...count).map { _ in IndexData() } } } CustomCombineDataSource.swift // // CustomCombineDataSource.swift // UITableViewTutorial // // Created by 김동현 on 5/15/25. // import UIKit /* class CustomCombineDataSource&lt;T, G&gt;: NSObject, UITableViewDataSource { // 멤버 변수 var dataList: [T] = [] var testDataList: [G] = [] */ class CustomCombineDataSource&lt;Item&gt;: NSObject, UITableViewDataSource { // 멤버 변수 var dataList: [Item] = [] override init() { super.init() } // MARK: - Combine 이벤트로 들어온 데이터랑 테이블뷰랑 연결시켜주는 지점 /// 변경된 데이터를 받아서 테이블뷰에 적용한다 /// - Parameters: /// - updatedDataList: 외부에서 변경된 Combine Publisher로 들어온 데이터를 내 DataSource가 가진 data로 변경하기 위한 매개변수 /// - tableView: 리로드 대상 테이블뷰 func pushDataList(_ updatedDataList: [Item], to tableView: UITableView) { tableView.dataSource = self self.dataList = updatedDataList tableView.reloadData() } // MARK: - 테이블뷰 데이터 소스 관련(변경이 된 데이터를 데이터소스로 넘겨받아서 reloadData를 하는 목적 /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return dataList.count } // 어떤 셀을 보여줄 지 /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 - 몇번째인지 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // [guard let] 방식 guard let cell = tableView.dequeueReusableCell(withIdentifier: CodeCell.reuseIdentifier, for: indexPath) as? CodeCell else { return UITableViewCell() } if let dataList = dataList as? [DummyData] { let cellData: DummyData = dataList[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body cell.detailTextLabel?.numberOfLines = 0 } if let dataList = dataList as? [IndexData] { let cellData: IndexData = dataList[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body cell.detailTextLabel?.numberOfLines = 0 } return cell } } 셀의 종류가 추가될때마다 항상 if let dataList를 하면 불편하다고 생각된다. UITableView+Combine.swift // // UITableView+Combine.swift // UITableViewTutorial // // Created by 김동현 on 5/15/25. // import UIKit import Combine // MARK: - Sink 정의를 보면 매개변수로 (Self.Output) -&gt; Void) 형태의 클로저를 받는다. 이 형태를 만족하는 로직 함수를 만들자. // public func sink(receiveValue: @escaping ((Self.Output) -&gt; Void)) -&gt; AnyCancellable extension UITableView { // 고차함수 - 클로저를 매개변수로 가지거나 반환을 가지는 함수 자체 // (Self.Output) -&gt; Void) // ([DummyData]) -&gt; Void // 데이터소스 바인딩 func customItems&lt;Item&gt;() -&gt; ([Item]) -&gt; Void { let dataSource = CustomCombineDataSource&lt;Item&gt;() return { (updatedDateLisst: [Item]) in dataSource.pushDataList(updatedDateLisst, to: self) // 리로드 } } } CombineListViewController.swift // // CombineListViewController.swift // UITableViewTutorial // // Created by 김동현 on 5/13/25. // import UIKit import Combine class CombineListViewController: UIViewController { // Combine 메모리 처리를 위해 생성 var subscriptions = Set&lt;AnyCancellable&gt;() // Published를 하게 되면 dummies 데이터가 추가나 값 변경시 이벤트를 받을 수 있다. // @Published var dummies: [DummyData] = [] @Published var indexDatas: [IndexData] = [] @IBOutlet weak var myTableView: UITableView! override func viewDidLoad() { super.viewDidLoad() configureTableView() /* - sink는 @Published가 수정된 스레드에서 실행된다 - 그래서 Published변수 수정시 메인 스레드에서 수정해주자 - @Published 값을 메인 스레드에서 수정하든, 백그라운드에서 수정하든, .receive(on: .main)만 붙이면 sink는 메인에서 실행되고reloadData()도 안전하게 실행된다 */ // MARK: - 기존의 데이터를 받는 거를 CombineListViewController에서 다했더라면 이제는 customDataSource으로 따로 뺴두고, 로직은 extension으로 빼서 처리를 한 것이다. // $ 붙이면 데이터 이벤트를 받을 수 있는 상태가 됨 // sink는 구독하는 것이다. // AnyCancellable 구독한다고 한다. // store: 구독했던거에 대한 메모리 참조가 들어오게 되는데 이를 관리하기 위해 subscriptions에 넣어준다. $indexDatas .receive(on: DispatchQueue.main) .sink(receiveValue: self.myTableView.customItems()) .store(in: &amp;subscriptions) /* 기존 방식 $dummies .receive(on: DispatchQueue.main) // 데이터 변경시마다 동작 .sink(receiveValue: { (changedDummies: [DummyData]) in print("changedDummies: \(changedDummies.count)") // sink는 메인스레드에서 동작해서 Dispatch안해도된다 self.myTableView.reloadData() }) .store(in: &amp;subscriptions) */ // 2초 뒤에 더미데이터 10개 추가 DispatchQueue.global().asyncAfter(deadline: .now() + 2, execute: { // self.dummies += DummyData.getDumies(10) self.indexDatas += IndexData.getDumies(10) }) } fileprivate func configureTableView() { // CodeCell에서는 이 줄만 필요 self.myTableView.register(CodeCell.self, forCellReuseIdentifier: CodeCell.reuseIdentifier) // self.myTableView.delegate = self } } 위 코드에서 CustomCombineDataSource.swift에서 셀이 추가될 때마다 항상 if let dataList를 하면 불편하다고 생각되기 때문에 이를 해결하기 위해 다음 포스팅을 작성하겠다. 정리 데이터소스는 데이터와 관련되어 있고, 셀의 종류를 정하고 어떤 데이터인지에 따라 어떤 셀을 보여줄지 정하고, 리스트 갯수가 몇개인지를 관여한다.]]></summary></entry><entry><title type="html">[Recommendation System] 1. 추천시스템 소개</title><link href="http://localhost:4000/Recommendation-System-Section1/" rel="alternate" type="text/html" title="[Recommendation System] 1. 추천시스템 소개" /><published>2025-05-14T00:00:00+00:00</published><updated>2025-05-14T00:00:00+00:00</updated><id>http://localhost:4000/%5BRecommendation%20System%5D-Section1</id><content type="html" xml:base="http://localhost:4000/Recommendation-System-Section1/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
@@ -1424,4 +1065,9 @@ ca-app-pub-xxxxx와 같은 형태의 App ID가 발급된다.</p>
 <p>AI 알고리즘 중 현재 가장 많이 사용되는 딥러닝 방법이다.</p>
 
 <h1 id="16-하이브리드-필터링협업필터링--딥러닝">1.6 하이브리드 필터링(협업필터링 &amp; 딥러닝)</h1>
-<p>두가지 이상의 알고리즘 혼합을 통한 하이브리드 형태이다.</p>]]></content><author><name>Dong Hyeon</name></author><category term="Recommendation System" /><summary type="html"><![CDATA[추천 시스템이란 추천 시스템이란 사용자의 과거 행동 데이터를 바탕으로 사용자에게 필요한 정보나 제품을 제시하는 시스템이다. 추천 시스템의 여러 기술 협업 필터링(Collaborative Filtering) 내용 기반 필터링(Content-Based Filtering) 지식 기반 필터링(Knowledge-Based Filtering) 딥러닝(Deep Learning) 하이브리드 필터링(협업필터링 &amp; 딥러닝) 1.1 협업 필터링 (Collaborative Filtering) 구매 및 소비한 제품에 대한 소비자의 평가 패턴이 비슷한 집단 속에서 서로 접하지 않은 제품을 추천하는 기술이다. 한계 - 소비자의 평가정보를 구하기 어렵다 ex)신규/휴먼 고객 해결책 - 구매가 아니라 클릭, 체류시간으로 간접적인 데이터로 협업 필터링 가능 1.2 내용 기반 필터링(Content-Based Filtering) 제품의 내용을 분석해서 추천하는 기술이다. 1.4 지식 기반 필터링(Knowledge-Based Filtering) 특정 분야 전문가의 도움을 받아서 그 분야에 대한 전체적인 지식 구조를 만들어서 활용하는 방법이다. 1.5 딥러닝(Deep Learning) AI 알고리즘 중 현재 가장 많이 사용되는 딥러닝 방법이다. 1.6 하이브리드 필터링(협업필터링 &amp; 딥러닝) 두가지 이상의 알고리즘 혼합을 통한 하이브리드 형태이다.]]></summary></entry></feed>
+<p>두가지 이상의 알고리즘 혼합을 통한 하이브리드 형태이다.</p>]]></content><author><name>Dong Hyeon</name></author><category term="Recommendation System" /><summary type="html"><![CDATA[추천 시스템이란 추천 시스템이란 사용자의 과거 행동 데이터를 바탕으로 사용자에게 필요한 정보나 제품을 제시하는 시스템이다. 추천 시스템의 여러 기술 협업 필터링(Collaborative Filtering) 내용 기반 필터링(Content-Based Filtering) 지식 기반 필터링(Knowledge-Based Filtering) 딥러닝(Deep Learning) 하이브리드 필터링(협업필터링 &amp; 딥러닝) 1.1 협업 필터링 (Collaborative Filtering) 구매 및 소비한 제품에 대한 소비자의 평가 패턴이 비슷한 집단 속에서 서로 접하지 않은 제품을 추천하는 기술이다. 한계 - 소비자의 평가정보를 구하기 어렵다 ex)신규/휴먼 고객 해결책 - 구매가 아니라 클릭, 체류시간으로 간접적인 데이터로 협업 필터링 가능 1.2 내용 기반 필터링(Content-Based Filtering) 제품의 내용을 분석해서 추천하는 기술이다. 1.4 지식 기반 필터링(Knowledge-Based Filtering) 특정 분야 전문가의 도움을 받아서 그 분야에 대한 전체적인 지식 구조를 만들어서 활용하는 방법이다. 1.5 딥러닝(Deep Learning) AI 알고리즘 중 현재 가장 많이 사용되는 딥러닝 방법이다. 1.6 하이브리드 필터링(협업필터링 &amp; 딥러닝) 두가지 이상의 알고리즘 혼합을 통한 하이브리드 형태이다.]]></summary></entry><entry><title type="html">[Docker] Docker?</title><link href="http://localhost:4000/Docker-docker1/" rel="alternate" type="text/html" title="[Docker] Docker?" /><published>2025-05-14T00:00:00+00:00</published><updated>2025-05-14T00:00:00+00:00</updated><id>http://localhost:4000/%5BDocker%5D-docker1</id><content type="html" xml:base="http://localhost:4000/Docker-docker1/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h2 id="docker">Docker</h2>
+<p>이식성 - 명령어 한 줄로 어떤 컴퓨터에서든 동일한 환경설정이 가능해 에러를 피할 수 있다.</p>]]></content><author><name>Dong Hyeon</name></author><category term="Docker" /><summary type="html"><![CDATA[Docker 이식성 - 명령어 한 줄로 어떤 컴퓨터에서든 동일한 환경설정이 가능해 에러를 피할 수 있다.]]></summary></entry></feed>
