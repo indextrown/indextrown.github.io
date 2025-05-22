@@ -1,0 +1,834 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li><li class="masthead__menu-item">
+              <a href="/projects/">Projects</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[UIKit] iOS 푸시알림 FCM, APNS 이게 뭔데?">
+    <meta itemprop="description" content="iOS 푸시알림 FCM, APNS 이게 뭔데?iOS에서 푸시 종류는 2가지가 있다.  로컬에서 직접 보내는 알림  서버에서 보내는 알림          서버에서 보내는 APNS(Apple Push Notification Service)              FCM(Firebase Cloud Messaging) -&gt; 이번 포스팅에서는 FCM을 활용한 2번 방식을 진행할 예정이다.        ​            APNS 란?APNS (Apple Push Notification Service) 는  iOS의 모든 원격 알림이 반드시 거쳐야 하는 애플 공식 푸시 전달 서버이다..즉, 푸시 메시지를 내가 직접 사용자 기기로 보내는 게 아니라  → APNS에 요청  → APNS가 사용자 기기로 전송  하는 방식이다.FCM 란?FCM은 Google에서 제공하는 클라우드 기반 메시징 서비스로,iOS의 APNS를 포함해 Android, Web 등 다양한 플랫폼에 푸시 메시지를 전송할 수 있도록 중간 서버 역할을 해준다.iOS에서 FCM을 통해 푸시 알림을 보내면, FCM 내부적으로 APNS를 거쳐서 사용자 기기에 도달한다.FCM이 APNS 대신 해주는 것들  애플 인증서 등록 및 관리  APNS에 메시지 전송 요청  안드로이드, iOS 둘 다 지원 (멀티 플랫폼)  클라우드 환경에서 손쉽게 운영왜 FCM을 쓰는가?  APNS 서버 직접 구축이 복잡하고 부담스러울 때  iOS &amp; Android를 동시에 지원하는 일관된 환경이 필요할 때  푸시 알림 시스템을 빠르게 구축하고 싶을 때  Firebase Analytics, A/B 테스트 같은 연계 기능을 활용할 때푸시 알림의 기본 동작 흐름  앱이 APNS에 Device Token 요청          이 토큰은 앱이 설치된 기기의 주소 역할을 한다.        APNS가 앱에게 Device Token 전달  앱이 Device Token을 푸시 서버(FCM 등)에 전달          이 서버가 실제 푸시 메시지를 보낼 주체이다.      APNS를 통한 푸시 알림 동작 구조  푸시 서버(예: FCM)가 메시지와 Device Token을 APNS에 전송          이때 APNS와 푸시 서버는 TLS 인증으로 보안 통신      서버에는 APNS 인증 정보(p8 키 or 인증서)가 등록되어 있어야 함        APNS는 해당 디바이스로 푸시 메시지를 전송  디바이스에서 푸시 알림 수신실습identifiers에서 해당 프로젝트 누른 후 push notification 체크박스 체크 해준다.keys에서 키를 발급 해준다. 완료하면 Download버튼이 생긴다 이를 통해 p8파일을 다운로드 한다.firebase 프로젝트 -&gt; 프로젝트 설정 -&gt; 클라우드 메시징에서 APNS인증키를 등록해준다.업로드를 눌러서 완료한다.                  Push Notifications    Background Modes  xcode -&gt; target -&gt; Push Notifications, Background Mode 추가한다.Remote Notifications 체크해준다.AppDelegate.swiftimport UIKitimport FirebaseCoreimport FirebaseMessagingimport UserNotifications@mainclass AppDelegate: UIResponder, UIApplicationDelegate {        func application(_ application: UIApplication,                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -&gt; Bool {                // Firebase 초기화        FirebaseApp.configure()                // 알림 권한 요청        UNUserNotificationCenter.current().delegate = self        UNUserNotificationCenter.current().requestAuthorization(            options: [.alert, .badge, .sound]        ) { granted, error in            print(&quot;✅ 알림 권한 요청 결과: \(granted)&quot;)            if granted {                DispatchQueue.main.async {                    UIApplication.shared.registerForRemoteNotifications()                }            }        }                // FCM 설정        Messaging.messaging().delegate = self                return true    }}extension AppDelegate: UNUserNotificationCenterDelegate {        // APNs로부터 device token 받았을 때 FCM에 등록    func application(_ application: UIApplication,                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {        print(&quot;📮 APNS Token 수신: \(deviceToken)&quot;)        Messaging.messaging().apnsToken = deviceToken    }    // 앱이 실행 중일 때 알림 수신 (배너로 표시되게 설정)    func userNotificationCenter(_ center: UNUserNotificationCenter,                                willPresent notification: UNNotification,                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -&gt; Void) {        completionHandler([.list, .banner, .sound])    }}extension AppDelegate: MessagingDelegate {        // FCM 토큰 갱신될 때 호출    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {        print(&quot;📌 FCM Token: \(fcmToken ?? &quot;nil&quot;)&quot;)                // 필요 시 NotificationCenter로 다른 컴포넌트에 전달        NotificationCenter.default.post(            name: Notification.Name(&quot;FCMToken&quot;),            object: nil,            userInfo: [&quot;token&quot;: fcmToken ?? &quot;&quot;]        )    }}  빌드하면 나오는 FCM을 복사한다.FCM.pyimport firebase_adminfrom firebase_admin import credentials, messaging# 1. 서비스 계정 키 경로 (.json)cred = credentials.Certificate(&quot;파이어베이스 설정 -&gt; 서비스 계정 -&gt; 새 비공키 키 생성시 .json파일 다운 가능 -&gt; 해당 경로 입력&quot;)firebase_admin.initialize_app(cred)# 2. 대상 유저의 FCM 토큰fcm_token = &quot;빌드하면 나오는 FCM 입력&quot;# 3. 전송할 메시지title = &quot;새 댓글이 달렸어요!&quot;body = &quot;당신의 게시글에 누군가 댓글을 남겼습니다.&quot;# 4. 알림 메시지 구성message = messaging.Message(    token=fcm_token,    notification=messaging.Notification(        title=title,        body=body,    ))# 5. 메시지 전송try:    response = messaging.send(message)    print(&quot;✅ 메시지 전송 성공:&quot;, response)except Exception as e:    print(&quot;❌ 메시지 전송 실패:&quot;, e)                  앱이 종료되어있을 때    앱 실행중일 때  Reference      https://bannavi.tistory.com/558    ​  ">
+    <meta itemprop="datePublished" content="2025-05-22T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/UIKit-FCM/" class="u-url" itemprop="url">[UIKit] iOS 푸시알림 FCM, APNS 이게 뭔데?
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=UIKit">UIKit</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-05-22T00:00:00+00:00">May 22, 2025</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h2 id="ios-푸시알림-fcm-apns-이게-뭔데">iOS 푸시알림 FCM, APNS 이게 뭔데?</h2>
+
+<p>iOS에서 푸시 종류는 2가지가 있다.</p>
+
+<ol>
+  <li>로컬에서 직접 보내는 알림</li>
+  <li>서버에서 보내는 알림
+    <ul>
+      <li>서버에서 보내는 APNS(Apple Push Notification Service)</li>
+      <li>
+        <p>FCM(Firebase Cloud Messaging) -&gt; 이번 포스팅에서는 FCM을 활용한 2번 방식을 진행할 예정이다.</p>
+
+        <p>​</p>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="apns-란">APNS 란?</h2>
+
+<p><strong>APNS (Apple Push Notification Service)</strong> 는  <br />
+iOS의 모든 원격 알림이 반드시 거쳐야 하는 <strong>애플 공식 푸시 전달 서버</strong>이다..</p>
+
+<p>즉, 푸시 메시지를 <strong>내가 직접 사용자 기기로 보내는 게 아니라</strong>  <br />
+→ <strong>APNS에 요청</strong>  <br />
+→ <strong>APNS가 사용자 기기로 전송</strong>  <br />
+하는 방식이다.</p>
+
+<hr />
+
+<h2 id="fcm-란">FCM 란?</h2>
+
+<p><strong>FCM은 Google에서 제공하는 클라우드 기반 메시징 서비스</strong>로,<br />
+iOS의 APNS를 포함해 Android, Web 등 다양한 플랫폼에 푸시 메시지를 전송할 수 있도록 <strong>중간 서버 역할</strong>을 해준다.<br />
+iOS에서 FCM을 통해 푸시 알림을 보내면, FCM 내부적으로 APNS를 거쳐서 사용자 기기에 도달한다.</p>
+
+<h4 id="fcm이-apns-대신-해주는-것들">FCM이 APNS 대신 해주는 것들</h4>
+
+<ul>
+  <li>애플 인증서 등록 및 관리</li>
+  <li>APNS에 메시지 전송 요청</li>
+  <li>안드로이드, iOS 둘 다 지원 (멀티 플랫폼)</li>
+  <li>클라우드 환경에서 손쉽게 운영</li>
+</ul>
+
+<h3 id="왜-fcm을-쓰는가">왜 FCM을 쓰는가?</h3>
+
+<ul>
+  <li>APNS 서버 직접 구축이 <strong>복잡하고 부담스러울 때</strong></li>
+  <li><strong>iOS &amp; Android를 동시에 지원</strong>하는 일관된 환경이 필요할 때</li>
+  <li>푸시 알림 시스템을 <strong>빠르게 구축</strong>하고 싶을 때</li>
+  <li><strong>Firebase Analytics</strong>, <strong>A/B 테스트</strong> 같은 연계 기능을 활용할 때</li>
+</ul>
+
+<hr />
+
+<h2 id="푸시-알림의-기본-동작-흐름">푸시 알림의 기본 동작 흐름</h2>
+
+<ol>
+  <li><strong>앱이 APNS에 Device Token 요청</strong>
+    <ul>
+      <li>이 토큰은 <strong>앱이 설치된 기기의 주소 역할</strong>을 한다.</li>
+    </ul>
+  </li>
+  <li><strong>APNS가 앱에게 Device Token 전달</strong></li>
+  <li><strong>앱이 Device Token을 푸시 서버(FCM 등)에 전달</strong>
+    <ul>
+      <li>이 서버가 실제 푸시 메시지를 보낼 주체이다.</li>
+    </ul>
+  </li>
+</ol>
+
+<hr />
+
+<h2 id="apns를-통한-푸시-알림-동작-구조">APNS를 통한 푸시 알림 동작 구조</h2>
+
+<ol>
+  <li>푸시 서버(예: FCM)가 메시지와 Device Token을 APNS에 전송
+    <ul>
+      <li>이때 APNS와 푸시 서버는 <strong>TLS 인증</strong>으로 보안 통신</li>
+      <li>서버에는 <strong>APNS 인증 정보(p8 키 or 인증서)</strong>가 등록되어 있어야 함</li>
+    </ul>
+  </li>
+  <li>APNS는 해당 디바이스로 푸시 메시지를 전송</li>
+  <li>디바이스에서 푸시 알림 수신</li>
+</ol>
+
+<hr />
+
+<h2 id="실습">실습</h2>
+
+<p><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250522235833599.png" alt="이미지" width="100%" /><br />
+identifiers에서 해당 프로젝트 누른 후 push notification 체크박스 체크 해준다.</p>
+
+<p><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250523000005112.png" alt="이미지" width="100%" /><br />
+keys에서 키를 발급 해준다. 완료하면 Download버튼이 생긴다 이를 통해 p8파일을 다운로드 한다.</p>
+
+<p><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250523000727014.png" alt="이미지" width="100%" /><br />
+firebase 프로젝트 -&gt; 프로젝트 설정 -&gt; 클라우드 메시징에서 APNS인증키를 등록해준다.</p>
+
+<p><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250523000908524.png" alt="이미지" width="30%" /><br />
+업로드를 눌러서 완료한다.</p>
+
+<table>
+  <tr>
+    <td><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250523001147940.png" alt="커스텀셀1" width="100%" /></td>
+    <td><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250523001324675.png" alt="커스텀셀" width="100%" /></td>
+  </tr>
+  <tr>
+    <td style="text-align:center;">Push Notifications</td>
+    <td style="text-align:center;">Background Modes</td>
+  </tr>
+</table>
+<p>xcode -&gt; target -&gt; Push Notifications, Background Mode 추가한다.</p>
+
+<p><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250523001739843.png" alt="이미지" width="100%" /><br />
+Remote Notifications 체크해준다.</p>
+
+<hr />
+
+<h2 id="appdelegateswift">AppDelegate.swift</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+<span class="kd">import</span> <span class="kt">FirebaseCore</span>
+<span class="kd">import</span> <span class="kt">FirebaseMessaging</span>
+<span class="kd">import</span> <span class="kt">UserNotifications</span>
+
+<span class="kd">@main</span>
+<span class="kd">class</span> <span class="kt">AppDelegate</span><span class="p">:</span> <span class="kt">UIResponder</span><span class="p">,</span> <span class="kt">UIApplicationDelegate</span> <span class="p">{</span>
+    
+    <span class="kd">func</span> <span class="nf">application</span><span class="p">(</span><span class="n">_</span> <span class="nv">application</span><span class="p">:</span> <span class="kt">UIApplication</span><span class="p">,</span>
+                     <span class="n">didFinishLaunchingWithOptions</span> <span class="nv">launchOptions</span><span class="p">:</span> <span class="p">[</span><span class="kt">UIApplication</span><span class="o">.</span><span class="kt">LaunchOptionsKey</span><span class="p">:</span> <span class="kt">Any</span><span class="p">]?)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
+        
+        <span class="c1">// Firebase 초기화</span>
+        <span class="kt">FirebaseApp</span><span class="o">.</span><span class="nf">configure</span><span class="p">()</span>
+        
+        <span class="c1">// 알림 권한 요청</span>
+        <span class="kt">UNUserNotificationCenter</span><span class="o">.</span><span class="nf">current</span><span class="p">()</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
+        <span class="kt">UNUserNotificationCenter</span><span class="o">.</span><span class="nf">current</span><span class="p">()</span><span class="o">.</span><span class="nf">requestAuthorization</span><span class="p">(</span>
+            <span class="nv">options</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="n">alert</span><span class="p">,</span> <span class="o">.</span><span class="n">badge</span><span class="p">,</span> <span class="o">.</span><span class="n">sound</span><span class="p">]</span>
+        <span class="p">)</span> <span class="p">{</span> <span class="n">granted</span><span class="p">,</span> <span class="n">error</span> <span class="k">in</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"✅ 알림 권한 요청 결과: </span><span class="se">\(</span><span class="n">granted</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">granted</span> <span class="p">{</span>
+                <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="k">async</span> <span class="p">{</span>
+                    <span class="kt">UIApplication</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">registerForRemoteNotifications</span><span class="p">()</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        
+        <span class="c1">// FCM 설정</span>
+        <span class="kt">Messaging</span><span class="o">.</span><span class="nf">messaging</span><span class="p">()</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
+        
+        <span class="k">return</span> <span class="kc">true</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">AppDelegate</span><span class="p">:</span> <span class="kt">UNUserNotificationCenterDelegate</span> <span class="p">{</span>
+    
+    <span class="c1">// APNs로부터 device token 받았을 때 FCM에 등록</span>
+    <span class="kd">func</span> <span class="nf">application</span><span class="p">(</span><span class="n">_</span> <span class="nv">application</span><span class="p">:</span> <span class="kt">UIApplication</span><span class="p">,</span>
+                     <span class="n">didRegisterForRemoteNotificationsWithDeviceToken</span> <span class="nv">deviceToken</span><span class="p">:</span> <span class="kt">Data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"📮 APNS Token 수신: </span><span class="se">\(</span><span class="n">deviceToken</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+        <span class="kt">Messaging</span><span class="o">.</span><span class="nf">messaging</span><span class="p">()</span><span class="o">.</span><span class="n">apnsToken</span> <span class="o">=</span> <span class="n">deviceToken</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 앱이 실행 중일 때 알림 수신 (배너로 표시되게 설정)</span>
+    <span class="kd">func</span> <span class="nf">userNotificationCenter</span><span class="p">(</span><span class="n">_</span> <span class="nv">center</span><span class="p">:</span> <span class="kt">UNUserNotificationCenter</span><span class="p">,</span>
+                                <span class="n">willPresent</span> <span class="nv">notification</span><span class="p">:</span> <span class="kt">UNNotification</span><span class="p">,</span>
+                                <span class="n">withCompletionHandler</span> <span class="nv">completionHandler</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">UNNotificationPresentationOptions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">completionHandler</span><span class="p">([</span><span class="o">.</span><span class="n">list</span><span class="p">,</span> <span class="o">.</span><span class="n">banner</span><span class="p">,</span> <span class="o">.</span><span class="n">sound</span><span class="p">])</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">AppDelegate</span><span class="p">:</span> <span class="kt">MessagingDelegate</span> <span class="p">{</span>
+    
+    <span class="c1">// FCM 토큰 갱신될 때 호출</span>
+    <span class="kd">func</span> <span class="nf">messaging</span><span class="p">(</span><span class="n">_</span> <span class="nv">messaging</span><span class="p">:</span> <span class="kt">Messaging</span><span class="p">,</span> <span class="n">didReceiveRegistrationToken</span> <span class="nv">fcmToken</span><span class="p">:</span> <span class="kt">String</span><span class="p">?)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"📌 FCM Token: </span><span class="se">\(</span><span class="n">fcmToken</span> <span class="p">??</span> <span class="s">"nil"</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="c1">// 필요 시 NotificationCenter로 다른 컴포넌트에 전달</span>
+        <span class="kt">NotificationCenter</span><span class="o">.</span><span class="k">default</span><span class="o">.</span><span class="nf">post</span><span class="p">(</span>
+            <span class="nv">name</span><span class="p">:</span> <span class="kt">Notification</span><span class="o">.</span><span class="kt">Name</span><span class="p">(</span><span class="s">"FCMToken"</span><span class="p">),</span>
+            <span class="nv">object</span><span class="p">:</span> <span class="kc">nil</span><span class="p">,</span>
+            <span class="nv">userInfo</span><span class="p">:</span> <span class="p">[</span><span class="s">"token"</span><span class="p">:</span> <span class="n">fcmToken</span> <span class="p">??</span> <span class="s">""</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+</code></pre></div></div>
+
+<ul>
+  <li>빌드하면 나오는 FCM을 복사한다.</li>
+</ul>
+
+<p>FCM.py</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">firebase_admin</span>
+<span class="kn">from</span> <span class="n">firebase_admin</span> <span class="kn">import</span> <span class="n">credentials</span><span class="p">,</span> <span class="n">messaging</span>
+
+<span class="c1"># 1. 서비스 계정 키 경로 (.json)
+</span><span class="n">cred</span> <span class="o">=</span> <span class="n">credentials</span><span class="p">.</span><span class="nc">Certificate</span><span class="p">(</span><span class="sh">"</span><span class="s">파이어베이스 설정 -&gt; 서비스 계정 -&gt; 새 비공키 키 생성시 .json파일 다운 가능 -&gt; 해당 경로 입력</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">firebase_admin</span><span class="p">.</span><span class="nf">initialize_app</span><span class="p">(</span><span class="n">cred</span><span class="p">)</span>
+
+<span class="c1"># 2. 대상 유저의 FCM 토큰
+</span><span class="n">fcm_token</span> <span class="o">=</span> <span class="sh">"</span><span class="s">빌드하면 나오는 FCM 입력</span><span class="sh">"</span>
+
+<span class="c1"># 3. 전송할 메시지
+</span><span class="n">title</span> <span class="o">=</span> <span class="sh">"</span><span class="s">새 댓글이 달렸어요!</span><span class="sh">"</span>
+<span class="n">body</span> <span class="o">=</span> <span class="sh">"</span><span class="s">당신의 게시글에 누군가 댓글을 남겼습니다.</span><span class="sh">"</span>
+
+<span class="c1"># 4. 알림 메시지 구성
+</span><span class="n">message</span> <span class="o">=</span> <span class="n">messaging</span><span class="p">.</span><span class="nc">Message</span><span class="p">(</span>
+    <span class="n">token</span><span class="o">=</span><span class="n">fcm_token</span><span class="p">,</span>
+    <span class="n">notification</span><span class="o">=</span><span class="n">messaging</span><span class="p">.</span><span class="nc">Notification</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+        <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># 5. 메시지 전송
+</span><span class="k">try</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">messaging</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">✅ 메시지 전송 성공:</span><span class="sh">"</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+<span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">❌ 메시지 전송 실패:</span><span class="sh">"</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+</code></pre></div></div>
+
+<table>
+  <tr>
+    <td><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250523002353948.png" alt="커스텀셀1" width="100%" /></td>
+    <td><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250523002621503.png" alt="커스텀셀" width="100%" /></td>
+  </tr>
+  <tr>
+    <td style="text-align:center;">앱이 종료되어있을 때</td>
+    <td style="text-align:center;">앱 실행중일 때</td>
+  </tr>
+</table>
+
+<h2 id="reference">Reference</h2>
+
+<ul>
+  <li>
+    <p>https://bannavi.tistory.com/558</p>
+
+    <p>​</p>
+  </li>
+</ul>
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/Baekjoon-2828/" class="pagination--pager" title="[Baekjoon] 백준 2828 사과 담기 게임
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

@@ -75,7 +75,7 @@
 
   </head>
 
-  <body class="layout--single">
+  <body class="layout--default">
     <nav class="skip-links">
   <ul>
     <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
@@ -387,147 +387,126 @@ checkbox.addEventListener('change', function() {
 </script>
 
     <div class="initial-content">
-      
+      <!--Hey! This is the original version
+of Simple CSS Waves-->
 
 
 
 
 
-<div id="main" role="main">
-  
+<div class="index-header">
 
-
-  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="[Baekjoon] 백준 1992 쿼드트리">
-    <meta itemprop="description" content="문제쿼드트리주어진 영상이 0으로만 이루어져 있다면 결과는 0이 되고 혹은 그 반대면 결과가 1이 된다.  만약 0과 1이 섞여 있으면 전체를 한번에 나타내지 못하고 4개의 영역으로 나누어 각 영역을 압축한 결과를 차례로 괄호 안에서 묶어서 표현한다.풀이분할 정복 알고리즘을 사용하여 해결할 수 있다.  분할 정복은 재귀적으로 큰 문제를 하위 문제로 쪼개어 하위 문제를 해결하고 모아서 상위 문제를 해결하는 방식이다.  2차원 배열을 같은 숫자로 구성된 4등분 단위로 압축 및 재귀적으로 처리하여 괄호로 묶는다. Stack으로도 구현 가능하다./*┌───┬───┐│ 1 │ 2 │├───┼───┤│ 3 │ 4 │└───┴───┘*/let n = Int(readLine()!)!var graph: [[String]] = []for _ in 0..&lt;n {    let row = readLine()!.map { String($0) }    graph.append(row)}// 분할정복 함수 - (y, x) 위치에서 size 크기의 정사각형 영역 처리func go(_ y: Int, _ x: Int, _ size: Int) -&gt; String {    let base = graph[y][x]    var ret = &quot;&quot;    for row in y..&lt;y+size {        for col in x..&lt;x+size {            // 입력 조건이 2^k 이므로 0이하로 들어올 가능성이 없기 때문에 기저 사례 필요 x            if size == 1 { return graph[y][x] }            // 하나라도 값이 다르다면 4분할하여 재귀적으로 검사            if base != graph[row][col] {                ret += &quot;(&quot;                ret += go(y, x, size/2)                ret += go(y, x+size/2, size/2)                ret += go(y+size/2, x, size/2)                ret += go(y+size/2, x+size/2, size/2)                ret += &quot;)&quot;                return ret            }        }    }    // 모두 같은 값이면 해당 값 반환    return base}// (0, 0)부터 분할정복 시작print(go(0, 0, n))">
-    <meta itemprop="datePublished" content="2025-05-21T00:00:00+00:00">
-    
-
-    <div class="page__inner-wrap">
-      
-        <header>
-          <h1 id="page-title" class="page__title p-name" itemprop="headline">
-            <a href="http://localhost:4000/Baekjoon-1992/" class="u-url" itemprop="url">[Baekjoon] 백준 1992 쿼드트리
-</a>
-          </h1>
-          <footer class="page__meta">
-            
-  
-
-
-
-  <p class="page__taxonomy">
-    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
-    <span class="archive__item-tags">
-    
-    
-    
-      <a class="posttag tagged" href="/posts/?tag=Baekjoon">Baekjoon</a>
-    
-    
-    </span>  
-  </p>
-
-
-
-<!--  -->
-            
-
-  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-05-21T00:00:00+00:00">May 21, 2025</time></p>
-
-          </footer>
-        </header>
-      
-
-      <section class="page__content e-content" itemprop="text">
-        
-        <!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h2 id="문제">문제</h2>
-<p><a href="https://www.acmicpc.net/problem/1992">쿼드트리</a></p>
-
-<p><img src="/assets/img/2025-05-21-%5BBaekjoon%5D-1992/image-20250521124353945.png" alt="이미지" width="100%" /><br />
-주어진 영상이 0으로만 이루어져 있다면 결과는 0이 되고 혹은 그 반대면 결과가 1이 된다.  <br />
-만약 0과 1이 섞여 있으면 전체를 한번에 나타내지 못하고 4개의 영역으로 나누어 각 영역을 압축한 결과를 차례로 괄호 안에서 묶어서 표현한다.</p>
-
-<h2 id="풀이">풀이</h2>
-<p>분할 정복 알고리즘을 사용하여 해결할 수 있다.  <br />
-분할 정복은 재귀적으로 큰 문제를 하위 문제로 쪼개어 하위 문제를 해결하고 모아서 상위 문제를 해결하는 방식이다.  <br />
-2차원 배열을 같은 숫자로 구성된 4등분 단위로 압축 및 재귀적으로 처리하여 괄호로 묶는다. Stack으로도 구현 가능하다.</p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
-┌───┬───┐
-│ 1 │ 2 │
-├───┼───┤
-│ 3 │ 4 │
-└───┴───┘
-*/</span>
-<span class="k">let</span> <span class="nv">n</span> <span class="o">=</span> <span class="kt">Int</span><span class="p">(</span><span class="nf">readLine</span><span class="p">()</span><span class="o">!</span><span class="p">)</span><span class="o">!</span>
-<span class="k">var</span> <span class="nv">graph</span><span class="p">:</span> <span class="p">[[</span><span class="kt">String</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
-
-<span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mi">0</span><span class="o">..&lt;</span><span class="n">n</span> <span class="p">{</span>
-    <span class="k">let</span> <span class="nv">row</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span><span class="o">!.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span>
-    <span class="n">graph</span><span class="o">.</span><span class="nf">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="c1">// 분할정복 함수 - (y, x) 위치에서 size 크기의 정사각형 영역 처리</span>
-<span class="kd">func</span> <span class="nf">go</span><span class="p">(</span><span class="n">_</span> <span class="nv">y</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="n">_</span> <span class="nv">x</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="n">_</span> <span class="nv">size</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span> <span class="p">{</span>
-    <span class="k">let</span> <span class="nv">base</span> <span class="o">=</span> <span class="n">graph</span><span class="p">[</span><span class="n">y</span><span class="p">][</span><span class="n">x</span><span class="p">]</span>
-    <span class="k">var</span> <span class="nv">ret</span> <span class="o">=</span> <span class="s">""</span>
-
-    <span class="k">for</span> <span class="n">row</span> <span class="k">in</span> <span class="n">y</span><span class="o">..&lt;</span><span class="n">y</span><span class="o">+</span><span class="n">size</span> <span class="p">{</span>
-        <span class="k">for</span> <span class="n">col</span> <span class="k">in</span> <span class="n">x</span><span class="o">..&lt;</span><span class="n">x</span><span class="o">+</span><span class="n">size</span> <span class="p">{</span>
-            <span class="c1">// 입력 조건이 2^k 이므로 0이하로 들어올 가능성이 없기 때문에 기저 사례 필요 x</span>
-            <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span> <span class="k">return</span> <span class="n">graph</span><span class="p">[</span><span class="n">y</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="p">}</span>
-
-            <span class="c1">// 하나라도 값이 다르다면 4분할하여 재귀적으로 검사</span>
-            <span class="k">if</span> <span class="n">base</span> <span class="o">!=</span> <span class="n">graph</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="p">{</span>
-                <span class="n">ret</span> <span class="o">+=</span> <span class="s">"("</span>
-                <span class="n">ret</span> <span class="o">+=</span> <span class="nf">go</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">size</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
-                <span class="n">ret</span> <span class="o">+=</span> <span class="nf">go</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">+</span><span class="n">size</span><span class="sr">/2, size/</span><span class="mi">2</span><span class="p">)</span>
-                <span class="n">ret</span> <span class="o">+=</span> <span class="nf">go</span><span class="p">(</span><span class="n">y</span><span class="o">+</span><span class="n">size</span><span class="sr">/2, x, size/</span><span class="mi">2</span><span class="p">)</span>
-                <span class="n">ret</span> <span class="o">+=</span> <span class="nf">go</span><span class="p">(</span><span class="n">y</span><span class="o">+</span><span class="n">size</span><span class="sr">/2, x+size/2, size/</span><span class="mi">2</span><span class="p">)</span>
-                <span class="n">ret</span> <span class="o">+=</span> <span class="s">")"</span>
-                <span class="k">return</span> <span class="n">ret</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="c1">// 모두 같은 값이면 해당 값 반환</span>
-    <span class="k">return</span> <span class="n">base</span>
-<span class="p">}</span>
-
-<span class="c1">// (0, 0)부터 분할정복 시작</span>
-<span class="nf">print</span><span class="p">(</span><span class="nf">go</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
-</code></pre></div></div>
-
-        
-      </section>
-
-      
-
-      
-  <nav class="pagination">
-    
-      <a href="/Docker-code-server/" class="pagination--pager" title="[Docker] code-server
-">Previous</a>
-    
-    
-      <a href="/Baekjoon-2828/" class="pagination--pager" title="[Baekjoon] 백준 2828 사과 담기 게임
-">Next</a>
-    
-  </nav>
-
+    <!--Content before waves-->
+    <div class="inner-header flex">
+    <!--Just the logo.. Don't mind this-->
+      <h1>DongHyeon Kim's Blog</h1>
+      <h2>Swift를 공부하고 있는 대학생 블로그입니다.</h2>
+      <div class="button-container">
+        <div class='button -regular center'>
+          <a href="/about/" style="color: #161616;">About Me</a>
+        </div>
+      </div>
     </div>
-
     
-  </article>
-
-  
-  
+    <!--Waves Container-->
+    <div>
+    <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+    viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+    <defs>
+    <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+    </defs>
+    <g class="parallax">
+    <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.7)" />
+    <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.5)" />
+    <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.3)" />
+    <use xlink:href="#gentle-wave" x="48" y="7" fill="#fff" />
+    </g>
+    </svg>
+    </div>
+    <!--Waves end-->
+    
 </div>
 
+<!-- popular post -->
+
+<h1 class="index-title">Popular Posts</h1>
+
+
+
+<div class="blog-slider">
+    <div class="blog-slider__wrp swiper-wrapper">
+
+    
+    
+
+    
+
+      <div class="blog-slider__item swiper-slide">
+        <div class="blog-slider__img">
+          
+          <img src="/assets/img/2025-03-25-%5BRxSwift%5D-RxSwift-1/image.png" alt="">
+        </div>
+        <div class="blog-slider__content">
+          <span class="blog-slider__code">Mar 25, 2025</span>
+          <div class="blog-slider__title">[ReactiveX] 1. 반응형 프로그래밍이란?</div>
+          <div class="blog-slider__text">
+
+1. 반응형 프로그래밍이란?
+데이터의 흐름 및 변경사항을 전파하는 데 중점을 둔 프로그래밍 패러다임이다.   
+이 패러다임을 사용할 경우, 주변 환경/데이터 변화가 생길 때 연결된 실행 모델들이 이 이벤트를 받아 동작하도록 ...</div>
+          <a href="/ReactiveX-ReactiveX-1/" class="blog-slider__button">READ MORE</a>
+        </div>
+      </div>
+    
+    
+
+    
+
+      <div class="blog-slider__item swiper-slide">
+        <div class="blog-slider__img">
+          
+          <img src="/assets/img/Combine/Combine.png" alt="">
+        </div>
+        <div class="blog-slider__content">
+          <span class="blog-slider__code">Aug 22, 2024</span>
+          <div class="blog-slider__title">[Combine] 개념 및 예제</div>
+          <div class="blog-slider__text">
+
+Combine이란
+2019년에 Apple에서 출시한 비동기처리 이벤트를 처리하기 위한 first-party 프레임워크이다.  
+Combine은 앱 내에서 일어나는 이벤트들의 진행 결과 등을 선언적으로 코딩할 수 있게끔 도와준...</div>
+          <a href="/Combine-Framework/" class="blog-slider__button">READ MORE</a>
+        </div>
+      </div>
+    
+    </div>
+    <div class="blog-slider__pagination"></div>
+</div>
+
+<script src="/assets/js/swiper-bundle.min.js"></script>
+<link rel="stylesheet" href="/assets/css/swiper-bundle.min.css">
+<script>
+
+    var swiper = new Swiper('.blog-slider', {
+      spaceBetween: 30,
+      effect: 'fade',
+      loop: true,
+      mousewheel: {
+        invert: false,
+      },
+      // autoHeight: true,
+      pagination: {
+        el: '.blog-slider__pagination',
+        clickable: true,
+      }
+    });
+</script>
+
+
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/index.css">
     </div>
 
     
@@ -584,38 +563,6 @@ checkbox.addEventListener('change', function() {
 <script src="/assets/js/lunr/lunr-store.js"></script>
 <script src="/assets/js/lunr/lunr-en.js"></script>
 
-
-
-    <script>
-  'use strict';
-
-  var theme = localStorage.getItem('theme');
-
-  (function() {
-    var commentContainer = document.querySelector('#utterances-comments');
-
-    if (!commentContainer) {
-      return;
-    }
-
-    var script = document.createElement('script');
-    script.setAttribute('src', 'https://utteranc.es/client.js');
-    script.setAttribute('repo', 'indextrown/indextrown.github.io');
-    script.setAttribute('issue-term', 'pathname');
-    
-
-    if (theme === 'dark') {
-      script.setAttribute('theme', 'github-dark');
-    } else {
-      script.setAttribute('theme', 'github-light');
-    }
-    script.setAttribute('crossorigin', 'anonymous');
-
-    commentContainer.appendChild(script);
-  })();
-</script>
-
-  
 
 
 

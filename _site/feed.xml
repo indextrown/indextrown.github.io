@@ -1,4 +1,308 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-05-21T03:44:54+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[Baekjoon] 백준 1992 쿼드트리</title><link href="http://localhost:4000/Baekjoon-1992/" rel="alternate" type="text/html" title="[Baekjoon] 백준 1992 쿼드트리" /><published>2025-05-21T00:00:00+00:00</published><updated>2025-05-21T00:00:00+00:00</updated><id>http://localhost:4000/%5BBaekjoon%5D-1992</id><content type="html" xml:base="http://localhost:4000/Baekjoon-1992/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-05-22T15:28:21+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[UIKit] iOS 푸시알림 FCM, APNS 이게 뭔데?</title><link href="http://localhost:4000/UIKit-FCM/" rel="alternate" type="text/html" title="[UIKit] iOS 푸시알림 FCM, APNS 이게 뭔데?" /><published>2025-05-22T00:00:00+00:00</published><updated>2025-05-22T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-FCM</id><content type="html" xml:base="http://localhost:4000/UIKit-FCM/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h2 id="ios-푸시알림-fcm-apns-이게-뭔데">iOS 푸시알림 FCM, APNS 이게 뭔데?</h2>
+
+<p>iOS에서 푸시 종류는 2가지가 있다.</p>
+
+<ol>
+  <li>로컬에서 직접 보내는 알림</li>
+  <li>서버에서 보내는 알림
+    <ul>
+      <li>서버에서 보내는 APNS(Apple Push Notification Service)</li>
+      <li>
+        <p>FCM(Firebase Cloud Messaging) -&gt; 이번 포스팅에서는 FCM을 활용한 2번 방식을 진행할 예정이다.</p>
+
+        <p>​</p>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="apns-란">APNS 란?</h2>
+
+<p><strong>APNS (Apple Push Notification Service)</strong> 는  <br />
+iOS의 모든 원격 알림이 반드시 거쳐야 하는 <strong>애플 공식 푸시 전달 서버</strong>이다..</p>
+
+<p>즉, 푸시 메시지를 <strong>내가 직접 사용자 기기로 보내는 게 아니라</strong>  <br />
+→ <strong>APNS에 요청</strong>  <br />
+→ <strong>APNS가 사용자 기기로 전송</strong>  <br />
+하는 방식이다.</p>
+
+<hr />
+
+<h2 id="fcm-란">FCM 란?</h2>
+
+<p><strong>FCM은 Google에서 제공하는 클라우드 기반 메시징 서비스</strong>로,<br />
+iOS의 APNS를 포함해 Android, Web 등 다양한 플랫폼에 푸시 메시지를 전송할 수 있도록 <strong>중간 서버 역할</strong>을 해준다.<br />
+iOS에서 FCM을 통해 푸시 알림을 보내면, FCM 내부적으로 APNS를 거쳐서 사용자 기기에 도달한다.</p>
+
+<h4 id="fcm이-apns-대신-해주는-것들">FCM이 APNS 대신 해주는 것들</h4>
+
+<ul>
+  <li>애플 인증서 등록 및 관리</li>
+  <li>APNS에 메시지 전송 요청</li>
+  <li>안드로이드, iOS 둘 다 지원 (멀티 플랫폼)</li>
+  <li>클라우드 환경에서 손쉽게 운영</li>
+</ul>
+
+<h3 id="왜-fcm을-쓰는가">왜 FCM을 쓰는가?</h3>
+
+<ul>
+  <li>APNS 서버 직접 구축이 <strong>복잡하고 부담스러울 때</strong></li>
+  <li><strong>iOS &amp; Android를 동시에 지원</strong>하는 일관된 환경이 필요할 때</li>
+  <li>푸시 알림 시스템을 <strong>빠르게 구축</strong>하고 싶을 때</li>
+  <li><strong>Firebase Analytics</strong>, <strong>A/B 테스트</strong> 같은 연계 기능을 활용할 때</li>
+</ul>
+
+<hr />
+
+<h2 id="푸시-알림의-기본-동작-흐름">푸시 알림의 기본 동작 흐름</h2>
+
+<ol>
+  <li><strong>앱이 APNS에 Device Token 요청</strong>
+    <ul>
+      <li>이 토큰은 <strong>앱이 설치된 기기의 주소 역할</strong>을 한다.</li>
+    </ul>
+  </li>
+  <li><strong>APNS가 앱에게 Device Token 전달</strong></li>
+  <li><strong>앱이 Device Token을 푸시 서버(FCM 등)에 전달</strong>
+    <ul>
+      <li>이 서버가 실제 푸시 메시지를 보낼 주체이다.</li>
+    </ul>
+  </li>
+</ol>
+
+<hr />
+
+<h2 id="apns를-통한-푸시-알림-동작-구조">APNS를 통한 푸시 알림 동작 구조</h2>
+
+<ol>
+  <li>푸시 서버(예: FCM)가 메시지와 Device Token을 APNS에 전송
+    <ul>
+      <li>이때 APNS와 푸시 서버는 <strong>TLS 인증</strong>으로 보안 통신</li>
+      <li>서버에는 <strong>APNS 인증 정보(p8 키 or 인증서)</strong>가 등록되어 있어야 함</li>
+    </ul>
+  </li>
+  <li>APNS는 해당 디바이스로 푸시 메시지를 전송</li>
+  <li>디바이스에서 푸시 알림 수신</li>
+</ol>
+
+<hr />
+
+<h2 id="실습">실습</h2>
+
+<p><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250522235833599.png" alt="이미지" width="100%" /><br />
+identifiers에서 해당 프로젝트 누른 후 push notification 체크박스 체크 해준다.</p>
+
+<p><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250523000005112.png" alt="이미지" width="100%" /><br />
+keys에서 키를 발급 해준다. 완료하면 Download버튼이 생긴다 이를 통해 p8파일을 다운로드 한다.</p>
+
+<p><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250523000727014.png" alt="이미지" width="100%" /><br />
+firebase 프로젝트 -&gt; 프로젝트 설정 -&gt; 클라우드 메시징에서 APNS인증키를 등록해준다.</p>
+
+<p><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250523000908524.png" alt="이미지" width="30%" /><br />
+업로드를 눌러서 완료한다.</p>
+
+<table>
+  <tr>
+    <td><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250523001147940.png" alt="커스텀셀1" width="100%" /></td>
+    <td><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250523001324675.png" alt="커스텀셀" width="100%" /></td>
+  </tr>
+  <tr>
+    <td style="text-align:center;">Push Notifications</td>
+    <td style="text-align:center;">Background Modes</td>
+  </tr>
+</table>
+<p>xcode -&gt; target -&gt; Push Notifications, Background Mode 추가한다.</p>
+
+<p><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250523001739843.png" alt="이미지" width="100%" /><br />
+Remote Notifications 체크해준다.</p>
+
+<hr />
+
+<h2 id="appdelegateswift">AppDelegate.swift</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+<span class="kd">import</span> <span class="kt">FirebaseCore</span>
+<span class="kd">import</span> <span class="kt">FirebaseMessaging</span>
+<span class="kd">import</span> <span class="kt">UserNotifications</span>
+
+<span class="kd">@main</span>
+<span class="kd">class</span> <span class="kt">AppDelegate</span><span class="p">:</span> <span class="kt">UIResponder</span><span class="p">,</span> <span class="kt">UIApplicationDelegate</span> <span class="p">{</span>
+    
+    <span class="kd">func</span> <span class="nf">application</span><span class="p">(</span><span class="n">_</span> <span class="nv">application</span><span class="p">:</span> <span class="kt">UIApplication</span><span class="p">,</span>
+                     <span class="n">didFinishLaunchingWithOptions</span> <span class="nv">launchOptions</span><span class="p">:</span> <span class="p">[</span><span class="kt">UIApplication</span><span class="o">.</span><span class="kt">LaunchOptionsKey</span><span class="p">:</span> <span class="kt">Any</span><span class="p">]?)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
+        
+        <span class="c1">// Firebase 초기화</span>
+        <span class="kt">FirebaseApp</span><span class="o">.</span><span class="nf">configure</span><span class="p">()</span>
+        
+        <span class="c1">// 알림 권한 요청</span>
+        <span class="kt">UNUserNotificationCenter</span><span class="o">.</span><span class="nf">current</span><span class="p">()</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
+        <span class="kt">UNUserNotificationCenter</span><span class="o">.</span><span class="nf">current</span><span class="p">()</span><span class="o">.</span><span class="nf">requestAuthorization</span><span class="p">(</span>
+            <span class="nv">options</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="n">alert</span><span class="p">,</span> <span class="o">.</span><span class="n">badge</span><span class="p">,</span> <span class="o">.</span><span class="n">sound</span><span class="p">]</span>
+        <span class="p">)</span> <span class="p">{</span> <span class="n">granted</span><span class="p">,</span> <span class="n">error</span> <span class="k">in</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"✅ 알림 권한 요청 결과: </span><span class="se">\(</span><span class="n">granted</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">granted</span> <span class="p">{</span>
+                <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="k">async</span> <span class="p">{</span>
+                    <span class="kt">UIApplication</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">registerForRemoteNotifications</span><span class="p">()</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        
+        <span class="c1">// FCM 설정</span>
+        <span class="kt">Messaging</span><span class="o">.</span><span class="nf">messaging</span><span class="p">()</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
+        
+        <span class="k">return</span> <span class="kc">true</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">AppDelegate</span><span class="p">:</span> <span class="kt">UNUserNotificationCenterDelegate</span> <span class="p">{</span>
+    
+    <span class="c1">// APNs로부터 device token 받았을 때 FCM에 등록</span>
+    <span class="kd">func</span> <span class="nf">application</span><span class="p">(</span><span class="n">_</span> <span class="nv">application</span><span class="p">:</span> <span class="kt">UIApplication</span><span class="p">,</span>
+                     <span class="n">didRegisterForRemoteNotificationsWithDeviceToken</span> <span class="nv">deviceToken</span><span class="p">:</span> <span class="kt">Data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"📮 APNS Token 수신: </span><span class="se">\(</span><span class="n">deviceToken</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+        <span class="kt">Messaging</span><span class="o">.</span><span class="nf">messaging</span><span class="p">()</span><span class="o">.</span><span class="n">apnsToken</span> <span class="o">=</span> <span class="n">deviceToken</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 앱이 실행 중일 때 알림 수신 (배너로 표시되게 설정)</span>
+    <span class="kd">func</span> <span class="nf">userNotificationCenter</span><span class="p">(</span><span class="n">_</span> <span class="nv">center</span><span class="p">:</span> <span class="kt">UNUserNotificationCenter</span><span class="p">,</span>
+                                <span class="n">willPresent</span> <span class="nv">notification</span><span class="p">:</span> <span class="kt">UNNotification</span><span class="p">,</span>
+                                <span class="n">withCompletionHandler</span> <span class="nv">completionHandler</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">UNNotificationPresentationOptions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">completionHandler</span><span class="p">([</span><span class="o">.</span><span class="n">list</span><span class="p">,</span> <span class="o">.</span><span class="n">banner</span><span class="p">,</span> <span class="o">.</span><span class="n">sound</span><span class="p">])</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">AppDelegate</span><span class="p">:</span> <span class="kt">MessagingDelegate</span> <span class="p">{</span>
+    
+    <span class="c1">// FCM 토큰 갱신될 때 호출</span>
+    <span class="kd">func</span> <span class="nf">messaging</span><span class="p">(</span><span class="n">_</span> <span class="nv">messaging</span><span class="p">:</span> <span class="kt">Messaging</span><span class="p">,</span> <span class="n">didReceiveRegistrationToken</span> <span class="nv">fcmToken</span><span class="p">:</span> <span class="kt">String</span><span class="p">?)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"📌 FCM Token: </span><span class="se">\(</span><span class="n">fcmToken</span> <span class="p">??</span> <span class="s">"nil"</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="c1">// 필요 시 NotificationCenter로 다른 컴포넌트에 전달</span>
+        <span class="kt">NotificationCenter</span><span class="o">.</span><span class="k">default</span><span class="o">.</span><span class="nf">post</span><span class="p">(</span>
+            <span class="nv">name</span><span class="p">:</span> <span class="kt">Notification</span><span class="o">.</span><span class="kt">Name</span><span class="p">(</span><span class="s">"FCMToken"</span><span class="p">),</span>
+            <span class="nv">object</span><span class="p">:</span> <span class="kc">nil</span><span class="p">,</span>
+            <span class="nv">userInfo</span><span class="p">:</span> <span class="p">[</span><span class="s">"token"</span><span class="p">:</span> <span class="n">fcmToken</span> <span class="p">??</span> <span class="s">""</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+</code></pre></div></div>
+
+<ul>
+  <li>빌드하면 나오는 FCM을 복사한다.</li>
+</ul>
+
+<p>FCM.py</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">firebase_admin</span>
+<span class="kn">from</span> <span class="n">firebase_admin</span> <span class="kn">import</span> <span class="n">credentials</span><span class="p">,</span> <span class="n">messaging</span>
+
+<span class="c1"># 1. 서비스 계정 키 경로 (.json)
+</span><span class="n">cred</span> <span class="o">=</span> <span class="n">credentials</span><span class="p">.</span><span class="nc">Certificate</span><span class="p">(</span><span class="sh">"</span><span class="s">파이어베이스 설정 -&gt; 서비스 계정 -&gt; 새 비공키 키 생성시 .json파일 다운 가능 -&gt; 해당 경로 입력</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">firebase_admin</span><span class="p">.</span><span class="nf">initialize_app</span><span class="p">(</span><span class="n">cred</span><span class="p">)</span>
+
+<span class="c1"># 2. 대상 유저의 FCM 토큰
+</span><span class="n">fcm_token</span> <span class="o">=</span> <span class="sh">"</span><span class="s">빌드하면 나오는 FCM 입력</span><span class="sh">"</span>
+
+<span class="c1"># 3. 전송할 메시지
+</span><span class="n">title</span> <span class="o">=</span> <span class="sh">"</span><span class="s">새 댓글이 달렸어요!</span><span class="sh">"</span>
+<span class="n">body</span> <span class="o">=</span> <span class="sh">"</span><span class="s">당신의 게시글에 누군가 댓글을 남겼습니다.</span><span class="sh">"</span>
+
+<span class="c1"># 4. 알림 메시지 구성
+</span><span class="n">message</span> <span class="o">=</span> <span class="n">messaging</span><span class="p">.</span><span class="nc">Message</span><span class="p">(</span>
+    <span class="n">token</span><span class="o">=</span><span class="n">fcm_token</span><span class="p">,</span>
+    <span class="n">notification</span><span class="o">=</span><span class="n">messaging</span><span class="p">.</span><span class="nc">Notification</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+        <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># 5. 메시지 전송
+</span><span class="k">try</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">messaging</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">✅ 메시지 전송 성공:</span><span class="sh">"</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+<span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">❌ 메시지 전송 실패:</span><span class="sh">"</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+</code></pre></div></div>
+
+<table>
+  <tr>
+    <td><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250523002353948.png" alt="커스텀셀1" width="100%" /></td>
+    <td><img src="/assets/img/2025-05-22-%5BUIKit%5D-FCM/image-20250523002621503.png" alt="커스텀셀" width="100%" /></td>
+  </tr>
+  <tr>
+    <td style="text-align:center;">앱이 종료되어있을 때</td>
+    <td style="text-align:center;">앱 실행중일 때</td>
+  </tr>
+</table>
+
+<h2 id="reference">Reference</h2>
+
+<ul>
+  <li>
+    <p>https://bannavi.tistory.com/558</p>
+
+    <p>​</p>
+  </li>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><summary type="html"><![CDATA[iOS 푸시알림 FCM, APNS 이게 뭔데? iOS에서 푸시 종류는 2가지가 있다. 로컬에서 직접 보내는 알림 서버에서 보내는 알림 서버에서 보내는 APNS(Apple Push Notification Service) FCM(Firebase Cloud Messaging) -&gt; 이번 포스팅에서는 FCM을 활용한 2번 방식을 진행할 예정이다. ​ APNS 란? APNS (Apple Push Notification Service) 는 iOS의 모든 원격 알림이 반드시 거쳐야 하는 애플 공식 푸시 전달 서버이다.. 즉, 푸시 메시지를 내가 직접 사용자 기기로 보내는 게 아니라 → APNS에 요청 → APNS가 사용자 기기로 전송 하는 방식이다. FCM 란? FCM은 Google에서 제공하는 클라우드 기반 메시징 서비스로, iOS의 APNS를 포함해 Android, Web 등 다양한 플랫폼에 푸시 메시지를 전송할 수 있도록 중간 서버 역할을 해준다. iOS에서 FCM을 통해 푸시 알림을 보내면, FCM 내부적으로 APNS를 거쳐서 사용자 기기에 도달한다. FCM이 APNS 대신 해주는 것들 애플 인증서 등록 및 관리 APNS에 메시지 전송 요청 안드로이드, iOS 둘 다 지원 (멀티 플랫폼) 클라우드 환경에서 손쉽게 운영 왜 FCM을 쓰는가? APNS 서버 직접 구축이 복잡하고 부담스러울 때 iOS &amp; Android를 동시에 지원하는 일관된 환경이 필요할 때 푸시 알림 시스템을 빠르게 구축하고 싶을 때 Firebase Analytics, A/B 테스트 같은 연계 기능을 활용할 때 푸시 알림의 기본 동작 흐름 앱이 APNS에 Device Token 요청 이 토큰은 앱이 설치된 기기의 주소 역할을 한다. APNS가 앱에게 Device Token 전달 앱이 Device Token을 푸시 서버(FCM 등)에 전달 이 서버가 실제 푸시 메시지를 보낼 주체이다. APNS를 통한 푸시 알림 동작 구조 푸시 서버(예: FCM)가 메시지와 Device Token을 APNS에 전송 이때 APNS와 푸시 서버는 TLS 인증으로 보안 통신 서버에는 APNS 인증 정보(p8 키 or 인증서)가 등록되어 있어야 함 APNS는 해당 디바이스로 푸시 메시지를 전송 디바이스에서 푸시 알림 수신 실습 identifiers에서 해당 프로젝트 누른 후 push notification 체크박스 체크 해준다. keys에서 키를 발급 해준다. 완료하면 Download버튼이 생긴다 이를 통해 p8파일을 다운로드 한다. firebase 프로젝트 -&gt; 프로젝트 설정 -&gt; 클라우드 메시징에서 APNS인증키를 등록해준다. 업로드를 눌러서 완료한다. Push Notifications Background Modes xcode -&gt; target -&gt; Push Notifications, Background Mode 추가한다. Remote Notifications 체크해준다. AppDelegate.swift import UIKit import FirebaseCore import FirebaseMessaging import UserNotifications @main class AppDelegate: UIResponder, UIApplicationDelegate { func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -&gt; Bool { // Firebase 초기화 FirebaseApp.configure() // 알림 권한 요청 UNUserNotificationCenter.current().delegate = self UNUserNotificationCenter.current().requestAuthorization( options: [.alert, .badge, .sound] ) { granted, error in print("✅ 알림 권한 요청 결과: \(granted)") if granted { DispatchQueue.main.async { UIApplication.shared.registerForRemoteNotifications() } } } // FCM 설정 Messaging.messaging().delegate = self return true } } extension AppDelegate: UNUserNotificationCenterDelegate { // APNs로부터 device token 받았을 때 FCM에 등록 func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) { print("📮 APNS Token 수신: \(deviceToken)") Messaging.messaging().apnsToken = deviceToken } // 앱이 실행 중일 때 알림 수신 (배너로 표시되게 설정) func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -&gt; Void) { completionHandler([.list, .banner, .sound]) } } extension AppDelegate: MessagingDelegate { // FCM 토큰 갱신될 때 호출 func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) { print("📌 FCM Token: \(fcmToken ?? "nil")") // 필요 시 NotificationCenter로 다른 컴포넌트에 전달 NotificationCenter.default.post( name: Notification.Name("FCMToken"), object: nil, userInfo: ["token": fcmToken ?? ""] ) } } 빌드하면 나오는 FCM을 복사한다. FCM.py import firebase_admin from firebase_admin import credentials, messaging # 1. 서비스 계정 키 경로 (.json) cred = credentials.Certificate("파이어베이스 설정 -&gt; 서비스 계정 -&gt; 새 비공키 키 생성시 .json파일 다운 가능 -&gt; 해당 경로 입력") firebase_admin.initialize_app(cred) # 2. 대상 유저의 FCM 토큰 fcm_token = "빌드하면 나오는 FCM 입력" # 3. 전송할 메시지 title = "새 댓글이 달렸어요!" body = "당신의 게시글에 누군가 댓글을 남겼습니다." # 4. 알림 메시지 구성 message = messaging.Message( token=fcm_token, notification=messaging.Notification( title=title, body=body, ) ) # 5. 메시지 전송 try: response = messaging.send(message) print("✅ 메시지 전송 성공:", response) except Exception as e: print("❌ 메시지 전송 실패:", e) 앱이 종료되어있을 때 앱 실행중일 때 Reference https://bannavi.tistory.com/558 ​]]></summary></entry><entry><title type="html">[Baekjoon] 백준 2828 사과 담기 게임</title><link href="http://localhost:4000/Baekjoon-2828/" rel="alternate" type="text/html" title="[Baekjoon] 백준 2828 사과 담기 게임" /><published>2025-05-22T00:00:00+00:00</published><updated>2025-05-22T00:00:00+00:00</updated><id>http://localhost:4000/%5BBaekjoon%5D-2828</id><content type="html" xml:base="http://localhost:4000/Baekjoon-2828/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h2 id="문제">문제</h2>
+<p><a href="https://www.acmicpc.net/problem/2828">사과 담기 게임</a></p>
+
+<p><img src="/assets/img/2025-05-22-%5BBaekjoon%5D-2828/image-20250522131128824.png" alt="이미지" width="100%" /><br />
+스크린 위에서 사과 여러개가 떨어질 때 바구니로 사과를 담기 위한 이동거리의 최솟값을 구하라</p>
+
+<h2 id="풀이">풀이</h2>
+<p>시작지점을 left와 right를 방정식으로 나타낼 수 있다.<br />
+left = 1<br />
+right = left + m - 1</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+ 5 1
+ 3
+ 1
+ 5
+ 3
+ */</span>
+
+<span class="k">let</span> <span class="nv">input</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span><span class="o">!.</span><span class="nf">split</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">Int</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span><span class="o">!</span> <span class="p">}</span>
+<span class="k">let</span> <span class="nv">n</span> <span class="o">=</span> <span class="n">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>          <span class="c1">// screen</span>
+<span class="k">let</span> <span class="nv">m</span> <span class="o">=</span> <span class="n">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>          <span class="c1">// basket</span>
+<span class="k">let</span> <span class="nv">j</span> <span class="o">=</span> <span class="kt">Int</span><span class="p">(</span><span class="nf">readLine</span><span class="p">()</span><span class="o">!</span><span class="p">)</span><span class="o">!</span> <span class="c1">// count</span>
+
+<span class="k">var</span> <span class="nv">left</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">var</span> <span class="nv">right</span> <span class="o">=</span> <span class="k">left</span> <span class="o">+</span> <span class="n">m</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1">// 그냉 m으로 해도 된다</span>
+<span class="k">var</span> <span class="nv">totalMove</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mi">0</span><span class="o">..&lt;</span><span class="n">j</span> <span class="p">{</span>
+    <span class="c1">// 사과가 떨어지는 위치</span>
+    <span class="k">let</span> <span class="nv">pos</span> <span class="o">=</span> <span class="kt">Int</span><span class="p">(</span><span class="nf">readLine</span><span class="p">()</span><span class="o">!</span><span class="p">)</span><span class="o">!</span>
+    
+    <span class="c1">// 사과의 위치가 이미 바구니가 있는 위치이면 아래 바구니 이동 로직을 무시</span>
+    <span class="k">if</span> <span class="n">pos</span> <span class="o">&gt;=</span> <span class="k">left</span> <span class="o">&amp;&amp;</span> <span class="n">pos</span> <span class="o">&lt;=</span> <span class="k">right</span> <span class="p">{</span> <span class="k">continue</span> <span class="p">}</span>
+   
+    <span class="c1">// 포지션이 바구니 안에 있으면 이동 안함</span>
+    <span class="k">if</span> <span class="n">pos</span> <span class="o">&lt;</span> <span class="k">left</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">move</span> <span class="o">=</span> <span class="k">left</span> <span class="o">-</span> <span class="n">pos</span>
+        <span class="k">left</span> <span class="o">-=</span> <span class="n">move</span>
+        <span class="k">right</span> <span class="o">-=</span> <span class="n">move</span>
+        <span class="n">totalMove</span> <span class="o">+=</span> <span class="n">move</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">pos</span> <span class="o">&gt;</span> <span class="k">right</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">move</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">-</span> <span class="k">right</span>
+        <span class="k">right</span> <span class="o">+=</span> <span class="n">move</span>
+        <span class="k">left</span> <span class="o">+=</span> <span class="n">move</span>
+        <span class="n">totalMove</span> <span class="o">+=</span> <span class="n">move</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="n">totalMove</span><span class="p">)</span>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Baekjoon" /><summary type="html"><![CDATA[문제 사과 담기 게임 스크린 위에서 사과 여러개가 떨어질 때 바구니로 사과를 담기 위한 이동거리의 최솟값을 구하라 풀이 시작지점을 left와 right를 방정식으로 나타낼 수 있다. left = 1 right = left + m - 1 /* 5 1 3 1 5 3 */ let input = readLine()!.split(separator: " ").map { Int($0)! } let n = input[0] // screen let m = input[1] // basket let j = Int(readLine()!)! // count var left = 1 var right = left + m - 1 // 그냉 m으로 해도 된다 var totalMove = 0 for _ in 0..&lt;j { // 사과가 떨어지는 위치 let pos = Int(readLine()!)! // 사과의 위치가 이미 바구니가 있는 위치이면 아래 바구니 이동 로직을 무시 if pos &gt;= left &amp;&amp; pos &lt;= right { continue } // 포지션이 바구니 안에 있으면 이동 안함 if pos &lt; left { let move = left - pos left -= move right -= move totalMove += move } else if pos &gt; right { let move = pos - right right += move left += move totalMove += move } } print(totalMove)]]></summary></entry><entry><title type="html">[Baekjoon] 백준 1992 쿼드트리</title><link href="http://localhost:4000/Baekjoon-1992/" rel="alternate" type="text/html" title="[Baekjoon] 백준 1992 쿼드트리" /><published>2025-05-21T00:00:00+00:00</published><updated>2025-05-21T00:00:00+00:00</updated><id>http://localhost:4000/%5BBaekjoon%5D-1992</id><content type="html" xml:base="http://localhost:4000/Baekjoon-1992/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
 <h2 id="문제">문제</h2>
@@ -10,8 +314,8 @@
 
 <h2 id="풀이">풀이</h2>
 <p>분할 정복 알고리즘을 사용하여 해결할 수 있다.  <br />
-분할 정복은 재귀적으로 큰 문제를 하위 문제로 쪼개어 상위 문제를 해결하는 방식이다.  <br />
-2차원 배열을 같은 숫자로 구성된 4등분 단위로 압축 및 재귀적츠로 처리하여 괄호로 묶는다. Stack으로도 구현 가능하다.</p>
+분할 정복은 재귀적으로 큰 문제를 하위 문제로 쪼개어 하위 문제를 해결하고 모아서 상위 문제를 해결하는 방식이다.  <br />
+2차원 배열을 같은 숫자로 구성된 4등분 단위로 압축 및 재귀적으로 처리하여 괄호로 묶는다. Stack으로도 구현 가능하다.</p>
 
 <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
 ┌───┬───┐
@@ -57,7 +361,7 @@
 
 <span class="c1">// (0, 0)부터 분할정복 시작</span>
 <span class="nf">print</span><span class="p">(</span><span class="nf">go</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Baekjoon" /><summary type="html"><![CDATA[문제 쿼드트리 주어진 영상이 0으로만 이루어져 있다면 결과는 0이 되고 혹은 그 반대면 결과가 1이 된다. 만약 0과 1이 섞여 있으면 전체를 한번에 나타내지 못하고 4개의 영역으로 나누어 각 영역을 압축한 결과를 차례로 괄호 안에서 묶어서 표현한다. 풀이 분할 정복 알고리즘을 사용하여 해결할 수 있다. 분할 정복은 재귀적으로 큰 문제를 하위 문제로 쪼개어 상위 문제를 해결하는 방식이다. 2차원 배열을 같은 숫자로 구성된 4등분 단위로 압축 및 재귀적츠로 처리하여 괄호로 묶는다. Stack으로도 구현 가능하다. /* ┌───┬───┐ │ 1 │ 2 │ ├───┼───┤ │ 3 │ 4 │ └───┴───┘ */ let n = Int(readLine()!)! var graph: [[String]] = [] for _ in 0..&lt;n { let row = readLine()!.map { String($0) } graph.append(row) } // 분할정복 함수 - (y, x) 위치에서 size 크기의 정사각형 영역 처리 func go(_ y: Int, _ x: Int, _ size: Int) -&gt; String { let base = graph[y][x] var ret = "" for row in y..&lt;y+size { for col in x..&lt;x+size { // 입력 조건이 2^k 이므로 0이하로 들어올 가능성이 없기 때문에 기저 사례 필요 x if size == 1 { return graph[y][x] } // 하나라도 값이 다르다면 4분할하여 재귀적으로 검사 if base != graph[row][col] { ret += "(" ret += go(y, x, size/2) ret += go(y, x+size/2, size/2) ret += go(y+size/2, x, size/2) ret += go(y+size/2, x+size/2, size/2) ret += ")" return ret } } } // 모두 같은 값이면 해당 값 반환 return base } // (0, 0)부터 분할정복 시작 print(go(0, 0, n))]]></summary></entry><entry><title type="html">[Docker] code-server</title><link href="http://localhost:4000/Docker-code-server/" rel="alternate" type="text/html" title="[Docker] code-server" /><published>2025-05-19T00:00:00+00:00</published><updated>2025-05-19T00:00:00+00:00</updated><id>http://localhost:4000/%5BDocker%5D-code-server</id><content type="html" xml:base="http://localhost:4000/Docker-code-server/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Baekjoon" /><summary type="html"><![CDATA[문제 쿼드트리 주어진 영상이 0으로만 이루어져 있다면 결과는 0이 되고 혹은 그 반대면 결과가 1이 된다. 만약 0과 1이 섞여 있으면 전체를 한번에 나타내지 못하고 4개의 영역으로 나누어 각 영역을 압축한 결과를 차례로 괄호 안에서 묶어서 표현한다. 풀이 분할 정복 알고리즘을 사용하여 해결할 수 있다. 분할 정복은 재귀적으로 큰 문제를 하위 문제로 쪼개어 하위 문제를 해결하고 모아서 상위 문제를 해결하는 방식이다. 2차원 배열을 같은 숫자로 구성된 4등분 단위로 압축 및 재귀적으로 처리하여 괄호로 묶는다. Stack으로도 구현 가능하다. /* ┌───┬───┐ │ 1 │ 2 │ ├───┼───┤ │ 3 │ 4 │ └───┴───┘ */ let n = Int(readLine()!)! var graph: [[String]] = [] for _ in 0..&lt;n { let row = readLine()!.map { String($0) } graph.append(row) } // 분할정복 함수 - (y, x) 위치에서 size 크기의 정사각형 영역 처리 func go(_ y: Int, _ x: Int, _ size: Int) -&gt; String { let base = graph[y][x] var ret = "" for row in y..&lt;y+size { for col in x..&lt;x+size { // 입력 조건이 2^k 이므로 0이하로 들어올 가능성이 없기 때문에 기저 사례 필요 x if size == 1 { return graph[y][x] } // 하나라도 값이 다르다면 4분할하여 재귀적으로 검사 if base != graph[row][col] { ret += "(" ret += go(y, x, size/2) ret += go(y, x+size/2, size/2) ret += go(y+size/2, x, size/2) ret += go(y+size/2, x+size/2, size/2) ret += ")" return ret } } } // 모두 같은 값이면 해당 값 반환 return base } // (0, 0)부터 분할정복 시작 print(go(0, 0, n))]]></summary></entry><entry><title type="html">[Docker] code-server</title><link href="http://localhost:4000/Docker-code-server/" rel="alternate" type="text/html" title="[Docker] code-server" /><published>2025-05-19T00:00:00+00:00</published><updated>2025-05-19T00:00:00+00:00</updated><id>http://localhost:4000/%5BDocker%5D-code-server</id><content type="html" xml:base="http://localhost:4000/Docker-code-server/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
@@ -168,7 +472,9 @@ curl <span class="nt">-O</span> <span class="s2">"https://download.swift.org/swi
 <span class="c"># 6. swift 실행 확인</span>
 find ~/.local/share/swiftly/toolchains <span class="nt">-name</span> swift <span class="nt">-type</span> f <span class="nt">-executable</span>
 swift <span class="nt">--version</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="UIComponent" /><summary type="html"><![CDATA[# Dockerfile FROM ubuntu:latest # ----- 기본 패키지 설치 ----- RUN apt-get update &amp;&amp; \ apt-get install -y \ curl sudo python3 python3-pip default-jdk \ git wget nano locales \ libpython3.10 libicu-dev libxml2-dev clang \ unzip gnupg2 libcurl4-openssl-dev pkg-config \ &amp;&amp; apt-get clean # ----- 로케일 설정 ----- RUN locale-gen en_US.UTF-8 ENV LANG=en_US.UTF-8 ENV LANGUAGE=en_US:en ENV LC_ALL=en_US.UTF-8 # ----- ARG로 외부에서 변수 받기 ----- ARG USER ARG PASSWORD # ----- 사용자 생성 및 sudo 권한 부여 ----- RUN useradd -m ${USER} &amp;&amp; echo "${USER}:${PASSWORD}" | chpasswd &amp;&amp; adduser ${USER} sudo # ----- code-server 설치 및 작업 디렉토리 생성 ----- ENV WORKINGDIR="/home/${USER}/vscode" RUN curl -fsSL https://code-server.dev/install.sh | sh &amp;&amp; \ mkdir -p ${WORKINGDIR} &amp;&amp; chown -R ${USER}:${USER} ${WORKINGDIR} # ----- 컨테이너 환경변수로도 유지 ----- ENV PASSWORD=${PASSWORD} ENV USER=${USER} # ----- 사용자 전환 ----- USER ${USER} WORKDIR ${WORKINGDIR} # ----- VSCode 확장 설치 ----- RUN code-server --install-extension ms-python.python &amp;&amp; \ code-server --install-extension ms-azuretools.vscode-docker &amp;&amp; \ code-server --install-extension formulahendry.code-runner # ----- 포트 오픈 ----- EXPOSE 8080 # ----- code-server 실행 ----- CMD ["code-server", "--bind-addr", "0.0.0.0:8080", "--auth", "password", "."] # 컨테이너 터미널로 진입 docker exec -it vscode-container bash # 이동 cd /home/ec2-user/.local/share/code-server/User nano settings.json { "code-runner.executorMap": { "python": "python3 -u", "swift": "/home/ec2-user/.local/share/swiftly/bin/swift" }, "code-runner.showExecutionMessage": false, "code-runner.clearPreviousOutput": true } # 저장 ctrl + o enter ctrl x # 나가고 재빌드 exit docker compose up -d --build swift 추가 # 컨테이너 터미널로 진입 docker exec -it vscode-container bash # 1. 기존 swiftly 완전 삭제 rm -rf ~/.local/share/swiftly rm -f ~/swiftly # 2. 필수 패키지 설치 sudo apt-get update sudo apt-get install -y clang libicu-dev wget libpython3-dev # 3. 최신 swiftly 설치 curl -O "https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz" tar zxf "swiftly-$(uname -m).tar.gz" chmod +x swiftly ./swiftly init --quiet-shell-followup --assume-yes # 4. 환경 변수 적용 source ~/.local/share/swiftly/env.sh echo 'source ~/.local/share/swiftly/env.sh' &gt;&gt; ~/.bashrc # 5. Swift 6.1.0 설치 (실제 toolchain 다운로드) ~/.local/share/swiftly/bin/swiftly install 6.1.0 --assume-yes --verify # 6. swift 실행 확인 find ~/.local/share/swiftly/toolchains -name swift -type f -executable swift --version]]></summary></entry><entry><title type="html">[TableView] UITextView vs UITextField</title><link href="http://localhost:4000/UIKit-UItextField-UITextView/" rel="alternate" type="text/html" title="[TableView] UITextView vs UITextField" /><published>2025-05-18T00:00:00+00:00</published><updated>2025-05-18T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-UItextField-UITextView</id><content type="html" xml:base="http://localhost:4000/UIKit-UItextField-UITextView/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="UIComponent" /><summary type="html"><![CDATA[# Dockerfile FROM ubuntu:latest # ----- 기본 패키지 설치 ----- RUN apt-get update &amp;&amp; \ apt-get install -y \ curl sudo python3 python3-pip default-jdk \ git wget nano locales \ libpython3.10 libicu-dev libxml2-dev clang \ unzip gnupg2 libcurl4-openssl-dev pkg-config \ &amp;&amp; apt-get clean # ----- 로케일 설정 ----- RUN locale-gen en_US.UTF-8 ENV LANG=en_US.UTF-8 ENV LANGUAGE=en_US:en ENV LC_ALL=en_US.UTF-8 # ----- ARG로 외부에서 변수 받기 ----- ARG USER ARG PASSWORD # ----- 사용자 생성 및 sudo 권한 부여 ----- RUN useradd -m ${USER} &amp;&amp; echo "${USER}:${PASSWORD}" | chpasswd &amp;&amp; adduser ${USER} sudo # ----- code-server 설치 및 작업 디렉토리 생성 ----- ENV WORKINGDIR="/home/${USER}/vscode" RUN curl -fsSL https://code-server.dev/install.sh | sh &amp;&amp; \ mkdir -p ${WORKINGDIR} &amp;&amp; chown -R ${USER}:${USER} ${WORKINGDIR} # ----- 컨테이너 환경변수로도 유지 ----- ENV PASSWORD=${PASSWORD} ENV USER=${USER} # ----- 사용자 전환 ----- USER ${USER} WORKDIR ${WORKINGDIR} # ----- VSCode 확장 설치 ----- RUN code-server --install-extension ms-python.python &amp;&amp; \ code-server --install-extension ms-azuretools.vscode-docker &amp;&amp; \ code-server --install-extension formulahendry.code-runner # ----- 포트 오픈 ----- EXPOSE 8080 # ----- code-server 실행 ----- CMD ["code-server", "--bind-addr", "0.0.0.0:8080", "--auth", "password", "."] # 컨테이너 터미널로 진입 docker exec -it vscode-container bash # 이동 cd /home/ec2-user/.local/share/code-server/User nano settings.json { "code-runner.executorMap": { "python": "python3 -u", "swift": "/home/ec2-user/.local/share/swiftly/bin/swift" }, "code-runner.showExecutionMessage": false, "code-runner.clearPreviousOutput": true } # 저장 ctrl + o enter ctrl x # 나가고 재빌드 exit docker compose up -d --build swift 추가 # 컨테이너 터미널로 진입 docker exec -it vscode-container bash # 1. 기존 swiftly 완전 삭제 rm -rf ~/.local/share/swiftly rm -f ~/swiftly # 2. 필수 패키지 설치 sudo apt-get update sudo apt-get install -y clang libicu-dev wget libpython3-dev # 3. 최신 swiftly 설치 curl -O "https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz" tar zxf "swiftly-$(uname -m).tar.gz" chmod +x swiftly ./swiftly init --quiet-shell-followup --assume-yes # 4. 환경 변수 적용 source ~/.local/share/swiftly/env.sh echo 'source ~/.local/share/swiftly/env.sh' &gt;&gt; ~/.bashrc # 5. Swift 6.1.0 설치 (실제 toolchain 다운로드) ~/.local/share/swiftly/bin/swiftly install 6.1.0 --assume-yes --verify # 6. swift 실행 확인 find ~/.local/share/swiftly/toolchains -name swift -type f -executable swift --version]]></summary></entry><entry><title type="html">[TableView] 13. RxTableView</title><link href="http://localhost:4000/UIKit-tableView13/" rel="alternate" type="text/html" title="[TableView] 13. RxTableView" /><published>2025-05-18T00:00:00+00:00</published><updated>2025-05-18T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView13</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView13/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">[TableView] UITextView vs UITextField</title><link href="http://localhost:4000/UIKit-UItextField-UITextView/" rel="alternate" type="text/html" title="[TableView] UITextView vs UITextField" /><published>2025-05-18T00:00:00+00:00</published><updated>2025-05-18T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-UItextField-UITextView</id><content type="html" xml:base="http://localhost:4000/UIKit-UItextField-UITextView/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
@@ -212,9 +518,7 @@ placeholder는 제공하지 않기 때문에 직접 구현해야 한다.</p>
 </code></pre></div></div>
 <p>textColor가 .secondaryLabel라는 기본값으로 세팅되어 있으면 return 시키고, 아니라면 text를 비우고 Color도 검정색으로 바꾸어준다.</p>
 
-<h1 id="uitextfield">UITextField</h1>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="UIComponent" /><summary type="html"><![CDATA[UITextView UITextField 차이 TextField는 placeholder를 사용할 수 있으나 TextView는 안되는것을 알게 되어 두 컴포넌트의 차이에 대해 알아보고자 정리하게 되었다. UITextView 공식문서를 살펴보면 A scrollable, multiline text region 1줄 이상으로 이루어진 스크롤 가능한 텍스트 영역 placeholder는 제공하지 않기 때문에 직접 구현해야 한다. placeholder 구현 방법 UITextView는 UITextViewDeleagate 프로토콜을 채택하고 있다. 그 중 textViewDidBeginEditing method를 사용해서 구현해보자. // init 시 상태를 lazy로 지정 private lazy var textView: UITextView = { let tv = UITextView() tv.text = "입력하세요.." tv.textColor = .secondaryLabel tv.delegate = self return textView }() init 시 상태를 lazy로 지정해주면서 layout 세팅을 진행하였다. textViewDidBeginEditing Tells the delegate when editing of the specified text view begins. Optional 설정으로 textView의 수정이 일어나면 실행되는 메서드 extension UploadViewController: UITextViewDelegate { func textViewDidBeginEditing(_ textView: UITextView) { guard textView.textColor == .secondaryLabel else { return } textView.text = nil textView.textColor = .label } } textColor가 .secondaryLabel라는 기본값으로 세팅되어 있으면 return 시키고, 아니라면 text를 비우고 Color도 검정색으로 바꾸어준다. UITextField]]></summary></entry><entry><title type="html">[TableView] 13. RxTableView</title><link href="http://localhost:4000/UIKit-tableView13/" rel="alternate" type="text/html" title="[TableView] 13. RxTableView" /><published>2025-05-18T00:00:00+00:00</published><updated>2025-05-18T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView13</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView13/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">[TableView] 12. 테이블뷰 제네릭 CustomCombineDataSource</title><link href="http://localhost:4000/UIKit-tableView12/" rel="alternate" type="text/html" title="[TableView] 12. 테이블뷰 제네릭 CustomCombineDataSource" /><published>2025-05-15T00:00:00+00:00</published><updated>2025-05-15T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView12</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView12/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<h1 id="uitextfield">UITextField</h1>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="UIComponent" /><summary type="html"><![CDATA[UITextView UITextField 차이 TextField는 placeholder를 사용할 수 있으나 TextView는 안되는것을 알게 되어 두 컴포넌트의 차이에 대해 알아보고자 정리하게 되었다. UITextView 공식문서를 살펴보면 A scrollable, multiline text region 1줄 이상으로 이루어진 스크롤 가능한 텍스트 영역 placeholder는 제공하지 않기 때문에 직접 구현해야 한다. placeholder 구현 방법 UITextView는 UITextViewDeleagate 프로토콜을 채택하고 있다. 그 중 textViewDidBeginEditing method를 사용해서 구현해보자. // init 시 상태를 lazy로 지정 private lazy var textView: UITextView = { let tv = UITextView() tv.text = "입력하세요.." tv.textColor = .secondaryLabel tv.delegate = self return textView }() init 시 상태를 lazy로 지정해주면서 layout 세팅을 진행하였다. textViewDidBeginEditing Tells the delegate when editing of the specified text view begins. Optional 설정으로 textView의 수정이 일어나면 실행되는 메서드 extension UploadViewController: UITextViewDelegate { func textViewDidBeginEditing(_ textView: UITextView) { guard textView.textColor == .secondaryLabel else { return } textView.text = nil textView.textColor = .label } } textColor가 .secondaryLabel라는 기본값으로 세팅되어 있으면 return 시키고, 아니라면 text를 비우고 Color도 검정색으로 바꾸어준다. UITextField]]></summary></entry><entry><title type="html">[TableView] 12. 테이블뷰 제네릭 CustomCombineDataSource</title><link href="http://localhost:4000/UIKit-tableView12/" rel="alternate" type="text/html" title="[TableView] 12. 테이블뷰 제네릭 CustomCombineDataSource" /><published>2025-05-15T00:00:00+00:00</published><updated>2025-05-15T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView12</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView12/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
@@ -1034,40 +1338,4 @@ placeholder는 제공하지 않기 때문에 직접 구현해야 한다.</p>
 <p>위 코드에서 CustomCombineDataSource.swift에서 셀이 추가될 때마다 항상 if let dataList를 하면 불편하다고 생각되기 때문에 이를 해결하기 위해 다음 포스팅을 작성하겠다.</p>
 
 <h2 id="정리">정리</h2>
-<p>데이터소스는 데이터와 관련되어 있고, 셀의 종류를 정하고 어떤 데이터인지에 따라 어떤 셀을 보여줄지 정하고, 리스트 갯수가 몇개인지를 관여한다.</p>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[테이블뷰 제네릭 CustomCombineDataSource 제네릭 어떠한 자료형을 받을 수 있다. IndexData를 만들어서 해당 타입도 받을 수 있도록 해보자. IndexData구조체 추가 // // DummyData.swift // UITableViewTutorial // // Created by 김동현 on 5/8/25. // import Foundation import Fakery struct DummySection { let uuid: UUID let title: String let body: String let rows: [DummyData] init() { self.uuid = UUID() self.title = "섹션 타이틀입니다: \(uuid)" self.body = "섹션 바디입니다: \(uuid)" self.rows = DummyData.getDumies(10) } static func getDummies(_ count: Int = 100) -&gt; [DummySection] { return (1...count).map { _ in DummySection() } } } struct DummyData { let uuid: UUID let title: String let body: String init() { self.uuid = UUID() let faker = Faker(locale: "ko") let firstName = faker.name.firstName() //=&gt; "Emilie" let lastName = faker.name.lastName() //=&gt; "Hansen" let body = faker.lorem.paragraphs(amount: 10) self.title = "타이틀입니다: \(lastName) \(firstName)" self.body = "바디입니다: \(body)" } static func getDumies(_ count: Int = 100) -&gt; [DummyData] { return (1...count).map { _ in DummyData() } } } struct IndexData { let uuid: UUID let title: String let body: String init() { self.uuid = UUID() let faker = Faker(locale: "ko") let firstName = faker.name.firstName() //=&gt; "Emilie" let lastName = faker.name.lastName() //=&gt; "Hansen" let body = faker.lorem.paragraphs(amount: 10) self.title = "타이틀입니다: \(lastName) \(firstName)" self.body = "바디입니다: \(body)" } static func getDumies(_ count: Int = 100) -&gt; [IndexData] { return (1...count).map { _ in IndexData() } } } CustomCombineDataSource.swift // // CustomCombineDataSource.swift // UITableViewTutorial // // Created by 김동현 on 5/15/25. // import UIKit /* class CustomCombineDataSource&lt;T, G&gt;: NSObject, UITableViewDataSource { // 멤버 변수 var dataList: [T] = [] var testDataList: [G] = [] */ class CustomCombineDataSource&lt;Item&gt;: NSObject, UITableViewDataSource { // 멤버 변수 var dataList: [Item] = [] override init() { super.init() } // MARK: - Combine 이벤트로 들어온 데이터랑 테이블뷰랑 연결시켜주는 지점 /// 변경된 데이터를 받아서 테이블뷰에 적용한다 /// - Parameters: /// - updatedDataList: 외부에서 변경된 Combine Publisher로 들어온 데이터를 내 DataSource가 가진 data로 변경하기 위한 매개변수 /// - tableView: 리로드 대상 테이블뷰 func pushDataList(_ updatedDataList: [Item], to tableView: UITableView) { tableView.dataSource = self self.dataList = updatedDataList tableView.reloadData() } // MARK: - 테이블뷰 데이터 소스 관련(변경이 된 데이터를 데이터소스로 넘겨받아서 reloadData를 하는 목적 /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return dataList.count } // 어떤 셀을 보여줄 지 /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 - 몇번째인지 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // [guard let] 방식 guard let cell = tableView.dequeueReusableCell(withIdentifier: CodeCell.reuseIdentifier, for: indexPath) as? CodeCell else { return UITableViewCell() } if let dataList = dataList as? [DummyData] { let cellData: DummyData = dataList[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body cell.detailTextLabel?.numberOfLines = 0 } if let dataList = dataList as? [IndexData] { let cellData: IndexData = dataList[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body cell.detailTextLabel?.numberOfLines = 0 } return cell } } 셀의 종류가 추가될때마다 항상 if let dataList를 하면 불편하다고 생각된다. UITableView+Combine.swift // // UITableView+Combine.swift // UITableViewTutorial // // Created by 김동현 on 5/15/25. // import UIKit import Combine // MARK: - Sink 정의를 보면 매개변수로 (Self.Output) -&gt; Void) 형태의 클로저를 받는다. 이 형태를 만족하는 로직 함수를 만들자. // public func sink(receiveValue: @escaping ((Self.Output) -&gt; Void)) -&gt; AnyCancellable extension UITableView { // 고차함수 - 클로저를 매개변수로 가지거나 반환을 가지는 함수 자체 // (Self.Output) -&gt; Void) // ([DummyData]) -&gt; Void // 데이터소스 바인딩 func customItems&lt;Item&gt;() -&gt; ([Item]) -&gt; Void { let dataSource = CustomCombineDataSource&lt;Item&gt;() return { (updatedDateLisst: [Item]) in dataSource.pushDataList(updatedDateLisst, to: self) // 리로드 } } } CombineListViewController.swift // // CombineListViewController.swift // UITableViewTutorial // // Created by 김동현 on 5/13/25. // import UIKit import Combine class CombineListViewController: UIViewController { // Combine 메모리 처리를 위해 생성 var subscriptions = Set&lt;AnyCancellable&gt;() // Published를 하게 되면 dummies 데이터가 추가나 값 변경시 이벤트를 받을 수 있다. // @Published var dummies: [DummyData] = [] @Published var indexDatas: [IndexData] = [] @IBOutlet weak var myTableView: UITableView! override func viewDidLoad() { super.viewDidLoad() configureTableView() /* - sink는 @Published가 수정된 스레드에서 실행된다 - 그래서 Published변수 수정시 메인 스레드에서 수정해주자 - @Published 값을 메인 스레드에서 수정하든, 백그라운드에서 수정하든, .receive(on: .main)만 붙이면 sink는 메인에서 실행되고reloadData()도 안전하게 실행된다 */ // MARK: - 기존의 데이터를 받는 거를 CombineListViewController에서 다했더라면 이제는 customDataSource으로 따로 뺴두고, 로직은 extension으로 빼서 처리를 한 것이다. // $ 붙이면 데이터 이벤트를 받을 수 있는 상태가 됨 // sink는 구독하는 것이다. // AnyCancellable 구독한다고 한다. // store: 구독했던거에 대한 메모리 참조가 들어오게 되는데 이를 관리하기 위해 subscriptions에 넣어준다. $indexDatas .receive(on: DispatchQueue.main) .sink(receiveValue: self.myTableView.customItems()) .store(in: &amp;subscriptions) /* 기존 방식 $dummies .receive(on: DispatchQueue.main) // 데이터 변경시마다 동작 .sink(receiveValue: { (changedDummies: [DummyData]) in print("changedDummies: \(changedDummies.count)") // sink는 메인스레드에서 동작해서 Dispatch안해도된다 self.myTableView.reloadData() }) .store(in: &amp;subscriptions) */ // 2초 뒤에 더미데이터 10개 추가 DispatchQueue.global().asyncAfter(deadline: .now() + 2, execute: { // self.dummies += DummyData.getDumies(10) self.indexDatas += IndexData.getDumies(10) }) } fileprivate func configureTableView() { // CodeCell에서는 이 줄만 필요 self.myTableView.register(CodeCell.self, forCellReuseIdentifier: CodeCell.reuseIdentifier) // self.myTableView.delegate = self } } 위 코드에서 CustomCombineDataSource.swift에서 셀이 추가될 때마다 항상 if let dataList를 하면 불편하다고 생각되기 때문에 이를 해결하기 위해 다음 포스팅을 작성하겠다. 정리 데이터소스는 데이터와 관련되어 있고, 셀의 종류를 정하고 어떤 데이터인지에 따라 어떤 셀을 보여줄지 정하고, 리스트 갯수가 몇개인지를 관여한다.]]></summary></entry><entry><title type="html">[Recommendation System] 1. 추천시스템 소개</title><link href="http://localhost:4000/Recommendation-System-Section1/" rel="alternate" type="text/html" title="[Recommendation System] 1. 추천시스템 소개" /><published>2025-05-14T00:00:00+00:00</published><updated>2025-05-14T00:00:00+00:00</updated><id>http://localhost:4000/%5BRecommendation%20System%5D-Section1</id><content type="html" xml:base="http://localhost:4000/Recommendation-System-Section1/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h1 id="추천-시스템이란">추천 시스템이란</h1>
-<p>추천 시스템이란 사용자의 과거 행동 데이터를 바탕으로 사용자에게 필요한 정보나 제품을 제시하는 시스템이다.</p>
-
-<h1 id="추천-시스템의-여러-기술">추천 시스템의 여러 기술</h1>
-<ul>
-  <li>협업 필터링(Collaborative Filtering)</li>
-  <li>내용 기반 필터링(Content-Based Filtering)</li>
-  <li>지식 기반 필터링(Knowledge-Based Filtering)</li>
-  <li>딥러닝(Deep Learning)</li>
-  <li>하이브리드 필터링(협업필터링 &amp; 딥러닝)</li>
-</ul>
-
-<h1 id="11-협업-필터링-collaborative-filtering">1.1 협업 필터링 (Collaborative Filtering)</h1>
-<p>구매 및 소비한 제품에 대한 소비자의 평가 패턴이 비슷한 집단 속에서 서로 접하지 않은 제품을 추천하는 기술이다.<br />
-한계 - 소비자의 평가정보를 구하기 어렵다 ex)신규/휴먼 고객<br />
-해결책 - 구매가 아니라 클릭, 체류시간으로 간접적인 데이터로 협업 필터링 가능</p>
-
-<h1 id="12-내용-기반-필터링content-based-filtering">1.2 내용 기반 필터링(Content-Based Filtering)</h1>
-<p>제품의 내용을 분석해서 추천하는 기술이다.</p>
-
-<h1 id="14-지식-기반-필터링knowledge-based-filtering">1.4 지식 기반 필터링(Knowledge-Based Filtering)</h1>
-<p>특정 분야 전문가의 도움을 받아서 그 분야에 대한 전체적인 지식 구조를 만들어서 활용하는 방법이다.</p>
-
-<h1 id="15-딥러닝deep-learning">1.5 딥러닝(Deep Learning)</h1>
-<p>AI 알고리즘 중 현재 가장 많이 사용되는 딥러닝 방법이다.</p>
-
-<h1 id="16-하이브리드-필터링협업필터링--딥러닝">1.6 하이브리드 필터링(협업필터링 &amp; 딥러닝)</h1>
-<p>두가지 이상의 알고리즘 혼합을 통한 하이브리드 형태이다.</p>]]></content><author><name>Dong Hyeon</name></author><category term="Recommendation System" /><summary type="html"><![CDATA[추천 시스템이란 추천 시스템이란 사용자의 과거 행동 데이터를 바탕으로 사용자에게 필요한 정보나 제품을 제시하는 시스템이다. 추천 시스템의 여러 기술 협업 필터링(Collaborative Filtering) 내용 기반 필터링(Content-Based Filtering) 지식 기반 필터링(Knowledge-Based Filtering) 딥러닝(Deep Learning) 하이브리드 필터링(협업필터링 &amp; 딥러닝) 1.1 협업 필터링 (Collaborative Filtering) 구매 및 소비한 제품에 대한 소비자의 평가 패턴이 비슷한 집단 속에서 서로 접하지 않은 제품을 추천하는 기술이다. 한계 - 소비자의 평가정보를 구하기 어렵다 ex)신규/휴먼 고객 해결책 - 구매가 아니라 클릭, 체류시간으로 간접적인 데이터로 협업 필터링 가능 1.2 내용 기반 필터링(Content-Based Filtering) 제품의 내용을 분석해서 추천하는 기술이다. 1.4 지식 기반 필터링(Knowledge-Based Filtering) 특정 분야 전문가의 도움을 받아서 그 분야에 대한 전체적인 지식 구조를 만들어서 활용하는 방법이다. 1.5 딥러닝(Deep Learning) AI 알고리즘 중 현재 가장 많이 사용되는 딥러닝 방법이다. 1.6 하이브리드 필터링(협업필터링 &amp; 딥러닝) 두가지 이상의 알고리즘 혼합을 통한 하이브리드 형태이다.]]></summary></entry><entry><title type="html">[Docker] Docker?</title><link href="http://localhost:4000/Docker-docker1/" rel="alternate" type="text/html" title="[Docker] Docker?" /><published>2025-05-14T00:00:00+00:00</published><updated>2025-05-14T00:00:00+00:00</updated><id>http://localhost:4000/%5BDocker%5D-docker1</id><content type="html" xml:base="http://localhost:4000/Docker-docker1/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h2 id="docker">Docker</h2>
-<p>이식성 - 명령어 한 줄로 어떤 컴퓨터에서든 동일한 환경설정이 가능해 에러를 피할 수 있다.</p>]]></content><author><name>Dong Hyeon</name></author><category term="Docker" /><summary type="html"><![CDATA[Docker 이식성 - 명령어 한 줄로 어떤 컴퓨터에서든 동일한 환경설정이 가능해 에러를 피할 수 있다.]]></summary></entry></feed>
+<p>데이터소스는 데이터와 관련되어 있고, 셀의 종류를 정하고 어떤 데이터인지에 따라 어떤 셀을 보여줄지 정하고, 리스트 갯수가 몇개인지를 관여한다.</p>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[테이블뷰 제네릭 CustomCombineDataSource 제네릭 어떠한 자료형을 받을 수 있다. IndexData를 만들어서 해당 타입도 받을 수 있도록 해보자. IndexData구조체 추가 // // DummyData.swift // UITableViewTutorial // // Created by 김동현 on 5/8/25. // import Foundation import Fakery struct DummySection { let uuid: UUID let title: String let body: String let rows: [DummyData] init() { self.uuid = UUID() self.title = "섹션 타이틀입니다: \(uuid)" self.body = "섹션 바디입니다: \(uuid)" self.rows = DummyData.getDumies(10) } static func getDummies(_ count: Int = 100) -&gt; [DummySection] { return (1...count).map { _ in DummySection() } } } struct DummyData { let uuid: UUID let title: String let body: String init() { self.uuid = UUID() let faker = Faker(locale: "ko") let firstName = faker.name.firstName() //=&gt; "Emilie" let lastName = faker.name.lastName() //=&gt; "Hansen" let body = faker.lorem.paragraphs(amount: 10) self.title = "타이틀입니다: \(lastName) \(firstName)" self.body = "바디입니다: \(body)" } static func getDumies(_ count: Int = 100) -&gt; [DummyData] { return (1...count).map { _ in DummyData() } } } struct IndexData { let uuid: UUID let title: String let body: String init() { self.uuid = UUID() let faker = Faker(locale: "ko") let firstName = faker.name.firstName() //=&gt; "Emilie" let lastName = faker.name.lastName() //=&gt; "Hansen" let body = faker.lorem.paragraphs(amount: 10) self.title = "타이틀입니다: \(lastName) \(firstName)" self.body = "바디입니다: \(body)" } static func getDumies(_ count: Int = 100) -&gt; [IndexData] { return (1...count).map { _ in IndexData() } } } CustomCombineDataSource.swift // // CustomCombineDataSource.swift // UITableViewTutorial // // Created by 김동현 on 5/15/25. // import UIKit /* class CustomCombineDataSource&lt;T, G&gt;: NSObject, UITableViewDataSource { // 멤버 변수 var dataList: [T] = [] var testDataList: [G] = [] */ class CustomCombineDataSource&lt;Item&gt;: NSObject, UITableViewDataSource { // 멤버 변수 var dataList: [Item] = [] override init() { super.init() } // MARK: - Combine 이벤트로 들어온 데이터랑 테이블뷰랑 연결시켜주는 지점 /// 변경된 데이터를 받아서 테이블뷰에 적용한다 /// - Parameters: /// - updatedDataList: 외부에서 변경된 Combine Publisher로 들어온 데이터를 내 DataSource가 가진 data로 변경하기 위한 매개변수 /// - tableView: 리로드 대상 테이블뷰 func pushDataList(_ updatedDataList: [Item], to tableView: UITableView) { tableView.dataSource = self self.dataList = updatedDataList tableView.reloadData() } // MARK: - 테이블뷰 데이터 소스 관련(변경이 된 데이터를 데이터소스로 넘겨받아서 reloadData를 하는 목적 /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return dataList.count } // 어떤 셀을 보여줄 지 /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 - 몇번째인지 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // [guard let] 방식 guard let cell = tableView.dequeueReusableCell(withIdentifier: CodeCell.reuseIdentifier, for: indexPath) as? CodeCell else { return UITableViewCell() } if let dataList = dataList as? [DummyData] { let cellData: DummyData = dataList[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body cell.detailTextLabel?.numberOfLines = 0 } if let dataList = dataList as? [IndexData] { let cellData: IndexData = dataList[indexPath.row] /// 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.titleLabel.text = cellData.title /// 셀의 서브 타이틀 설정 cell.bodyLabel.text = cellData.body cell.detailTextLabel?.numberOfLines = 0 } return cell } } 셀의 종류가 추가될때마다 항상 if let dataList를 하면 불편하다고 생각된다. UITableView+Combine.swift // // UITableView+Combine.swift // UITableViewTutorial // // Created by 김동현 on 5/15/25. // import UIKit import Combine // MARK: - Sink 정의를 보면 매개변수로 (Self.Output) -&gt; Void) 형태의 클로저를 받는다. 이 형태를 만족하는 로직 함수를 만들자. // public func sink(receiveValue: @escaping ((Self.Output) -&gt; Void)) -&gt; AnyCancellable extension UITableView { // 고차함수 - 클로저를 매개변수로 가지거나 반환을 가지는 함수 자체 // (Self.Output) -&gt; Void) // ([DummyData]) -&gt; Void // 데이터소스 바인딩 func customItems&lt;Item&gt;() -&gt; ([Item]) -&gt; Void { let dataSource = CustomCombineDataSource&lt;Item&gt;() return { (updatedDateLisst: [Item]) in dataSource.pushDataList(updatedDateLisst, to: self) // 리로드 } } } CombineListViewController.swift // // CombineListViewController.swift // UITableViewTutorial // // Created by 김동현 on 5/13/25. // import UIKit import Combine class CombineListViewController: UIViewController { // Combine 메모리 처리를 위해 생성 var subscriptions = Set&lt;AnyCancellable&gt;() // Published를 하게 되면 dummies 데이터가 추가나 값 변경시 이벤트를 받을 수 있다. // @Published var dummies: [DummyData] = [] @Published var indexDatas: [IndexData] = [] @IBOutlet weak var myTableView: UITableView! override func viewDidLoad() { super.viewDidLoad() configureTableView() /* - sink는 @Published가 수정된 스레드에서 실행된다 - 그래서 Published변수 수정시 메인 스레드에서 수정해주자 - @Published 값을 메인 스레드에서 수정하든, 백그라운드에서 수정하든, .receive(on: .main)만 붙이면 sink는 메인에서 실행되고reloadData()도 안전하게 실행된다 */ // MARK: - 기존의 데이터를 받는 거를 CombineListViewController에서 다했더라면 이제는 customDataSource으로 따로 뺴두고, 로직은 extension으로 빼서 처리를 한 것이다. // $ 붙이면 데이터 이벤트를 받을 수 있는 상태가 됨 // sink는 구독하는 것이다. // AnyCancellable 구독한다고 한다. // store: 구독했던거에 대한 메모리 참조가 들어오게 되는데 이를 관리하기 위해 subscriptions에 넣어준다. $indexDatas .receive(on: DispatchQueue.main) .sink(receiveValue: self.myTableView.customItems()) .store(in: &amp;subscriptions) /* 기존 방식 $dummies .receive(on: DispatchQueue.main) // 데이터 변경시마다 동작 .sink(receiveValue: { (changedDummies: [DummyData]) in print("changedDummies: \(changedDummies.count)") // sink는 메인스레드에서 동작해서 Dispatch안해도된다 self.myTableView.reloadData() }) .store(in: &amp;subscriptions) */ // 2초 뒤에 더미데이터 10개 추가 DispatchQueue.global().asyncAfter(deadline: .now() + 2, execute: { // self.dummies += DummyData.getDumies(10) self.indexDatas += IndexData.getDumies(10) }) } fileprivate func configureTableView() { // CodeCell에서는 이 줄만 필요 self.myTableView.register(CodeCell.self, forCellReuseIdentifier: CodeCell.reuseIdentifier) // self.myTableView.delegate = self } } 위 코드에서 CustomCombineDataSource.swift에서 셀이 추가될 때마다 항상 if let dataList를 하면 불편하다고 생각되기 때문에 이를 해결하기 위해 다음 포스팅을 작성하겠다. 정리 데이터소스는 데이터와 관련되어 있고, 셀의 종류를 정하고 어떤 데이터인지에 따라 어떤 셀을 보여줄지 정하고, 리스트 갯수가 몇개인지를 관여한다.]]></summary></entry></feed>
