@@ -9,6 +9,14 @@
         } ,
     
         {
+        "title"    : "[Baekjoon] 백준 2910 빈도 정렬",
+        "category" : "",
+        "tags"     : "Baekjoon",
+        "url"      : "/Baekjoon-2910/",
+        "date"     : "2025-05-22 00:00:00 +0000"
+        } ,
+    
+        {
         "title"    : "[Baekjoon] 백준 2828 사과 담기 게임",
         "category" : "",
         "tags"     : "Baekjoon",
