@@ -506,99 +506,101 @@ checkbox.addEventListener('change', function() {
         
 <div class="grid-container">
   <div class="grid-item about_avatar">
-    
-      <img src="/assets/logos/bio-photo.png" alt="Dong Hyeon" itemprop="image" class="u-photo" />
-    
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;img src="/assets/logos/bio-photo.png" alt="Dong Hyeon" itemprop="image" class="u-photo"&gt;
+</code></pre></div>    </div>
+
   </div>
-  
+
   <div class="grid-item about_content">
 
-    <div class="my-name">DongHyeon Kim</div>
-    
-      <div class="about__bio p-note" itemprop="description">
-        <p>Swift, 알고리즘 공부</p>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="my-name"&gt;DongHyeon Kim&lt;/div&gt;
 
-      </div>
+  &lt;div class="about__bio p-note" itemprop="description"&gt;
+    &lt;p&gt;Swift, 알고리즘 공부&lt;/p&gt;
+
+  &lt;/div&gt;
+
+&lt;div class="about_urls-wrapper"&gt;
+  &lt;ul class="about_urls"&gt;
     
-    <div class="about_urls-wrapper">
-      <ul class="about_urls">
+      &lt;li class="my-location" itemprop="homeLocation" itemscope itemtype="https://schema.org/Place"&gt;
+        &lt;i class="fas fa-fw fa-map-marker-alt"&gt;&lt;/i&gt; &lt;span itemprop="name" class="p-locality"&gt;Busan, South Korea&lt;/span&gt;
+      &lt;/li&gt;
+    
+    
+    &lt;!-- 
+      
         
-          <li class="my-location" itemprop="homeLocation" itemscope="" itemtype="https://schema.org/Place">
-            <i class="fas fa-fw fa-map-marker-alt"></i> <span itemprop="name" class="p-locality">Busan, South Korea</span>
-          </li>
+          &lt;li&gt;
+            &lt;a href="lghan00020@gmail.com" rel="nofollow noopener noreferrer me"&gt;
+              &lt;i class="fas fa-fw fa-envelope-square"&gt;&lt;/i&gt;&lt;span class="label"&gt;Email&lt;/span&gt;
+            &lt;/a&gt;
+          &lt;/li&gt;
         
+      
         
-        <!-- 
-          
-            
-              <li>
-                <a href="lghan00020@gmail.com" rel="nofollow noopener noreferrer me">
-                  <i class="fas fa-fw fa-envelope-square"></i><span class="label">Email</span>
-                </a>
-              </li>
-            
-          
-            
-              <li>
-                <a href="https://github.com/indextrown" rel="nofollow noopener noreferrer me" itemprop="sameAs">
-                  <i class="fab fa-fw fa-github"></i><span class="label">GitHub</span>
-                </a>
-              </li>
-            
-          
-            
-              <li>
-                <a href="" rel="nofollow noopener noreferrer me">
-                  <i class="fab fa-fw fa-linkedin"></i><span class="label">LinkedIn</span>
-                </a>
-              </li>
-            
-          
+          &lt;li&gt;
+            &lt;a href="https://github.com/indextrown" rel="nofollow noopener noreferrer me" itemprop="sameAs"&gt;
+              &lt;i class="fab fa-fw fa-github"&gt;&lt;/i&gt;&lt;span class="label"&gt;GitHub&lt;/span&gt;
+            &lt;/a&gt;
+          &lt;/li&gt;
         
-         -->
-        <li>
-          <a href="mailto:lghan00020@gmail.com" class="u-email" target="_top">
-            <meta itemprop="email" content="" />
-            <i class="fas fa-fw fa-envelope-square"></i><span class="label"> Email</span>
-          </a>
-        </li>
+      
         
-        <li>
-          <a href="https://www.linkedin.com/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
-            <i class="fab fa-fw fa-linkedin"></i><span class="label"> LinkedIn</span>
-          </a>
-        </li>
+          &lt;li&gt;
+            &lt;a href="" rel="nofollow noopener noreferrer me"&gt;
+              &lt;i class="fab fa-fw fa-linkedin"&gt;&lt;/i&gt;&lt;span class="label"&gt;LinkedIn&lt;/span&gt;
+            &lt;/a&gt;
+          &lt;/li&gt;
         
-        <!--  -->
-        
-        <li>
-          <a href="https://github.com/indextrown" itemprop="sameAs" rel="nofollow noopener noreferrer me">
-            <i class="fab fa-fw fa-github"></i><span class="label"> GitHub</span>
-          </a>
-        </li>
-        
-        
-        
-        <!-- <a href="https://hits.seeyoufarm.com">
-          <style>
-            @media screen and (max-width: 1024px) {
-              .hits {
-                display: none;
-              }
-            }
-            @media screen and (min-width: 1025px) {
-              .hits {
-              width: auto;
-              height: auto;
-              max-width: 150px;
-              max-height: 30px;
-            } 
-            }
-          </style>
-          <img class="hits" src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fddangchani.github.io&count_bg=%233D99C8&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false"/>
-        </a> -->
-      </ul>
-    </div>
+      
+    
+     --&gt;
+    &lt;li&gt;
+      &lt;a href="mailto:lghan00020@gmail.com" class="u-email" target="_top"&gt;
+        &lt;meta itemprop="email" content="" /&gt;
+        &lt;i class="fas fa-fw fa-envelope-square"&gt;&lt;/i&gt;&lt;span class="label"&gt; Email&lt;/span&gt;
+      &lt;/a&gt;
+    &lt;/li&gt;
+    
+    &lt;li&gt;
+      &lt;a href="https://www.linkedin.com/" itemprop="sameAs" rel="nofollow noopener noreferrer me"&gt;
+        &lt;i class="fab fa-fw fa-linkedin"&gt;&lt;/i&gt;&lt;span class="label"&gt; LinkedIn&lt;/span&gt;
+      &lt;/a&gt;
+    &lt;/li&gt;
+    
+    &lt;!--  --&gt;
+    
+    &lt;li&gt;
+      &lt;a href="https://github.com/indextrown" itemprop="sameAs" rel="nofollow noopener noreferrer me"&gt;
+        &lt;i class="fab fa-fw fa-github"&gt;&lt;/i&gt;&lt;span class="label"&gt; GitHub&lt;/span&gt;
+      &lt;/a&gt;
+    &lt;/li&gt;
+    
+    
+    
+    &lt;!-- &lt;a href="https://hits.seeyoufarm.com"&gt;
+      &lt;style&gt;
+        @media screen and (max-width: 1024px) {
+          .hits {
+            display: none;
+          }
+        }
+        @media screen and (min-width: 1025px) {
+          .hits {
+          width: auto;
+          height: auto;
+          max-width: 150px;
+          max-height: 30px;
+        } 
+        }
+      &lt;/style&gt;
+      &lt;img class="hits" src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fddangchani.github.io&amp;count_bg=%233D99C8&amp;title_bg=%23555555&amp;icon=&amp;icon_color=%23E7E7E7&amp;title=hits&amp;edge_flat=false"/&gt;
+    &lt;/a&gt; --&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;
+</code></pre></div>    </div>
   </div>
 </div>
 
@@ -677,85 +679,86 @@ checkbox.addEventListener('change', function() {
 </style>
 
 <div class="intro">
-<p align="center">
-"Swift와 크롤링 기술을 통해 <span class="word-highlight">안전한 사회</span>를 만들어가는 개발자입니다. 기술을 통해 문제를 해결하고, 사회에 긍정적인 변화를 가져오는 것을 목표로 합니다. 끊임없이 배우고 성장하며, 개발 과정에서 얻은 경험과 배움을 이 블로그에 기록합니다. 궁금한 점이나 피드백은 언제든지 환영합니다! 😊"
+  <p align="center">
+“Swift와 크롤링 기술을 통해 <span class="word-highlight">안전한 사회</span>를 만들어가는 개발자입니다. 기술을 통해 문제를 해결하고, 사회에 긍정적인 변화를 가져오는 것을 목표로 합니다. 끊임없이 배우고 성장하며, 개발 과정에서 얻은 경험과 배움을 이 블로그에 기록합니다. 궁금한 점이나 피드백은 언제든지 환영합니다! 😊”
 </p>
 </div>
 
 <div class="cv">
-        <h1 class="row">
-                <div class="column">
-                    📚 Interest
-                </div>
-                <div class="column">
-                    <button type="button" class="btn btn-toggle" data-toggle="button" onclick="toggleLanguage()" id="toggleButton">KOR</button>
-                </div>
-        </h1>
-                        
-        
-        <h2 class="translation-toggle" data-lang="en"> Mobile App Development </h2>
-        <ul class="translation-toggle" data-lang="en">
-            <li> Swift and UIKit Development </li>
-            <li> Health Management Applications </li>
-            <li> iOS App Ecosystem </li>
-        </ul>
-        <h2 class="translation-toggle" data-lang="ko" style="display: none;">모바일 앱 개발</h2>
-        <ul class="translation-toggle" data-lang="ko" style="display: none;">
-            <li> Swift와 UIKit 개발 </li>
-            <li> 건강 관리 애플리케이션 </li>
-            <li> iOS 앱 생태계 </li>
-        </ul>
+  <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;h1 class="row"&gt;
+            &lt;div class="column"&gt;
+                📚 Interest
+            &lt;/div&gt;
+            &lt;div class="column"&gt;
+                &lt;button type="button" class="btn btn-toggle" data-toggle="button" onclick="toggleLanguage()" id="toggleButton"&gt;KOR&lt;/button&gt;
+            &lt;/div&gt;
+    &lt;/h1&gt;
+                    
+    
+    &lt;h2 class="translation-toggle" data-lang="en"&gt; Mobile App Development &lt;/h2&gt;
+    &lt;ul class="translation-toggle" data-lang="en"&gt;
+        &lt;li&gt; Swift and UIKit Development &lt;/li&gt;
+        &lt;li&gt; Health Management Applications &lt;/li&gt;
+        &lt;li&gt; iOS App Ecosystem &lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;h2 class="translation-toggle" data-lang="ko" style="display: none;"&gt;모바일 앱 개발&lt;/h2&gt;
+    &lt;ul class="translation-toggle" data-lang="ko" style="display: none;"&gt;
+        &lt;li&gt; Swift와 UIKit 개발 &lt;/li&gt;
+        &lt;li&gt; 건강 관리 애플리케이션 &lt;/li&gt;
+        &lt;li&gt; iOS 앱 생태계 &lt;/li&gt;
+    &lt;/ul&gt;
 
-        <h1> 🎓 Education </h1>
-        
-        <h2 class="translation-toggle" data-lang="en"> Ellen School - 2024.07.01 ~ 2024.09.01 </h2>
-        <ul class="translation-toggle" data-lang="en">
-            <li> Studying Swift, UIKit, Computer Science </li>
-        </ul>
-        <h2 class="translation-toggle" data-lang="ko" style="display: none;">엘렌 스쿨 - 2024.07.01 ~ 2024.09.01</h2>
-        <ul class="translation-toggle" data-lang="ko" style="display: none;">
-            <li> Swift, UIKit, 컴퓨터 과학 학습 </li>
-        </ul>
-        
-        <h1> 🥇 Projects and Awards </h1>
-        
-        <h2 class="translation-toggle" data-lang="en"> 2024 Korea Multimedia Society Fall Conference </h2>
-        <ul class="translation-toggle" data-lang="en">
-            <li> Research on Social Media Platform Data Collection using Web Crawling and ChatGPT </li>
-            <!-- <li> <a href="">Link</a> </li> -->
-        </ul>
-        <h2 class="translation-toggle" data-lang="ko" style="display: none;">2024 한국멀티미디어학회 추계학술대회</h2>
-        <ul class="translation-toggle" data-lang="ko" style="display: none;">
-            <li> 웹 크롤링과 ChatGPT를 활용한 소셜 미디어 플랫폼 데이터 수집 연구 </li>
-            <!-- <li> <a href="">링크</a> </li> -->
-        </ul>
-        
-        <!-- 반창고 -->
-        <h2 class="translation-toggle" data-lang="en"> 반창고: Personal Health Management App - 2024.11 ~ </h2>
-        <ul class="translation-toggle" data-lang="en">
-            <li> Developing a comprehensive health management mobile application </li>
-            <li> <a href="https://github.com/indextrown/Ban-Chang-Go">Github link</a> </li>
-        </ul>
-        <h2 class="translation-toggle" data-lang="ko" style="display: none;">반창고: 개인 건강관리 앱 - 2024.11 ~</h2>
-        <ul class="translation-toggle" data-lang="ko" style="display: none;">
-            <li> 종합 건강관리 모바일 애플리케이션 개발 </li>
-            <li> <a href="https://github.com/indextrown/Ban-Chang-Go">Github 링크</a> </li>
-        </ul>
-        
-        <!-- 코드라운지 -->
-        <h2 class="translation-toggle" data-lang="en">코드라운지: A Platform for Growing Developers - 2025.01 ~</h2>
-        <ul class="translation-toggle" data-lang="en">
-            <li> A social platform for sharing code and UI designs </li>
-            <li> Connecting developers through collaborative learning </li>
-            <li> <a href="https://github.com/team-GitDeulida/CodeLounge-iOS">Github link</a> </li>
-        </ul>
+    &lt;h1&gt; 🎓 Education &lt;/h1&gt;
+    
+    &lt;h2 class="translation-toggle" data-lang="en"&gt; Ellen School - 2024.07.01 ~ 2024.09.01 &lt;/h2&gt;
+    &lt;ul class="translation-toggle" data-lang="en"&gt;
+        &lt;li&gt; Studying Swift, UIKit, Computer Science &lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;h2 class="translation-toggle" data-lang="ko" style="display: none;"&gt;엘렌 스쿨 - 2024.07.01 ~ 2024.09.01&lt;/h2&gt;
+    &lt;ul class="translation-toggle" data-lang="ko" style="display: none;"&gt;
+        &lt;li&gt; Swift, UIKit, 컴퓨터 과학 학습 &lt;/li&gt;
+    &lt;/ul&gt;
+    
+    &lt;h1&gt; 🥇 Projects and Awards &lt;/h1&gt;
+    
+    &lt;h2 class="translation-toggle" data-lang="en"&gt; 2024 Korea Multimedia Society Fall Conference &lt;/h2&gt;
+    &lt;ul class="translation-toggle" data-lang="en"&gt;
+        &lt;li&gt; Research on Social Media Platform Data Collection using Web Crawling and ChatGPT &lt;/li&gt;
+        &lt;!-- &lt;li&gt; &lt;a href=""&gt;Link&lt;/a&gt; &lt;/li&gt; --&gt;
+    &lt;/ul&gt;
+    &lt;h2 class="translation-toggle" data-lang="ko" style="display: none;"&gt;2024 한국멀티미디어학회 추계학술대회&lt;/h2&gt;
+    &lt;ul class="translation-toggle" data-lang="ko" style="display: none;"&gt;
+        &lt;li&gt; 웹 크롤링과 ChatGPT를 활용한 소셜 미디어 플랫폼 데이터 수집 연구 &lt;/li&gt;
+        &lt;!-- &lt;li&gt; &lt;a href=""&gt;링크&lt;/a&gt; &lt;/li&gt; --&gt;
+    &lt;/ul&gt;
+    
+    &lt;!-- 반창고 --&gt;
+    &lt;h2 class="translation-toggle" data-lang="en"&gt; 반창고: Personal Health Management App - 2024.11 ~ &lt;/h2&gt;
+    &lt;ul class="translation-toggle" data-lang="en"&gt;
+        &lt;li&gt; Developing a comprehensive health management mobile application &lt;/li&gt;
+        &lt;li&gt; &lt;a href="https://github.com/indextrown/Ban-Chang-Go"&gt;Github link&lt;/a&gt; &lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;h2 class="translation-toggle" data-lang="ko" style="display: none;"&gt;반창고: 개인 건강관리 앱 - 2024.11 ~&lt;/h2&gt;
+    &lt;ul class="translation-toggle" data-lang="ko" style="display: none;"&gt;
+        &lt;li&gt; 종합 건강관리 모바일 애플리케이션 개발 &lt;/li&gt;
+        &lt;li&gt; &lt;a href="https://github.com/indextrown/Ban-Chang-Go"&gt;Github 링크&lt;/a&gt; &lt;/li&gt;
+    &lt;/ul&gt;
+    
+    &lt;!-- 코드라운지 --&gt;
+    &lt;h2 class="translation-toggle" data-lang="en"&gt;코드라운지: A Platform for Growing Developers - 2025.01 ~&lt;/h2&gt;
+    &lt;ul class="translation-toggle" data-lang="en"&gt;
+        &lt;li&gt; A social platform for sharing code and UI designs &lt;/li&gt;
+        &lt;li&gt; Connecting developers through collaborative learning &lt;/li&gt;
+        &lt;li&gt; &lt;a href="https://github.com/team-GitDeulida/CodeLounge-iOS"&gt;Github link&lt;/a&gt; &lt;/li&gt;
+    &lt;/ul&gt;
 
-        <h2 class="translation-toggle" data-lang="ko" style="display: none;">코드라운지: 성장하는 개발자를 위한 배움터 - 2025.01 ~</h2>
-        <ul class="translation-toggle" data-lang="ko" style="display: none;">
-            <li> 코드와 UI 디자인을 공유하는 소셜 플랫폼 </li>
-            <li> 개발자 간 협업과 학습을 위한 공간 </li>
-            <li> <a href="https://github.com/team-GitDeulida/CodeLounge-iOS">Github 링크</a> </li>
-        </ul>
+    &lt;h2 class="translation-toggle" data-lang="ko" style="display: none;"&gt;코드라운지: 성장하는 개발자를 위한 배움터 - 2025.01 ~&lt;/h2&gt;
+    &lt;ul class="translation-toggle" data-lang="ko" style="display: none;"&gt;
+        &lt;li&gt; 코드와 UI 디자인을 공유하는 소셜 플랫폼 &lt;/li&gt;
+        &lt;li&gt; 개발자 간 협업과 학습을 위한 공간 &lt;/li&gt;
+        &lt;li&gt; &lt;a href="https://github.com/team-GitDeulida/CodeLounge-iOS"&gt;Github 링크&lt;/a&gt; &lt;/li&gt;
+    &lt;/ul&gt;
+</code></pre></div>  </div>
 
 </div>
 <p><br /></p>

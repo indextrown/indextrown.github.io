@@ -10,7 +10,7 @@
     <meta charset="utf-8">
 
 <!-- begin _includes/seo.html --><title>[알고리즘] 깊이우선탐색(DFS) - DongHyeon Kim’s Blog</title>
-<meta name="description" content="깊이우선탐색(Depth First Search) 그래프를 탐색할 때 쓰는 알고리즘으로 어떤 노드부터 시작해 인접한 노드들을 재귀적으로 방문하며 방문한 정점은 다시 반복하지 않고 각 분기마다 가능한 가장 멀리 있는 노드까지 탐색하는 알고리즘이다.  DFS PseudoCode DFS(u, adj)     u.visited = true     for each v ∈ adj[u]         if v.visited == false             DFS(v, adj)     어떠한 정점 U의 visited를 참으로 바꾸고 연결되어있는 V지점을 탐색한다.   이 때 방문되지 않은 노드에 대해 재귀적으로 DFS를 호출한다.   DFS 탐색 예제  graph TD;     1((1)) --&gt; 2((2));     2((2)) --&gt; 4((4));     1((1)) --&gt; 3((3));     2((2)) --&gt; 5((5));     4((4)) --&gt; 2((2));  style 1 stroke:#333,stroke-width:3px,font-size:30px style 2 stroke:#333,stroke-width:3px,font-size:30px style 3 stroke:#333,stroke-width:3px,font-size:30px style 4 stroke:#333,stroke-width:3px,font-size:30px style 5 stroke:#333,stroke-width:3px,font-size:30px     1 -&gt; 2 -&gt; 4 -&gt; 5 -&gt; 3   let n: Int = 6 var adj: [[Int]] = Array(repeating: [Int](), count: n) var visited: [Bool] = Array(repeating: false, count: n)  func dfs(_ here: Int) {     visited[here] = true     print(here, terminator: &quot; &quot;)          for there in adj[here] {         if visited[there] { continue }         dfs(there)     } }  @main struct Main {     static func main() {         adj[1].append(2)         adj[1].append(3)         adj[2].append(4)         adj[4].append(2)         adj[2].append(5)         dfs(1)     } }  // 결과: 1 2 3 4 5 3">
+<meta name="description" content="깊이우선탐색(Depth First Search) 그래프를 탐색할 때 쓰는 알고리즘으로 어떤 노드부터 시작해 인접한 노드들을 재귀적으로 방문하며 방문한 정점은 다시 반복하지 않고 각 분기마다 가능한 가장 멀리 있는 노드까지 탐색하는 알고리즘이다.  DFS PseudoCode         DFS(u, adj)     u.visited = true     for each v ∈ adj[u]         if v.visited == false             DFS(v, adj)         어떠한 정점 U의 visited를 참으로 바꾸고 연결되어있는 V지점을 탐색한다.   이 때 방문되지 않은 노드에 대해 재귀적으로 DFS를 호출한다.   DFS 탐색 예제    graph TD;     1((1)) –&gt; 2((2));     2((2)) –&gt; 4((4));     1((1)) –&gt; 3((3));     2((2)) –&gt; 5((5));     4((4)) –&gt; 2((2));    style 1 stroke:#333,stroke-width:3px,font-size:30px style 2 stroke:#333,stroke-width:3px,font-size:30px style 3 stroke:#333,stroke-width:3px,font-size:30px style 4 stroke:#333,stroke-width:3px,font-size:30px style 5 stroke:#333,stroke-width:3px,font-size:30px     1 -&gt; 2 -&gt; 4 -&gt; 5 -&gt; 3           let n: Int = 6 var adj: [[Int]] = Array(repeating: [Int](), count: n) var visited: [Bool] = Array(repeating: false, count: n)  func dfs(_ here: Int) {     visited[here] = true     print(here, terminator: &quot; &quot;)          for there in adj[here] {         if visited[there] { continue }         dfs(there)     } }  @main struct Main {     static func main() {         adj[1].append(2)         adj[1].append(3)         adj[2].append(4)         adj[4].append(2)         adj[2].append(5)         dfs(1)     } }  // 결과: 1 2 3 4 5 3">
 
 
   <meta name="author" content="Dong Hyeon">
@@ -26,7 +26,7 @@
 <meta property="og:url" content="http://localhost:4000/%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-%EA%B9%8A%EC%9D%B4%EC%9A%B0%EC%84%A0%ED%83%90%EC%83%89(DFS)/">
 
 
-  <meta property="og:description" content="깊이우선탐색(Depth First Search) 그래프를 탐색할 때 쓰는 알고리즘으로 어떤 노드부터 시작해 인접한 노드들을 재귀적으로 방문하며 방문한 정점은 다시 반복하지 않고 각 분기마다 가능한 가장 멀리 있는 노드까지 탐색하는 알고리즘이다.  DFS PseudoCode DFS(u, adj)     u.visited = true     for each v ∈ adj[u]         if v.visited == false             DFS(v, adj)     어떠한 정점 U의 visited를 참으로 바꾸고 연결되어있는 V지점을 탐색한다.   이 때 방문되지 않은 노드에 대해 재귀적으로 DFS를 호출한다.   DFS 탐색 예제  graph TD;     1((1)) --&gt; 2((2));     2((2)) --&gt; 4((4));     1((1)) --&gt; 3((3));     2((2)) --&gt; 5((5));     4((4)) --&gt; 2((2));  style 1 stroke:#333,stroke-width:3px,font-size:30px style 2 stroke:#333,stroke-width:3px,font-size:30px style 3 stroke:#333,stroke-width:3px,font-size:30px style 4 stroke:#333,stroke-width:3px,font-size:30px style 5 stroke:#333,stroke-width:3px,font-size:30px     1 -&gt; 2 -&gt; 4 -&gt; 5 -&gt; 3   let n: Int = 6 var adj: [[Int]] = Array(repeating: [Int](), count: n) var visited: [Bool] = Array(repeating: false, count: n)  func dfs(_ here: Int) {     visited[here] = true     print(here, terminator: &quot; &quot;)          for there in adj[here] {         if visited[there] { continue }         dfs(there)     } }  @main struct Main {     static func main() {         adj[1].append(2)         adj[1].append(3)         adj[2].append(4)         adj[4].append(2)         adj[2].append(5)         dfs(1)     } }  // 결과: 1 2 3 4 5 3">
+  <meta property="og:description" content="깊이우선탐색(Depth First Search) 그래프를 탐색할 때 쓰는 알고리즘으로 어떤 노드부터 시작해 인접한 노드들을 재귀적으로 방문하며 방문한 정점은 다시 반복하지 않고 각 분기마다 가능한 가장 멀리 있는 노드까지 탐색하는 알고리즘이다.  DFS PseudoCode         DFS(u, adj)     u.visited = true     for each v ∈ adj[u]         if v.visited == false             DFS(v, adj)         어떠한 정점 U의 visited를 참으로 바꾸고 연결되어있는 V지점을 탐색한다.   이 때 방문되지 않은 노드에 대해 재귀적으로 DFS를 호출한다.   DFS 탐색 예제    graph TD;     1((1)) –&gt; 2((2));     2((2)) –&gt; 4((4));     1((1)) –&gt; 3((3));     2((2)) –&gt; 5((5));     4((4)) –&gt; 2((2));    style 1 stroke:#333,stroke-width:3px,font-size:30px style 2 stroke:#333,stroke-width:3px,font-size:30px style 3 stroke:#333,stroke-width:3px,font-size:30px style 4 stroke:#333,stroke-width:3px,font-size:30px style 5 stroke:#333,stroke-width:3px,font-size:30px     1 -&gt; 2 -&gt; 4 -&gt; 5 -&gt; 3           let n: Int = 6 var adj: [[Int]] = Array(repeating: [Int](), count: n) var visited: [Bool] = Array(repeating: false, count: n)  func dfs(_ here: Int) {     visited[here] = true     print(here, terminator: &quot; &quot;)          for there in adj[here] {         if visited[there] { continue }         dfs(there)     } }  @main struct Main {     static func main() {         adj[1].append(2)         adj[1].append(3)         adj[2].append(4)         adj[4].append(2)         adj[2].append(5)         dfs(1)     } }  // 결과: 1 2 3 4 5 3">
 
 
 
@@ -457,7 +457,7 @@ checkbox.addEventListener('change', function() {
 
   <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
     <meta itemprop="headline" content="[알고리즘] 깊이우선탐색(DFS)">
-    <meta itemprop="description" content="깊이우선탐색(Depth First Search)그래프를 탐색할 때 쓰는 알고리즘으로 어떤 노드부터 시작해 인접한 노드들을 재귀적으로 방문하며 방문한 정점은 다시 반복하지 않고 각 분기마다 가능한 가장 멀리 있는 노드까지 탐색하는 알고리즘이다.DFS PseudoCodeDFS(u, adj)    u.visited = true    for each v ∈ adj[u]        if v.visited == false            DFS(v, adj)  어떠한 정점 U의 visited를 참으로 바꾸고 연결되어있는 V지점을 탐색한다.  이 때 방문되지 않은 노드에 대해 재귀적으로 DFS를 호출한다.DFS 탐색 예제graph TD;    1((1)) --&gt; 2((2));    2((2)) --&gt; 4((4));    1((1)) --&gt; 3((3));    2((2)) --&gt; 5((5));    4((4)) --&gt; 2((2));style 1 stroke:#333,stroke-width:3px,font-size:30pxstyle 2 stroke:#333,stroke-width:3px,font-size:30pxstyle 3 stroke:#333,stroke-width:3px,font-size:30pxstyle 4 stroke:#333,stroke-width:3px,font-size:30pxstyle 5 stroke:#333,stroke-width:3px,font-size:30px  1 -&gt; 2 -&gt; 4 -&gt; 5 -&gt; 3let n: Int = 6var adj: [[Int]] = Array(repeating: [Int](), count: n)var visited: [Bool] = Array(repeating: false, count: n)func dfs(_ here: Int) {    visited[here] = true    print(here, terminator: &quot; &quot;)        for there in adj[here] {        if visited[there] { continue }        dfs(there)    }}@mainstruct Main {    static func main() {        adj[1].append(2)        adj[1].append(3)        adj[2].append(4)        adj[4].append(2)        adj[2].append(5)        dfs(1)    }}// 결과: 1 2 3 4 5 3">
+    <meta itemprop="description" content="깊이우선탐색(Depth First Search)그래프를 탐색할 때 쓰는 알고리즘으로 어떤 노드부터 시작해 인접한 노드들을 재귀적으로 방문하며 방문한 정점은 다시 반복하지 않고 각 분기마다 가능한 가장 멀리 있는 노드까지 탐색하는 알고리즘이다.DFS PseudoCode      DFS(u, adj)    u.visited = true    for each v ∈ adj[u]        if v.visited == false            DFS(v, adj)    어떠한 정점 U의 visited를 참으로 바꾸고 연결되어있는 V지점을 탐색한다.  이 때 방문되지 않은 노드에 대해 재귀적으로 DFS를 호출한다.DFS 탐색 예제  graph TD;    1((1)) –&gt; 2((2));    2((2)) –&gt; 4((4));    1((1)) –&gt; 3((3));    2((2)) –&gt; 5((5));    4((4)) –&gt; 2((2));  style 1 stroke:#333,stroke-width:3px,font-size:30pxstyle 2 stroke:#333,stroke-width:3px,font-size:30pxstyle 3 stroke:#333,stroke-width:3px,font-size:30pxstyle 4 stroke:#333,stroke-width:3px,font-size:30pxstyle 5 stroke:#333,stroke-width:3px,font-size:30px  1 -&gt; 2 -&gt; 4 -&gt; 5 -&gt; 3      let n: Int = 6var adj: [[Int]] = Array(repeating: [Int](), count: n)var visited: [Bool] = Array(repeating: false, count: n)func dfs(_ here: Int) {    visited[here] = true    print(here, terminator: &quot; &quot;)        for there in adj[here] {        if visited[there] { continue }        dfs(there)    }}@mainstruct Main {    static func main() {        adj[1].append(2)        adj[1].append(3)        adj[2].append(4)        adj[4].append(2)        adj[2].append(5)        dfs(1)    }}// 결과: 1 2 3 4 5 3  ">
     <meta itemprop="datePublished" content="2025-02-01T00:00:00+00:00">
     
 
@@ -516,18 +516,18 @@ checkbox.addEventListener('change', function() {
 
 <h1 id="dfs-탐색-예제">DFS 탐색 예제</h1>
 <div class="mermaid">
-graph TD;
-    1((1)) --&gt; 2((2));
-    2((2)) --&gt; 4((4));
-    1((1)) --&gt; 3((3));
-    2((2)) --&gt; 5((5));
-    4((4)) --&gt; 2((2));
+  <p>graph TD;
+    1((1)) –&gt; 2((2));
+    2((2)) –&gt; 4((4));
+    1((1)) –&gt; 3((3));
+    2((2)) –&gt; 5((5));
+    4((4)) –&gt; 2((2));</p>
 
-style 1 stroke:#333,stroke-width:3px,font-size:30px
+  <p>style 1 stroke:#333,stroke-width:3px,font-size:30px
 style 2 stroke:#333,stroke-width:3px,font-size:30px
 style 3 stroke:#333,stroke-width:3px,font-size:30px
 style 4 stroke:#333,stroke-width:3px,font-size:30px
-style 5 stroke:#333,stroke-width:3px,font-size:30px
+style 5 stroke:#333,stroke-width:3px,font-size:30px</p>
 </div>
 <ul>
   <li>1 -&gt; 2 -&gt; 4 -&gt; 5 -&gt; 3</li>

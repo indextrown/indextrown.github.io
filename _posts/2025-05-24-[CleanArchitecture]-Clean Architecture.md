@@ -1,5 +1,5 @@
 ---
-title: "[CleanArchitecture] SOLOD, MVVM, CleanArchitecture"
+title: "[CleanArchitecture] SOLID, MVVM, CleanArchitecture"
 tags: 
 - CleanArchitecture
 header: 
@@ -11,7 +11,6 @@ typora-root-url: ../
 <!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="{{ '/assets/img/2025-05-08-[UIKit]-tableView2/1.png' | relative_url }}" alt="이미지" width="30%"> -->
-
 
 <!-- <table>
   <tr>
@@ -54,7 +53,7 @@ typora-root-url: ../
 ## SOLID원칙
 
 - SOLOD원칙은 5가지 원칙을 의미한다.
-    
+  
 
 ### 1. 단일 책임
 
@@ -84,11 +83,10 @@ ViewModel에서 User데이터에 대한 타입이 변경되면 ViewModel에 의�
     - ex) FriendUser -> FamilyUser로 바뀌어도 ViewController에서 UI코드 변경 필요 없다.
     - ViewController 코드를 수정하지 않고 기능을 확장할 수 있다.
  */
+protocol UserProtocol { }
 protocol ViewModelProtocol {
     func getUserList() -> [UserProtocol]
 }
-
-protocol UserProtocol { }
 
 struct FriendUser: UserProtocol { }
 struct FamilyUser: UserProtocol { }
@@ -389,3 +387,41 @@ view.render()
 
 이렇게 **구현을 감추고 필요한 기능만 정의한 것**을 `**추상화**`라고 한다.
 인터페이스를 사용하는이유 = 의존성을 최소화 하기 위해 = 변경을 대응하기 위함.
+
+
+
+---
+
+## Clean Architecture
+
+<img src="{{ '/assets/img/2025-03-25-[CleanArchitecture]-CleanArchitecture/clean1.png' | relative_url }}" alt="커스텀셀1" width="50%">
+모바일 뿐만 아니라 웹이나 서버 등 여러 곳에서 많이 사용하는 아키텍처이다. 모바일 기준으로는 조금 단순화한 아래 사진을 참고하면 된다.
+
+<img src="{{ '/assets/img/2025-03-25-[CleanArchitecture]-CleanArchitecture/clean3.png' | relative_url }}" alt="커스텀셀" width="50%">
+모바일 기준으로는 크게 3개의 계층(Layer)로 분류한다. Domain Layer, Data Layer, Presentation Layer로 분류한다. 
+
+---
+
+### Domain Layer
+
+Domain Layer는 프로젝트의 **가장 핵심적인 영역**이며,  
+비즈니스의 규칙과 요구사항을 직접 담고 있는 계층이다.
+
+### 구성 요소
+
+- Entity - 모델 정의
+- UseCase - 핵심적인 비즈니스 로직을 담은 역할
+    - 유저 리스트 불러오기
+    - 유저 상세 데이터 불러오기
+    - 유저를 내부 저장소에 저장하기
+- Repository Protocol(인터페이스) - UseCase와 Data Layer(서버 API, 로컬 DB)를 연결해주는 중간 다리 역할
+    - `UseCase`와 `Data Layer` 사이를 연결하는 **추상화 계층**
+    - 데이터의 출처가 무엇이든 (API, DB 등) `UseCase`는 몰라도 된다
+
+### 왜 Repository를 사용하는가?
+
+- `UseCase`는 **데이터가 어디서 오는지 알 필요 없다.**
+    - API든, CoreData든, Realm이든 전혀 신경 쓰지 않는다.
+- `Repository`가 데이터의 출처를 감싸서 대신 처리해준다.
+    - 덕분에 `UseCase`는 **오직 기능 수행에만 집중 가능**
+- `Repository`는 인터페이스만 존재하며, 실제 구현은 **Data Layer**에서 처리한다.
