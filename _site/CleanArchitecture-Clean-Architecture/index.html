@@ -1,0 +1,1045 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>[CleanArchitecture] SOLOD, MVVM, CleanArchitecture - DongHyeon Kim’s Blog</title>
+<meta name="description" content="SOLOD, MVVM, CleanArchitecture  클린 아키텍처를 알기 위해서는 MVVM을 알아야 하고 MVVM을 알기 위해서는 SOLID 원칙을 알아야 한다.  SOLID 원칙 -&gt; MVVM -&gt; Clean Architecture 순서로 정리하였다.  원칙이란?      원칙을 지키면 시간이 흐른 뒤에는 큰 영향을 가져온다.   SOLID 프로그램의 원칙을 지키면 프로젝트 규모가 커질수록 큰 영향을 가져온다.   원칙을 지키지 않는다면 어디서부터 어떻게 고쳐야 할 지 어렵고, 한 부분을 해결하면 다른 부분에서 문제가 발생할 수도 있다.   이렇기 때문에 SOLID 원칙을 지켜야 한다.   이 원칙을 지키면 얻을 수 있는 효과가 유지보수성이다.   유지보수가 쉬운 코드 = 어떤 상황에서도 잘 동작하고 변경에 용이     SOLID원칙     SOLOD원칙은 5가지 원칙을 의미한다.   1. 단일 책임     클래스는 하나의 책임만을 가져야 한다   ex) ViewConntroller의 책임(책임 = 변경이 일어날 때 영향을 받는다라고 가정)     UI 그리기   (&lt;- 책임)   UI 로직 구현   API 호출   내부 데이터 저장, 불러오기   =&gt; 이 4개중에 하나의 책임만 가져야 한다. 여기서는 UI 그리기가 책임이 된다.   2. 개팡 폐쇄     클래스는 기능의 확장에 있어서 열려 있어야 하고 수정에는 닫혀 있어야 한다.    ViewModel에서 User데이터에 대한 타입이 변경되면 ViewModel에 의존하는 ViewController가 영향을 받는다.  하지만 ViewController에서 UI에 대한 코드가 변경되면 안된다.  /*     MARK: - 개방 폐쇄 원칙     - viewController가 ViewModelProtocol을 의존하므로 ViewModel 내부 구현이 변경되어도 영향이 없다.     - ex) FriendUser -&gt; FamilyUser로 바뀌어도 ViewController에서 UI코드 변경 필요 없다.     - ViewController 코드를 수정하지 않고 기능을 확장할 수 있다.  */ protocol ViewModelProtocol {     func getUserList() -&gt; [UserProtocol] }  protocol UserProtocol { }  struct FriendUser: UserProtocol { } struct FamilyUser: UserProtocol { }  class ViewModel: ViewModelProtocol {     // ViewController는 각 객체가 어떤 구체 타입인지 몰라도 공통 인터페이스(UserProtocol)로 처리 가능하다.     func getUserList() -&gt; [UserProtocol] {         return [FriendUser(), FamilyUser()]     } }     3. 인터페이스 분리 원칙     사용하지 않는 인터페이스는 쓰지 않아야 한다.    사진과 같이 ViewController가 property1과 func3만 사용한다면  ViewController입장에서 나머지 property2, func1, func2는 필요 없다. 이럴때는 인터페이스를 분리해야 한다.   4. 의존성 역전 원칙     고수준 모듈은 저수준 모듈에 의존해서는 안된다. 둘다 추상화에 의존해야 한다.    저수준은 UI와 같이 잘 바뀌는 코드를 의미하고 고수준은 앱에서 핵심 기능인 잘 안바뀌는 기능을 의미한다.(쇼핑앱에서는 결제 기능과 유사) 즉 쉽게 바뀌는 코드가 쉽게 바뀌지 않는 코드를 의존해야 한다. 참고로 추상화(인터페이스)에 의존해야한다.  // MARK: - Model protocol UserProtocol {     var name: String { get } }  struct FriendUser: UserProtocol {     let name: String = &quot;친구 유저&quot; } struct FamilyUser: UserProtocol {     let name: String = &quot;가족 유저&quot; }  // MARK: - ViewModelProtocol(고수준의 추상화) // 핵심 로직 담당, UserProtocol 추상화에만 의존 protocol ViewModelProtocol {     var users: [UserProtocol] { get } }  // 고수준 class ViewModel: ViewModelProtocol {     var users: [UserProtocol] {         return [FriendUser(),FamilyUser()]     } }  // MARK: - View(저수준) // UI 담당, ViewModel의 추상화(ViewModelProtocol)에만 의존 class View {     private let viewModel: ViewModelProtocol // 고수준 추상화에 의존      init(viewModel: ViewModelProtocol) {         self.viewModel = viewModel     }          func render() {         for user in viewModel.users {             print(&quot;👤 이름: \(user.name)&quot;)         }     } }  // MARK: - 실행 let viewModel = ViewModel() let view = View(viewModel: viewModel) view.render()     5. 리스코프 치환원칙     자식 클래스는 언제나 자신의 부모 클래스로 교체할 수 있어야 한다. 즉 부모 타입을 사용하는 곳에 자식 타입을 넣어도 정상적으로 작동해야 한다.   리스코프 치환 위반 예시  class Bird {     func fly() {         print(&quot;날아갑니다!&quot;)     } }  class Penguin: Bird {     override func fly() {         // 펭귄은 날 수 없음 → LSP 위반         fatalError(&quot;펭귄은 날 수 없습니다!&quot;)     } }  func letBirdFly(_ bird: Bird) {     bird.fly() }  letBirdFly(Bird())     // ✅ &quot;날아갑니다!&quot; letBirdFly(Penguin())  // ❌ 런타임 에러!    리스코프 치환 지키는 예시  protocol Bird {     func move() }  class FlyingBird: Bird {     func move() {         print(&quot;날아갑니다!&quot;)     } }  class WalkingBird: Bird {     func move() {         print(&quot;걸어갑니다!&quot;)     } }  func letBirdMove(_ bird: Bird) {     bird.move() }  letBirdMove(FlyingBird()) // ✅ 날아갑니다! letBirdMove(WalkingBird()) // ✅ 걸어갑니다!      MVVM    SOLID 원칙을 지키기 위해 MVVM 패턴을 사용한다. MVVM패턴을 지키면 자연스럽게 SOLID 원칙을 지킬 수 있다. MVVM은 Model, View, ViewModel로 3등분으로 구성된다.  그림 상세내용(참고)     View는 UI를 표현하고 버튼 클릭이나 텍스트 입력과 같은 이벤트를 ViewModel으로 전달한다.   ViewModel은 View(UI)와 관련한 로직을 모두 처리하거나 상태를 보유한다. 또한 View에서 전달된 이벤트에 따라 바뀐 상태나 바뀐 UI 관련 로직을 처리하고 필요시 ViewController에게 바로 상태를 전달하고, 만약 더 핵심적인 비즈니스 로직(API 호츌)이 필요하면 Model에 전달하여 Model에서 핵심 비즈니스 로직을 처리하고 데이터를 다시 ViewModel로 전달해주고 ViewModel에서 UI적인 로직을 처리하여 ViewController에게 상태나 데이터를 전달한다.   MVVM 구성                 구성 요소       역할                       Model       데이터와 비즈니스 로직 (API 통신, 데이터 가공 등)                 ViewModel       View에 필요한 상태와 로직을 관리 (UI 상태 결정, 이벤트 처리)                 View (UI)       사용자 입력, 화면 표시 (이벤트는 ViewModel로 전달)           🔁 의존성 방향     View → ViewModel: View는 ViewModel에 의존 (버튼 클릭 → 메서드 호출 등)   ViewModel → Model: ViewModel은 데이터가 필요할 때 Model에 요청   Model은 아무것도 모름 (하위 계층은 상위 계층을 몰라야 함 = DIP 적용)   의존성의 방향은 잘 변경되는 쪽이 잘 변경되지 않는 쪽을 바라본다, 즉 각 구성요소가 단방향적인 의존성을 지키고 있다.   ✅ SOLID 원칙 적용 전 MVVM 코드 (DIP 위반)   // MARK: - Model struct User {     let name: String }  // MARK: - ViewModel (구체 타입에 직접 의존) class UserViewModel {     private let user: User      init(user: User) {         self.user = user     }      var displayName: String {         &quot;👤 \(user.name)&quot;     } }  // MARK: - View (ViewModel의 구체 타입에 의존함 → DIP 위반) class UserView {     private let viewModel: UserViewModel  // ❌ 구체 클래스에 의존      init(viewModel: UserViewModel) {         self.viewModel = viewModel     }      func render() {         print(viewModel.displayName)     } }  // MARK: - 실행 let user = User(name: &quot;김동현&quot;) let viewModel = UserViewModel(user: user) let view = UserView(viewModel: viewModel) view.render() // 출력: 👤 김동현    ✅ SOLID 원칙 적용 후 MVVM 코드 (DIP, OCP 등 만족)   // MARK: - Model struct User {     let name: String }  // MARK: - ViewModel 추상화 (DIP 적용) protocol UserViewModelProtocol {     var displayName: String { get } }  // MARK: - ViewModel 구현체 class UserViewModel: UserViewModelProtocol {     private let user: User      init(user: User) {         self.user = user     }      var displayName: String {         &quot;👤 \(user.name)&quot;     } }  // MARK: - View (프로토콜에 의존함 → DIP 만족) class UserView {     private let viewModel: UserViewModelProtocol  // ✅ 프로토콜에 의존      init(viewModel: UserViewModelProtocol) {         self.viewModel = viewModel     }      func render() {         print(viewModel.displayName)     } }  // MARK: - 실행 let user = User(name: &quot;김동현&quot;) let viewModel = UserViewModel(user: user) let view = UserView(viewModel: viewModel) view.render() // 출력: 👤 김동현     Interface  클린아키텍처를 이해하기위해 인터페이스 개념을 다시 한번 알고 가자.  인터페이스란?     우리가 흔이 말하는 앱의 유저 인터페이스(UI)는 사용자가 직접 마주하는 화면을 의미한다.   어떻게 구성되고, 어떻게 동작하며, 어떤 방식으로 정의한다.   ❄️ 냉장고로 예시를 들어본다면     유저 인터페이스(UI): 손잡이, 버튼, 디스플레이   내부 로직: 온도 조절, 냉각 등 실제 동작   중요한 포인트:     사용자는 내부 로직을 몰라도, 버튼 하나로 냉장고를 조작할 수 있다.     → 즉, “인터페이스만 알면 사용 가능”한 구조다.        냉장고의 UI는 ViewController, 내부 로직은 ViewModel로 비유할 수 있다.   ViewController는 “냉장고 온도를 내려주세요”라고 요청만 한다.   실제 로직(냉각, 온도 계산 등)은 ViewModel이 처리한다.   인터페이스를 정리하자면       ViewController가 ViewModel을 직접 구현이 아닌 인터페이스(Protocol)에 의존하면,   내부 로직이 바뀌더라도 ViewController는 수정 없이 그대로 동작할 수 있다.   이렇게 구현을 감추고 필요한 기능만 정의한 것을 **추상화**라고 한다. 인터페이스를 사용하는이유 = 의존성을 최소화 하기 위해 = 변경을 대응하기 위함.">
+
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[CleanArchitecture] SOLOD, MVVM, CleanArchitecture">
+<meta property="og:url" content="http://localhost:4000/CleanArchitecture-Clean-Architecture/">
+
+
+  <meta property="og:description" content="SOLOD, MVVM, CleanArchitecture  클린 아키텍처를 알기 위해서는 MVVM을 알아야 하고 MVVM을 알기 위해서는 SOLID 원칙을 알아야 한다.  SOLID 원칙 -&gt; MVVM -&gt; Clean Architecture 순서로 정리하였다.  원칙이란?      원칙을 지키면 시간이 흐른 뒤에는 큰 영향을 가져온다.   SOLID 프로그램의 원칙을 지키면 프로젝트 규모가 커질수록 큰 영향을 가져온다.   원칙을 지키지 않는다면 어디서부터 어떻게 고쳐야 할 지 어렵고, 한 부분을 해결하면 다른 부분에서 문제가 발생할 수도 있다.   이렇기 때문에 SOLID 원칙을 지켜야 한다.   이 원칙을 지키면 얻을 수 있는 효과가 유지보수성이다.   유지보수가 쉬운 코드 = 어떤 상황에서도 잘 동작하고 변경에 용이     SOLID원칙     SOLOD원칙은 5가지 원칙을 의미한다.   1. 단일 책임     클래스는 하나의 책임만을 가져야 한다   ex) ViewConntroller의 책임(책임 = 변경이 일어날 때 영향을 받는다라고 가정)     UI 그리기   (&lt;- 책임)   UI 로직 구현   API 호출   내부 데이터 저장, 불러오기   =&gt; 이 4개중에 하나의 책임만 가져야 한다. 여기서는 UI 그리기가 책임이 된다.   2. 개팡 폐쇄     클래스는 기능의 확장에 있어서 열려 있어야 하고 수정에는 닫혀 있어야 한다.    ViewModel에서 User데이터에 대한 타입이 변경되면 ViewModel에 의존하는 ViewController가 영향을 받는다.  하지만 ViewController에서 UI에 대한 코드가 변경되면 안된다.  /*     MARK: - 개방 폐쇄 원칙     - viewController가 ViewModelProtocol을 의존하므로 ViewModel 내부 구현이 변경되어도 영향이 없다.     - ex) FriendUser -&gt; FamilyUser로 바뀌어도 ViewController에서 UI코드 변경 필요 없다.     - ViewController 코드를 수정하지 않고 기능을 확장할 수 있다.  */ protocol ViewModelProtocol {     func getUserList() -&gt; [UserProtocol] }  protocol UserProtocol { }  struct FriendUser: UserProtocol { } struct FamilyUser: UserProtocol { }  class ViewModel: ViewModelProtocol {     // ViewController는 각 객체가 어떤 구체 타입인지 몰라도 공통 인터페이스(UserProtocol)로 처리 가능하다.     func getUserList() -&gt; [UserProtocol] {         return [FriendUser(), FamilyUser()]     } }     3. 인터페이스 분리 원칙     사용하지 않는 인터페이스는 쓰지 않아야 한다.    사진과 같이 ViewController가 property1과 func3만 사용한다면  ViewController입장에서 나머지 property2, func1, func2는 필요 없다. 이럴때는 인터페이스를 분리해야 한다.   4. 의존성 역전 원칙     고수준 모듈은 저수준 모듈에 의존해서는 안된다. 둘다 추상화에 의존해야 한다.    저수준은 UI와 같이 잘 바뀌는 코드를 의미하고 고수준은 앱에서 핵심 기능인 잘 안바뀌는 기능을 의미한다.(쇼핑앱에서는 결제 기능과 유사) 즉 쉽게 바뀌는 코드가 쉽게 바뀌지 않는 코드를 의존해야 한다. 참고로 추상화(인터페이스)에 의존해야한다.  // MARK: - Model protocol UserProtocol {     var name: String { get } }  struct FriendUser: UserProtocol {     let name: String = &quot;친구 유저&quot; } struct FamilyUser: UserProtocol {     let name: String = &quot;가족 유저&quot; }  // MARK: - ViewModelProtocol(고수준의 추상화) // 핵심 로직 담당, UserProtocol 추상화에만 의존 protocol ViewModelProtocol {     var users: [UserProtocol] { get } }  // 고수준 class ViewModel: ViewModelProtocol {     var users: [UserProtocol] {         return [FriendUser(),FamilyUser()]     } }  // MARK: - View(저수준) // UI 담당, ViewModel의 추상화(ViewModelProtocol)에만 의존 class View {     private let viewModel: ViewModelProtocol // 고수준 추상화에 의존      init(viewModel: ViewModelProtocol) {         self.viewModel = viewModel     }          func render() {         for user in viewModel.users {             print(&quot;👤 이름: \(user.name)&quot;)         }     } }  // MARK: - 실행 let viewModel = ViewModel() let view = View(viewModel: viewModel) view.render()     5. 리스코프 치환원칙     자식 클래스는 언제나 자신의 부모 클래스로 교체할 수 있어야 한다. 즉 부모 타입을 사용하는 곳에 자식 타입을 넣어도 정상적으로 작동해야 한다.   리스코프 치환 위반 예시  class Bird {     func fly() {         print(&quot;날아갑니다!&quot;)     } }  class Penguin: Bird {     override func fly() {         // 펭귄은 날 수 없음 → LSP 위반         fatalError(&quot;펭귄은 날 수 없습니다!&quot;)     } }  func letBirdFly(_ bird: Bird) {     bird.fly() }  letBirdFly(Bird())     // ✅ &quot;날아갑니다!&quot; letBirdFly(Penguin())  // ❌ 런타임 에러!    리스코프 치환 지키는 예시  protocol Bird {     func move() }  class FlyingBird: Bird {     func move() {         print(&quot;날아갑니다!&quot;)     } }  class WalkingBird: Bird {     func move() {         print(&quot;걸어갑니다!&quot;)     } }  func letBirdMove(_ bird: Bird) {     bird.move() }  letBirdMove(FlyingBird()) // ✅ 날아갑니다! letBirdMove(WalkingBird()) // ✅ 걸어갑니다!      MVVM    SOLID 원칙을 지키기 위해 MVVM 패턴을 사용한다. MVVM패턴을 지키면 자연스럽게 SOLID 원칙을 지킬 수 있다. MVVM은 Model, View, ViewModel로 3등분으로 구성된다.  그림 상세내용(참고)     View는 UI를 표현하고 버튼 클릭이나 텍스트 입력과 같은 이벤트를 ViewModel으로 전달한다.   ViewModel은 View(UI)와 관련한 로직을 모두 처리하거나 상태를 보유한다. 또한 View에서 전달된 이벤트에 따라 바뀐 상태나 바뀐 UI 관련 로직을 처리하고 필요시 ViewController에게 바로 상태를 전달하고, 만약 더 핵심적인 비즈니스 로직(API 호츌)이 필요하면 Model에 전달하여 Model에서 핵심 비즈니스 로직을 처리하고 데이터를 다시 ViewModel로 전달해주고 ViewModel에서 UI적인 로직을 처리하여 ViewController에게 상태나 데이터를 전달한다.   MVVM 구성                 구성 요소       역할                       Model       데이터와 비즈니스 로직 (API 통신, 데이터 가공 등)                 ViewModel       View에 필요한 상태와 로직을 관리 (UI 상태 결정, 이벤트 처리)                 View (UI)       사용자 입력, 화면 표시 (이벤트는 ViewModel로 전달)           🔁 의존성 방향     View → ViewModel: View는 ViewModel에 의존 (버튼 클릭 → 메서드 호출 등)   ViewModel → Model: ViewModel은 데이터가 필요할 때 Model에 요청   Model은 아무것도 모름 (하위 계층은 상위 계층을 몰라야 함 = DIP 적용)   의존성의 방향은 잘 변경되는 쪽이 잘 변경되지 않는 쪽을 바라본다, 즉 각 구성요소가 단방향적인 의존성을 지키고 있다.   ✅ SOLID 원칙 적용 전 MVVM 코드 (DIP 위반)   // MARK: - Model struct User {     let name: String }  // MARK: - ViewModel (구체 타입에 직접 의존) class UserViewModel {     private let user: User      init(user: User) {         self.user = user     }      var displayName: String {         &quot;👤 \(user.name)&quot;     } }  // MARK: - View (ViewModel의 구체 타입에 의존함 → DIP 위반) class UserView {     private let viewModel: UserViewModel  // ❌ 구체 클래스에 의존      init(viewModel: UserViewModel) {         self.viewModel = viewModel     }      func render() {         print(viewModel.displayName)     } }  // MARK: - 실행 let user = User(name: &quot;김동현&quot;) let viewModel = UserViewModel(user: user) let view = UserView(viewModel: viewModel) view.render() // 출력: 👤 김동현    ✅ SOLID 원칙 적용 후 MVVM 코드 (DIP, OCP 등 만족)   // MARK: - Model struct User {     let name: String }  // MARK: - ViewModel 추상화 (DIP 적용) protocol UserViewModelProtocol {     var displayName: String { get } }  // MARK: - ViewModel 구현체 class UserViewModel: UserViewModelProtocol {     private let user: User      init(user: User) {         self.user = user     }      var displayName: String {         &quot;👤 \(user.name)&quot;     } }  // MARK: - View (프로토콜에 의존함 → DIP 만족) class UserView {     private let viewModel: UserViewModelProtocol  // ✅ 프로토콜에 의존      init(viewModel: UserViewModelProtocol) {         self.viewModel = viewModel     }      func render() {         print(viewModel.displayName)     } }  // MARK: - 실행 let user = User(name: &quot;김동현&quot;) let viewModel = UserViewModel(user: user) let view = UserView(viewModel: viewModel) view.render() // 출력: 👤 김동현     Interface  클린아키텍처를 이해하기위해 인터페이스 개념을 다시 한번 알고 가자.  인터페이스란?     우리가 흔이 말하는 앱의 유저 인터페이스(UI)는 사용자가 직접 마주하는 화면을 의미한다.   어떻게 구성되고, 어떻게 동작하며, 어떤 방식으로 정의한다.   ❄️ 냉장고로 예시를 들어본다면     유저 인터페이스(UI): 손잡이, 버튼, 디스플레이   내부 로직: 온도 조절, 냉각 등 실제 동작   중요한 포인트:     사용자는 내부 로직을 몰라도, 버튼 하나로 냉장고를 조작할 수 있다.     → 즉, “인터페이스만 알면 사용 가능”한 구조다.        냉장고의 UI는 ViewController, 내부 로직은 ViewModel로 비유할 수 있다.   ViewController는 “냉장고 온도를 내려주세요”라고 요청만 한다.   실제 로직(냉각, 온도 계산 등)은 ViewModel이 처리한다.   인터페이스를 정리하자면       ViewController가 ViewModel을 직접 구현이 아닌 인터페이스(Protocol)에 의존하면,   내부 로직이 바뀌더라도 ViewController는 수정 없이 그대로 동작할 수 있다.   이렇게 구현을 감추고 필요한 기능만 정의한 것을 **추상화**라고 한다. 인터페이스를 사용하는이유 = 의존성을 최소화 하기 위해 = 변경을 대응하기 위함.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-05-24T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/CleanArchitecture-Clean-Architecture/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li><li class="masthead__menu-item">
+              <a href="/projects/">Projects</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[CleanArchitecture] SOLOD, MVVM, CleanArchitecture">
+    <meta itemprop="description" content="SOLOD, MVVM, CleanArchitecture클린 아키텍처를 알기 위해서는 MVVM을 알아야 하고 MVVM을 알기 위해서는 SOLID 원칙을 알아야 한다.  SOLID 원칙 -&gt; MVVM -&gt; Clean Architecture 순서로 정리하였다.원칙이란?  원칙을 지키면 시간이 흐른 뒤에는 큰 영향을 가져온다.  SOLID 프로그램의 원칙을 지키면 프로젝트 규모가 커질수록 큰 영향을 가져온다.  원칙을 지키지 않는다면 어디서부터 어떻게 고쳐야 할 지 어렵고, 한 부분을 해결하면 다른 부분에서 문제가 발생할 수도 있다.  이렇기 때문에 SOLID 원칙을 지켜야 한다.  이 원칙을 지키면 얻을 수 있는 효과가 유지보수성이다.  유지보수가 쉬운 코드 = 어떤 상황에서도 잘 동작하고 변경에 용이SOLID원칙  SOLOD원칙은 5가지 원칙을 의미한다.1. 단일 책임  클래스는 하나의 책임만을 가져야 한다ex) ViewConntroller의 책임(책임 = 변경이 일어날 때 영향을 받는다라고 가정)  UI 그리기   (&lt;- 책임)  UI 로직 구현  API 호출  내부 데이터 저장, 불러오기=&gt; 이 4개중에 하나의 책임만 가져야 한다. 여기서는 UI 그리기가 책임이 된다.2. 개팡 폐쇄  클래스는 기능의 확장에 있어서 열려 있어야 하고 수정에는 닫혀 있어야 한다.ViewModel에서 User데이터에 대한 타입이 변경되면 ViewModel에 의존하는 ViewController가 영향을 받는다.  하지만 ViewController에서 UI에 대한 코드가 변경되면 안된다./*    MARK: - 개방 폐쇄 원칙    - viewController가 ViewModelProtocol을 의존하므로 ViewModel 내부 구현이 변경되어도 영향이 없다.    - ex) FriendUser -&gt; FamilyUser로 바뀌어도 ViewController에서 UI코드 변경 필요 없다.    - ViewController 코드를 수정하지 않고 기능을 확장할 수 있다. */protocol ViewModelProtocol {    func getUserList() -&gt; [UserProtocol]}protocol UserProtocol { }struct FriendUser: UserProtocol { }struct FamilyUser: UserProtocol { }class ViewModel: ViewModelProtocol {    // ViewController는 각 객체가 어떤 구체 타입인지 몰라도 공통 인터페이스(UserProtocol)로 처리 가능하다.    func getUserList() -&gt; [UserProtocol] {        return [FriendUser(), FamilyUser()]    }}3. 인터페이스 분리 원칙  사용하지 않는 인터페이스는 쓰지 않아야 한다.사진과 같이 ViewController가 property1과 func3만 사용한다면  ViewController입장에서 나머지 property2, func1, func2는 필요 없다. 이럴때는 인터페이스를 분리해야 한다.4. 의존성 역전 원칙  고수준 모듈은 저수준 모듈에 의존해서는 안된다. 둘다 추상화에 의존해야 한다.저수준은 UI와 같이 잘 바뀌는 코드를 의미하고 고수준은 앱에서 핵심 기능인 잘 안바뀌는 기능을 의미한다.(쇼핑앱에서는 결제 기능과 유사)즉 쉽게 바뀌는 코드가 쉽게 바뀌지 않는 코드를 의존해야 한다.참고로 추상화(인터페이스)에 의존해야한다.// MARK: - Modelprotocol UserProtocol {    var name: String { get }}struct FriendUser: UserProtocol {    let name: String = &quot;친구 유저&quot;}struct FamilyUser: UserProtocol {    let name: String = &quot;가족 유저&quot;}// MARK: - ViewModelProtocol(고수준의 추상화)// 핵심 로직 담당, UserProtocol 추상화에만 의존protocol ViewModelProtocol {    var users: [UserProtocol] { get }}// 고수준class ViewModel: ViewModelProtocol {    var users: [UserProtocol] {        return [FriendUser(),FamilyUser()]    }}// MARK: - View(저수준)// UI 담당, ViewModel의 추상화(ViewModelProtocol)에만 의존class View {    private let viewModel: ViewModelProtocol // 고수준 추상화에 의존    init(viewModel: ViewModelProtocol) {        self.viewModel = viewModel    }        func render() {        for user in viewModel.users {            print(&quot;👤 이름: \(user.name)&quot;)        }    }}// MARK: - 실행let viewModel = ViewModel()let view = View(viewModel: viewModel)view.render()5. 리스코프 치환원칙  자식 클래스는 언제나 자신의 부모 클래스로 교체할 수 있어야 한다. 즉 부모 타입을 사용하는 곳에 자식 타입을 넣어도 정상적으로 작동해야 한다.리스코프 치환 위반 예시class Bird {    func fly() {        print(&quot;날아갑니다!&quot;)    }}class Penguin: Bird {    override func fly() {        // 펭귄은 날 수 없음 → LSP 위반        fatalError(&quot;펭귄은 날 수 없습니다!&quot;)    }}func letBirdFly(_ bird: Bird) {    bird.fly()}letBirdFly(Bird())     // ✅ &quot;날아갑니다!&quot;letBirdFly(Penguin())  // ❌ 런타임 에러!리스코프 치환 지키는 예시protocol Bird {    func move()}class FlyingBird: Bird {    func move() {        print(&quot;날아갑니다!&quot;)    }}class WalkingBird: Bird {    func move() {        print(&quot;걸어갑니다!&quot;)    }}func letBirdMove(_ bird: Bird) {    bird.move()}letBirdMove(FlyingBird()) // ✅ 날아갑니다!letBirdMove(WalkingBird()) // ✅ 걸어갑니다!MVVMSOLID 원칙을 지키기 위해 MVVM 패턴을 사용한다. MVVM패턴을 지키면 자연스럽게 SOLID 원칙을 지킬 수 있다. MVVM은 Model, View, ViewModel로 3등분으로 구성된다.그림 상세내용(참고)  View는 UI를 표현하고 버튼 클릭이나 텍스트 입력과 같은 이벤트를 ViewModel으로 전달한다.  ViewModel은 View(UI)와 관련한 로직을 모두 처리하거나 상태를 보유한다. 또한 View에서 전달된 이벤트에 따라 바뀐 상태나 바뀐 UI 관련 로직을 처리하고 필요시 ViewController에게 바로 상태를 전달하고, 만약 더 핵심적인 비즈니스 로직(API 호츌)이 필요하면 Model에 전달하여 Model에서 핵심 비즈니스 로직을 처리하고 데이터를 다시 ViewModel로 전달해주고 ViewModel에서 UI적인 로직을 처리하여 ViewController에게 상태나 데이터를 전달한다.MVVM 구성            구성 요소      역할                  Model      데이터와 비즈니스 로직 (API 통신, 데이터 가공 등)              ViewModel      View에 필요한 상태와 로직을 관리 (UI 상태 결정, 이벤트 처리)              View (UI)      사용자 입력, 화면 표시 (이벤트는 ViewModel로 전달)      🔁 의존성 방향  View → ViewModel: View는 ViewModel에 의존 (버튼 클릭 → 메서드 호출 등)  ViewModel → Model: ViewModel은 데이터가 필요할 때 Model에 요청  Model은 아무것도 모름 (하위 계층은 상위 계층을 몰라야 함 = DIP 적용)  의존성의 방향은 잘 변경되는 쪽이 잘 변경되지 않는 쪽을 바라본다, 즉 각 구성요소가 단방향적인 의존성을 지키고 있다.✅ SOLID 원칙 적용 전 MVVM 코드 (DIP 위반)// MARK: - Modelstruct User {    let name: String}// MARK: - ViewModel (구체 타입에 직접 의존)class UserViewModel {    private let user: User    init(user: User) {        self.user = user    }    var displayName: String {        &quot;👤 \(user.name)&quot;    }}// MARK: - View (ViewModel의 구체 타입에 의존함 → DIP 위반)class UserView {    private let viewModel: UserViewModel  // ❌ 구체 클래스에 의존    init(viewModel: UserViewModel) {        self.viewModel = viewModel    }    func render() {        print(viewModel.displayName)    }}// MARK: - 실행let user = User(name: &quot;김동현&quot;)let viewModel = UserViewModel(user: user)let view = UserView(viewModel: viewModel)view.render()// 출력: 👤 김동현✅ SOLID 원칙 적용 후 MVVM 코드 (DIP, OCP 등 만족)// MARK: - Modelstruct User {    let name: String}// MARK: - ViewModel 추상화 (DIP 적용)protocol UserViewModelProtocol {    var displayName: String { get }}// MARK: - ViewModel 구현체class UserViewModel: UserViewModelProtocol {    private let user: User    init(user: User) {        self.user = user    }    var displayName: String {        &quot;👤 \(user.name)&quot;    }}// MARK: - View (프로토콜에 의존함 → DIP 만족)class UserView {    private let viewModel: UserViewModelProtocol  // ✅ 프로토콜에 의존    init(viewModel: UserViewModelProtocol) {        self.viewModel = viewModel    }    func render() {        print(viewModel.displayName)    }}// MARK: - 실행let user = User(name: &quot;김동현&quot;)let viewModel = UserViewModel(user: user)let view = UserView(viewModel: viewModel)view.render()// 출력: 👤 김동현Interface클린아키텍처를 이해하기위해 인터페이스 개념을 다시 한번 알고 가자.인터페이스란?  우리가 흔이 말하는 앱의 유저 인터페이스(UI)는 사용자가 직접 마주하는 화면을 의미한다.  어떻게 구성되고, 어떻게 동작하며, 어떤 방식으로 정의한다.❄️ 냉장고로 예시를 들어본다면  유저 인터페이스(UI): 손잡이, 버튼, 디스플레이  내부 로직: 온도 조절, 냉각 등 실제 동작  중요한 포인트:    사용자는 내부 로직을 몰라도, 버튼 하나로 냉장고를 조작할 수 있다.    → 즉, “인터페이스만 알면 사용 가능”한 구조다.  냉장고의 UI는 ViewController, 내부 로직은 ViewModel로 비유할 수 있다.  ViewController는 “냉장고 온도를 내려주세요”라고 요청만 한다.  실제 로직(냉각, 온도 계산 등)은 ViewModel이 처리한다.인터페이스를 정리하자면  ViewController가 ViewModel을 직접 구현이 아닌 인터페이스(Protocol)에 의존하면,  내부 로직이 바뀌더라도 ViewController는 수정 없이 그대로 동작할 수 있다.이렇게 구현을 감추고 필요한 기능만 정의한 것을 **추상화**라고 한다.인터페이스를 사용하는이유 = 의존성을 최소화 하기 위해 = 변경을 대응하기 위함.">
+    <meta itemprop="datePublished" content="2025-05-24T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/CleanArchitecture-Clean-Architecture/" class="u-url" itemprop="url">[CleanArchitecture] SOLOD, MVVM, CleanArchitecture
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=CleanArchitecture">CleanArchitecture</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-05-24T00:00:00+00:00">May 24, 2025</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<!-- <table>
+  <tr>
+    <td><img src="/assets/img/2025-03-25-%5BCleanArchitecture%5D-CleanArchitecture/clean1.png" alt="커스텀셀1" width="50%"></td>
+    <td><img src="/assets/img/2025-03-25-%5BCleanArchitecture%5D-CleanArchitecture/clean3.png" alt="커스텀셀" width="50%"></td>
+  </tr>
+</table>
+
+<div style="display: flex; justify-content: space-between;">
+  <img src="/assets/img/2025-03-25-%5BCleanArchitecture%5D-CleanArchitecture/clean1.png" alt="커스텀셀1" width="50%">
+  <img src="/assets/img/2025-03-25-%5BCleanArchitecture%5D-CleanArchitecture/clean3.png" alt="커스텀셀" width="50%">
+</div> -->
+
+<!-- <div style="display: flex; justify-content: space-between;">
+  <img src="/assets/img/2025-03-25-%5BCleanArchitecture%5D-CleanArchitecture/clean1.png" alt="커스텀셀1" width="50%">
+  <img src="/assets/img/2025-03-25-%5BCleanArchitecture%5D-CleanArchitecture/clean3.png" alt="커스텀셀" width="50%">
+</div> -->
+
+<h1 id="solod-mvvm-cleanarchitecture">SOLOD, MVVM, CleanArchitecture</h1>
+
+<p>클린 아키텍처를 알기 위해서는 MVVM을 알아야 하고 MVVM을 알기 위해서는 SOLID 원칙을 알아야 한다.  SOLID 원칙 -&gt; MVVM -&gt; Clean Architecture 순서로 정리하였다.</p>
+
+<h2 id="원칙이란">원칙이란?</h2>
+
+<p><img src="/assets/img/2025-05-24-%5BCleanArchitecture%5D-Clean%20Architecture/img.jpg" alt="이미지" width="70%" /></p>
+<ul>
+  <li>원칙을 지키면 시간이 흐른 뒤에는 큰 영향을 가져온다.</li>
+  <li>SOLID 프로그램의 원칙을 지키면 프로젝트 규모가 커질수록 큰 영향을 가져온다.</li>
+  <li>원칙을 지키지 않는다면 어디서부터 어떻게 고쳐야 할 지 어렵고, 한 부분을 해결하면 다른 부분에서 문제가 발생할 수도 있다.</li>
+  <li>이렇기 때문에 SOLID 원칙을 지켜야 한다.</li>
+  <li>이 원칙을 지키면 얻을 수 있는 효과가 유지보수성이다.</li>
+  <li>유지보수가 쉬운 코드 = 어떤 상황에서도 잘 동작하고 변경에 용이</li>
+</ul>
+
+<hr />
+
+<h2 id="solid원칙">SOLID원칙</h2>
+
+<ul>
+  <li>SOLOD원칙은 5가지 원칙을 의미한다.</li>
+</ul>
+
+<h3 id="1-단일-책임">1. 단일 책임</h3>
+
+<ul>
+  <li>클래스는 하나의 책임만을 가져야 한다</li>
+</ul>
+
+<p>ex) ViewConntroller의 책임(책임 = 변경이 일어날 때 영향을 받는다라고 가정)</p>
+
+<ul>
+  <li>UI 그리기   (&lt;- 책임)</li>
+  <li>UI 로직 구현</li>
+  <li>API 호출</li>
+  <li>내부 데이터 저장, 불러오기</li>
+</ul>
+
+<p>=&gt; 이 4개중에 하나의 책임만 가져야 한다. 여기서는 UI 그리기가 책임이 된다.<br />
+<br /><br /></p>
+
+<h3 id="2-개팡-폐쇄">2. 개팡 폐쇄</h3>
+
+<ul>
+  <li>클래스는 기능의 확장에 있어서 열려 있어야 하고 수정에는 닫혀 있어야 한다.</li>
+</ul>
+
+<p><img src="/assets/img/2025-05-24-%5BCleanArchitecture%5D-Clean%20Architecture/image-20250524154310671.png" alt="이미지" width="50%" /><br />
+ViewModel에서 User데이터에 대한 타입이 변경되면 ViewModel에 의존하는 ViewController가 영향을 받는다.  하지만 ViewController에서 UI에 대한 코드가 변경되면 안된다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+    MARK: - 개방 폐쇄 원칙
+    - viewController가 ViewModelProtocol을 의존하므로 ViewModel 내부 구현이 변경되어도 영향이 없다.
+    - ex) FriendUser -&gt; FamilyUser로 바뀌어도 ViewController에서 UI코드 변경 필요 없다.
+    - ViewController 코드를 수정하지 않고 기능을 확장할 수 있다.
+ */</span>
+<span class="kd">protocol</span> <span class="kt">ViewModelProtocol</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">getUserList</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">UserProtocol</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="kd">protocol</span> <span class="kt">UserProtocol</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kd">struct</span> <span class="kt">FriendUser</span><span class="p">:</span> <span class="kt">UserProtocol</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kd">struct</span> <span class="kt">FamilyUser</span><span class="p">:</span> <span class="kt">UserProtocol</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">ViewModel</span><span class="p">:</span> <span class="kt">ViewModelProtocol</span> <span class="p">{</span>
+    <span class="c1">// ViewController는 각 객체가 어떤 구체 타입인지 몰라도 공통 인터페이스(UserProtocol)로 처리 가능하다.</span>
+    <span class="kd">func</span> <span class="nf">getUserList</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">UserProtocol</span><span class="p">]</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">[</span><span class="kt">FriendUser</span><span class="p">(),</span> <span class="kt">FamilyUser</span><span class="p">()]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><br /><br /></p>
+
+<h3 id="3-인터페이스-분리-원칙">3. 인터페이스 분리 원칙</h3>
+
+<ul>
+  <li>사용하지 않는 인터페이스는 쓰지 않아야 한다.</li>
+</ul>
+
+<p><img src="/assets/img/2025-05-24-%5BCleanArchitecture%5D-Clean%20Architecture/image-20250524160614297.png" alt="이미지" width="50%" /><br />
+사진과 같이 ViewController가 property1과 func3만 사용한다면  ViewController입장에서 나머지 property2, func1, func2는 필요 없다. 이럴때는 인터페이스를 분리해야 한다.<br />
+<br /><br /></p>
+
+<h3 id="4-의존성-역전-원칙">4. 의존성 역전 원칙</h3>
+
+<ul>
+  <li>고수준 모듈은 저수준 모듈에 의존해서는 안된다. 둘다 추상화에 의존해야 한다.</li>
+</ul>
+
+<p><img src="/assets/img/2025-05-24-%5BCleanArchitecture%5D-Clean%20Architecture/image-20250524161541708.png" alt="이미지" width="50%" /><br />
+저수준은 UI와 같이 잘 바뀌는 코드를 의미하고 고수준은 앱에서 핵심 기능인 잘 안바뀌는 기능을 의미한다.(쇼핑앱에서는 결제 기능과 유사)<br />
+즉 쉽게 바뀌는 코드가 쉽게 바뀌지 않는 코드를 의존해야 한다.<br />
+참고로 추상화(인터페이스)에 의존해야한다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// MARK: - Model</span>
+<span class="kd">protocol</span> <span class="kt">UserProtocol</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">struct</span> <span class="kt">FriendUser</span><span class="p">:</span> <span class="kt">UserProtocol</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"친구 유저"</span>
+<span class="p">}</span>
+<span class="kd">struct</span> <span class="kt">FamilyUser</span><span class="p">:</span> <span class="kt">UserProtocol</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"가족 유저"</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - ViewModelProtocol(고수준의 추상화)</span>
+<span class="c1">// 핵심 로직 담당, UserProtocol 추상화에만 의존</span>
+<span class="kd">protocol</span> <span class="kt">ViewModelProtocol</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">users</span><span class="p">:</span> <span class="p">[</span><span class="kt">UserProtocol</span><span class="p">]</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 고수준</span>
+<span class="kd">class</span> <span class="kt">ViewModel</span><span class="p">:</span> <span class="kt">ViewModelProtocol</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">users</span><span class="p">:</span> <span class="p">[</span><span class="kt">UserProtocol</span><span class="p">]</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">[</span><span class="kt">FriendUser</span><span class="p">(),</span><span class="kt">FamilyUser</span><span class="p">()]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - View(저수준)</span>
+<span class="c1">// UI 담당, ViewModel의 추상화(ViewModelProtocol)에만 의존</span>
+<span class="kd">class</span> <span class="kt">View</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">viewModel</span><span class="p">:</span> <span class="kt">ViewModelProtocol</span> <span class="c1">// 고수준 추상화에 의존</span>
+
+    <span class="nf">init</span><span class="p">(</span><span class="nv">viewModel</span><span class="p">:</span> <span class="kt">ViewModelProtocol</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">viewModel</span> <span class="o">=</span> <span class="n">viewModel</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">render</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="n">user</span> <span class="k">in</span> <span class="n">viewModel</span><span class="o">.</span><span class="n">users</span> <span class="p">{</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"👤 이름: </span><span class="se">\(</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - 실행</span>
+<span class="k">let</span> <span class="nv">viewModel</span> <span class="o">=</span> <span class="kt">ViewModel</span><span class="p">()</span>
+<span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="kt">View</span><span class="p">(</span><span class="nv">viewModel</span><span class="p">:</span> <span class="n">viewModel</span><span class="p">)</span>
+<span class="n">view</span><span class="o">.</span><span class="nf">render</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /><br /></p>
+
+<h3 id="5-리스코프-치환원칙">5. 리스코프 치환원칙</h3>
+
+<ul>
+  <li>자식 클래스는 언제나 자신의 부모 클래스로 교체할 수 있어야 한다. 즉 부모 타입을 사용하는 곳에 자식 타입을 넣어도 정상적으로 작동해야 한다.</li>
+</ul>
+
+<h3 id="리스코프-치환-위반-예시">리스코프 치환 위반 예시</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="kt">Bird</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">fly</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"날아갑니다!"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">Penguin</span><span class="p">:</span> <span class="kt">Bird</span> <span class="p">{</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">fly</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// 펭귄은 날 수 없음 → LSP 위반</span>
+        <span class="nf">fatalError</span><span class="p">(</span><span class="s">"펭귄은 날 수 없습니다!"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">letBirdFly</span><span class="p">(</span><span class="n">_</span> <span class="nv">bird</span><span class="p">:</span> <span class="kt">Bird</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">bird</span><span class="o">.</span><span class="nf">fly</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="nf">letBirdFly</span><span class="p">(</span><span class="kt">Bird</span><span class="p">())</span>     <span class="c1">// ✅ "날아갑니다!"</span>
+<span class="nf">letBirdFly</span><span class="p">(</span><span class="kt">Penguin</span><span class="p">())</span>  <span class="c1">// ❌ 런타임 에러!</span>
+
+</code></pre></div></div>
+
+<h3 id="리스코프-치환-지키는-예시">리스코프 치환 지키는 예시</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protocol</span> <span class="kt">Bird</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">move</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">FlyingBird</span><span class="p">:</span> <span class="kt">Bird</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">move</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"날아갑니다!"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">WalkingBird</span><span class="p">:</span> <span class="kt">Bird</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">move</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"걸어갑니다!"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">letBirdMove</span><span class="p">(</span><span class="n">_</span> <span class="nv">bird</span><span class="p">:</span> <span class="kt">Bird</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">bird</span><span class="o">.</span><span class="nf">move</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="nf">letBirdMove</span><span class="p">(</span><span class="kt">FlyingBird</span><span class="p">())</span> <span class="c1">// ✅ 날아갑니다!</span>
+<span class="nf">letBirdMove</span><span class="p">(</span><span class="kt">WalkingBird</span><span class="p">())</span> <span class="c1">// ✅ 걸어갑니다!</span>
+
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="mvvm">MVVM</h2>
+
+<p><img src="/assets/img/2025-05-24-%5BCleanArchitecture%5D-Clean%20Architecture/image-20250524171856966.png" alt="이미지" width="70%" /></p>
+
+<p>SOLID 원칙을 지키기 위해 MVVM 패턴을 사용한다. MVVM패턴을 지키면 자연스럽게 SOLID 원칙을 지킬 수 있다. MVVM은 Model, View, ViewModel로 3등분으로 구성된다.</p>
+
+<h3 id="그림-상세내용참고">그림 상세내용(참고)</h3>
+
+<ul>
+  <li>View는 UI를 표현하고 버튼 클릭이나 텍스트 입력과 같은 <strong>이벤트를 ViewModel으로 전달</strong>한다.</li>
+  <li>ViewModel은 View(UI)와 관련한 로직을 모두 처리하거나 상태를 보유한다. 또한 View에서 전달된 이벤트에 따라 바뀐 상태나 바뀐 UI 관련 로직을 처리하고 필요시 ViewController에게 바로 상태를 전달하고, 만약 더 핵심적인 비즈니스 로직(API 호츌)이 필요하면 Model에 전달하여 Model에서 핵심 비즈니스 로직을 처리하고 데이터를 다시 ViewModel로 전달해주고 ViewModel에서 UI적인 로직을 처리하여 ViewController에게 상태나 데이터를 전달한다.</li>
+</ul>
+
+<h3 id="mvvm-구성">MVVM 구성</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>구성 요소</th>
+      <th>역할</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Model</strong></td>
+      <td>데이터와 비즈니스 로직 (API 통신, 데이터 가공 등)</td>
+    </tr>
+    <tr>
+      <td><strong>ViewModel</strong></td>
+      <td>View에 필요한 상태와 로직을 관리 (UI 상태 결정, 이벤트 처리)</td>
+    </tr>
+    <tr>
+      <td><strong>View (UI)</strong></td>
+      <td>사용자 입력, 화면 표시 (이벤트는 ViewModel로 전달)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="-의존성-방향">🔁 의존성 방향</h3>
+
+<ul>
+  <li><strong>View → ViewModel</strong>: View는 ViewModel에 의존 (버튼 클릭 → 메서드 호출 등)</li>
+  <li><strong>ViewModel → Model</strong>: ViewModel은 데이터가 필요할 때 Model에 요청</li>
+  <li><strong>Model은 아무것도 모름</strong> (하위 계층은 상위 계층을 몰라야 함 = DIP 적용)</li>
+  <li>의존성의 방향은 잘 변경되는 쪽이 잘 변경되지 않는 쪽을 바라본다, 즉 각 구성요소가 단방향적인 의존성을 지키고 있다.</li>
+</ul>
+
+<h3 id="-solid-원칙-적용-전-mvvm-코드-dip-위반">✅ SOLID 원칙 적용 전 MVVM 코드 (DIP 위반)</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="c1">// MARK: - Model</span>
+<span class="kd">struct</span> <span class="kt">User</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - ViewModel (구체 타입에 직접 의존)</span>
+<span class="kd">class</span> <span class="kt">UserViewModel</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">user</span><span class="p">:</span> <span class="kt">User</span>
+
+    <span class="nf">init</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt">User</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">user</span>
+    <span class="p">}</span>
+
+    <span class="k">var</span> <span class="nv">displayName</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span>
+        <span class="s">"👤 </span><span class="se">\(</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="se">)</span><span class="s">"</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - View (ViewModel의 구체 타입에 의존함 → DIP 위반)</span>
+<span class="kd">class</span> <span class="kt">UserView</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">viewModel</span><span class="p">:</span> <span class="kt">UserViewModel</span>  <span class="c1">// ❌ 구체 클래스에 의존</span>
+
+    <span class="nf">init</span><span class="p">(</span><span class="nv">viewModel</span><span class="p">:</span> <span class="kt">UserViewModel</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">viewModel</span> <span class="o">=</span> <span class="n">viewModel</span>
+    <span class="p">}</span>
+
+    <span class="kd">func</span> <span class="nf">render</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">viewModel</span><span class="o">.</span><span class="n">displayName</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - 실행</span>
+<span class="k">let</span> <span class="nv">user</span> <span class="o">=</span> <span class="kt">User</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"김동현"</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">viewModel</span> <span class="o">=</span> <span class="kt">UserViewModel</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="n">user</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="kt">UserView</span><span class="p">(</span><span class="nv">viewModel</span><span class="p">:</span> <span class="n">viewModel</span><span class="p">)</span>
+<span class="n">view</span><span class="o">.</span><span class="nf">render</span><span class="p">()</span>
+<span class="c1">// 출력: 👤 김동현</span>
+
+</code></pre></div></div>
+
+<h3 id="-solid-원칙-적용-후-mvvm-코드-dip-ocp-등-만족">✅ SOLID 원칙 적용 후 MVVM 코드 (DIP, OCP 등 만족)</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="c1">// MARK: - Model</span>
+<span class="kd">struct</span> <span class="kt">User</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - ViewModel 추상화 (DIP 적용)</span>
+<span class="kd">protocol</span> <span class="kt">UserViewModelProtocol</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">displayName</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - ViewModel 구현체</span>
+<span class="kd">class</span> <span class="kt">UserViewModel</span><span class="p">:</span> <span class="kt">UserViewModelProtocol</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">user</span><span class="p">:</span> <span class="kt">User</span>
+
+    <span class="nf">init</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="kt">User</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">user</span>
+    <span class="p">}</span>
+
+    <span class="k">var</span> <span class="nv">displayName</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span>
+        <span class="s">"👤 </span><span class="se">\(</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="se">)</span><span class="s">"</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - View (프로토콜에 의존함 → DIP 만족)</span>
+<span class="kd">class</span> <span class="kt">UserView</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">viewModel</span><span class="p">:</span> <span class="kt">UserViewModelProtocol</span>  <span class="c1">// ✅ 프로토콜에 의존</span>
+
+    <span class="nf">init</span><span class="p">(</span><span class="nv">viewModel</span><span class="p">:</span> <span class="kt">UserViewModelProtocol</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">viewModel</span> <span class="o">=</span> <span class="n">viewModel</span>
+    <span class="p">}</span>
+
+    <span class="kd">func</span> <span class="nf">render</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">viewModel</span><span class="o">.</span><span class="n">displayName</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - 실행</span>
+<span class="k">let</span> <span class="nv">user</span> <span class="o">=</span> <span class="kt">User</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"김동현"</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">viewModel</span> <span class="o">=</span> <span class="kt">UserViewModel</span><span class="p">(</span><span class="nv">user</span><span class="p">:</span> <span class="n">user</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="kt">UserView</span><span class="p">(</span><span class="nv">viewModel</span><span class="p">:</span> <span class="n">viewModel</span><span class="p">)</span>
+<span class="n">view</span><span class="o">.</span><span class="nf">render</span><span class="p">()</span>
+<span class="c1">// 출력: 👤 김동현</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="interface">Interface</h2>
+
+<p>클린아키텍처를 이해하기위해 인터페이스 개념을 다시 한번 알고 가자.</p>
+
+<h3 id="인터페이스란">인터페이스란?</h3>
+
+<ul>
+  <li>우리가 흔이 말하는 앱의 유저 인터페이스(UI)는 사용자가 직접 마주하는 화면을 의미한다.</li>
+  <li>어떻게 구성되고, 어떻게 동작하며, 어떤 방식으로 정의한다.</li>
+</ul>
+
+<h3 id="️-냉장고로-예시를-들어본다면">❄️ 냉장고로 예시를 들어본다면</h3>
+
+<ul>
+  <li>유저 인터페이스(UI): 손잡이, 버튼, 디스플레이</li>
+  <li>내부 로직: 온도 조절, 냉각 등 실제 동작</li>
+  <li><strong>중요한 포인트</strong>:  <br />
+  사용자는 내부 로직을 몰라도, 버튼 하나로 냉장고를 조작할 수 있다.  <br />
+  → 즉, <strong>“인터페이스만 알면 사용 가능”</strong>한 구조다.</li>
+</ul>
+
+<p><img src="/assets/img/2025-05-24-%5BCleanArchitecture%5D-Clean%20Architecture/image-20250524175041634.png" alt="이미지" width="70%" /></p>
+
+<ul>
+  <li>냉장고의 UI는 <code class="language-plaintext highlighter-rouge">ViewController</code>, 내부 로직은 <code class="language-plaintext highlighter-rouge">ViewModel</code>로 비유할 수 있다.</li>
+  <li><code class="language-plaintext highlighter-rouge">ViewController</code>는 <strong>“냉장고 온도를 내려주세요”</strong>라고 요청만 한다.</li>
+  <li>실제 로직(냉각, 온도 계산 등)은 <code class="language-plaintext highlighter-rouge">ViewModel</code>이 처리한다.</li>
+</ul>
+
+<h2 id="인터페이스를-정리하자면">인터페이스를 정리하자면</h2>
+
+<p><img src="/assets/img/2025-05-24-%5BCleanArchitecture%5D-Clean%20Architecture/image-20250524175910967.png" alt="이미지" width="70%" /></p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ViewController</code>가 <code class="language-plaintext highlighter-rouge">ViewModel</code>을 <strong>직접 구현이 아닌 인터페이스(Protocol)</strong>에 의존하면,</li>
+  <li>내부 로직이 바뀌더라도 ViewController는 수정 없이 그대로 동작할 수 있다.</li>
+</ul>
+
+<p>이렇게 <strong>구현을 감추고 필요한 기능만 정의한 것</strong>을 <code class="language-plaintext highlighter-rouge">**추상화**</code>라고 한다.<br />
+인터페이스를 사용하는이유 = 의존성을 최소화 하기 위해 = 변경을 대응하기 위함.</p>
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/UIKit-FCM/" class="pagination--pager" title="[UIKit] iOS 푸시알림 FCM, APNS
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

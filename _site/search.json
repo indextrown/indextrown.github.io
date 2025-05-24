@@ -1,7 +1,15 @@
 [
     
         {
-        "title"    : "[UIKit] iOS 푸시알림 FCM, APNS 이게 뭔데?",
+        "title"    : "[CleanArchitecture] SOLOD, MVVM, CleanArchitecture",
+        "category" : "",
+        "tags"     : "CleanArchitecture",
+        "url"      : "/CleanArchitecture-Clean-Architecture/",
+        "date"     : "2025-05-24 00:00:00 +0000"
+        } ,
+    
+        {
+        "title"    : "[UIKit] iOS 푸시알림 FCM, APNS",
         "category" : "",
         "tags"     : "UIKit",
         "url"      : "/UIKit-FCM/",

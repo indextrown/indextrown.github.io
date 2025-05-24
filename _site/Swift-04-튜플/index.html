@@ -9,7 +9,65 @@
   <head>
     <meta charset="utf-8">
 
+<!-- begin _includes/seo.html --><title>[Swift] 튜플(Tuple) - DongHyeon Kim’s Blog</title>
+<meta name="description" content="1. 튜플     원하는 연관된 데이터의 조합으로 만들 수 있는 타입이다.        변수를 선언과 동시에 해당 멤버(데이터의 종류 및 개수)가 결정되므로 추가/삭제는 불가능하다.      // 좌표 let position: (Int, Int) = (1, 2)   print(position.0)   print(position.1)    // 3차원 공간 let position3D: (Int, Int, Int) = (1, 2, 3) print(position3D.0) print(position3D.1) print(position3D.2)    // 태입 앨리어스를 이용하여 튜플의 묶음값을 치환해서 사용가능(이 자체가 하나의 타입) typealias GridPoint = (Int, Int)	 let grid: GridPoint = (1, 2) print(grid.0) print(grid.1)              Named Tuple(이름이 매겨진 튜플)          데이터의 각 요소에 이름을 붙일 수 있다.      let iOS = (&quot;Swift&quot;, &quot;6.0&quot;) let iOS2 = (language: &quot;Swift&quot;, version: &quot;6.0&quot;)    print(iOS.0, iOS.1) print(iOS2.0, iOS2.1) print(iOS2.language, iOS2.version)    // Swift 6.0 // Swift 6.0 // Swift 6.0              Decomposition(튜플의 분해)     튜플의 각 요소를 상수/변수화 가능하다. (바인딩)        특징: 데이터를 분해해서 활용할 수 있다.      let (name, age, address) = (&quot;홍길동&quot;, 20, &quot;서울&quot;) print(name) print(address)           튜플과 조건문 활용          if문 활용      let iOS = (&quot;Swift&quot;, &quot;6.0&quot;)    if iOS.0 == &quot;Swift&quot; &amp;&amp; iOS.1 == &quot;6.0&quot; {   	print(&quot;Swift 버전 \(iOS.1)&quot;) }            switch문 활용        변수의 케이스에 따라 구분할 때 주로 사용한다.      switch iOS { case (&quot;Swift&quot;, 5):     print(&quot;스위프트 버전 5&quot;) case (&quot;Swift&quot;, 6):   	print(&quot;스위프트 버전 6&quot;) default:     break }           튜플의 switch문 바인딩        각 케이스 내에서 튜플의 각 요소를 활용할 때 주로 사용한다.      switch coordinate { case (let x, let y):     print(&quot;좌표는 (\(x), \(y)) 입니다.&quot;) default:     break }           튜플의 switch문 바인딩/where절        특정 조건에 따라 튜플 케이스를 처리하고 싶을 때 주로 사용한다.      switch coordinate { case let (x, y) where x == y:     print(&quot;좌표는 (\(x), \(y)) 입니다.&quot;) default:     break }           튜플을 사용하는 이유 with function     함수는 원칙적으로 리턴값이 하나만 존재하여 여러 값을 반환할 수 없다.        하지만 튜플을 리턴하면 묶음 값으로 반화할 수 있다.      func tuple() -&gt; (String, Int) {     return (&quot;Index&quot;, 26) } print(tuple())">
 
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[Swift] 튜플(Tuple)">
+<meta property="og:url" content="http://localhost:4000/Swift-04-%ED%8A%9C%ED%94%8C/">
+
+
+  <meta property="og:description" content="1. 튜플     원하는 연관된 데이터의 조합으로 만들 수 있는 타입이다.        변수를 선언과 동시에 해당 멤버(데이터의 종류 및 개수)가 결정되므로 추가/삭제는 불가능하다.      // 좌표 let position: (Int, Int) = (1, 2)   print(position.0)   print(position.1)    // 3차원 공간 let position3D: (Int, Int, Int) = (1, 2, 3) print(position3D.0) print(position3D.1) print(position3D.2)    // 태입 앨리어스를 이용하여 튜플의 묶음값을 치환해서 사용가능(이 자체가 하나의 타입) typealias GridPoint = (Int, Int)	 let grid: GridPoint = (1, 2) print(grid.0) print(grid.1)              Named Tuple(이름이 매겨진 튜플)          데이터의 각 요소에 이름을 붙일 수 있다.      let iOS = (&quot;Swift&quot;, &quot;6.0&quot;) let iOS2 = (language: &quot;Swift&quot;, version: &quot;6.0&quot;)    print(iOS.0, iOS.1) print(iOS2.0, iOS2.1) print(iOS2.language, iOS2.version)    // Swift 6.0 // Swift 6.0 // Swift 6.0              Decomposition(튜플의 분해)     튜플의 각 요소를 상수/변수화 가능하다. (바인딩)        특징: 데이터를 분해해서 활용할 수 있다.      let (name, age, address) = (&quot;홍길동&quot;, 20, &quot;서울&quot;) print(name) print(address)           튜플과 조건문 활용          if문 활용      let iOS = (&quot;Swift&quot;, &quot;6.0&quot;)    if iOS.0 == &quot;Swift&quot; &amp;&amp; iOS.1 == &quot;6.0&quot; {   	print(&quot;Swift 버전 \(iOS.1)&quot;) }            switch문 활용        변수의 케이스에 따라 구분할 때 주로 사용한다.      switch iOS { case (&quot;Swift&quot;, 5):     print(&quot;스위프트 버전 5&quot;) case (&quot;Swift&quot;, 6):   	print(&quot;스위프트 버전 6&quot;) default:     break }           튜플의 switch문 바인딩        각 케이스 내에서 튜플의 각 요소를 활용할 때 주로 사용한다.      switch coordinate { case (let x, let y):     print(&quot;좌표는 (\(x), \(y)) 입니다.&quot;) default:     break }           튜플의 switch문 바인딩/where절        특정 조건에 따라 튜플 케이스를 처리하고 싶을 때 주로 사용한다.      switch coordinate { case let (x, y) where x == y:     print(&quot;좌표는 (\(x), \(y)) 입니다.&quot;) default:     break }           튜플을 사용하는 이유 with function     함수는 원칙적으로 리턴값이 하나만 존재하여 여러 값을 반환할 수 없다.        하지만 튜플을 리턴하면 묶음 값으로 반화할 수 있다.      func tuple() -&gt; (String, Int) {     return (&quot;Index&quot;, 26) } print(tuple())">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-02-10T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/Swift-04-%ED%8A%9C%ED%94%8C/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
 
 <!-- 여기에 analytics 추가 -->
 

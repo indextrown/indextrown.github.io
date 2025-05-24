@@ -9,7 +9,65 @@
   <head>
     <meta charset="utf-8">
 
+<!-- begin _includes/seo.html --><title>[Swift] 변수와 상수 그리고 타입 - DongHyeon Kim’s Blog</title>
+<meta name="description" content="1. 변수(Variable) var         데이터를 담을 수 있는 공간름           프로그래밍 동작의 첫번째 단계: 변수 선언      // 변수를 선언하면서 저장 // 3이라는 숫자를 a라는 공간에 저장한다 var a = 3	 var b = 7    // 변수를 여러개 한꺼번에 선언 var x = 1, y = 2, z = 3    // 새로운 공간을 만들고 값을 복사(Copy)해서 저장 var newSpace = a           String Interpolation (문자열 보간법)          변수를 문자열 안에서 출력방법      // \(변수이름)    var name = &quot;Index&quot; print(&quot;Hello \(name)&quot;)           2. 상수(constants) let          변하지 않는 데이터를 담을 수 있는 공간           식별자(한 영역에 유일한 이름만 사용): 상수의 이름      let name = &quot;Index&quot; print(&quot;Hello \(name)&quot;)           3. 타입(Type)  Swift 기본 타입                 타입(키워드 = 약속어)       내용       예시                       Int       정수(8바이트)       1, 2, 3                 Float       부동소수(4바이트), 6자리       3.14                 Double       부동소수(8바이트), 15자리       3.14                 Character       문자       “I”                 String       문자열       “Hello Index”                 Bool       참/거짓       true, false                 기타       UInt                   Swift 변수 특징                 종류       설명       예시                       타입 주석(Type annotation)       변수를 선언하면서 타입을 명시적으로 선언하는 방법.       var name: String = “Index”                 타입 추론       데이터 타입을 명시하지 않아도 컴파일러가 타입을 유추해서 알맞는 타입으로 저장하는 방법.       var name = “Index”                 타입 안전성       어떤 변수가 특정 타입으로 선언되면 그 변수에는 해당 타입만 담을 수 있다.       var number = 1 number=3.14(❌ 컴파일 에러)">
 
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[Swift] 변수와 상수 그리고 타입">
+<meta property="og:url" content="http://localhost:4000/Swift-01-%EB%B3%80%EC%88%98%EC%99%80-%EC%83%81%EC%88%98-%EA%B7%B8%EB%A6%AC%EA%B3%A0-%ED%83%80%EC%9E%85/">
+
+
+  <meta property="og:description" content="1. 변수(Variable) var         데이터를 담을 수 있는 공간름           프로그래밍 동작의 첫번째 단계: 변수 선언      // 변수를 선언하면서 저장 // 3이라는 숫자를 a라는 공간에 저장한다 var a = 3	 var b = 7    // 변수를 여러개 한꺼번에 선언 var x = 1, y = 2, z = 3    // 새로운 공간을 만들고 값을 복사(Copy)해서 저장 var newSpace = a           String Interpolation (문자열 보간법)          변수를 문자열 안에서 출력방법      // \(변수이름)    var name = &quot;Index&quot; print(&quot;Hello \(name)&quot;)           2. 상수(constants) let          변하지 않는 데이터를 담을 수 있는 공간           식별자(한 영역에 유일한 이름만 사용): 상수의 이름      let name = &quot;Index&quot; print(&quot;Hello \(name)&quot;)           3. 타입(Type)  Swift 기본 타입                 타입(키워드 = 약속어)       내용       예시                       Int       정수(8바이트)       1, 2, 3                 Float       부동소수(4바이트), 6자리       3.14                 Double       부동소수(8바이트), 15자리       3.14                 Character       문자       “I”                 String       문자열       “Hello Index”                 Bool       참/거짓       true, false                 기타       UInt                   Swift 변수 특징                 종류       설명       예시                       타입 주석(Type annotation)       변수를 선언하면서 타입을 명시적으로 선언하는 방법.       var name: String = “Index”                 타입 추론       데이터 타입을 명시하지 않아도 컴파일러가 타입을 유추해서 알맞는 타입으로 저장하는 방법.       var name = “Index”                 타입 안전성       어떤 변수가 특정 타입으로 선언되면 그 변수에는 해당 타입만 담을 수 있다.       var number = 1 number=3.14(❌ 컴파일 에러)">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-02-10T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/Swift-01-%EB%B3%80%EC%88%98%EC%99%80-%EC%83%81%EC%88%98-%EA%B7%B8%EB%A6%AC%EA%B3%A0-%ED%83%80%EC%9E%85/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
 
 <!-- 여기에 analytics 추가 -->
 

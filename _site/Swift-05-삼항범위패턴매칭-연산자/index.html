@@ -9,7 +9,65 @@
   <head>
     <meta charset="utf-8">
 
+<!-- begin _includes/seo.html --><title>[Swift] (삼항/범위/패턴매칭)연산자 - DongHyeon Kim’s Blog</title>
+<meta name="description" content="1. 삼항연산자(Ternary Conditional Operator)     세가지 항을 가진 연산자이다.   조건에 따라 선택이 2가지인 경우 사용한다.   ? 와 : 를 사용한다.   조건에 따라 리터럴 값을 선택하여 변수에 대입할 때 사용한다.   if문과 동일하게 사용가능하다.   삼항연산자는 단독으로 사용하기 보다는 결과 값을 대입할 때 주로 사용한다.        ✅ 사용 예시: 어떤 조건에 따라 선택이 두가지인 경우 사용한다.      // if문 if condition { 		print(&quot;1&quot;) } else {   	print(&quot;2&quot;) }    // 삼항연산자 condition ? print(&quot;1&quot;) : print(&quot;2&quot;) var name = a &gt; 5 ? &quot;스티브&quot; : &quot;인덱스&quot;           2. 범위연산자     Swift에서 범위를 쉽게 표기하는 방법이다.                  폐쇠 범위 연산자(Closed Range Operator)       반폐쇄 범위 연산자(Half-Open Range operator)                       1…10 ClosedRange1… PartialRangeForm…10 PartialRangeThrough       1..&lt;10 Range..&lt;10 PartialRangeUpTo           3. 패턴 매칭 연산자(~=)     오른쪽에 있는 표현식이 왼쪽의 범위에 포함되는 지에 따라 참과 거짓을 반환한다.        범위연산자와 함께 쓰이는 연산자이다.      var age = 26 1...9 ~= age    // false 20...29 ~= age  // true">
 
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[Swift] (삼항/범위/패턴매칭)연산자">
+<meta property="og:url" content="http://localhost:4000/Swift-05-%EC%82%BC%ED%95%AD%EB%B2%94%EC%9C%84%ED%8C%A8%ED%84%B4%EB%A7%A4%EC%B9%AD-%EC%97%B0%EC%82%B0%EC%9E%90/">
+
+
+  <meta property="og:description" content="1. 삼항연산자(Ternary Conditional Operator)     세가지 항을 가진 연산자이다.   조건에 따라 선택이 2가지인 경우 사용한다.   ? 와 : 를 사용한다.   조건에 따라 리터럴 값을 선택하여 변수에 대입할 때 사용한다.   if문과 동일하게 사용가능하다.   삼항연산자는 단독으로 사용하기 보다는 결과 값을 대입할 때 주로 사용한다.        ✅ 사용 예시: 어떤 조건에 따라 선택이 두가지인 경우 사용한다.      // if문 if condition { 		print(&quot;1&quot;) } else {   	print(&quot;2&quot;) }    // 삼항연산자 condition ? print(&quot;1&quot;) : print(&quot;2&quot;) var name = a &gt; 5 ? &quot;스티브&quot; : &quot;인덱스&quot;           2. 범위연산자     Swift에서 범위를 쉽게 표기하는 방법이다.                  폐쇠 범위 연산자(Closed Range Operator)       반폐쇄 범위 연산자(Half-Open Range operator)                       1…10 ClosedRange1… PartialRangeForm…10 PartialRangeThrough       1..&lt;10 Range..&lt;10 PartialRangeUpTo           3. 패턴 매칭 연산자(~=)     오른쪽에 있는 표현식이 왼쪽의 범위에 포함되는 지에 따라 참과 거짓을 반환한다.        범위연산자와 함께 쓰이는 연산자이다.      var age = 26 1...9 ~= age    // false 20...29 ~= age  // true">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-02-10T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/Swift-05-%EC%82%BC%ED%95%AD%EB%B2%94%EC%9C%84%ED%8C%A8%ED%84%B4%EB%A7%A4%EC%B9%AD-%EC%97%B0%EC%82%B0%EC%9E%90/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
 
 <!-- 여기에 analytics 추가 -->
 

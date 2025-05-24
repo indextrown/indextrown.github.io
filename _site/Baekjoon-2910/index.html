@@ -9,7 +9,65 @@
   <head>
     <meta charset="utf-8">
 
+<!-- begin _includes/seo.html --><title>[Baekjoon] 백준 2910 빈도 정렬 - DongHyeon Kim’s Blog</title>
+<meta name="description" content="문제 빈도 정렬   자주 등장하는 숫자 기준으로 오름차순 정렬하되, 등장횟수가 같다면 먼저 나온 것이 앞에 있어야 한다.  풀이  정렬 관련 함수 // 배열 var numbers = [5, 2, 8, 1, 3]  // 오름차순 정렬 let ascending = numbers.sorted() print(&quot;오름차순:&quot;, ascending) // [1, 2, 3, 5, 8]  // 내림차순 정렬 let descending = numbers.sorted(by: &gt;) print(&quot;내림차순:&quot;, descending) // [8, 5, 3, 2, 1]   // 딕셔너리 let scores = [&quot;Alice&quot;: 88, &quot;Bob&quot;: 95, &quot;Charlie&quot;: 72]  // 🔹 value 기준 오름차순 정렬 let byScoreAsc = scores.sorted { $0.value &lt; $1.value } print(&quot;점수 오름차순:&quot;, byScoreAsc)  // 🔹 value 기준 내림차순 정렬 let byScoreDesc = scores.sorted { $0.value &gt; $1.value } print(&quot;점수 내림차순:&quot;, byScoreDesc)  // 🔹 key 기준 오름차순 정렬 let byNameAsc = scores.sorted { $0.key &lt; $1.key } print(&quot;이름 오름차순:&quot;, byNameAsc)  // 우선순위 기반 정렬 1 let dic = [1: 2, 2: 5, 3: 5, 4: 1] let order = [2, 3, 1, 4] // 우선순위: 2 &gt; 3 &gt; 1 &gt; 4  let sortedKeys = dic.sorted {     if $0.value == $1.value {         // O(n)         return order.firstIndex(of: $0.key)! &lt; order.firstIndex(of: $1.key)! // &lt;: 인덱스가 낮은 key가 먼저 온다     }     return $0.value &gt; $1.value }.map { $0.key } print(sortedKeys)  // 우선순위 기반 정렬 2 let dic = [1: 2, 2: 5, 3: 5, 4: 1] // num: count let order = [2, 3, 1, 4]   // [2: 0, 3: 1, 1: 2, 4: 3] = num: idx(Order) // 우선순위 인덱스를 미리 딕셔너리로 만들어 둔다 (O(1) 접근) let priority: [Int: Int] = Dictionary(uniqueKeysWithValues: order.enumerated().map { ($1, $0) })  let sortedKeys = dic.sorted {     if $0.value == $1.value {         return priority[$0.key]! &lt; priority[$1.key]!     }     return $0.value &gt; $1.value }.map { $0.key }  print(sortedKeys)    처음 접근 방법 딕셔너리의 키를 숫자로 두고 value로 카운팅을 한다.  _ = readLine() let numbers = readLine()!.split(separator: &quot; &quot;).map { Int($0)! } // [1, 1, 1, 2, 2, 2] var dic: [Int:Int] = [:]  for num in numbers {     dic[num, default: 0] += 1 } print(dic)       // [2: 3, 1: 2]  // value가 많은순으로 키룰 정렬하는 방법 let sortedKeys = dic.sorted {     return $0.value &gt; $1.value }.map { $0.key } print(sortedKeys)  // [2, 1]  var output = &quot;&quot; for num in sortedKeys {     output += String(repeating: &quot;\(num) &quot;, count: dic[num]!) } print(output) // 2 2 2 1 1   이러면 1번 예제는 해결이 되지만 만약 동일한 등장횟수면 해당 순서를 보장해줘야 한다.  제출 1  /* 5 2 2 1 2 1 2  */ _ = readLine() let numbers = readLine()!.split(separator: &quot; &quot;).map { Int($0)! }  // ── 1) 빈도 계산 / 순서 계산 ───────────────────────────────────── var dic: [Int:Int] = [:]    // 숫자:개수 var order: [Int:Int] = [:]  // 숫자:우선순위 for (idx, num) in numbers.enumerated() {     if dic[num] == nil {         order[num] = idx // num이 처음 등장한 idx 기록     }     dic[num, default: 0] += 1  // [num:value] }  // ── 2) 빈도순으로 key 한번씩만 내보내기 ───────────────────────────────────── let keysByFreq = dic     .sorted {         if $0.value == $1.value {             // 먼저 나온 key가 앞으로 오도록 정렬             return order[$0.key]! &lt; order[$1.key]!         } else {             return $0.value &gt; $1.value // 내림차순         }     }     .map { $0.key }                   // key만 추출  // ── 3) 빈도순으로 key를 빈도만큼 반복 출력 ───────────────────────────────────── var output: String = &quot;&quot; for num in keysByFreq {     output += String(repeating: &quot;\(num) &quot;, count: dic[num]!) } print(output)    제출 2  /* 5 2 2 1 2 1 2  딕셔너리 dic은 다음과 같이 구성 [숫자: (등장 순서, 등장 횟수)]  [예시] [   2: (0, 3), // 0번째에 처음 등장, 3번 나옴   1: (1, 2), // 1번째에 처음 등장, 2번 나옴 ]  */ _ = readLine() var dic = [Int: (Int, Int)]() let numbers = readLine()!.split(separator: &quot; &quot;).map { Int($0)! }  for (idx, num) in numbers.enumerated() {     // 숫자 처음 등장시     if dic[num] == nil {         dic[num] = (idx, 1) // 등장순서, 1번 등장     } else {         dic[num]!.1 += 1   // 이미 등장한 숫자라면 횟수만 추가     } }  // 등장 횟수가 많은 숫자가 먼저 오도록, 같으면 등장순서가 빠른 순으로 let sorted = dic.sorted {     let (firstIdx, firstCnt) = $0.value     let (secondIdx, secondCnt) = $1.value          if firstCnt != secondCnt {         return firstCnt &gt; secondCnt // 등장 횟수 많은 순     } else {         return firstIdx &lt; secondIdx // 먼저 등장한 숫자 먼저     } }  // 출력 1 print(sorted.map { String(repeating: &quot;\($0.key) &quot;, count: $0.value.1) }.joined())  // 출력 2 var output = &quot;&quot; for (number, (_, cnt)) in sorted {     output += String(repeating: &quot;\(number) &quot;, count: cnt) } print(output)">
 
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[Baekjoon] 백준 2910 빈도 정렬">
+<meta property="og:url" content="http://localhost:4000/Baekjoon-2910/">
+
+
+  <meta property="og:description" content="문제 빈도 정렬   자주 등장하는 숫자 기준으로 오름차순 정렬하되, 등장횟수가 같다면 먼저 나온 것이 앞에 있어야 한다.  풀이  정렬 관련 함수 // 배열 var numbers = [5, 2, 8, 1, 3]  // 오름차순 정렬 let ascending = numbers.sorted() print(&quot;오름차순:&quot;, ascending) // [1, 2, 3, 5, 8]  // 내림차순 정렬 let descending = numbers.sorted(by: &gt;) print(&quot;내림차순:&quot;, descending) // [8, 5, 3, 2, 1]   // 딕셔너리 let scores = [&quot;Alice&quot;: 88, &quot;Bob&quot;: 95, &quot;Charlie&quot;: 72]  // 🔹 value 기준 오름차순 정렬 let byScoreAsc = scores.sorted { $0.value &lt; $1.value } print(&quot;점수 오름차순:&quot;, byScoreAsc)  // 🔹 value 기준 내림차순 정렬 let byScoreDesc = scores.sorted { $0.value &gt; $1.value } print(&quot;점수 내림차순:&quot;, byScoreDesc)  // 🔹 key 기준 오름차순 정렬 let byNameAsc = scores.sorted { $0.key &lt; $1.key } print(&quot;이름 오름차순:&quot;, byNameAsc)  // 우선순위 기반 정렬 1 let dic = [1: 2, 2: 5, 3: 5, 4: 1] let order = [2, 3, 1, 4] // 우선순위: 2 &gt; 3 &gt; 1 &gt; 4  let sortedKeys = dic.sorted {     if $0.value == $1.value {         // O(n)         return order.firstIndex(of: $0.key)! &lt; order.firstIndex(of: $1.key)! // &lt;: 인덱스가 낮은 key가 먼저 온다     }     return $0.value &gt; $1.value }.map { $0.key } print(sortedKeys)  // 우선순위 기반 정렬 2 let dic = [1: 2, 2: 5, 3: 5, 4: 1] // num: count let order = [2, 3, 1, 4]   // [2: 0, 3: 1, 1: 2, 4: 3] = num: idx(Order) // 우선순위 인덱스를 미리 딕셔너리로 만들어 둔다 (O(1) 접근) let priority: [Int: Int] = Dictionary(uniqueKeysWithValues: order.enumerated().map { ($1, $0) })  let sortedKeys = dic.sorted {     if $0.value == $1.value {         return priority[$0.key]! &lt; priority[$1.key]!     }     return $0.value &gt; $1.value }.map { $0.key }  print(sortedKeys)    처음 접근 방법 딕셔너리의 키를 숫자로 두고 value로 카운팅을 한다.  _ = readLine() let numbers = readLine()!.split(separator: &quot; &quot;).map { Int($0)! } // [1, 1, 1, 2, 2, 2] var dic: [Int:Int] = [:]  for num in numbers {     dic[num, default: 0] += 1 } print(dic)       // [2: 3, 1: 2]  // value가 많은순으로 키룰 정렬하는 방법 let sortedKeys = dic.sorted {     return $0.value &gt; $1.value }.map { $0.key } print(sortedKeys)  // [2, 1]  var output = &quot;&quot; for num in sortedKeys {     output += String(repeating: &quot;\(num) &quot;, count: dic[num]!) } print(output) // 2 2 2 1 1   이러면 1번 예제는 해결이 되지만 만약 동일한 등장횟수면 해당 순서를 보장해줘야 한다.  제출 1  /* 5 2 2 1 2 1 2  */ _ = readLine() let numbers = readLine()!.split(separator: &quot; &quot;).map { Int($0)! }  // ── 1) 빈도 계산 / 순서 계산 ───────────────────────────────────── var dic: [Int:Int] = [:]    // 숫자:개수 var order: [Int:Int] = [:]  // 숫자:우선순위 for (idx, num) in numbers.enumerated() {     if dic[num] == nil {         order[num] = idx // num이 처음 등장한 idx 기록     }     dic[num, default: 0] += 1  // [num:value] }  // ── 2) 빈도순으로 key 한번씩만 내보내기 ───────────────────────────────────── let keysByFreq = dic     .sorted {         if $0.value == $1.value {             // 먼저 나온 key가 앞으로 오도록 정렬             return order[$0.key]! &lt; order[$1.key]!         } else {             return $0.value &gt; $1.value // 내림차순         }     }     .map { $0.key }                   // key만 추출  // ── 3) 빈도순으로 key를 빈도만큼 반복 출력 ───────────────────────────────────── var output: String = &quot;&quot; for num in keysByFreq {     output += String(repeating: &quot;\(num) &quot;, count: dic[num]!) } print(output)    제출 2  /* 5 2 2 1 2 1 2  딕셔너리 dic은 다음과 같이 구성 [숫자: (등장 순서, 등장 횟수)]  [예시] [   2: (0, 3), // 0번째에 처음 등장, 3번 나옴   1: (1, 2), // 1번째에 처음 등장, 2번 나옴 ]  */ _ = readLine() var dic = [Int: (Int, Int)]() let numbers = readLine()!.split(separator: &quot; &quot;).map { Int($0)! }  for (idx, num) in numbers.enumerated() {     // 숫자 처음 등장시     if dic[num] == nil {         dic[num] = (idx, 1) // 등장순서, 1번 등장     } else {         dic[num]!.1 += 1   // 이미 등장한 숫자라면 횟수만 추가     } }  // 등장 횟수가 많은 숫자가 먼저 오도록, 같으면 등장순서가 빠른 순으로 let sorted = dic.sorted {     let (firstIdx, firstCnt) = $0.value     let (secondIdx, secondCnt) = $1.value          if firstCnt != secondCnt {         return firstCnt &gt; secondCnt // 등장 횟수 많은 순     } else {         return firstIdx &lt; secondIdx // 먼저 등장한 숫자 먼저     } }  // 출력 1 print(sorted.map { String(repeating: &quot;\($0.key) &quot;, count: $0.value.1) }.joined())  // 출력 2 var output = &quot;&quot; for (number, (_, cnt)) in sorted {     output += String(repeating: &quot;\(number) &quot;, count: cnt) } print(output)">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-05-22T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/Baekjoon-2910/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
 
 <!-- 여기에 analytics 추가 -->
 
@@ -644,7 +702,7 @@ checkbox.addEventListener('change', function() {
 ">Previous</a>
     
     
-      <a href="/UIKit-FCM/" class="pagination--pager" title="[UIKit] iOS 푸시알림 FCM, APNS 이게 뭔데?
+      <a href="/UIKit-FCM/" class="pagination--pager" title="[UIKit] iOS 푸시알림 FCM, APNS
 ">Next</a>
     
   </nav>

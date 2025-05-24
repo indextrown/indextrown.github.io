@@ -9,7 +9,65 @@
   <head>
     <meta charset="utf-8">
 
+<!-- begin _includes/seo.html --><title>[알고리즘] 그래프 이론 - DongHyeon Kim’s Blog</title>
+<meta name="description" content="정점과 간선  정점(Vertex)     노드라고 불리며 그래프를 형성하는 기본 단위다.   분할할 수 없는 객체이자 점으로 표현되는 위치, 사람, 물건 등이 될 수 있다.   간선(Edge)     정점을 잇는 선을 의미한다.   관계 경로 등이 될 수 있다.   예시     “어떠한 위치나 어떠한 사람(정점)” 으로부터 “무언가를 통해(간선)“간다.   Index(정점)가 길(간선)을 걸어 아파트로(정점) 간다   단방향 간선     남자가 여자를 좋아한다. 여자는 남자를 좋아하지 않는다.(짝사랑)   양방향 간선     남자와 여자가 서로 좋아한다.   그래프 이론에서 일반적으로 사용되는 기호     u - 시작점(from)   v - 도착점(to)   indegree &amp; outdegree          U에서 V로 가는 경로가 3가지가 있을 때 표현 방법 -&gt; u의 outdegree(나가는 간선) = 3개           V에서 U로 가는 경로가 7가지 있을 때 표현 방법 -&gt; u의 indegree(들어오는  간선) = 7개      가중치     정점과 정점 사이에 드는 비용을 의미한다   1번노드에서 2번노드까지 가는 비용이 한칸이면 가중치는 한칸이다.   그래프     정점과 간선으로 이루어진 집합이다.   트리     자식노드와 부모노드로 이루어진 계층적인 구조를 가지며 무방향 그래프의 일종이자 사이클이 없는 자료구조를 의미한다.   트리의 특징     부모, 자식 계층구조를 가진다. 같은 경로 상에서 어떤 노드보다 위에 있으면 부모, 아래에 있으면 자식 노드가 된다.   E = V - 1 이다. 간선수 = 노드수 - 1   임의의 두 노드 사이의 경로는 반드시 있으며 하나밖에 없다.">
 
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[알고리즘] 그래프 이론">
+<meta property="og:url" content="http://localhost:4000/%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-%EA%B7%B8%EB%9E%98%ED%94%84%EC%9D%B4%EB%A1%A0/">
+
+
+  <meta property="og:description" content="정점과 간선  정점(Vertex)     노드라고 불리며 그래프를 형성하는 기본 단위다.   분할할 수 없는 객체이자 점으로 표현되는 위치, 사람, 물건 등이 될 수 있다.   간선(Edge)     정점을 잇는 선을 의미한다.   관계 경로 등이 될 수 있다.   예시     “어떠한 위치나 어떠한 사람(정점)” 으로부터 “무언가를 통해(간선)“간다.   Index(정점)가 길(간선)을 걸어 아파트로(정점) 간다   단방향 간선     남자가 여자를 좋아한다. 여자는 남자를 좋아하지 않는다.(짝사랑)   양방향 간선     남자와 여자가 서로 좋아한다.   그래프 이론에서 일반적으로 사용되는 기호     u - 시작점(from)   v - 도착점(to)   indegree &amp; outdegree          U에서 V로 가는 경로가 3가지가 있을 때 표현 방법 -&gt; u의 outdegree(나가는 간선) = 3개           V에서 U로 가는 경로가 7가지 있을 때 표현 방법 -&gt; u의 indegree(들어오는  간선) = 7개      가중치     정점과 정점 사이에 드는 비용을 의미한다   1번노드에서 2번노드까지 가는 비용이 한칸이면 가중치는 한칸이다.   그래프     정점과 간선으로 이루어진 집합이다.   트리     자식노드와 부모노드로 이루어진 계층적인 구조를 가지며 무방향 그래프의 일종이자 사이클이 없는 자료구조를 의미한다.   트리의 특징     부모, 자식 계층구조를 가진다. 같은 경로 상에서 어떤 노드보다 위에 있으면 부모, 아래에 있으면 자식 노드가 된다.   E = V - 1 이다. 간선수 = 노드수 - 1   임의의 두 노드 사이의 경로는 반드시 있으며 하나밖에 없다.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-02-01T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-%EA%B7%B8%EB%9E%98%ED%94%84%EC%9D%B4%EB%A1%A0/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
 
 <!-- 여기에 analytics 추가 -->
 
