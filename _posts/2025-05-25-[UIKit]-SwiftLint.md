@@ -1,7 +1,7 @@
 ---
-title: "[UIKit] 프로젝트에 SwiftLint적용하기"
+title: "[Xcode] 프로젝트에 SwiftLint적용하기"
 tags: 
-- UIKit
+- Xcode
 header: 
   teaser: 
 typora-root-url: ../

@@ -1,5 +1,5 @@
 ---
-title: "[Xcode] fastlane 에러"
+title: "[Xcode] fastlane 에러 해결"
 tags: 
 - Xcode
 header: 
