@@ -74,7 +74,7 @@ Run Script라는 이름을 SwiftLint Script로 바꿔 준 다음, 위치를 Comp
 Build Settings -> User Script Sandboxing 검색후 No로 변경해준다.
 <br/><br/>
 
-```swi
+```swift
 # swiftlint.yml
 
 # 사용하지 않을 규칙 설정
@@ -110,7 +110,6 @@ line_length:
   error: 300                 # 300자 이상이면 오류
   ignores_comments: true     # 주석은 길이 제한에서 제외
   ignores_urls: true         # URL은 길이 제한에서 제외
-
 
 ```
 

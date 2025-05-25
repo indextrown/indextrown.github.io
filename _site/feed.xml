@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-05-25T15:28:05+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[Xcode] 프로젝트에 SwiftLint적용하기</title><link href="http://localhost:4000/UIKit-SwiftLint/" rel="alternate" type="text/html" title="[Xcode] 프로젝트에 SwiftLint적용하기" /><published>2025-05-25T00:00:00+00:00</published><updated>2025-05-25T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-SwiftLint</id><content type="html" xml:base="http://localhost:4000/UIKit-SwiftLint/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-05-25T15:30:37+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[Xcode] 프로젝트에 SwiftLint적용하기</title><link href="http://localhost:4000/UIKit-SwiftLint/" rel="alternate" type="text/html" title="[Xcode] 프로젝트에 SwiftLint적용하기" /><published>2025-05-25T00:00:00+00:00</published><updated>2025-05-25T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-SwiftLint</id><content type="html" xml:base="http://localhost:4000/UIKit-SwiftLint/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
@@ -54,44 +54,43 @@ Run Script라는 이름을 SwiftLint Script로 바꿔 준 다음, 위치를 Comp
 Build Settings -&gt; User Script Sandboxing 검색후 No로 변경해준다.<br />
 <br /><br /></p>
 
-<pre><code class="language-swi"># swiftlint.yml
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp"># swiftlint.yml</span>
 
-# 사용하지 않을 규칙 설정
-disabled_rules:
-  - force_cast               # 강제 형변환 사용 시 경고하지 않음
-  - trailing_whitespace      # 줄 끝 공백에 대해 경고하지 않음
+<span class="cp"># 사용하지 않을 규칙 설정</span>
+<span class="nv">disabled_rules</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">force_cast</span>               <span class="err">#</span> <span class="n">강제</span> <span class="n">형변환</span> <span class="n">사용</span> <span class="n">시</span> <span class="n">경고하지</span> <span class="n">않음</span>
+  <span class="o">-</span> <span class="n">trailing_whitespace</span>      <span class="err">#</span> <span class="n">줄</span> <span class="n">끝</span> <span class="n">공백에</span> <span class="n">대해</span> <span class="n">경고하지</span> <span class="n">않음</span>
 
-# 식별자(변수, 상수, 함수 이름 등)의 글자 수 제한
-identifier_name:
-  min_length: 1              # 최소 글자 수: 1자
-  max_length: 40             # 최대 글자 수: 40자
-  allowed_symbols: ["_"]     # 밑줄(_) 사용 허용
-  validates_start_with_lowercase: true  # 소문자로 시작해야 함
+<span class="cp"># 식별자(변수, 상수, 함수 이름 등)의 글자 수 제한</span>
+<span class="nv">identifier_name</span><span class="p">:</span>
+  <span class="nv">min_length</span><span class="p">:</span> <span class="mi">1</span>              <span class="err">#</span> <span class="n">최소</span> <span class="n">글자</span> <span class="nv">수</span><span class="p">:</span> <span class="mi">1</span><span class="n">자</span>
+  <span class="nv">max_length</span><span class="p">:</span> <span class="mi">40</span>             <span class="err">#</span> <span class="n">최대</span> <span class="n">글자</span> <span class="nv">수</span><span class="p">:</span> <span class="mi">40</span><span class="n">자</span>
+  <span class="nv">allowed_symbols</span><span class="p">:</span> <span class="p">[</span><span class="s">"_"</span><span class="p">]</span>     <span class="err">#</span> <span class="nf">밑줄</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="n">사용</span> <span class="n">허용</span>
+  <span class="nv">validates_start_with_lowercase</span><span class="p">:</span> <span class="kc">true</span>  <span class="err">#</span> <span class="n">소문자로</span> <span class="n">시작해야</span> <span class="n">함</span>
 
-# 사이클 복잡도 설정 (분기 개수)
-cyclomatic_complexity:
-  warning: 20                # 20 이상이면 경고
-  error: 30                  # 30 이상이면 오류
+<span class="cp"># 사이클 복잡도 설정 (분기 개수)</span>
+<span class="nv">cyclomatic_complexity</span><span class="p">:</span>
+  <span class="nv">warning</span><span class="p">:</span> <span class="mi">20</span>                <span class="err">#</span> <span class="mi">20</span> <span class="n">이상이면</span> <span class="n">경고</span>
+  <span class="nv">error</span><span class="p">:</span> <span class="mi">30</span>                  <span class="err">#</span> <span class="mi">30</span> <span class="n">이상이면</span> <span class="n">오류</span>
 
-# 함수 본문의 줄 수 제한
-function_body_length:
-  warning: 120               # 120줄 이상이면 경고
-  error: 160                 # 160줄 이상이면 오류
+<span class="cp"># 함수 본문의 줄 수 제한</span>
+<span class="nv">function_body_length</span><span class="p">:</span>
+  <span class="nv">warning</span><span class="p">:</span> <span class="mi">120</span>               <span class="err">#</span> <span class="mi">120</span><span class="n">줄</span> <span class="n">이상이면</span> <span class="n">경고</span>
+  <span class="nv">error</span><span class="p">:</span> <span class="mi">160</span>                 <span class="err">#</span> <span class="mi">160</span><span class="n">줄</span> <span class="n">이상이면</span> <span class="n">오류</span>
 
-# 클래스, 구조체, enum 등의 본문 줄 수 제한
-type_body_length:
-  warning: 500               # 500줄 이상이면 경고
-  error: 1000                # 1000줄 이상이면 오류
+<span class="cp"># 클래스, 구조체, enum 등의 본문 줄 수 제한</span>
+<span class="nv">type_body_length</span><span class="p">:</span>
+  <span class="nv">warning</span><span class="p">:</span> <span class="mi">500</span>               <span class="err">#</span> <span class="mi">500</span><span class="n">줄</span> <span class="n">이상이면</span> <span class="n">경고</span>
+  <span class="nv">error</span><span class="p">:</span> <span class="mi">1000</span>                <span class="err">#</span> <span class="mi">1000</span><span class="n">줄</span> <span class="n">이상이면</span> <span class="n">오류</span>
 
-# 한 줄의 최대 길이 제한
-line_length:
-  warning: 200               # 200자 이상이면 경고
-  error: 300                 # 300자 이상이면 오류
-  ignores_comments: true     # 주석은 길이 제한에서 제외
-  ignores_urls: true         # URL은 길이 제한에서 제외
+<span class="cp"># 한 줄의 최대 길이 제한</span>
+<span class="nv">line_length</span><span class="p">:</span>
+  <span class="nv">warning</span><span class="p">:</span> <span class="mi">200</span>               <span class="err">#</span> <span class="mi">200</span><span class="n">자</span> <span class="n">이상이면</span> <span class="n">경고</span>
+  <span class="nv">error</span><span class="p">:</span> <span class="mi">300</span>                 <span class="err">#</span> <span class="mi">300</span><span class="n">자</span> <span class="n">이상이면</span> <span class="n">오류</span>
+  <span class="nv">ignores_comments</span><span class="p">:</span> <span class="kc">true</span>     <span class="err">#</span> <span class="n">주석은</span> <span class="n">길이</span> <span class="n">제한에서</span> <span class="n">제외</span>
+  <span class="nv">ignores_urls</span><span class="p">:</span> <span class="kc">true</span>         <span class="err">#</span> <span class="kt">URL은</span> <span class="n">길이</span> <span class="n">제한에서</span> <span class="n">제외</span>
 
-
-</code></pre>
+</code></pre></div></div>
 
 <p>.yml코드 완성을 해주면 끝난다.<br />
 <br /><br /></p>
