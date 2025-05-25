@@ -1,8 +1,7 @@
 ---
 title: "[Docker] code-server"
 tags: 
-- UIKit
-- UIComponent
+- Docker
 header: 
   teaser: 
 typora-root-url: ../
