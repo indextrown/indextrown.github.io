@@ -17,7 +17,7 @@ https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/01.cpp
 정수 배열 arr을 오름차순으로 정렬해서 반환하는 solution() 함수를 완성하라.
 
 ### 제약조건
-- arr의 길이는 2이상 10^5 이하이다.
+- arr의 길이는 2 이상 10^5 이하이다.
 - arr의 원소 값은 -100,000 이상 100,000 이하이다.
 
 ### 입출력 예

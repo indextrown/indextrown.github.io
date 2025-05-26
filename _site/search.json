@@ -9,6 +9,14 @@
         } ,
     
         {
+        "title"    : "[Programmers] 3. 두 수를 뽑아서 더하기",
+        "category" : "",
+        "tags"     : "Programmers",
+        "url"      : "/Programmers-3/",
+        "date"     : "2025-05-26 00:00:00 +0000"
+        } ,
+    
+        {
         "title"    : "[Programmers] 2. 배열 제어하기",
         "category" : "",
         "tags"     : "Programmers",
