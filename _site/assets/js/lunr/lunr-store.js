@@ -365,10 +365,16 @@ var store = [{
         "url": "/UIKit-SwiftLint/",
         "teaser": "/assets/logos/background.png"
       },{
+        "title": "[Programmers] 1. 배열 정렬하기",
+        "excerpt":"    문제  https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/01.cpp    정수 배열 arr을 오름차순으로 정렬해서 반환하는 solution() 함수를 완성하라.   제약조건     arr의 길이는 2이상 10^5 이하이다.   arr의 원소 값은 -100,000 이상 100,000 이하이다.   입출력 예  [1, -5, 2, 4, 3] -&gt; [-5, 1, 2, 3, 4]    [2, 1, 1, 3, 2, 5,4] -&gt; [1, 1, 2, 2, 3, 4, 5]  [6, 1, 7] -&gt; 1, 6, 7   풀이  import Foundation  func solution(_ arr: [Int]) -&gt; [Int] {     return arr.sorted() }  // 결과를 출력하는 함수 func printSolution(_ vec: [Int]) {     print(vec.map { String($0) }.joined(separator: \" \")) }  // 메인 함수 func start() {     printSolution(solution([1, -5, 2, 4, 3]))     printSolution(solution([2, 1, 1, 3, 2, 5, 4]))     printSolution(solution([6, 1, 7])) }  @main struct Main {     static func main() {         start()     } }   #include &lt;iostream&gt; #include &lt;vector&gt; using namespace std;  vector&lt;int&gt; solution(vector&lt;int&gt; arr) {     sort(arr.begin(), arr.end());     return arr; }  // 테스트 코드 #include &lt;iostream&gt; void print(vector&lt;int&gt; vec) {     copy(vec.begin(), vec.end(), std::ostream_iterator&lt;int&gt;(cout, \" \"));     cout &lt;&lt; endl; }  int main() {     print(solution({1, -5, 2, 4, 3}));      // -5 1 2 3 4     print(solution({2, 1, 1, 3, 2, 5, 4})); // 1 1 2 2 3 4 5     print(solution({6, 1, 7}));             // 1 6 7          return 0; }  ","categories": [],
+        "tags": ["Programmers"],
+        "url": "/Programmers-1/",
+        "teaser": "/assets/logos/background.png"
+      },{
         "title": "[Xcode] fastlane 에러 해결",
-        "excerpt":"    fastlane 에러 해결   깃 저장소에서 관련 내용 삭제  ## 각 명령에서 질문 나오면 y 눌러주기 -&gt; 깃허브에서 제거됨 fastlane match nuke distribution fastlane match nuke development   ## 인증서 &amp; 프로비저닝 프로파일 생성 -&gt; 깃허브에 저장됨 fastlane match appstore fastlane match development   ## 팀원이 같은 인증서를 내려받을 때 fastlane match appstore --readonly fastlane match development --readonly  ","categories": [],
+        "excerpt":"    fastlane 에러 해결   깃 저장소에서 관련 내용 삭제  ## 각 명령에서 질문 나오면 y 눌러주기 -&gt; 깃허브에서 제거됨 fastlane match nuke distribution fastlane match nuke development   ## 인증서 &amp; 프로비저닝 프로파일 생성 -&gt; 깃허브에 저장됨 fastlane match appstore fastlane match development   ## 팀원이 같은 인증서를 내려받을 때 fastlane match appstore --readonly fastlane match development --readonly   ","categories": [],
         "tags": ["Xcode"],
-        "url": "/UIKit-fastlane/",
+        "url": "/UIKit-fastlaneError/",
         "teaser": "/assets/logos/background.png"
       },{
         "title": "Star Bridge: 생일카페 알리미",
