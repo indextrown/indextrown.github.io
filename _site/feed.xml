@@ -1,4 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-05-25T15:30:37+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[Xcode] 프로젝트에 SwiftLint적용하기</title><link href="http://localhost:4000/UIKit-SwiftLint/" rel="alternate" type="text/html" title="[Xcode] 프로젝트에 SwiftLint적용하기" /><published>2025-05-25T00:00:00+00:00</published><updated>2025-05-25T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-SwiftLint</id><content type="html" xml:base="http://localhost:4000/UIKit-SwiftLint/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-05-26T14:24:20+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[Xcode] fastlane 에러 해결</title><link href="http://localhost:4000/UIKit-fastlane/" rel="alternate" type="text/html" title="[Xcode] fastlane 에러 해결" /><published>2025-05-26T00:00:00+00:00</published><updated>2025-05-26T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-fastlane</id><content type="html" xml:base="http://localhost:4000/UIKit-fastlane/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h1 id="fastlane-에러-해결">fastlane 에러 해결</h1>
+
+<h2 id="깃-저장소에서-관련-내용-삭제">깃 저장소에서 관련 내용 삭제</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## 각 명령에서 질문 나오면 y 눌러주기 -&gt; 깃허브에서 제거됨</span>
+fastlane match nuke distribution
+fastlane match nuke development
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## 인증서 &amp; 프로비저닝 프로파일 생성 -&gt; 깃허브에 저장됨</span>
+fastlane match appstore
+fastlane match development
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## 팀원이 같은 인증서를 내려받을 때</span>
+fastlane match appstore <span class="nt">--readonly</span>
+fastlane match development <span class="nt">--readonly</span>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Xcode" /><summary type="html"><![CDATA[fastlane 에러 해결 깃 저장소에서 관련 내용 삭제 ## 각 명령에서 질문 나오면 y 눌러주기 -&gt; 깃허브에서 제거됨 fastlane match nuke distribution fastlane match nuke development ## 인증서 &amp; 프로비저닝 프로파일 생성 -&gt; 깃허브에 저장됨 fastlane match appstore fastlane match development ## 팀원이 같은 인증서를 내려받을 때 fastlane match appstore --readonly fastlane match development --readonly]]></summary></entry><entry><title type="html">[Xcode] 프로젝트에 SwiftLint적용하기</title><link href="http://localhost:4000/UIKit-SwiftLint/" rel="alternate" type="text/html" title="[Xcode] 프로젝트에 SwiftLint적용하기" /><published>2025-05-25T00:00:00+00:00</published><updated>2025-05-25T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-SwiftLint</id><content type="html" xml:base="http://localhost:4000/UIKit-SwiftLint/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
@@ -476,7 +496,248 @@ ViewModel에서 User 데이터에 대한 타입이 변경되면 ViewModel에 의
 
 <h1 id="최종-clean-architecture-구조">최종 Clean Architecture 구조</h1>
 
-<p><img src="/assets/img/2025-05-24-%5BCleanArchitecture%5D-Clean%20Architecture/123.drawio.png" alt="커스텀셀" width="100%" /></p>]]></content><author><name>Dong Hyeon</name></author><category term="CleanArchitecture" /><summary type="html"><![CDATA[SOLOD, MVVM, CleanArchitecture 클린 아키텍처를 알기 위해서는 MVVM을 알아야 하고 MVVM을 알기 위해서는 SOLID 원칙을 알아야 한다. SOLID 원칙 -&gt; MVVM -&gt; Interface -&gt; Clean Architecture 순서로 정리하였다. 원칙이란? 원칙을 지키면 시간이 흐른 뒤에는 큰 영향을 가져온다. 원칙을 지키지 않는다면 어디서부터 어떻게 고쳐야 할 지 어렵고, 한 부분을 해결하면 다른 부분에서 문제가 발생할 수도 있다. SOLID 프로그램의 원칙을 지키면 프로젝트 규모가 커질수록 큰 영향을 가져온다. SOLID 원칙을 지키면 얻을 수 있는 효과가 유지보수성이다. 유지보수가 쉬운 코드 = 어떤 상황에서도 잘 동작하고 변경에 용이 SOLID 원칙 SOLID원칙은 5가지 원칙을 의미한다. 1. 단일 책임 원칙 클래스는 하나의 책임만을 가져야 한다. (책임 = 변경이 일어날 때 영향을 받는다라고 가정) ex) ViewConntroller의 책임 UI 그리기 (&lt;- 책임) UI 로직 구현 API 호출 내부 데이터 저장, 불러오기 =&gt; 이 4개중에 하나의 책임만 가져야 한다. 여기서는 UI 그리기가 책임이 된다. 2. 개팡 폐쇄 원칙 클래스는 기능의 확장에 있어서 열려 있어야 하고 수정에는 닫혀 있어야 한다. ViewModel에서 User 데이터에 대한 타입이 변경되면 ViewModel에 의존하는 ViewController가 영향을 받는다. 하지만 ViewController에서 UI에 대한 코드가 변경되면 안된다. 예제코드 3. 인터페이스 분리 원칙 사용하지 않는 인터페이스는 쓰지 않아야 한다. 사진과 같이 ViewController가 property1과 func3만 사용한다면 ViewController입장에서 나머지 property2, func1, func2는 필요 없다. 이럴때는 인터페이스를 분리해야 한다. 4. 의존성 역전 원칙 고수준 모듈은 저수준 모듈에 의존해서는 안된다. 둘다 추상화에 의존해야 한다. 저수준은 UI와 같이 잘 바뀌는 코드를 의미하고 고수준은 앱에서 핵심 기능인 잘 안바뀌는 기능을 의미한다.(쇼핑앱에서는 결제 기능과 유사) 즉 쉽게 바뀌는 코드가 쉽게 바뀌지 않는 코드를 의존해야 한다. 참고로 추상화(인터페이스)에 의존해야한다. 예제코드 5. 리스코프 치환원칙 자식 클래스는 언제나 자신의 부모 클래스로 교체할 수 있어야 한다. 즉 부모 타입을 사용하는 곳에 자식 타입을 넣어도 정상적으로 작동해야 한다. 리스코프 치환 위반 예시 리스코프 치환 지키는 예시 MVVM SOLID 원칙을 지키기 위해 MVVM 패턴을 사용한다. MVVM패턴을 지키면 자연스럽게 SOLID 원칙을 지킬 수 있다. MVVM은 Model, View, ViewModel로 3등분으로 구성된다. 그림 상세내용(참고) View는 UI를 표현하고 버튼 클릭이나 텍스트 입력과 같은 이벤트를 ViewModel으로 전달한다. ViewModel은 View(UI)와 관련한 로직을 모두 처리하거나 상태를 보유한다. 또한 View에서 전달된 이벤트에 따라 바뀐 상태나 바뀐 UI 관련 로직을 처리하고 필요시 ViewController에게 바로 상태를 전달하고, 만약 더 핵심적인 비즈니스 로직(API 호츌)이 필요하면 Model에 전달하여 Model에서 핵심 비즈니스 로직을 처리하고 데이터를 다시 ViewModel로 전달해주고 ViewModel에서 UI적인 로직을 처리하여 ViewController에게 상태나 데이터를 전달한다. MVVM 구성 구성 요소 역할 Model 데이터와 비즈니스 로직 (API 통신, 데이터 가공 등) ViewModel View에 필요한 상태와 로직을 관리 (UI 상태 결정, 이벤트 처리) View (UI) 사용자 입력, 화면 표시 (이벤트는 ViewModel로 전달) 🔁 의존성 방향 View → ViewModel: View는 ViewModel에 의존 (버튼 클릭 → 메서드 호출 등) ViewModel → Model: ViewModel은 데이터가 필요할 때 Model에 요청 Model은 아무것도 모름 (하위 계층은 상위 계층을 몰라야 함 = DIP 적용) 의존성의 방향은 잘 변경되는 쪽이 잘 변경되지 않는 쪽을 바라본다, 즉 각 구성요소가 단방향적인 의존성을 지키고 있다. SOLID 원칙 적용 전 MVVM 코드 (DIP 위반) SOLID 원칙 적용 후 MVVM 코드 (DIP, OCP 등 만족) Interface 클린아키텍처를 이해하기위해 인터페이스 개념을 다시 한번 알고 가자. 인터페이스란? 우리가 흔이 말하는 앱의 유저 인터페이스(UI)는 사용자가 직접 마주하는 화면을 의미한다. 어떻게 구성되고, 어떻게 동작하며, 어떤 방식으로 정의한다. ❄️ 냉장고로 예시를 들어본다면 유저 인터페이스(UI): 손잡이, 버튼, 디스플레이 내부 로직: 온도 조절, 냉각 등 실제 동작 중요한 포인트: 사용자는 내부 로직을 몰라도, 버튼 하나로 냉장고를 조작할 수 있다. → 즉, “인터페이스만 알면 사용 가능”한 구조다. 냉장고의 UI는 ViewController, 내부 로직은 ViewModel로 비유할 수 있다. ViewController는 “냉장고 온도를 내려주세요”라고 요청만 한다. 실제 로직(냉각, 온도 계산 등)은 ViewModel이 처리한다. 인터페이스를 정리하자면 ViewController가 ViewModel을 직접 구현이 아닌 인터페이스(Protocol)에 의존하면, 내부 로직이 바뀌더라도 ViewController는 수정 없이 그대로 동작할 수 있다. 이렇게 구현을 감추고 필요한 기능만 정의한 것을 **추상화**라고 한다. 인터페이스를 사용하는이유 = 의존성을 최소화 하기 위해 = 변경을 대응하기 위함. Clean Architecture 엉글 밥Robert C. Martin)이 제시한 추상적인 개념으로서 관심사를 분리시키고 의존도를 낮추는 것에 목적을 둔 아키텍처이다. 모바일 뿐만 아니라 웹이나 서버 등 여러 곳에서 많이 사용하는 아키텍처이다. 모바일 기준으로는 조금 단순화한 아래 사진을 참고하면 된다. 모바일 기준으로는 크게 3개의 계층(Layer)로 분류한다. Domain Layer, Data Layer, Presentation Layer로 분류한다. 1. Domain Layer Domain Layer는 프로젝트의 가장 핵심적인 영역이며, 비즈니스의 규칙과 요구사항을 직접 담고 있는 계층이다. 구성 요소 Entity - 모델 정의 UseCase - 핵심적인 비즈니스 로직을 담은 역할 유저 리스트 불러오기 유저 상세 데이터 불러오기 유저를 내부 저장소에 저장하기 Repository Protocol(인터페이스) - UseCase와 Data Layer(서버 API, 로컬 DB)를 연결해주는 중간 다리 역할 UseCase와 Data Layer 사이를 연결하는 추상화 계층 데이터의 출처가 무엇이든 (API, DB 등) UseCase는 몰라도 된다 2. Data Layer 데이터를 가져오는 역할이다. DB API Repository 구현체 API를 사용할지 DB를 사용할지를 Repository를 통해서 가져온다. Repository를 통해 가져오므로 API나 DB를 직접 의존할 필요가 없다. 왜 Repository를 사용하는가? UseCase는 데이터가 어디서 오는지 알 필요 없다. API든, CoreData든, Realm이든 전혀 신경 쓰지 않는다. Repository가 데이터의 출처를 감싸서 대신 처리해준다. 덕분에 UseCase는 오직 기능 수행에만 집중 가능 Repository는 인터페이스만 존재하며, 실제 구현은 Data Layer에서 처리한다. 3. Presentation Layer MVVM에서 ViewController(UI)와 ViewModel(Presentor)을 의미한다. M을 제외한 VVM이 Presentation에 존대한다. M은 Data/Domain Layer둘다 포함한다. MVVM에서 클린 아키텍처 확장함에 있어서 M이 세분화 되었다. UI Presenters(=ViewModel) 의존성이 바깥에서 안으로 향하고 있다. 고수준(Domain Layer)는 변동이 거의 일어나지 않는다. 저수준(Presentation Layer)는 변동이 자주 발생한다. 의존성의 방향은 자주 변하는 쪽에서 자주 변하지 않는 쪽으로 의존한다. 저수준은 고수준을 의존할 수 있지만. 고수준이 저수준을 의존하면 의존성 역전 원칙 위반이다. 의존성 역전 원칙 위반 예시 // 저수준 Data Layer class Repository { func getUsers() {} } // 고수준 Domain Layer class Usecase { private let repository = Repository() // 2. 고수준(Usecase)이 저수준(Repository)을 의존하고있다 -&gt; 의존성 역전 위반 func getUsers() { repository.getUsers() } } // 저수준 Presentation Layer class ViewModel { private let usecase = Usecase() // 1. 저수준(ViewModel)이 고수준(usecase)을 의존하고 있다 O } 의존성 역전 시킨 좋은 예시 // 의존성 역전을 하려면 -&gt; Protocol(인터페이스)를 사용하면 된다. // 인터페이스는 추상화 한 개념이라 변경이 일어나지 않기 때문에 항상 고수준이다. // ViewModel, Repository는 저수준, Usecase는 고수준 // Domain Layer protocol RepositoryProtocol { func getUsers() } // 저수준 Data Layer class Repository: RepositoryProtocol { func getUsers() {} } // 고수준 Domain Layer class Usecase { private let repository: RepositoryProtocol // 2. 고수준(Usecase)이 고수준(protocol)을 의존하고있다 -&gt; 의존성 역전 시켜서 클린아키텍처 원칙을 만족 O init(repository: RepositoryProtocol) { self.repository = repository } func getUsers() { repository.getUsers() } } // 저수준 Presentation Layer class ViewModel { private let usecase = Usecase(repository: Repository()) // 1. 저수준(ViewModel)이 고수준(usecase)을 의존하고 있다 -&gt; 클린아키텍처 원칙 만족 } 최종 Clean Architecture 구조]]></summary></entry><entry><title type="html">[UIKit] iOS 푸시알림 FCM, APNS</title><link href="http://localhost:4000/UIKit-FCM/" rel="alternate" type="text/html" title="[UIKit] iOS 푸시알림 FCM, APNS" /><published>2025-05-22T00:00:00+00:00</published><updated>2025-05-22T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-FCM</id><content type="html" xml:base="http://localhost:4000/UIKit-FCM/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<p><img src="/assets/img/2025-05-24-%5BCleanArchitecture%5D-Clean%20Architecture/123.drawio.png" alt="커스텀셀" width="100%" /></p>]]></content><author><name>Dong Hyeon</name></author><category term="CleanArchitecture" /><summary type="html"><![CDATA[SOLOD, MVVM, CleanArchitecture 클린 아키텍처를 알기 위해서는 MVVM을 알아야 하고 MVVM을 알기 위해서는 SOLID 원칙을 알아야 한다. SOLID 원칙 -&gt; MVVM -&gt; Interface -&gt; Clean Architecture 순서로 정리하였다. 원칙이란? 원칙을 지키면 시간이 흐른 뒤에는 큰 영향을 가져온다. 원칙을 지키지 않는다면 어디서부터 어떻게 고쳐야 할 지 어렵고, 한 부분을 해결하면 다른 부분에서 문제가 발생할 수도 있다. SOLID 프로그램의 원칙을 지키면 프로젝트 규모가 커질수록 큰 영향을 가져온다. SOLID 원칙을 지키면 얻을 수 있는 효과가 유지보수성이다. 유지보수가 쉬운 코드 = 어떤 상황에서도 잘 동작하고 변경에 용이 SOLID 원칙 SOLID원칙은 5가지 원칙을 의미한다. 1. 단일 책임 원칙 클래스는 하나의 책임만을 가져야 한다. (책임 = 변경이 일어날 때 영향을 받는다라고 가정) ex) ViewConntroller의 책임 UI 그리기 (&lt;- 책임) UI 로직 구현 API 호출 내부 데이터 저장, 불러오기 =&gt; 이 4개중에 하나의 책임만 가져야 한다. 여기서는 UI 그리기가 책임이 된다. 2. 개팡 폐쇄 원칙 클래스는 기능의 확장에 있어서 열려 있어야 하고 수정에는 닫혀 있어야 한다. ViewModel에서 User 데이터에 대한 타입이 변경되면 ViewModel에 의존하는 ViewController가 영향을 받는다. 하지만 ViewController에서 UI에 대한 코드가 변경되면 안된다. 예제코드 3. 인터페이스 분리 원칙 사용하지 않는 인터페이스는 쓰지 않아야 한다. 사진과 같이 ViewController가 property1과 func3만 사용한다면 ViewController입장에서 나머지 property2, func1, func2는 필요 없다. 이럴때는 인터페이스를 분리해야 한다. 4. 의존성 역전 원칙 고수준 모듈은 저수준 모듈에 의존해서는 안된다. 둘다 추상화에 의존해야 한다. 저수준은 UI와 같이 잘 바뀌는 코드를 의미하고 고수준은 앱에서 핵심 기능인 잘 안바뀌는 기능을 의미한다.(쇼핑앱에서는 결제 기능과 유사) 즉 쉽게 바뀌는 코드가 쉽게 바뀌지 않는 코드를 의존해야 한다. 참고로 추상화(인터페이스)에 의존해야한다. 예제코드 5. 리스코프 치환원칙 자식 클래스는 언제나 자신의 부모 클래스로 교체할 수 있어야 한다. 즉 부모 타입을 사용하는 곳에 자식 타입을 넣어도 정상적으로 작동해야 한다. 리스코프 치환 위반 예시 리스코프 치환 지키는 예시 MVVM SOLID 원칙을 지키기 위해 MVVM 패턴을 사용한다. MVVM패턴을 지키면 자연스럽게 SOLID 원칙을 지킬 수 있다. MVVM은 Model, View, ViewModel로 3등분으로 구성된다. 그림 상세내용(참고) View는 UI를 표현하고 버튼 클릭이나 텍스트 입력과 같은 이벤트를 ViewModel으로 전달한다. ViewModel은 View(UI)와 관련한 로직을 모두 처리하거나 상태를 보유한다. 또한 View에서 전달된 이벤트에 따라 바뀐 상태나 바뀐 UI 관련 로직을 처리하고 필요시 ViewController에게 바로 상태를 전달하고, 만약 더 핵심적인 비즈니스 로직(API 호츌)이 필요하면 Model에 전달하여 Model에서 핵심 비즈니스 로직을 처리하고 데이터를 다시 ViewModel로 전달해주고 ViewModel에서 UI적인 로직을 처리하여 ViewController에게 상태나 데이터를 전달한다. MVVM 구성 구성 요소 역할 Model 데이터와 비즈니스 로직 (API 통신, 데이터 가공 등) ViewModel View에 필요한 상태와 로직을 관리 (UI 상태 결정, 이벤트 처리) View (UI) 사용자 입력, 화면 표시 (이벤트는 ViewModel로 전달) 🔁 의존성 방향 View → ViewModel: View는 ViewModel에 의존 (버튼 클릭 → 메서드 호출 등) ViewModel → Model: ViewModel은 데이터가 필요할 때 Model에 요청 Model은 아무것도 모름 (하위 계층은 상위 계층을 몰라야 함 = DIP 적용) 의존성의 방향은 잘 변경되는 쪽이 잘 변경되지 않는 쪽을 바라본다, 즉 각 구성요소가 단방향적인 의존성을 지키고 있다. SOLID 원칙 적용 전 MVVM 코드 (DIP 위반) SOLID 원칙 적용 후 MVVM 코드 (DIP, OCP 등 만족) Interface 클린아키텍처를 이해하기위해 인터페이스 개념을 다시 한번 알고 가자. 인터페이스란? 우리가 흔이 말하는 앱의 유저 인터페이스(UI)는 사용자가 직접 마주하는 화면을 의미한다. 어떻게 구성되고, 어떻게 동작하며, 어떤 방식으로 정의한다. ❄️ 냉장고로 예시를 들어본다면 유저 인터페이스(UI): 손잡이, 버튼, 디스플레이 내부 로직: 온도 조절, 냉각 등 실제 동작 중요한 포인트: 사용자는 내부 로직을 몰라도, 버튼 하나로 냉장고를 조작할 수 있다. → 즉, “인터페이스만 알면 사용 가능”한 구조다. 냉장고의 UI는 ViewController, 내부 로직은 ViewModel로 비유할 수 있다. ViewController는 “냉장고 온도를 내려주세요”라고 요청만 한다. 실제 로직(냉각, 온도 계산 등)은 ViewModel이 처리한다. 인터페이스를 정리하자면 ViewController가 ViewModel을 직접 구현이 아닌 인터페이스(Protocol)에 의존하면, 내부 로직이 바뀌더라도 ViewController는 수정 없이 그대로 동작할 수 있다. 이렇게 구현을 감추고 필요한 기능만 정의한 것을 **추상화**라고 한다. 인터페이스를 사용하는이유 = 의존성을 최소화 하기 위해 = 변경을 대응하기 위함. Clean Architecture 엉글 밥Robert C. Martin)이 제시한 추상적인 개념으로서 관심사를 분리시키고 의존도를 낮추는 것에 목적을 둔 아키텍처이다. 모바일 뿐만 아니라 웹이나 서버 등 여러 곳에서 많이 사용하는 아키텍처이다. 모바일 기준으로는 조금 단순화한 아래 사진을 참고하면 된다. 모바일 기준으로는 크게 3개의 계층(Layer)로 분류한다. Domain Layer, Data Layer, Presentation Layer로 분류한다. 1. Domain Layer Domain Layer는 프로젝트의 가장 핵심적인 영역이며, 비즈니스의 규칙과 요구사항을 직접 담고 있는 계층이다. 구성 요소 Entity - 모델 정의 UseCase - 핵심적인 비즈니스 로직을 담은 역할 유저 리스트 불러오기 유저 상세 데이터 불러오기 유저를 내부 저장소에 저장하기 Repository Protocol(인터페이스) - UseCase와 Data Layer(서버 API, 로컬 DB)를 연결해주는 중간 다리 역할 UseCase와 Data Layer 사이를 연결하는 추상화 계층 데이터의 출처가 무엇이든 (API, DB 등) UseCase는 몰라도 된다 2. Data Layer 데이터를 가져오는 역할이다. DB API Repository 구현체 API를 사용할지 DB를 사용할지를 Repository를 통해서 가져온다. Repository를 통해 가져오므로 API나 DB를 직접 의존할 필요가 없다. 왜 Repository를 사용하는가? UseCase는 데이터가 어디서 오는지 알 필요 없다. API든, CoreData든, Realm이든 전혀 신경 쓰지 않는다. Repository가 데이터의 출처를 감싸서 대신 처리해준다. 덕분에 UseCase는 오직 기능 수행에만 집중 가능 Repository는 인터페이스만 존재하며, 실제 구현은 Data Layer에서 처리한다. 3. Presentation Layer MVVM에서 ViewController(UI)와 ViewModel(Presentor)을 의미한다. M을 제외한 VVM이 Presentation에 존대한다. M은 Data/Domain Layer둘다 포함한다. MVVM에서 클린 아키텍처 확장함에 있어서 M이 세분화 되었다. UI Presenters(=ViewModel) 의존성이 바깥에서 안으로 향하고 있다. 고수준(Domain Layer)는 변동이 거의 일어나지 않는다. 저수준(Presentation Layer)는 변동이 자주 발생한다. 의존성의 방향은 자주 변하는 쪽에서 자주 변하지 않는 쪽으로 의존한다. 저수준은 고수준을 의존할 수 있지만. 고수준이 저수준을 의존하면 의존성 역전 원칙 위반이다. 의존성 역전 원칙 위반 예시 // 저수준 Data Layer class Repository { func getUsers() {} } // 고수준 Domain Layer class Usecase { private let repository = Repository() // 2. 고수준(Usecase)이 저수준(Repository)을 의존하고있다 -&gt; 의존성 역전 위반 func getUsers() { repository.getUsers() } } // 저수준 Presentation Layer class ViewModel { private let usecase = Usecase() // 1. 저수준(ViewModel)이 고수준(usecase)을 의존하고 있다 O } 의존성 역전 시킨 좋은 예시 // 의존성 역전을 하려면 -&gt; Protocol(인터페이스)를 사용하면 된다. // 인터페이스는 추상화 한 개념이라 변경이 일어나지 않기 때문에 항상 고수준이다. // ViewModel, Repository는 저수준, Usecase는 고수준 // Domain Layer protocol RepositoryProtocol { func getUsers() } // 저수준 Data Layer class Repository: RepositoryProtocol { func getUsers() {} } // 고수준 Domain Layer class Usecase { private let repository: RepositoryProtocol // 2. 고수준(Usecase)이 고수준(protocol)을 의존하고있다 -&gt; 의존성 역전 시켜서 클린아키텍처 원칙을 만족 O init(repository: RepositoryProtocol) { self.repository = repository } func getUsers() { repository.getUsers() } } // 저수준 Presentation Layer class ViewModel { private let usecase = Usecase(repository: Repository()) // 1. 저수준(ViewModel)이 고수준(usecase)을 의존하고 있다 -&gt; 클린아키텍처 원칙 만족 } 최종 Clean Architecture 구조]]></summary></entry><entry><title type="html">[Baekjoon] 백준 2910 빈도 정렬</title><link href="http://localhost:4000/Baekjoon-2910/" rel="alternate" type="text/html" title="[Baekjoon] 백준 2910 빈도 정렬" /><published>2025-05-22T00:00:00+00:00</published><updated>2025-05-22T00:00:00+00:00</updated><id>http://localhost:4000/%5BBaekjoon%5D-2910</id><content type="html" xml:base="http://localhost:4000/Baekjoon-2910/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h2 id="문제">문제</h2>
+<p><a href="https://www.acmicpc.net/problem/2910">빈도 정렬</a></p>
+
+<p><img src="/assets/img/2025-05-22-%5BBaekjoon%5D-2910/image-20250523012134858.png" alt="이미지" width="100%" /><br />
+자주 등장하는 숫자 기준으로 오름차순 정렬하되, 등장횟수가 같다면 먼저 나온 것이 앞에 있어야 한다.</p>
+
+<h2 id="풀이">풀이</h2>
+
+<p>정렬 관련 함수</p>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 배열</span>
+<span class="k">var</span> <span class="nv">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+
+<span class="c1">// 오름차순 정렬</span>
+<span class="k">let</span> <span class="nv">ascending</span> <span class="o">=</span> <span class="n">numbers</span><span class="o">.</span><span class="nf">sorted</span><span class="p">()</span>
+<span class="nf">print</span><span class="p">(</span><span class="s">"오름차순:"</span><span class="p">,</span> <span class="n">ascending</span><span class="p">)</span> <span class="c1">// [1, 2, 3, 5, 8]</span>
+
+<span class="c1">// 내림차순 정렬</span>
+<span class="k">let</span> <span class="nv">descending</span> <span class="o">=</span> <span class="n">numbers</span><span class="o">.</span><span class="nf">sorted</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="o">&gt;</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="s">"내림차순:"</span><span class="p">,</span> <span class="n">descending</span><span class="p">)</span> <span class="c1">// [8, 5, 3, 2, 1]</span>
+
+
+<span class="c1">// 딕셔너리</span>
+<span class="k">let</span> <span class="nv">scores</span> <span class="o">=</span> <span class="p">[</span><span class="s">"Alice"</span><span class="p">:</span> <span class="mi">88</span><span class="p">,</span> <span class="s">"Bob"</span><span class="p">:</span> <span class="mi">95</span><span class="p">,</span> <span class="s">"Charlie"</span><span class="p">:</span> <span class="mi">72</span><span class="p">]</span>
+
+<span class="c1">// 🔹 value 기준 오름차순 정렬</span>
+<span class="k">let</span> <span class="nv">byScoreAsc</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">sorted</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span> <span class="p">}</span>
+<span class="nf">print</span><span class="p">(</span><span class="s">"점수 오름차순:"</span><span class="p">,</span> <span class="n">byScoreAsc</span><span class="p">)</span>
+
+<span class="c1">// 🔹 value 기준 내림차순 정렬</span>
+<span class="k">let</span> <span class="nv">byScoreDesc</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">sorted</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span> <span class="p">}</span>
+<span class="nf">print</span><span class="p">(</span><span class="s">"점수 내림차순:"</span><span class="p">,</span> <span class="n">byScoreDesc</span><span class="p">)</span>
+
+<span class="c1">// 🔹 key 기준 오름차순 정렬</span>
+<span class="k">let</span> <span class="nv">byNameAsc</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">sorted</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">key</span> <span class="o">&lt;</span> <span class="nv">$1</span><span class="o">.</span><span class="n">key</span> <span class="p">}</span>
+<span class="nf">print</span><span class="p">(</span><span class="s">"이름 오름차순:"</span><span class="p">,</span> <span class="n">byNameAsc</span><span class="p">)</span>
+
+<span class="c1">// 우선순위 기반 정렬 1</span>
+<span class="k">let</span> <span class="nv">dic</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="mi">1</span><span class="p">]</span>
+<span class="k">let</span> <span class="nv">order</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="c1">// 우선순위: 2 &gt; 3 &gt; 1 &gt; 4</span>
+
+<span class="k">let</span> <span class="nv">sortedKeys</span> <span class="o">=</span> <span class="n">dic</span><span class="o">.</span><span class="n">sorted</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span> <span class="p">{</span>
+        <span class="c1">// O(n)</span>
+        <span class="k">return</span> <span class="n">order</span><span class="o">.</span><span class="nf">firstIndex</span><span class="p">(</span><span class="nv">of</span><span class="p">:</span> <span class="nv">$0</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="o">!</span> <span class="o">&lt;</span> <span class="n">order</span><span class="o">.</span><span class="nf">firstIndex</span><span class="p">(</span><span class="nv">of</span><span class="p">:</span> <span class="nv">$1</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="o">!</span> <span class="c1">// &lt;: 인덱스가 낮은 key가 먼저 온다</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span>
+<span class="p">}</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">key</span> <span class="p">}</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">sortedKeys</span><span class="p">)</span>
+
+<span class="c1">// 우선순위 기반 정렬 2</span>
+<span class="k">let</span> <span class="nv">dic</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="mi">1</span><span class="p">]</span> <span class="c1">// num: count</span>
+<span class="k">let</span> <span class="nv">order</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+ 
+<span class="c1">// [2: 0, 3: 1, 1: 2, 4: 3] = num: idx(Order)</span>
+<span class="c1">// 우선순위 인덱스를 미리 딕셔너리로 만들어 둔다 (O(1) 접근)</span>
+<span class="k">let</span> <span class="nv">priority</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">:</span> <span class="kt">Int</span><span class="p">]</span> <span class="o">=</span> <span class="kt">Dictionary</span><span class="p">(</span><span class="nv">uniqueKeysWithValues</span><span class="p">:</span> <span class="n">order</span><span class="o">.</span><span class="nf">enumerated</span><span class="p">()</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="p">(</span><span class="nv">$1</span><span class="p">,</span> <span class="nv">$0</span><span class="p">)</span> <span class="p">})</span>
+
+<span class="k">let</span> <span class="nv">sortedKeys</span> <span class="o">=</span> <span class="n">dic</span><span class="o">.</span><span class="n">sorted</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">priority</span><span class="p">[</span><span class="nv">$0</span><span class="o">.</span><span class="n">key</span><span class="p">]</span><span class="o">!</span> <span class="o">&lt;</span> <span class="n">priority</span><span class="p">[</span><span class="nv">$1</span><span class="o">.</span><span class="n">key</span><span class="p">]</span><span class="o">!</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span>
+<span class="p">}</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">key</span> <span class="p">}</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="n">sortedKeys</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<p>처음 접근 방법<br />
+딕셔너리의 키를 숫자로 두고 value로 카운팅을 한다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">_</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span>
+<span class="k">let</span> <span class="nv">numbers</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span><span class="o">!.</span><span class="nf">split</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">Int</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span><span class="o">!</span> <span class="p">}</span> <span class="c1">// [1, 1, 1, 2, 2, 2]</span>
+<span class="k">var</span> <span class="nv">dic</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">:</span><span class="kt">Int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[:]</span>
+
+<span class="k">for</span> <span class="n">num</span> <span class="k">in</span> <span class="n">numbers</span> <span class="p">{</span>
+    <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">,</span> <span class="k">default</span><span class="p">:</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="p">}</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span>       <span class="c1">// [2: 3, 1: 2]</span>
+
+<span class="c1">// value가 많은순으로 키룰 정렬하는 방법</span>
+<span class="k">let</span> <span class="nv">sortedKeys</span> <span class="o">=</span> <span class="n">dic</span><span class="o">.</span><span class="n">sorted</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span>
+<span class="p">}</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">key</span> <span class="p">}</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">sortedKeys</span><span class="p">)</span>  <span class="c1">// [2, 1]</span>
+
+<span class="k">var</span> <span class="nv">output</span> <span class="o">=</span> <span class="s">""</span>
+<span class="k">for</span> <span class="n">num</span> <span class="k">in</span> <span class="n">sortedKeys</span> <span class="p">{</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="kt">String</span><span class="p">(</span><span class="nv">repeating</span><span class="p">:</span> <span class="s">"</span><span class="se">\(</span><span class="n">num</span><span class="se">)</span><span class="s"> "</span><span class="p">,</span> <span class="nv">count</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">]</span><span class="o">!</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="c1">// 2 2 2 1 1</span>
+</code></pre></div></div>
+
+<p>이러면 1번 예제는 해결이 되지만 만약 동일한 등장횟수면 해당 순서를 보장해줘야 한다.</p>
+
+<h2 id="제출-1">제출 1</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+5 2
+2 1 2 1 2
+ */</span>
+<span class="n">_</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span>
+<span class="k">let</span> <span class="nv">numbers</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span><span class="o">!.</span><span class="nf">split</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">Int</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span><span class="o">!</span> <span class="p">}</span>
+
+<span class="c1">// ── 1) 빈도 계산 / 순서 계산 ─────────────────────────────────────</span>
+<span class="k">var</span> <span class="nv">dic</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">:</span><span class="kt">Int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[:]</span>    <span class="c1">// 숫자:개수</span>
+<span class="k">var</span> <span class="nv">order</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">:</span><span class="kt">Int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[:]</span>  <span class="c1">// 숫자:우선순위</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span> <span class="k">in</span> <span class="n">numbers</span><span class="o">.</span><span class="nf">enumerated</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="n">order</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span> <span class="c1">// num이 처음 등장한 idx 기록</span>
+    <span class="p">}</span>
+    <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">,</span> <span class="k">default</span><span class="p">:</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1">// [num:value]</span>
+<span class="p">}</span>
+
+<span class="c1">// ── 2) 빈도순으로 key 한번씩만 내보내기 ─────────────────────────────────────</span>
+<span class="k">let</span> <span class="nv">keysByFreq</span> <span class="o">=</span> <span class="n">dic</span>
+    <span class="o">.</span><span class="n">sorted</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span> <span class="p">{</span>
+            <span class="c1">// 먼저 나온 key가 앞으로 오도록 정렬</span>
+            <span class="k">return</span> <span class="n">order</span><span class="p">[</span><span class="nv">$0</span><span class="o">.</span><span class="n">key</span><span class="p">]</span><span class="o">!</span> <span class="o">&lt;</span> <span class="n">order</span><span class="p">[</span><span class="nv">$1</span><span class="o">.</span><span class="n">key</span><span class="p">]</span><span class="o">!</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span> <span class="c1">// 내림차순</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">key</span> <span class="p">}</span>                   <span class="c1">// key만 추출</span>
+
+<span class="c1">// ── 3) 빈도순으로 key를 빈도만큼 반복 출력 ─────────────────────────────────────</span>
+<span class="k">var</span> <span class="nv">output</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+<span class="k">for</span> <span class="n">num</span> <span class="k">in</span> <span class="n">keysByFreq</span> <span class="p">{</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="kt">String</span><span class="p">(</span><span class="nv">repeating</span><span class="p">:</span> <span class="s">"</span><span class="se">\(</span><span class="n">num</span><span class="se">)</span><span class="s"> "</span><span class="p">,</span> <span class="nv">count</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">]</span><span class="o">!</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<h2 id="제출-2">제출 2</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+5 2
+2 1 2 1 2
+
+딕셔너리 dic은 다음과 같이 구성
+[숫자: (등장 순서, 등장 횟수)]
+
+[예시]
+[
+  2: (0, 3), // 0번째에 처음 등장, 3번 나옴
+  1: (1, 2), // 1번째에 처음 등장, 2번 나옴
+]
+
+*/</span>
+<span class="n">_</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span>
+<span class="k">var</span> <span class="nv">dic</span> <span class="o">=</span> <span class="p">[</span><span class="kt">Int</span><span class="p">:</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)]()</span>
+<span class="k">let</span> <span class="nv">numbers</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span><span class="o">!.</span><span class="nf">split</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">Int</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span><span class="o">!</span> <span class="p">}</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span> <span class="k">in</span> <span class="n">numbers</span><span class="o">.</span><span class="nf">enumerated</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// 숫자 처음 등장시</span>
+    <span class="k">if</span> <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">// 등장순서, 1번 등장</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">]</span><span class="o">!.</span><span class="mi">1</span> <span class="o">+=</span> <span class="mi">1</span>   <span class="c1">// 이미 등장한 숫자라면 횟수만 추가</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 등장 횟수가 많은 숫자가 먼저 오도록, 같으면 등장순서가 빠른 순으로</span>
+<span class="k">let</span> <span class="nv">sorted</span> <span class="o">=</span> <span class="n">dic</span><span class="o">.</span><span class="n">sorted</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="p">(</span><span class="nv">firstIdx</span><span class="p">,</span> <span class="nv">firstCnt</span><span class="p">)</span> <span class="o">=</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">let</span> <span class="p">(</span><span class="nv">secondIdx</span><span class="p">,</span> <span class="nv">secondCnt</span><span class="p">)</span> <span class="o">=</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span>
+    
+    <span class="k">if</span> <span class="n">firstCnt</span> <span class="o">!=</span> <span class="n">secondCnt</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">firstCnt</span> <span class="o">&gt;</span> <span class="n">secondCnt</span> <span class="c1">// 등장 횟수 많은 순</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">firstIdx</span> <span class="o">&lt;</span> <span class="n">secondIdx</span> <span class="c1">// 먼저 등장한 숫자 먼저</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 출력 1</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">sorted</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">repeating</span><span class="p">:</span> <span class="s">"</span><span class="se">\(</span><span class="nv">$0</span><span class="o">.</span><span class="n">key</span><span class="se">)</span><span class="s"> "</span><span class="p">,</span> <span class="nv">count</span><span class="p">:</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="nf">joined</span><span class="p">())</span>
+
+<span class="c1">// 출력 2</span>
+<span class="k">var</span> <span class="nv">output</span> <span class="o">=</span> <span class="s">""</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">cnt</span><span class="p">))</span> <span class="k">in</span> <span class="n">sorted</span> <span class="p">{</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="kt">String</span><span class="p">(</span><span class="nv">repeating</span><span class="p">:</span> <span class="s">"</span><span class="se">\(</span><span class="n">number</span><span class="se">)</span><span class="s"> "</span><span class="p">,</span> <span class="nv">count</span><span class="p">:</span> <span class="n">cnt</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Baekjoon" /><summary type="html"><![CDATA[문제 빈도 정렬 자주 등장하는 숫자 기준으로 오름차순 정렬하되, 등장횟수가 같다면 먼저 나온 것이 앞에 있어야 한다. 풀이 정렬 관련 함수 // 배열 var numbers = [5, 2, 8, 1, 3] // 오름차순 정렬 let ascending = numbers.sorted() print("오름차순:", ascending) // [1, 2, 3, 5, 8] // 내림차순 정렬 let descending = numbers.sorted(by: &gt;) print("내림차순:", descending) // [8, 5, 3, 2, 1] // 딕셔너리 let scores = ["Alice": 88, "Bob": 95, "Charlie": 72] // 🔹 value 기준 오름차순 정렬 let byScoreAsc = scores.sorted { $0.value &lt; $1.value } print("점수 오름차순:", byScoreAsc) // 🔹 value 기준 내림차순 정렬 let byScoreDesc = scores.sorted { $0.value &gt; $1.value } print("점수 내림차순:", byScoreDesc) // 🔹 key 기준 오름차순 정렬 let byNameAsc = scores.sorted { $0.key &lt; $1.key } print("이름 오름차순:", byNameAsc) // 우선순위 기반 정렬 1 let dic = [1: 2, 2: 5, 3: 5, 4: 1] let order = [2, 3, 1, 4] // 우선순위: 2 &gt; 3 &gt; 1 &gt; 4 let sortedKeys = dic.sorted { if $0.value == $1.value { // O(n) return order.firstIndex(of: $0.key)! &lt; order.firstIndex(of: $1.key)! // &lt;: 인덱스가 낮은 key가 먼저 온다 } return $0.value &gt; $1.value }.map { $0.key } print(sortedKeys) // 우선순위 기반 정렬 2 let dic = [1: 2, 2: 5, 3: 5, 4: 1] // num: count let order = [2, 3, 1, 4] // [2: 0, 3: 1, 1: 2, 4: 3] = num: idx(Order) // 우선순위 인덱스를 미리 딕셔너리로 만들어 둔다 (O(1) 접근) let priority: [Int: Int] = Dictionary(uniqueKeysWithValues: order.enumerated().map { ($1, $0) }) let sortedKeys = dic.sorted { if $0.value == $1.value { return priority[$0.key]! &lt; priority[$1.key]! } return $0.value &gt; $1.value }.map { $0.key } print(sortedKeys) 처음 접근 방법 딕셔너리의 키를 숫자로 두고 value로 카운팅을 한다. _ = readLine() let numbers = readLine()!.split(separator: " ").map { Int($0)! } // [1, 1, 1, 2, 2, 2] var dic: [Int:Int] = [:] for num in numbers { dic[num, default: 0] += 1 } print(dic) // [2: 3, 1: 2] // value가 많은순으로 키룰 정렬하는 방법 let sortedKeys = dic.sorted { return $0.value &gt; $1.value }.map { $0.key } print(sortedKeys) // [2, 1] var output = "" for num in sortedKeys { output += String(repeating: "\(num) ", count: dic[num]!) } print(output) // 2 2 2 1 1 이러면 1번 예제는 해결이 되지만 만약 동일한 등장횟수면 해당 순서를 보장해줘야 한다. 제출 1 /* 5 2 2 1 2 1 2 */ _ = readLine() let numbers = readLine()!.split(separator: " ").map { Int($0)! } // ── 1) 빈도 계산 / 순서 계산 ───────────────────────────────────── var dic: [Int:Int] = [:] // 숫자:개수 var order: [Int:Int] = [:] // 숫자:우선순위 for (idx, num) in numbers.enumerated() { if dic[num] == nil { order[num] = idx // num이 처음 등장한 idx 기록 } dic[num, default: 0] += 1 // [num:value] } // ── 2) 빈도순으로 key 한번씩만 내보내기 ───────────────────────────────────── let keysByFreq = dic .sorted { if $0.value == $1.value { // 먼저 나온 key가 앞으로 오도록 정렬 return order[$0.key]! &lt; order[$1.key]! } else { return $0.value &gt; $1.value // 내림차순 } } .map { $0.key } // key만 추출 // ── 3) 빈도순으로 key를 빈도만큼 반복 출력 ───────────────────────────────────── var output: String = "" for num in keysByFreq { output += String(repeating: "\(num) ", count: dic[num]!) } print(output) 제출 2 /* 5 2 2 1 2 1 2 딕셔너리 dic은 다음과 같이 구성 [숫자: (등장 순서, 등장 횟수)] [예시] [ 2: (0, 3), // 0번째에 처음 등장, 3번 나옴 1: (1, 2), // 1번째에 처음 등장, 2번 나옴 ] */ _ = readLine() var dic = [Int: (Int, Int)]() let numbers = readLine()!.split(separator: " ").map { Int($0)! } for (idx, num) in numbers.enumerated() { // 숫자 처음 등장시 if dic[num] == nil { dic[num] = (idx, 1) // 등장순서, 1번 등장 } else { dic[num]!.1 += 1 // 이미 등장한 숫자라면 횟수만 추가 } } // 등장 횟수가 많은 숫자가 먼저 오도록, 같으면 등장순서가 빠른 순으로 let sorted = dic.sorted { let (firstIdx, firstCnt) = $0.value let (secondIdx, secondCnt) = $1.value if firstCnt != secondCnt { return firstCnt &gt; secondCnt // 등장 횟수 많은 순 } else { return firstIdx &lt; secondIdx // 먼저 등장한 숫자 먼저 } } // 출력 1 print(sorted.map { String(repeating: "\($0.key) ", count: $0.value.1) }.joined()) // 출력 2 var output = "" for (number, (_, cnt)) in sorted { output += String(repeating: "\(number) ", count: cnt) } print(output)]]></summary></entry><entry><title type="html">[Baekjoon] 백준 2828 사과 담기 게임</title><link href="http://localhost:4000/Baekjoon-2828/" rel="alternate" type="text/html" title="[Baekjoon] 백준 2828 사과 담기 게임" /><published>2025-05-22T00:00:00+00:00</published><updated>2025-05-22T00:00:00+00:00</updated><id>http://localhost:4000/%5BBaekjoon%5D-2828</id><content type="html" xml:base="http://localhost:4000/Baekjoon-2828/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h2 id="문제">문제</h2>
+<p><a href="https://www.acmicpc.net/problem/2828">사과 담기 게임</a></p>
+
+<p><img src="/assets/img/2025-05-22-%5BBaekjoon%5D-2828/image-20250522131128824.png" alt="이미지" width="100%" /><br />
+스크린 위에서 사과 여러개가 떨어질 때 바구니로 사과를 담기 위한 이동거리의 최솟값을 구하라</p>
+
+<h2 id="풀이">풀이</h2>
+<p>시작지점을 left와 right를 방정식으로 나타낼 수 있다.<br />
+left = 1<br />
+right = left + m - 1</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+ 5 1
+ 3
+ 1
+ 5
+ 3
+ */</span>
+
+<span class="k">let</span> <span class="nv">input</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span><span class="o">!.</span><span class="nf">split</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">Int</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span><span class="o">!</span> <span class="p">}</span>
+<span class="k">let</span> <span class="nv">n</span> <span class="o">=</span> <span class="n">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>          <span class="c1">// screen</span>
+<span class="k">let</span> <span class="nv">m</span> <span class="o">=</span> <span class="n">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>          <span class="c1">// basket</span>
+<span class="k">let</span> <span class="nv">j</span> <span class="o">=</span> <span class="kt">Int</span><span class="p">(</span><span class="nf">readLine</span><span class="p">()</span><span class="o">!</span><span class="p">)</span><span class="o">!</span> <span class="c1">// count</span>
+
+<span class="k">var</span> <span class="nv">left</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">var</span> <span class="nv">right</span> <span class="o">=</span> <span class="k">left</span> <span class="o">+</span> <span class="n">m</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1">// 그냉 m으로 해도 된다</span>
+<span class="k">var</span> <span class="nv">totalMove</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mi">0</span><span class="o">..&lt;</span><span class="n">j</span> <span class="p">{</span>
+    <span class="c1">// 사과가 떨어지는 위치</span>
+    <span class="k">let</span> <span class="nv">pos</span> <span class="o">=</span> <span class="kt">Int</span><span class="p">(</span><span class="nf">readLine</span><span class="p">()</span><span class="o">!</span><span class="p">)</span><span class="o">!</span>
+    
+    <span class="c1">// 사과의 위치가 이미 바구니가 있는 위치이면 아래 바구니 이동 로직을 무시</span>
+    <span class="k">if</span> <span class="n">pos</span> <span class="o">&gt;=</span> <span class="k">left</span> <span class="o">&amp;&amp;</span> <span class="n">pos</span> <span class="o">&lt;=</span> <span class="k">right</span> <span class="p">{</span> <span class="k">continue</span> <span class="p">}</span>
+   
+    <span class="c1">// 포지션이 바구니 안에 있으면 이동 안함</span>
+    <span class="k">if</span> <span class="n">pos</span> <span class="o">&lt;</span> <span class="k">left</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">move</span> <span class="o">=</span> <span class="k">left</span> <span class="o">-</span> <span class="n">pos</span>
+        <span class="k">left</span> <span class="o">-=</span> <span class="n">move</span>
+        <span class="k">right</span> <span class="o">-=</span> <span class="n">move</span>
+        <span class="n">totalMove</span> <span class="o">+=</span> <span class="n">move</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">pos</span> <span class="o">&gt;</span> <span class="k">right</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">move</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">-</span> <span class="k">right</span>
+        <span class="k">right</span> <span class="o">+=</span> <span class="n">move</span>
+        <span class="k">left</span> <span class="o">+=</span> <span class="n">move</span>
+        <span class="n">totalMove</span> <span class="o">+=</span> <span class="n">move</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="n">totalMove</span><span class="p">)</span>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Baekjoon" /><summary type="html"><![CDATA[문제 사과 담기 게임 스크린 위에서 사과 여러개가 떨어질 때 바구니로 사과를 담기 위한 이동거리의 최솟값을 구하라 풀이 시작지점을 left와 right를 방정식으로 나타낼 수 있다. left = 1 right = left + m - 1 /* 5 1 3 1 5 3 */ let input = readLine()!.split(separator: " ").map { Int($0)! } let n = input[0] // screen let m = input[1] // basket let j = Int(readLine()!)! // count var left = 1 var right = left + m - 1 // 그냉 m으로 해도 된다 var totalMove = 0 for _ in 0..&lt;j { // 사과가 떨어지는 위치 let pos = Int(readLine()!)! // 사과의 위치가 이미 바구니가 있는 위치이면 아래 바구니 이동 로직을 무시 if pos &gt;= left &amp;&amp; pos &lt;= right { continue } // 포지션이 바구니 안에 있으면 이동 안함 if pos &lt; left { let move = left - pos left -= move right -= move totalMove += move } else if pos &gt; right { let move = pos - right right += move left += move totalMove += move } } print(totalMove)]]></summary></entry><entry><title type="html">[UIKit] iOS 푸시알림 FCM, APNS</title><link href="http://localhost:4000/UIKit-FCM/" rel="alternate" type="text/html" title="[UIKit] iOS 푸시알림 FCM, APNS" /><published>2025-05-22T00:00:00+00:00</published><updated>2025-05-22T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-FCM</id><content type="html" xml:base="http://localhost:4000/UIKit-FCM/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
@@ -727,248 +988,7 @@ Remote Notifications 체크해준다.</p>
   <li>https://dokit.tistory.com/50</li>
   <li>https://velog.io/@niro/Firebase-Push-Notification-알림-보내기-with-SwiftUI</li>
   <li>https://yagom.net/forums/topic/push-알림을-보낼-때-fcm-과-apns-의-차이점이-있나요/</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><summary type="html"><![CDATA[iOS 푸시알림 FCM, APNS iOS에서 푸시 종류는 2가지가 있다. 로컬에서 직접 보내는 알림 서버에서 보내는 알림 서버에서 보내는 APNS(Apple Push Notification Service) FCM(Firebase Cloud Messaging) -&gt; 이번 포스팅에서는 FCM을 활용한 2번 방식을 진행할 예정이다. ​ APNS 란? APNS (Apple Push Notification Service) 는 iOS의 모든 원격 알림이 반드시 거쳐야 하는 애플 공식 푸시 전달 서버이다.. 즉, 푸시 메시지를 내가 직접 사용자 기기로 보내는 게 아니라 → APNS에 요청 → APNS가 사용자 기기로 전송 하는 방식이다. FCM 란? FCM은 Google에서 제공하는 클라우드 기반 메시징 서비스로, iOS의 APNS를 포함해 Android, Web 등 다양한 플랫폼에 푸시 메시지를 전송할 수 있도록 중간 서버 역할을 해준다. iOS에서 FCM을 통해 푸시 알림을 보내면, FCM 내부적으로 APNS를 거쳐서 사용자 기기에 도달한다. FCM이 APNS 대신 해주는 것들 애플 인증서 등록 및 관리 APNS에 메시지 전송 요청 안드로이드, iOS 둘 다 지원 (멀티 플랫폼) 클라우드 환경에서 손쉽게 운영 왜 FCM을 쓰는가? APNS 서버 직접 구축이 복잡하고 부담스러울 때 iOS &amp; Android를 동시에 지원하는 일관된 환경이 필요할 때 푸시 알림 시스템을 빠르게 구축하고 싶을 때 Firebase Analytics, A/B 테스트 같은 연계 기능을 활용할 때 푸시 알림의 기본 동작 흐름 앱이 APNS에 Device Token 요청 이 토큰은 앱이 설치된 기기의 주소 역할을 한다. APNS가 앱에게 Device Token 전달 앱이 Device Token을 푸시 서버(FCM 등)에 전달 이 서버가 실제 푸시 메시지를 보낼 주체이다. APNS를 통한 푸시 알림 동작 구조 푸시 서버(예: FCM)가 메시지와 Device Token을 APNS에 전송 이때 APNS와 푸시 서버는 TLS 인증으로 보안 통신 서버에는 APNS 인증 정보(p8 키 or 인증서)가 등록되어 있어야 함 APNS는 해당 디바이스로 푸시 메시지를 전송 디바이스에서 푸시 알림 수신 실습 identifiers에서 해당 프로젝트 누른 후 push notification 체크박스 체크 해준다. keys에서 키를 발급 해준다. 완료하면 Download버튼이 생긴다 이를 통해 p8파일을 다운로드 한다. firebase 프로젝트 -&gt; 프로젝트 설정 -&gt; 클라우드 메시징에서 APNS인증키를 등록해준다. 업로드를 눌러서 완료한다. Push Notifications Background Modes xcode -&gt; target -&gt; Push Notifications, Background Mode 추가한다. Remote Notifications 체크해준다. AppDelegate.swift import UIKit import FirebaseCore import FirebaseMessaging import UserNotifications @main class AppDelegate: UIResponder, UIApplicationDelegate { func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -&gt; Bool { // Firebase 초기화 FirebaseApp.configure() // 알림 권한 요청 UNUserNotificationCenter.current().delegate = self UNUserNotificationCenter.current().requestAuthorization( options: [.alert, .badge, .sound] ) { granted, error in print("✅ 알림 권한 요청 결과: \(granted)") if granted { DispatchQueue.main.async { UIApplication.shared.registerForRemoteNotifications() } } } // FCM 설정 Messaging.messaging().delegate = self return true } } extension AppDelegate: UNUserNotificationCenterDelegate { // APNs로부터 device token 받았을 때 FCM에 등록 func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) { print("📮 APNS Token 수신: \(deviceToken)") Messaging.messaging().apnsToken = deviceToken } // 앱이 실행 중일 때 알림 수신 (배너로 표시되게 설정) func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -&gt; Void) { completionHandler([.list, .banner, .sound]) } } extension AppDelegate: MessagingDelegate { // FCM 토큰 갱신될 때 호출 func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) { print("📌 FCM Token: \(fcmToken ?? "nil")") // 필요 시 NotificationCenter로 다른 컴포넌트에 전달 NotificationCenter.default.post( name: Notification.Name("FCMToken"), object: nil, userInfo: ["token": fcmToken ?? ""] ) } } 빌드하면 나오는 FCM을 복사한다. FCM.py import firebase_admin from firebase_admin import credentials, messaging # 1. 서비스 계정 키 경로 (.json) cred = credentials.Certificate("파이어베이스 설정 -&gt; 서비스 계정 -&gt; 새 비공키 키 생성시 .json파일 다운 가능 -&gt; 해당 경로 입력") firebase_admin.initialize_app(cred) # 2. 대상 유저의 FCM 토큰 fcm_token = "빌드하면 나오는 FCM 입력" # 3. 전송할 메시지 title = "새 댓글이 달렸어요!" body = "당신의 게시글에 누군가 댓글을 남겼습니다." # 4. 알림 메시지 구성 message = messaging.Message( token=fcm_token, notification=messaging.Notification( title=title, body=body, ) ) # 5. 메시지 전송 try: response = messaging.send(message) print("✅ 메시지 전송 성공:", response) except Exception as e: print("❌ 메시지 전송 실패:", e) 앱이 종료되어있을 때 앱 실행중일 때 Reference https://bannavi.tistory.com/558 https://dokit.tistory.com/49 https://dokit.tistory.com/50 https://velog.io/@niro/Firebase-Push-Notification-알림-보내기-with-SwiftUI https://yagom.net/forums/topic/push-알림을-보낼-때-fcm-과-apns-의-차이점이-있나요/]]></summary></entry><entry><title type="html">[Baekjoon] 백준 2828 사과 담기 게임</title><link href="http://localhost:4000/Baekjoon-2828/" rel="alternate" type="text/html" title="[Baekjoon] 백준 2828 사과 담기 게임" /><published>2025-05-22T00:00:00+00:00</published><updated>2025-05-22T00:00:00+00:00</updated><id>http://localhost:4000/%5BBaekjoon%5D-2828</id><content type="html" xml:base="http://localhost:4000/Baekjoon-2828/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h2 id="문제">문제</h2>
-<p><a href="https://www.acmicpc.net/problem/2828">사과 담기 게임</a></p>
-
-<p><img src="/assets/img/2025-05-22-%5BBaekjoon%5D-2828/image-20250522131128824.png" alt="이미지" width="100%" /><br />
-스크린 위에서 사과 여러개가 떨어질 때 바구니로 사과를 담기 위한 이동거리의 최솟값을 구하라</p>
-
-<h2 id="풀이">풀이</h2>
-<p>시작지점을 left와 right를 방정식으로 나타낼 수 있다.<br />
-left = 1<br />
-right = left + m - 1</p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
- 5 1
- 3
- 1
- 5
- 3
- */</span>
-
-<span class="k">let</span> <span class="nv">input</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span><span class="o">!.</span><span class="nf">split</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">Int</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span><span class="o">!</span> <span class="p">}</span>
-<span class="k">let</span> <span class="nv">n</span> <span class="o">=</span> <span class="n">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>          <span class="c1">// screen</span>
-<span class="k">let</span> <span class="nv">m</span> <span class="o">=</span> <span class="n">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>          <span class="c1">// basket</span>
-<span class="k">let</span> <span class="nv">j</span> <span class="o">=</span> <span class="kt">Int</span><span class="p">(</span><span class="nf">readLine</span><span class="p">()</span><span class="o">!</span><span class="p">)</span><span class="o">!</span> <span class="c1">// count</span>
-
-<span class="k">var</span> <span class="nv">left</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="k">var</span> <span class="nv">right</span> <span class="o">=</span> <span class="k">left</span> <span class="o">+</span> <span class="n">m</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1">// 그냉 m으로 해도 된다</span>
-<span class="k">var</span> <span class="nv">totalMove</span> <span class="o">=</span> <span class="mi">0</span>
-
-<span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mi">0</span><span class="o">..&lt;</span><span class="n">j</span> <span class="p">{</span>
-    <span class="c1">// 사과가 떨어지는 위치</span>
-    <span class="k">let</span> <span class="nv">pos</span> <span class="o">=</span> <span class="kt">Int</span><span class="p">(</span><span class="nf">readLine</span><span class="p">()</span><span class="o">!</span><span class="p">)</span><span class="o">!</span>
-    
-    <span class="c1">// 사과의 위치가 이미 바구니가 있는 위치이면 아래 바구니 이동 로직을 무시</span>
-    <span class="k">if</span> <span class="n">pos</span> <span class="o">&gt;=</span> <span class="k">left</span> <span class="o">&amp;&amp;</span> <span class="n">pos</span> <span class="o">&lt;=</span> <span class="k">right</span> <span class="p">{</span> <span class="k">continue</span> <span class="p">}</span>
-   
-    <span class="c1">// 포지션이 바구니 안에 있으면 이동 안함</span>
-    <span class="k">if</span> <span class="n">pos</span> <span class="o">&lt;</span> <span class="k">left</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">move</span> <span class="o">=</span> <span class="k">left</span> <span class="o">-</span> <span class="n">pos</span>
-        <span class="k">left</span> <span class="o">-=</span> <span class="n">move</span>
-        <span class="k">right</span> <span class="o">-=</span> <span class="n">move</span>
-        <span class="n">totalMove</span> <span class="o">+=</span> <span class="n">move</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">pos</span> <span class="o">&gt;</span> <span class="k">right</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">move</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">-</span> <span class="k">right</span>
-        <span class="k">right</span> <span class="o">+=</span> <span class="n">move</span>
-        <span class="k">left</span> <span class="o">+=</span> <span class="n">move</span>
-        <span class="n">totalMove</span> <span class="o">+=</span> <span class="n">move</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="nf">print</span><span class="p">(</span><span class="n">totalMove</span><span class="p">)</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Baekjoon" /><summary type="html"><![CDATA[문제 사과 담기 게임 스크린 위에서 사과 여러개가 떨어질 때 바구니로 사과를 담기 위한 이동거리의 최솟값을 구하라 풀이 시작지점을 left와 right를 방정식으로 나타낼 수 있다. left = 1 right = left + m - 1 /* 5 1 3 1 5 3 */ let input = readLine()!.split(separator: " ").map { Int($0)! } let n = input[0] // screen let m = input[1] // basket let j = Int(readLine()!)! // count var left = 1 var right = left + m - 1 // 그냉 m으로 해도 된다 var totalMove = 0 for _ in 0..&lt;j { // 사과가 떨어지는 위치 let pos = Int(readLine()!)! // 사과의 위치가 이미 바구니가 있는 위치이면 아래 바구니 이동 로직을 무시 if pos &gt;= left &amp;&amp; pos &lt;= right { continue } // 포지션이 바구니 안에 있으면 이동 안함 if pos &lt; left { let move = left - pos left -= move right -= move totalMove += move } else if pos &gt; right { let move = pos - right right += move left += move totalMove += move } } print(totalMove)]]></summary></entry><entry><title type="html">[Baekjoon] 백준 2910 빈도 정렬</title><link href="http://localhost:4000/Baekjoon-2910/" rel="alternate" type="text/html" title="[Baekjoon] 백준 2910 빈도 정렬" /><published>2025-05-22T00:00:00+00:00</published><updated>2025-05-22T00:00:00+00:00</updated><id>http://localhost:4000/%5BBaekjoon%5D-2910</id><content type="html" xml:base="http://localhost:4000/Baekjoon-2910/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h2 id="문제">문제</h2>
-<p><a href="https://www.acmicpc.net/problem/2910">빈도 정렬</a></p>
-
-<p><img src="/assets/img/2025-05-22-%5BBaekjoon%5D-2910/image-20250523012134858.png" alt="이미지" width="100%" /><br />
-자주 등장하는 숫자 기준으로 오름차순 정렬하되, 등장횟수가 같다면 먼저 나온 것이 앞에 있어야 한다.</p>
-
-<h2 id="풀이">풀이</h2>
-
-<p>정렬 관련 함수</p>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 배열</span>
-<span class="k">var</span> <span class="nv">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
-
-<span class="c1">// 오름차순 정렬</span>
-<span class="k">let</span> <span class="nv">ascending</span> <span class="o">=</span> <span class="n">numbers</span><span class="o">.</span><span class="nf">sorted</span><span class="p">()</span>
-<span class="nf">print</span><span class="p">(</span><span class="s">"오름차순:"</span><span class="p">,</span> <span class="n">ascending</span><span class="p">)</span> <span class="c1">// [1, 2, 3, 5, 8]</span>
-
-<span class="c1">// 내림차순 정렬</span>
-<span class="k">let</span> <span class="nv">descending</span> <span class="o">=</span> <span class="n">numbers</span><span class="o">.</span><span class="nf">sorted</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="o">&gt;</span><span class="p">)</span>
-<span class="nf">print</span><span class="p">(</span><span class="s">"내림차순:"</span><span class="p">,</span> <span class="n">descending</span><span class="p">)</span> <span class="c1">// [8, 5, 3, 2, 1]</span>
-
-
-<span class="c1">// 딕셔너리</span>
-<span class="k">let</span> <span class="nv">scores</span> <span class="o">=</span> <span class="p">[</span><span class="s">"Alice"</span><span class="p">:</span> <span class="mi">88</span><span class="p">,</span> <span class="s">"Bob"</span><span class="p">:</span> <span class="mi">95</span><span class="p">,</span> <span class="s">"Charlie"</span><span class="p">:</span> <span class="mi">72</span><span class="p">]</span>
-
-<span class="c1">// 🔹 value 기준 오름차순 정렬</span>
-<span class="k">let</span> <span class="nv">byScoreAsc</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">sorted</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span> <span class="p">}</span>
-<span class="nf">print</span><span class="p">(</span><span class="s">"점수 오름차순:"</span><span class="p">,</span> <span class="n">byScoreAsc</span><span class="p">)</span>
-
-<span class="c1">// 🔹 value 기준 내림차순 정렬</span>
-<span class="k">let</span> <span class="nv">byScoreDesc</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">sorted</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span> <span class="p">}</span>
-<span class="nf">print</span><span class="p">(</span><span class="s">"점수 내림차순:"</span><span class="p">,</span> <span class="n">byScoreDesc</span><span class="p">)</span>
-
-<span class="c1">// 🔹 key 기준 오름차순 정렬</span>
-<span class="k">let</span> <span class="nv">byNameAsc</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">sorted</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">key</span> <span class="o">&lt;</span> <span class="nv">$1</span><span class="o">.</span><span class="n">key</span> <span class="p">}</span>
-<span class="nf">print</span><span class="p">(</span><span class="s">"이름 오름차순:"</span><span class="p">,</span> <span class="n">byNameAsc</span><span class="p">)</span>
-
-<span class="c1">// 우선순위 기반 정렬 1</span>
-<span class="k">let</span> <span class="nv">dic</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="mi">1</span><span class="p">]</span>
-<span class="k">let</span> <span class="nv">order</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="c1">// 우선순위: 2 &gt; 3 &gt; 1 &gt; 4</span>
-
-<span class="k">let</span> <span class="nv">sortedKeys</span> <span class="o">=</span> <span class="n">dic</span><span class="o">.</span><span class="n">sorted</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span> <span class="p">{</span>
-        <span class="c1">// O(n)</span>
-        <span class="k">return</span> <span class="n">order</span><span class="o">.</span><span class="nf">firstIndex</span><span class="p">(</span><span class="nv">of</span><span class="p">:</span> <span class="nv">$0</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="o">!</span> <span class="o">&lt;</span> <span class="n">order</span><span class="o">.</span><span class="nf">firstIndex</span><span class="p">(</span><span class="nv">of</span><span class="p">:</span> <span class="nv">$1</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="o">!</span> <span class="c1">// &lt;: 인덱스가 낮은 key가 먼저 온다</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span>
-<span class="p">}</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">key</span> <span class="p">}</span>
-<span class="nf">print</span><span class="p">(</span><span class="n">sortedKeys</span><span class="p">)</span>
-
-<span class="c1">// 우선순위 기반 정렬 2</span>
-<span class="k">let</span> <span class="nv">dic</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="mi">1</span><span class="p">]</span> <span class="c1">// num: count</span>
-<span class="k">let</span> <span class="nv">order</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
- 
-<span class="c1">// [2: 0, 3: 1, 1: 2, 4: 3] = num: idx(Order)</span>
-<span class="c1">// 우선순위 인덱스를 미리 딕셔너리로 만들어 둔다 (O(1) 접근)</span>
-<span class="k">let</span> <span class="nv">priority</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">:</span> <span class="kt">Int</span><span class="p">]</span> <span class="o">=</span> <span class="kt">Dictionary</span><span class="p">(</span><span class="nv">uniqueKeysWithValues</span><span class="p">:</span> <span class="n">order</span><span class="o">.</span><span class="nf">enumerated</span><span class="p">()</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="p">(</span><span class="nv">$1</span><span class="p">,</span> <span class="nv">$0</span><span class="p">)</span> <span class="p">})</span>
-
-<span class="k">let</span> <span class="nv">sortedKeys</span> <span class="o">=</span> <span class="n">dic</span><span class="o">.</span><span class="n">sorted</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">priority</span><span class="p">[</span><span class="nv">$0</span><span class="o">.</span><span class="n">key</span><span class="p">]</span><span class="o">!</span> <span class="o">&lt;</span> <span class="n">priority</span><span class="p">[</span><span class="nv">$1</span><span class="o">.</span><span class="n">key</span><span class="p">]</span><span class="o">!</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span>
-<span class="p">}</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">key</span> <span class="p">}</span>
-
-<span class="nf">print</span><span class="p">(</span><span class="n">sortedKeys</span><span class="p">)</span>
-
-</code></pre></div></div>
-
-<p>처음 접근 방법<br />
-딕셔너리의 키를 숫자로 두고 value로 카운팅을 한다.</p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">_</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span>
-<span class="k">let</span> <span class="nv">numbers</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span><span class="o">!.</span><span class="nf">split</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">Int</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span><span class="o">!</span> <span class="p">}</span> <span class="c1">// [1, 1, 1, 2, 2, 2]</span>
-<span class="k">var</span> <span class="nv">dic</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">:</span><span class="kt">Int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[:]</span>
-
-<span class="k">for</span> <span class="n">num</span> <span class="k">in</span> <span class="n">numbers</span> <span class="p">{</span>
-    <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">,</span> <span class="k">default</span><span class="p">:</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-<span class="p">}</span>
-<span class="nf">print</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span>       <span class="c1">// [2: 3, 1: 2]</span>
-
-<span class="c1">// value가 많은순으로 키룰 정렬하는 방법</span>
-<span class="k">let</span> <span class="nv">sortedKeys</span> <span class="o">=</span> <span class="n">dic</span><span class="o">.</span><span class="n">sorted</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span>
-<span class="p">}</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">key</span> <span class="p">}</span>
-<span class="nf">print</span><span class="p">(</span><span class="n">sortedKeys</span><span class="p">)</span>  <span class="c1">// [2, 1]</span>
-
-<span class="k">var</span> <span class="nv">output</span> <span class="o">=</span> <span class="s">""</span>
-<span class="k">for</span> <span class="n">num</span> <span class="k">in</span> <span class="n">sortedKeys</span> <span class="p">{</span>
-    <span class="n">output</span> <span class="o">+=</span> <span class="kt">String</span><span class="p">(</span><span class="nv">repeating</span><span class="p">:</span> <span class="s">"</span><span class="se">\(</span><span class="n">num</span><span class="se">)</span><span class="s"> "</span><span class="p">,</span> <span class="nv">count</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">]</span><span class="o">!</span><span class="p">)</span>
-<span class="p">}</span>
-<span class="nf">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="c1">// 2 2 2 1 1</span>
-</code></pre></div></div>
-
-<p>이러면 1번 예제는 해결이 되지만 만약 동일한 등장횟수면 해당 순서를 보장해줘야 한다.</p>
-
-<h2 id="제출-1">제출 1</h2>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
-5 2
-2 1 2 1 2
- */</span>
-<span class="n">_</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span>
-<span class="k">let</span> <span class="nv">numbers</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span><span class="o">!.</span><span class="nf">split</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">Int</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span><span class="o">!</span> <span class="p">}</span>
-
-<span class="c1">// ── 1) 빈도 계산 / 순서 계산 ─────────────────────────────────────</span>
-<span class="k">var</span> <span class="nv">dic</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">:</span><span class="kt">Int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[:]</span>    <span class="c1">// 숫자:개수</span>
-<span class="k">var</span> <span class="nv">order</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">:</span><span class="kt">Int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[:]</span>  <span class="c1">// 숫자:우선순위</span>
-<span class="k">for</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span> <span class="k">in</span> <span class="n">numbers</span><span class="o">.</span><span class="nf">enumerated</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
-        <span class="n">order</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span> <span class="c1">// num이 처음 등장한 idx 기록</span>
-    <span class="p">}</span>
-    <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">,</span> <span class="k">default</span><span class="p">:</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1">// [num:value]</span>
-<span class="p">}</span>
-
-<span class="c1">// ── 2) 빈도순으로 key 한번씩만 내보내기 ─────────────────────────────────────</span>
-<span class="k">let</span> <span class="nv">keysByFreq</span> <span class="o">=</span> <span class="n">dic</span>
-    <span class="o">.</span><span class="n">sorted</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span> <span class="p">{</span>
-            <span class="c1">// 먼저 나온 key가 앞으로 오도록 정렬</span>
-            <span class="k">return</span> <span class="n">order</span><span class="p">[</span><span class="nv">$0</span><span class="o">.</span><span class="n">key</span><span class="p">]</span><span class="o">!</span> <span class="o">&lt;</span> <span class="n">order</span><span class="p">[</span><span class="nv">$1</span><span class="o">.</span><span class="n">key</span><span class="p">]</span><span class="o">!</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span> <span class="c1">// 내림차순</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">key</span> <span class="p">}</span>                   <span class="c1">// key만 추출</span>
-
-<span class="c1">// ── 3) 빈도순으로 key를 빈도만큼 반복 출력 ─────────────────────────────────────</span>
-<span class="k">var</span> <span class="nv">output</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
-<span class="k">for</span> <span class="n">num</span> <span class="k">in</span> <span class="n">keysByFreq</span> <span class="p">{</span>
-    <span class="n">output</span> <span class="o">+=</span> <span class="kt">String</span><span class="p">(</span><span class="nv">repeating</span><span class="p">:</span> <span class="s">"</span><span class="se">\(</span><span class="n">num</span><span class="se">)</span><span class="s"> "</span><span class="p">,</span> <span class="nv">count</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">]</span><span class="o">!</span><span class="p">)</span>
-<span class="p">}</span>
-<span class="nf">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
-
-</code></pre></div></div>
-
-<h2 id="제출-2">제출 2</h2>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
-5 2
-2 1 2 1 2
-
-딕셔너리 dic은 다음과 같이 구성
-[숫자: (등장 순서, 등장 횟수)]
-
-[예시]
-[
-  2: (0, 3), // 0번째에 처음 등장, 3번 나옴
-  1: (1, 2), // 1번째에 처음 등장, 2번 나옴
-]
-
-*/</span>
-<span class="n">_</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span>
-<span class="k">var</span> <span class="nv">dic</span> <span class="o">=</span> <span class="p">[</span><span class="kt">Int</span><span class="p">:</span> <span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)]()</span>
-<span class="k">let</span> <span class="nv">numbers</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span><span class="o">!.</span><span class="nf">split</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">Int</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span><span class="o">!</span> <span class="p">}</span>
-
-<span class="k">for</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span> <span class="k">in</span> <span class="n">numbers</span><span class="o">.</span><span class="nf">enumerated</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// 숫자 처음 등장시</span>
-    <span class="k">if</span> <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
-        <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">// 등장순서, 1번 등장</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">]</span><span class="o">!.</span><span class="mi">1</span> <span class="o">+=</span> <span class="mi">1</span>   <span class="c1">// 이미 등장한 숫자라면 횟수만 추가</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="c1">// 등장 횟수가 많은 숫자가 먼저 오도록, 같으면 등장순서가 빠른 순으로</span>
-<span class="k">let</span> <span class="nv">sorted</span> <span class="o">=</span> <span class="n">dic</span><span class="o">.</span><span class="n">sorted</span> <span class="p">{</span>
-    <span class="k">let</span> <span class="p">(</span><span class="nv">firstIdx</span><span class="p">,</span> <span class="nv">firstCnt</span><span class="p">)</span> <span class="o">=</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span>
-    <span class="k">let</span> <span class="p">(</span><span class="nv">secondIdx</span><span class="p">,</span> <span class="nv">secondCnt</span><span class="p">)</span> <span class="o">=</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span>
-    
-    <span class="k">if</span> <span class="n">firstCnt</span> <span class="o">!=</span> <span class="n">secondCnt</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">firstCnt</span> <span class="o">&gt;</span> <span class="n">secondCnt</span> <span class="c1">// 등장 횟수 많은 순</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">firstIdx</span> <span class="o">&lt;</span> <span class="n">secondIdx</span> <span class="c1">// 먼저 등장한 숫자 먼저</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="c1">// 출력 1</span>
-<span class="nf">print</span><span class="p">(</span><span class="n">sorted</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">repeating</span><span class="p">:</span> <span class="s">"</span><span class="se">\(</span><span class="nv">$0</span><span class="o">.</span><span class="n">key</span><span class="se">)</span><span class="s"> "</span><span class="p">,</span> <span class="nv">count</span><span class="p">:</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="nf">joined</span><span class="p">())</span>
-
-<span class="c1">// 출력 2</span>
-<span class="k">var</span> <span class="nv">output</span> <span class="o">=</span> <span class="s">""</span>
-<span class="k">for</span> <span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">cnt</span><span class="p">))</span> <span class="k">in</span> <span class="n">sorted</span> <span class="p">{</span>
-    <span class="n">output</span> <span class="o">+=</span> <span class="kt">String</span><span class="p">(</span><span class="nv">repeating</span><span class="p">:</span> <span class="s">"</span><span class="se">\(</span><span class="n">number</span><span class="se">)</span><span class="s"> "</span><span class="p">,</span> <span class="nv">count</span><span class="p">:</span> <span class="n">cnt</span><span class="p">)</span>
-<span class="p">}</span>
-<span class="nf">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Baekjoon" /><summary type="html"><![CDATA[문제 빈도 정렬 자주 등장하는 숫자 기준으로 오름차순 정렬하되, 등장횟수가 같다면 먼저 나온 것이 앞에 있어야 한다. 풀이 정렬 관련 함수 // 배열 var numbers = [5, 2, 8, 1, 3] // 오름차순 정렬 let ascending = numbers.sorted() print("오름차순:", ascending) // [1, 2, 3, 5, 8] // 내림차순 정렬 let descending = numbers.sorted(by: &gt;) print("내림차순:", descending) // [8, 5, 3, 2, 1] // 딕셔너리 let scores = ["Alice": 88, "Bob": 95, "Charlie": 72] // 🔹 value 기준 오름차순 정렬 let byScoreAsc = scores.sorted { $0.value &lt; $1.value } print("점수 오름차순:", byScoreAsc) // 🔹 value 기준 내림차순 정렬 let byScoreDesc = scores.sorted { $0.value &gt; $1.value } print("점수 내림차순:", byScoreDesc) // 🔹 key 기준 오름차순 정렬 let byNameAsc = scores.sorted { $0.key &lt; $1.key } print("이름 오름차순:", byNameAsc) // 우선순위 기반 정렬 1 let dic = [1: 2, 2: 5, 3: 5, 4: 1] let order = [2, 3, 1, 4] // 우선순위: 2 &gt; 3 &gt; 1 &gt; 4 let sortedKeys = dic.sorted { if $0.value == $1.value { // O(n) return order.firstIndex(of: $0.key)! &lt; order.firstIndex(of: $1.key)! // &lt;: 인덱스가 낮은 key가 먼저 온다 } return $0.value &gt; $1.value }.map { $0.key } print(sortedKeys) // 우선순위 기반 정렬 2 let dic = [1: 2, 2: 5, 3: 5, 4: 1] // num: count let order = [2, 3, 1, 4] // [2: 0, 3: 1, 1: 2, 4: 3] = num: idx(Order) // 우선순위 인덱스를 미리 딕셔너리로 만들어 둔다 (O(1) 접근) let priority: [Int: Int] = Dictionary(uniqueKeysWithValues: order.enumerated().map { ($1, $0) }) let sortedKeys = dic.sorted { if $0.value == $1.value { return priority[$0.key]! &lt; priority[$1.key]! } return $0.value &gt; $1.value }.map { $0.key } print(sortedKeys) 처음 접근 방법 딕셔너리의 키를 숫자로 두고 value로 카운팅을 한다. _ = readLine() let numbers = readLine()!.split(separator: " ").map { Int($0)! } // [1, 1, 1, 2, 2, 2] var dic: [Int:Int] = [:] for num in numbers { dic[num, default: 0] += 1 } print(dic) // [2: 3, 1: 2] // value가 많은순으로 키룰 정렬하는 방법 let sortedKeys = dic.sorted { return $0.value &gt; $1.value }.map { $0.key } print(sortedKeys) // [2, 1] var output = "" for num in sortedKeys { output += String(repeating: "\(num) ", count: dic[num]!) } print(output) // 2 2 2 1 1 이러면 1번 예제는 해결이 되지만 만약 동일한 등장횟수면 해당 순서를 보장해줘야 한다. 제출 1 /* 5 2 2 1 2 1 2 */ _ = readLine() let numbers = readLine()!.split(separator: " ").map { Int($0)! } // ── 1) 빈도 계산 / 순서 계산 ───────────────────────────────────── var dic: [Int:Int] = [:] // 숫자:개수 var order: [Int:Int] = [:] // 숫자:우선순위 for (idx, num) in numbers.enumerated() { if dic[num] == nil { order[num] = idx // num이 처음 등장한 idx 기록 } dic[num, default: 0] += 1 // [num:value] } // ── 2) 빈도순으로 key 한번씩만 내보내기 ───────────────────────────────────── let keysByFreq = dic .sorted { if $0.value == $1.value { // 먼저 나온 key가 앞으로 오도록 정렬 return order[$0.key]! &lt; order[$1.key]! } else { return $0.value &gt; $1.value // 내림차순 } } .map { $0.key } // key만 추출 // ── 3) 빈도순으로 key를 빈도만큼 반복 출력 ───────────────────────────────────── var output: String = "" for num in keysByFreq { output += String(repeating: "\(num) ", count: dic[num]!) } print(output) 제출 2 /* 5 2 2 1 2 1 2 딕셔너리 dic은 다음과 같이 구성 [숫자: (등장 순서, 등장 횟수)] [예시] [ 2: (0, 3), // 0번째에 처음 등장, 3번 나옴 1: (1, 2), // 1번째에 처음 등장, 2번 나옴 ] */ _ = readLine() var dic = [Int: (Int, Int)]() let numbers = readLine()!.split(separator: " ").map { Int($0)! } for (idx, num) in numbers.enumerated() { // 숫자 처음 등장시 if dic[num] == nil { dic[num] = (idx, 1) // 등장순서, 1번 등장 } else { dic[num]!.1 += 1 // 이미 등장한 숫자라면 횟수만 추가 } } // 등장 횟수가 많은 숫자가 먼저 오도록, 같으면 등장순서가 빠른 순으로 let sorted = dic.sorted { let (firstIdx, firstCnt) = $0.value let (secondIdx, secondCnt) = $1.value if firstCnt != secondCnt { return firstCnt &gt; secondCnt // 등장 횟수 많은 순 } else { return firstIdx &lt; secondIdx // 먼저 등장한 숫자 먼저 } } // 출력 1 print(sorted.map { String(repeating: "\($0.key) ", count: $0.value.1) }.joined()) // 출력 2 var output = "" for (number, (_, cnt)) in sorted { output += String(repeating: "\(number) ", count: cnt) } print(output)]]></summary></entry><entry><title type="html">[Baekjoon] 백준 1992 쿼드트리</title><link href="http://localhost:4000/Baekjoon-1992/" rel="alternate" type="text/html" title="[Baekjoon] 백준 1992 쿼드트리" /><published>2025-05-21T00:00:00+00:00</published><updated>2025-05-21T00:00:00+00:00</updated><id>http://localhost:4000/%5BBaekjoon%5D-1992</id><content type="html" xml:base="http://localhost:4000/Baekjoon-1992/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><summary type="html"><![CDATA[iOS 푸시알림 FCM, APNS iOS에서 푸시 종류는 2가지가 있다. 로컬에서 직접 보내는 알림 서버에서 보내는 알림 서버에서 보내는 APNS(Apple Push Notification Service) FCM(Firebase Cloud Messaging) -&gt; 이번 포스팅에서는 FCM을 활용한 2번 방식을 진행할 예정이다. ​ APNS 란? APNS (Apple Push Notification Service) 는 iOS의 모든 원격 알림이 반드시 거쳐야 하는 애플 공식 푸시 전달 서버이다.. 즉, 푸시 메시지를 내가 직접 사용자 기기로 보내는 게 아니라 → APNS에 요청 → APNS가 사용자 기기로 전송 하는 방식이다. FCM 란? FCM은 Google에서 제공하는 클라우드 기반 메시징 서비스로, iOS의 APNS를 포함해 Android, Web 등 다양한 플랫폼에 푸시 메시지를 전송할 수 있도록 중간 서버 역할을 해준다. iOS에서 FCM을 통해 푸시 알림을 보내면, FCM 내부적으로 APNS를 거쳐서 사용자 기기에 도달한다. FCM이 APNS 대신 해주는 것들 애플 인증서 등록 및 관리 APNS에 메시지 전송 요청 안드로이드, iOS 둘 다 지원 (멀티 플랫폼) 클라우드 환경에서 손쉽게 운영 왜 FCM을 쓰는가? APNS 서버 직접 구축이 복잡하고 부담스러울 때 iOS &amp; Android를 동시에 지원하는 일관된 환경이 필요할 때 푸시 알림 시스템을 빠르게 구축하고 싶을 때 Firebase Analytics, A/B 테스트 같은 연계 기능을 활용할 때 푸시 알림의 기본 동작 흐름 앱이 APNS에 Device Token 요청 이 토큰은 앱이 설치된 기기의 주소 역할을 한다. APNS가 앱에게 Device Token 전달 앱이 Device Token을 푸시 서버(FCM 등)에 전달 이 서버가 실제 푸시 메시지를 보낼 주체이다. APNS를 통한 푸시 알림 동작 구조 푸시 서버(예: FCM)가 메시지와 Device Token을 APNS에 전송 이때 APNS와 푸시 서버는 TLS 인증으로 보안 통신 서버에는 APNS 인증 정보(p8 키 or 인증서)가 등록되어 있어야 함 APNS는 해당 디바이스로 푸시 메시지를 전송 디바이스에서 푸시 알림 수신 실습 identifiers에서 해당 프로젝트 누른 후 push notification 체크박스 체크 해준다. keys에서 키를 발급 해준다. 완료하면 Download버튼이 생긴다 이를 통해 p8파일을 다운로드 한다. firebase 프로젝트 -&gt; 프로젝트 설정 -&gt; 클라우드 메시징에서 APNS인증키를 등록해준다. 업로드를 눌러서 완료한다. Push Notifications Background Modes xcode -&gt; target -&gt; Push Notifications, Background Mode 추가한다. Remote Notifications 체크해준다. AppDelegate.swift import UIKit import FirebaseCore import FirebaseMessaging import UserNotifications @main class AppDelegate: UIResponder, UIApplicationDelegate { func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -&gt; Bool { // Firebase 초기화 FirebaseApp.configure() // 알림 권한 요청 UNUserNotificationCenter.current().delegate = self UNUserNotificationCenter.current().requestAuthorization( options: [.alert, .badge, .sound] ) { granted, error in print("✅ 알림 권한 요청 결과: \(granted)") if granted { DispatchQueue.main.async { UIApplication.shared.registerForRemoteNotifications() } } } // FCM 설정 Messaging.messaging().delegate = self return true } } extension AppDelegate: UNUserNotificationCenterDelegate { // APNs로부터 device token 받았을 때 FCM에 등록 func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) { print("📮 APNS Token 수신: \(deviceToken)") Messaging.messaging().apnsToken = deviceToken } // 앱이 실행 중일 때 알림 수신 (배너로 표시되게 설정) func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -&gt; Void) { completionHandler([.list, .banner, .sound]) } } extension AppDelegate: MessagingDelegate { // FCM 토큰 갱신될 때 호출 func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) { print("📌 FCM Token: \(fcmToken ?? "nil")") // 필요 시 NotificationCenter로 다른 컴포넌트에 전달 NotificationCenter.default.post( name: Notification.Name("FCMToken"), object: nil, userInfo: ["token": fcmToken ?? ""] ) } } 빌드하면 나오는 FCM을 복사한다. FCM.py import firebase_admin from firebase_admin import credentials, messaging # 1. 서비스 계정 키 경로 (.json) cred = credentials.Certificate("파이어베이스 설정 -&gt; 서비스 계정 -&gt; 새 비공키 키 생성시 .json파일 다운 가능 -&gt; 해당 경로 입력") firebase_admin.initialize_app(cred) # 2. 대상 유저의 FCM 토큰 fcm_token = "빌드하면 나오는 FCM 입력" # 3. 전송할 메시지 title = "새 댓글이 달렸어요!" body = "당신의 게시글에 누군가 댓글을 남겼습니다." # 4. 알림 메시지 구성 message = messaging.Message( token=fcm_token, notification=messaging.Notification( title=title, body=body, ) ) # 5. 메시지 전송 try: response = messaging.send(message) print("✅ 메시지 전송 성공:", response) except Exception as e: print("❌ 메시지 전송 실패:", e) 앱이 종료되어있을 때 앱 실행중일 때 Reference https://bannavi.tistory.com/558 https://dokit.tistory.com/49 https://dokit.tistory.com/50 https://velog.io/@niro/Firebase-Push-Notification-알림-보내기-with-SwiftUI https://yagom.net/forums/topic/push-알림을-보낼-때-fcm-과-apns-의-차이점이-있나요/]]></summary></entry><entry><title type="html">[Baekjoon] 백준 1992 쿼드트리</title><link href="http://localhost:4000/Baekjoon-1992/" rel="alternate" type="text/html" title="[Baekjoon] 백준 1992 쿼드트리" /><published>2025-05-21T00:00:00+00:00</published><updated>2025-05-21T00:00:00+00:00</updated><id>http://localhost:4000/%5BBaekjoon%5D-1992</id><content type="html" xml:base="http://localhost:4000/Baekjoon-1992/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
 <h2 id="문제">문제</h2>
@@ -1138,7 +1158,7 @@ curl <span class="nt">-O</span> <span class="s2">"https://download.swift.org/swi
 <span class="c"># 6. swift 실행 확인</span>
 find ~/.local/share/swiftly/toolchains <span class="nt">-name</span> swift <span class="nt">-type</span> f <span class="nt">-executable</span>
 swift <span class="nt">--version</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="UIComponent" /><summary type="html"><![CDATA[# Dockerfile FROM ubuntu:latest # ----- 기본 패키지 설치 ----- RUN apt-get update &amp;&amp; \ apt-get install -y \ curl sudo python3 python3-pip default-jdk \ git wget nano locales \ libpython3.10 libicu-dev libxml2-dev clang \ unzip gnupg2 libcurl4-openssl-dev pkg-config \ &amp;&amp; apt-get clean # ----- 로케일 설정 ----- RUN locale-gen en_US.UTF-8 ENV LANG=en_US.UTF-8 ENV LANGUAGE=en_US:en ENV LC_ALL=en_US.UTF-8 # ----- ARG로 외부에서 변수 받기 ----- ARG USER ARG PASSWORD # ----- 사용자 생성 및 sudo 권한 부여 ----- RUN useradd -m ${USER} &amp;&amp; echo "${USER}:${PASSWORD}" | chpasswd &amp;&amp; adduser ${USER} sudo # ----- code-server 설치 및 작업 디렉토리 생성 ----- ENV WORKINGDIR="/home/${USER}/vscode" RUN curl -fsSL https://code-server.dev/install.sh | sh &amp;&amp; \ mkdir -p ${WORKINGDIR} &amp;&amp; chown -R ${USER}:${USER} ${WORKINGDIR} # ----- 컨테이너 환경변수로도 유지 ----- ENV PASSWORD=${PASSWORD} ENV USER=${USER} # ----- 사용자 전환 ----- USER ${USER} WORKDIR ${WORKINGDIR} # ----- VSCode 확장 설치 ----- RUN code-server --install-extension ms-python.python &amp;&amp; \ code-server --install-extension ms-azuretools.vscode-docker &amp;&amp; \ code-server --install-extension formulahendry.code-runner # ----- 포트 오픈 ----- EXPOSE 8080 # ----- code-server 실행 ----- CMD ["code-server", "--bind-addr", "0.0.0.0:8080", "--auth", "password", "."] # 컨테이너 터미널로 진입 docker exec -it vscode-container bash # 이동 cd /home/ec2-user/.local/share/code-server/User nano settings.json { "code-runner.executorMap": { "python": "python3 -u", "swift": "/home/ec2-user/.local/share/swiftly/bin/swift" }, "code-runner.showExecutionMessage": false, "code-runner.clearPreviousOutput": true } # 저장 ctrl + o enter ctrl x # 나가고 재빌드 exit docker compose up -d --build swift 추가 # 컨테이너 터미널로 진입 docker exec -it vscode-container bash # 1. 기존 swiftly 완전 삭제 rm -rf ~/.local/share/swiftly rm -f ~/swiftly # 2. 필수 패키지 설치 sudo apt-get update sudo apt-get install -y clang libicu-dev wget libpython3-dev # 3. 최신 swiftly 설치 curl -O "https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz" tar zxf "swiftly-$(uname -m).tar.gz" chmod +x swiftly ./swiftly init --quiet-shell-followup --assume-yes # 4. 환경 변수 적용 source ~/.local/share/swiftly/env.sh echo 'source ~/.local/share/swiftly/env.sh' &gt;&gt; ~/.bashrc # 5. Swift 6.1.0 설치 (실제 toolchain 다운로드) ~/.local/share/swiftly/bin/swiftly install 6.1.0 --assume-yes --verify # 6. swift 실행 확인 find ~/.local/share/swiftly/toolchains -name swift -type f -executable swift --version]]></summary></entry><entry><title type="html">[TableView] 13. RxTableView</title><link href="http://localhost:4000/UIKit-tableView13/" rel="alternate" type="text/html" title="[TableView] 13. RxTableView" /><published>2025-05-18T00:00:00+00:00</published><updated>2025-05-18T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView13</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView13/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Docker" /><summary type="html"><![CDATA[# Dockerfile FROM ubuntu:latest # ----- 기본 패키지 설치 ----- RUN apt-get update &amp;&amp; \ apt-get install -y \ curl sudo python3 python3-pip default-jdk \ git wget nano locales \ libpython3.10 libicu-dev libxml2-dev clang \ unzip gnupg2 libcurl4-openssl-dev pkg-config \ &amp;&amp; apt-get clean # ----- 로케일 설정 ----- RUN locale-gen en_US.UTF-8 ENV LANG=en_US.UTF-8 ENV LANGUAGE=en_US:en ENV LC_ALL=en_US.UTF-8 # ----- ARG로 외부에서 변수 받기 ----- ARG USER ARG PASSWORD # ----- 사용자 생성 및 sudo 권한 부여 ----- RUN useradd -m ${USER} &amp;&amp; echo "${USER}:${PASSWORD}" | chpasswd &amp;&amp; adduser ${USER} sudo # ----- code-server 설치 및 작업 디렉토리 생성 ----- ENV WORKINGDIR="/home/${USER}/vscode" RUN curl -fsSL https://code-server.dev/install.sh | sh &amp;&amp; \ mkdir -p ${WORKINGDIR} &amp;&amp; chown -R ${USER}:${USER} ${WORKINGDIR} # ----- 컨테이너 환경변수로도 유지 ----- ENV PASSWORD=${PASSWORD} ENV USER=${USER} # ----- 사용자 전환 ----- USER ${USER} WORKDIR ${WORKINGDIR} # ----- VSCode 확장 설치 ----- RUN code-server --install-extension ms-python.python &amp;&amp; \ code-server --install-extension ms-azuretools.vscode-docker &amp;&amp; \ code-server --install-extension formulahendry.code-runner # ----- 포트 오픈 ----- EXPOSE 8080 # ----- code-server 실행 ----- CMD ["code-server", "--bind-addr", "0.0.0.0:8080", "--auth", "password", "."] # 컨테이너 터미널로 진입 docker exec -it vscode-container bash # 이동 cd /home/ec2-user/.local/share/code-server/User nano settings.json { "code-runner.executorMap": { "python": "python3 -u", "swift": "/home/ec2-user/.local/share/swiftly/bin/swift" }, "code-runner.showExecutionMessage": false, "code-runner.clearPreviousOutput": true } # 저장 ctrl + o enter ctrl x # 나가고 재빌드 exit docker compose up -d --build swift 추가 # 컨테이너 터미널로 진입 docker exec -it vscode-container bash # 1. 기존 swiftly 완전 삭제 rm -rf ~/.local/share/swiftly rm -f ~/swiftly # 2. 필수 패키지 설치 sudo apt-get update sudo apt-get install -y clang libicu-dev wget libpython3-dev # 3. 최신 swiftly 설치 curl -O "https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz" tar zxf "swiftly-$(uname -m).tar.gz" chmod +x swiftly ./swiftly init --quiet-shell-followup --assume-yes # 4. 환경 변수 적용 source ~/.local/share/swiftly/env.sh echo 'source ~/.local/share/swiftly/env.sh' &gt;&gt; ~/.bashrc # 5. Swift 6.1.0 설치 (실제 toolchain 다운로드) ~/.local/share/swiftly/bin/swiftly install 6.1.0 --assume-yes --verify # 6. swift 실행 확인 find ~/.local/share/swiftly/toolchains -name swift -type f -executable swift --version]]></summary></entry><entry><title type="html">[TableView] 13. RxTableView</title><link href="http://localhost:4000/UIKit-tableView13/" rel="alternate" type="text/html" title="[TableView] 13. RxTableView" /><published>2025-05-18T00:00:00+00:00</published><updated>2025-05-18T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView13</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView13/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">[TableView] UITextView vs UITextField</title><link href="http://localhost:4000/UIKit-UItextField-UITextView/" rel="alternate" type="text/html" title="[TableView] UITextView vs UITextField" /><published>2025-05-18T00:00:00+00:00</published><updated>2025-05-18T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-UItextField-UITextView</id><content type="html" xml:base="http://localhost:4000/UIKit-UItextField-UITextView/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
@@ -1184,253 +1204,4 @@ placeholder는 제공하지 않기 때문에 직접 구현해야 한다.</p>
 </code></pre></div></div>
 <p>textColor가 .secondaryLabel라는 기본값으로 세팅되어 있으면 return 시키고, 아니라면 text를 비우고 Color도 검정색으로 바꾸어준다.</p>
 
-<h1 id="uitextfield">UITextField</h1>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="UIComponent" /><summary type="html"><![CDATA[UITextView UITextField 차이 TextField는 placeholder를 사용할 수 있으나 TextView는 안되는것을 알게 되어 두 컴포넌트의 차이에 대해 알아보고자 정리하게 되었다. UITextView 공식문서를 살펴보면 A scrollable, multiline text region 1줄 이상으로 이루어진 스크롤 가능한 텍스트 영역 placeholder는 제공하지 않기 때문에 직접 구현해야 한다. placeholder 구현 방법 UITextView는 UITextViewDeleagate 프로토콜을 채택하고 있다. 그 중 textViewDidBeginEditing method를 사용해서 구현해보자. // init 시 상태를 lazy로 지정 private lazy var textView: UITextView = { let tv = UITextView() tv.text = "입력하세요.." tv.textColor = .secondaryLabel tv.delegate = self return textView }() init 시 상태를 lazy로 지정해주면서 layout 세팅을 진행하였다. textViewDidBeginEditing Tells the delegate when editing of the specified text view begins. Optional 설정으로 textView의 수정이 일어나면 실행되는 메서드 extension UploadViewController: UITextViewDelegate { func textViewDidBeginEditing(_ textView: UITextView) { guard textView.textColor == .secondaryLabel else { return } textView.text = nil textView.textColor = .label } } textColor가 .secondaryLabel라는 기본값으로 세팅되어 있으면 return 시키고, 아니라면 text를 비우고 Color도 검정색으로 바꾸어준다. UITextField]]></summary></entry><entry><title type="html">[TableView] 12. 테이블뷰 제네릭 CustomCombineDataSource</title><link href="http://localhost:4000/UIKit-tableView12/" rel="alternate" type="text/html" title="[TableView] 12. 테이블뷰 제네릭 CustomCombineDataSource" /><published>2025-05-15T00:00:00+00:00</published><updated>2025-05-15T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView12</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView12/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h2 id="테이블뷰-제네릭-customcombinedatasource">테이블뷰 제네릭 CustomCombineDataSource</h2>
-<p>이전 포스팅에서 tableview데이터소스를 combine과 제네릭으로 연결을 했다. <br />
-데이터소스는 데이터와 연괸되어있고, 셀의 종류를 정하고, 리스트 개수가 몇개인지 정하는 역할이다 즉 데이터와 관련이 있다.</p>
-
-<p>이전 포스팅에서 커스텀 DataSource를 만들어서 처리하였는데 문제가 있었다. 리스트를 보여줄 때 데이터 타입이 변경되면 받을 수 없고 DummyData타입만 받을 수 있었다. 어떠한 데이터가 오더라도 확장성이 있도록 호출하는 쪽에서 셀의 타입을 정하도록 구현해보자.</p>
-
-<h3 id="customcombinedatasourceswift">CustomCombineDataSource.swift</h3>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c1">//</span>
- <span class="c1">//  CustomCombineDataSource.swift</span>
- <span class="c1">//  UITableViewTutorial</span>
- <span class="c1">//</span>
- <span class="c1">//  Created by 김동현 on 5/15/25.</span>
- <span class="c1">//</span>
- <span class="c1">// https://www.youtube.com/watch?v=vlJ392OMkoI&amp;list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&amp;index=16</span>
- 
- <span class="kd">import</span> <span class="kt">UIKit</span>
- 
- <span class="cm">/*
- class CustomCombineDataSource&lt;T, G&gt;: NSObject, UITableViewDataSource {
-     
-     // 멤버 변수
-     var dataList: [T] = []
-     
-     var testDataList: [G] = []
- */</span>
- 
- <span class="kd">class</span> <span class="kt">CustomCombineDataSource</span><span class="o">&lt;</span><span class="kt">Item</span><span class="o">&gt;</span><span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">UITableViewDataSource</span> <span class="p">{</span>
-     
-     <span class="c1">// 셀을 만드는 클로저</span>
-     <span class="c1">// 1. let makeCell: (_ tableView: UITableView, _ indexPath: IndexPath, _ cellData: Item) -&gt; UITableViewCell</span>
-     <span class="c1">// 2. let makeCell: (UITableView, IndexPath, Item) -&gt; UITableViewCell // 위랑 같음</span>
-     <span class="c1">// 3.</span>
-     <span class="k">var</span> <span class="nv">makeCell</span><span class="p">:</span> <span class="p">((</span><span class="kt">UITableView</span><span class="p">,</span> <span class="kt">IndexPath</span><span class="p">,</span> <span class="kt">Item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITableViewCell</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span> <span class="c1">// 옵셔널로도 가능</span>
-     
-     <span class="k">var</span> <span class="nv">dataList</span><span class="p">:</span> <span class="p">[</span><span class="kt">Item</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-     
-     <span class="c1">// 2. 안쪽에서 터트리기 때문에 escaping 해주자</span>
-     <span class="cm">/*
-     init(makeCell: @escaping (_ tableView: UITableView, _ indexPath: IndexPath, _ cellData: Item) -&gt; UITableViewCell) {
-         self.makeCell = makeCell
-         super.init()
-     }
-      */</span>
-     
-     <span class="c1">// 3. 옵셔널로 한다면 escaping 안해도 된다</span>
-     <span class="nf">init</span><span class="p">(</span><span class="n">_</span> <span class="nv">makeCell</span><span class="p">:</span> <span class="p">((</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">_</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">,</span> <span class="n">_</span> <span class="nv">cellData</span><span class="p">:</span> <span class="kt">Item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITableViewCell</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="p">{</span>
-         <span class="k">self</span><span class="o">.</span><span class="n">makeCell</span> <span class="o">=</span> <span class="n">makeCell</span>
-         <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">()</span>
-     <span class="p">}</span>
-     
-     <span class="c1">// MARK: - Combine 이벤트로 들어온 데이터랑 테이블뷰랑 연결시켜주는 지점</span>
- 
-     <span class="c1">/// 변경된 데이터를 받아서 테이블뷰에 적용한다</span>
-     <span class="c1">/// - Parameters:</span>
-     <span class="c1">///   - updatedDataList: 외부에서 변경된 Combine Publisher로 들어온 데이터를 내 DataSource가 가진 data로 변경하기 위한 매개변수</span>
-     <span class="c1">///   - tableView: 리로드 대상 테이블뷰</span>
-     <span class="kd">func</span> <span class="nf">pushDataList</span><span class="p">(</span><span class="n">_</span> <span class="nv">updatedDataList</span><span class="p">:</span> <span class="p">[</span><span class="kt">Item</span><span class="p">],</span> <span class="n">to</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">)</span> <span class="p">{</span>
-         <span class="n">tableView</span><span class="o">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="k">self</span>
-         <span class="k">self</span><span class="o">.</span><span class="n">dataList</span> <span class="o">=</span> <span class="n">updatedDataList</span>
-         <span class="n">tableView</span><span class="o">.</span><span class="nf">reloadData</span><span class="p">()</span>
-     <span class="p">}</span>
-     
-     <span class="c1">// MARK: - 테이블뷰 데이터 소스 관련(변경이 된 데이터를 데이터소스로 넘겨받아서 reloadData를 하는 목적 </span>
-     
-     <span class="c1">/// 하나의 섹션에 몇개의 rows가 있냐</span>
-     <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">numberOfRowsInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
-         <span class="k">return</span> <span class="n">dataList</span><span class="o">.</span><span class="n">count</span>
-     <span class="p">}</span>
- 
-     <span class="c1">/// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라</span>
-     <span class="c1">/// - indexPath: 셀의 위치를 나타내는 인덱스 경로</span>
-     <span class="c1">/// - returns: 구성된 UITableViewCell 객체</span>
-     <span class="c1">/// 어떤 셀을 보여줄지</span>
-     <span class="c1">// 1. 테이블뷰</span>
-     <span class="c1">// 2. indexPath 몇번째인지</span>
-     <span class="c1">// 3. 셀에 대한 데이터 - 셀에 대한 제네릭 데이터</span>
-     <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">cellForRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
-         
-         <span class="c1">// 비어있으면 기본 UITableViewCell 반환</span>
-         <span class="nf">makeCell</span><span class="p">?(</span><span class="n">tableView</span><span class="p">,</span> <span class="n">indexPath</span><span class="p">,</span> <span class="n">dataList</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">])</span> <span class="p">??</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
-         
-         <span class="c1">//        /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함)</span>
-         <span class="c1">//        /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell")</span>
-         <span class="c1">//</span>
-         <span class="c1">//        // [guard let] 방식</span>
-         <span class="c1">//        guard let cell = tableView.dequeueReusableCell(withIdentifier: CodeCell.reuseIdentifier, for: indexPath) as? CodeCell else {</span>
-         <span class="c1">//            return UITableViewCell()</span>
-         <span class="c1">//        }</span>
-         <span class="c1">//</span>
-         <span class="c1">//        if let dataList = dataList as? [DummyData] {</span>
-         <span class="c1">//            let cellData: DummyData = dataList[indexPath.row]</span>
-         <span class="c1">//</span>
-         <span class="c1">//            /// 셀의 주 텍스트를 더미 데이터에서 가져오기</span>
-         <span class="c1">//            cell.titleLabel.text = cellData.title</span>
-         <span class="c1">//</span>
-         <span class="c1">//            /// 셀의 서브 타이틀 설정</span>
-         <span class="c1">//            cell.bodyLabel.text = cellData.body</span>
-         <span class="c1">//</span>
-         <span class="c1">//            cell.detailTextLabel?.numberOfLines = 0</span>
-         <span class="c1">//        }</span>
-         <span class="c1">//</span>
-         <span class="c1">//        if let dataList = dataList as? [IndexData] {</span>
-         <span class="c1">//            let cellData: IndexData = dataList[indexPath.row]</span>
-         <span class="c1">//</span>
-         <span class="c1">//            /// 셀의 주 텍스트를 더미 데이터에서 가져오기</span>
-         <span class="c1">//            cell.titleLabel.text = cellData.title</span>
-         <span class="c1">//</span>
-         <span class="c1">//            /// 셀의 서브 타이틀 설정</span>
-         <span class="c1">//            cell.bodyLabel.text = cellData.body</span>
-         <span class="c1">//</span>
-         <span class="c1">//            cell.detailTextLabel?.numberOfLines = 0</span>
-         <span class="c1">//        }</span>
-         <span class="c1">//</span>
-         <span class="c1">//        return cell</span>
-     <span class="p">}</span>
- <span class="p">}</span>
- 
- 
- 
- 
- 
-</code></pre></div></div>
-
-<p>tableView()의 각 매개변수 tableView, indexPath, 그리고 셀에 대한 데이터 cellData을 조합을 하여 UITableViewCell 즉 셀을 만들자. 기존 tableView() 내부를 전부 주석처리를 하고 주석부분을 만드는 클로저를 두자. 함수 = 클로저 = 논리이다.  즉 논리 = 로직이다. 다시말해 로직을 클로저로 빼자.</p>
-
-<h3 id="uitableviewcombineswift">UITableView+Combine.swift</h3>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//</span>
-<span class="c1">//  UITableView+Combine.swift</span>
-<span class="c1">//  UITableViewTutorial</span>
-<span class="c1">//</span>
-<span class="c1">//  Created by 김동현 on 5/15/25.</span>
-<span class="c1">//</span>
-
-<span class="kd">import</span> <span class="kt">UIKit</span>
-<span class="kd">import</span> <span class="kt">Combine</span>
-
-<span class="c1">// MARK: - Sink 정의를 보면 매개변수로 (Self.Output) -&gt; Void) 형태의 클로저를 받는다. 이 형태를 만족하는 로직 함수를 만들자.</span>
-<span class="c1">// public func sink(receiveValue: @escaping ((Self.Output) -&gt; Void)) -&gt; AnyCancellable</span>
-<span class="kd">extension</span> <span class="kt">UITableView</span> <span class="p">{</span>
-    <span class="c1">// 고차함수 - 클로저를 매개변수로 가지거나 반환을 가지는 함수 자체</span>
-    <span class="c1">// (Self.Output) -&gt; Void)</span>
-    <span class="c1">// ([DummyData]) -&gt; Void</span>
-    <span class="c1">// 데이터소스 바인딩    </span>
-    <span class="kd">func</span> <span class="n">customItemsWithCell</span><span class="o">&lt;</span><span class="kt">Item</span><span class="o">&gt;</span><span class="p">(</span>
-        <span class="nv">makeCell</span><span class="p">:</span> <span class="p">((</span><span class="kt">UITableView</span><span class="p">,</span> <span class="kt">IndexPath</span><span class="p">,</span> <span class="kt">Item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITableViewCell</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="p">([</span><span class="kt">Item</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kt">Void</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">dataSource</span> <span class="o">=</span> <span class="kt">CustomCombineDataSource</span><span class="o">&lt;</span><span class="kt">Item</span><span class="o">&gt;</span><span class="p">(</span><span class="n">makeCell</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">{</span> <span class="p">(</span><span class="nv">updatedDateLisst</span><span class="p">:</span> <span class="p">[</span><span class="kt">Item</span><span class="p">])</span> <span class="k">in</span>
-            <span class="n">dataSource</span><span class="o">.</span><span class="nf">pushDataList</span><span class="p">(</span><span class="n">updatedDateLisst</span><span class="p">,</span> <span class="nv">to</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span> <span class="c1">// 리로드</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-</code></pre></div></div>
-
-<h3 id="combinelistviewcontrollerswift">CombineListViewController.swift</h3>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//</span>
-<span class="c1">//  CombineListViewController.swift</span>
-<span class="c1">//  UITableViewTutorial</span>
-<span class="c1">//</span>
-<span class="c1">//  Created by 김동현 on 5/13/25.</span>
-<span class="c1">//</span>
-
-<span class="kd">import</span> <span class="kt">UIKit</span>
-<span class="kd">import</span> <span class="kt">Combine</span>
-
-<span class="kd">class</span> <span class="kt">CombineListViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
-    
-    <span class="c1">// Combine 메모리 처리를 위해 생성</span>
-    <span class="k">var</span> <span class="nv">subscriptions</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">AnyCancellable</span><span class="o">&gt;</span><span class="p">()</span>
-    
-    <span class="c1">// Published를 하게 되면 dummies 데이터가 추가나 값 변경시 이벤트를 받을 수 있다.</span>
-    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">dummies</span><span class="p">:</span> <span class="p">[</span><span class="kt">DummyData</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">indexDatas</span><span class="p">:</span> <span class="p">[</span><span class="kt">IndexData</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    
-    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">myTableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="o">!</span>
-
-   
-    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
-        <span class="nf">configureTableView</span><span class="p">()</span>
-        
-        
-        <span class="cm">/*
-        - sink는 @Published가 수정된 스레드에서 실행된다
-        - 그래서 Published변수 수정시 메인 스레드에서 수정해주자
-        - @Published 값을 메인 스레드에서 수정하든, 백그라운드에서 수정하든, .receive(on: .main)만 붙이면 sink는 메인에서 실행되고reloadData()도 안전하게 실행된다
-         */</span>
-        
-        <span class="c1">// MARK: - 기존의 데이터를 받는 거를 CombineListViewController에서 다했더라면 이제는 customDataSource으로 따로 뺴두고, 로직은 extension으로 빼서 처리를 한 것이다.</span>
-        <span class="c1">// $ 붙이면 데이터 이벤트를 받을 수 있는 상태가 됨</span>
-        <span class="c1">// sink는 구독하는 것이다.</span>
-        <span class="c1">// AnyCancellable 구독한다고 한다.</span>
-        <span class="c1">// store: 구독했던거에 대한 메모리 참조가 들어오게 되는데 이를 관리하기 위해 subscriptions에 넣어준다.</span>
-        <span class="cm">/*
-         기존 방식
-         $dummies
-             .receive(on: DispatchQueue.main)
-             // 데이터 변경시마다 동작
-             .sink(receiveValue: { (changedDummies: [DummyData]) in
-                 print("changedDummies: \(changedDummies.count)")
-                 
-                 // sink는 메인스레드에서 동작해서 Dispatch안해도된다
-                 self.myTableView.reloadData()
-             })
-             .store(in: &amp;subscriptions)
-         */</span>
-        
-        <span class="n">$dummies</span><span class="o">.</span><span class="nf">receive</span><span class="p">(</span><span class="nv">on</span><span class="p">:</span> <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="p">)</span>
-            <span class="o">.</span><span class="nf">sink</span><span class="p">(</span><span class="nv">receiveValue</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="nf">customItemsWithCell</span><span class="p">(</span>
-                <span class="c1">// 셀에 대한 종류를 정해주기 위해 바깥으로 뺀 형태 -&gt; makeCell을 데이터 타입마다 다르게 정의할 수 있다</span>
-                <span class="nv">makeCell</span><span class="p">:</span> <span class="p">{</span> <span class="n">myTableView</span><span class="p">,</span> <span class="n">indexPath</span><span class="p">,</span> <span class="n">cellData</span> <span class="k">in</span>
-                
-                <span class="c1">// [guard let] 방식</span>
-                <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">myTableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="kt">CodeCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">CodeCell</span> <span class="k">else</span> <span class="p">{</span>
-                    <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
-                <span class="p">}</span>
-        
-                <span class="n">cell</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">title</span>  <span class="c1">// 셀의 주 텍스트를 더미 데이터에서 가져오기</span>
-                <span class="n">cell</span><span class="o">.</span><span class="n">bodyLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">cellData</span><span class="o">.</span><span class="n">body</span> <span class="c1">// 셀의 서브 타이틀 설정</span>
-                <span class="n">cell</span><span class="o">.</span><span class="n">detailTextLabel</span><span class="p">?</span><span class="o">.</span><span class="n">numberOfLines</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="k">return</span> <span class="n">cell</span>
-                
-            <span class="p">}))</span>
-            <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
-        
-        
-        <span class="c1">// 2초 뒤에 더미데이터 10개 추가</span>
-        <span class="kt">DispatchQueue</span><span class="o">.</span><span class="nf">global</span><span class="p">()</span><span class="o">.</span><span class="nf">asyncAfter</span><span class="p">(</span><span class="nv">deadline</span><span class="p">:</span> <span class="o">.</span><span class="nf">now</span><span class="p">()</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="nv">execute</span><span class="p">:</span> <span class="p">{</span>
-            <span class="k">self</span><span class="o">.</span><span class="n">dummies</span> <span class="o">+=</span> <span class="kt">DummyData</span><span class="o">.</span><span class="nf">getDumies</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-            <span class="c1">// self.indexDatas += IndexData.getDumies(10)</span>
-        <span class="p">})</span>
-    <span class="p">}</span>
-    
-    <span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">configureTableView</span><span class="p">()</span> <span class="p">{</span>
-        
-        <span class="c1">// CodeCell에서는 이 줄만 필요</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="kt">CodeCell</span><span class="o">.</span><span class="k">self</span><span class="p">,</span> <span class="nv">forCellReuseIdentifier</span><span class="p">:</span> <span class="kt">CodeCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">)</span>
-        <span class="c1">// self.myTableView.delegate = self</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[테이블뷰 제네릭 CustomCombineDataSource 이전 포스팅에서 tableview데이터소스를 combine과 제네릭으로 연결을 했다. 데이터소스는 데이터와 연괸되어있고, 셀의 종류를 정하고, 리스트 개수가 몇개인지 정하는 역할이다 즉 데이터와 관련이 있다. 이전 포스팅에서 커스텀 DataSource를 만들어서 처리하였는데 문제가 있었다. 리스트를 보여줄 때 데이터 타입이 변경되면 받을 수 없고 DummyData타입만 받을 수 있었다. 어떠한 데이터가 오더라도 확장성이 있도록 호출하는 쪽에서 셀의 타입을 정하도록 구현해보자. CustomCombineDataSource.swift // // CustomCombineDataSource.swift // UITableViewTutorial // // Created by 김동현 on 5/15/25. // // https://www.youtube.com/watch?v=vlJ392OMkoI&amp;list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&amp;index=16 import UIKit /* class CustomCombineDataSource&lt;T, G&gt;: NSObject, UITableViewDataSource { // 멤버 변수 var dataList: [T] = [] var testDataList: [G] = [] */ class CustomCombineDataSource&lt;Item&gt;: NSObject, UITableViewDataSource { // 셀을 만드는 클로저 // 1. let makeCell: (_ tableView: UITableView, _ indexPath: IndexPath, _ cellData: Item) -&gt; UITableViewCell // 2. let makeCell: (UITableView, IndexPath, Item) -&gt; UITableViewCell // 위랑 같음 // 3. var makeCell: ((UITableView, IndexPath, Item) -&gt; UITableViewCell)? = nil // 옵셔널로도 가능 var dataList: [Item] = [] // 2. 안쪽에서 터트리기 때문에 escaping 해주자 /* init(makeCell: @escaping (_ tableView: UITableView, _ indexPath: IndexPath, _ cellData: Item) -&gt; UITableViewCell) { self.makeCell = makeCell super.init() } */ // 3. 옵셔널로 한다면 escaping 안해도 된다 init(_ makeCell: ((_ tableView: UITableView, _ indexPath: IndexPath, _ cellData: Item) -&gt; UITableViewCell)? = nil) { self.makeCell = makeCell super.init() } // MARK: - Combine 이벤트로 들어온 데이터랑 테이블뷰랑 연결시켜주는 지점 /// 변경된 데이터를 받아서 테이블뷰에 적용한다 /// - Parameters: /// - updatedDataList: 외부에서 변경된 Combine Publisher로 들어온 데이터를 내 DataSource가 가진 data로 변경하기 위한 매개변수 /// - tableView: 리로드 대상 테이블뷰 func pushDataList(_ updatedDataList: [Item], to tableView: UITableView) { tableView.dataSource = self self.dataList = updatedDataList tableView.reloadData() } // MARK: - 테이블뷰 데이터 소스 관련(변경이 된 데이터를 데이터소스로 넘겨받아서 reloadData를 하는 목적 /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return dataList.count } /// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 /// - returns: 구성된 UITableViewCell 객체 /// 어떤 셀을 보여줄지 // 1. 테이블뷰 // 2. indexPath 몇번째인지 // 3. 셀에 대한 데이터 - 셀에 대한 제네릭 데이터 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { // 비어있으면 기본 UITableViewCell 반환 makeCell?(tableView, indexPath, dataList[indexPath.row]) ?? UITableViewCell() // /// 기본 스타일의 셀 생성 (textLabel과 detailTextLabel 포함) // /// let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MyCell") // // // [guard let] 방식 // guard let cell = tableView.dequeueReusableCell(withIdentifier: CodeCell.reuseIdentifier, for: indexPath) as? CodeCell else { // return UITableViewCell() // } // // if let dataList = dataList as? [DummyData] { // let cellData: DummyData = dataList[indexPath.row] // // /// 셀의 주 텍스트를 더미 데이터에서 가져오기 // cell.titleLabel.text = cellData.title // // /// 셀의 서브 타이틀 설정 // cell.bodyLabel.text = cellData.body // // cell.detailTextLabel?.numberOfLines = 0 // } // // if let dataList = dataList as? [IndexData] { // let cellData: IndexData = dataList[indexPath.row] // // /// 셀의 주 텍스트를 더미 데이터에서 가져오기 // cell.titleLabel.text = cellData.title // // /// 셀의 서브 타이틀 설정 // cell.bodyLabel.text = cellData.body // // cell.detailTextLabel?.numberOfLines = 0 // } // // return cell } } tableView()의 각 매개변수 tableView, indexPath, 그리고 셀에 대한 데이터 cellData을 조합을 하여 UITableViewCell 즉 셀을 만들자. 기존 tableView() 내부를 전부 주석처리를 하고 주석부분을 만드는 클로저를 두자. 함수 = 클로저 = 논리이다. 즉 논리 = 로직이다. 다시말해 로직을 클로저로 빼자. UITableView+Combine.swift // // UITableView+Combine.swift // UITableViewTutorial // // Created by 김동현 on 5/15/25. // import UIKit import Combine // MARK: - Sink 정의를 보면 매개변수로 (Self.Output) -&gt; Void) 형태의 클로저를 받는다. 이 형태를 만족하는 로직 함수를 만들자. // public func sink(receiveValue: @escaping ((Self.Output) -&gt; Void)) -&gt; AnyCancellable extension UITableView { // 고차함수 - 클로저를 매개변수로 가지거나 반환을 가지는 함수 자체 // (Self.Output) -&gt; Void) // ([DummyData]) -&gt; Void // 데이터소스 바인딩 func customItemsWithCell&lt;Item&gt;( makeCell: ((UITableView, IndexPath, Item) -&gt; UITableViewCell)? = nil ) -&gt; ([Item]) -&gt; Void { let dataSource = CustomCombineDataSource&lt;Item&gt;(makeCell) return { (updatedDateLisst: [Item]) in dataSource.pushDataList(updatedDateLisst, to: self) // 리로드 } } } CombineListViewController.swift // // CombineListViewController.swift // UITableViewTutorial // // Created by 김동현 on 5/13/25. // import UIKit import Combine class CombineListViewController: UIViewController { // Combine 메모리 처리를 위해 생성 var subscriptions = Set&lt;AnyCancellable&gt;() // Published를 하게 되면 dummies 데이터가 추가나 값 변경시 이벤트를 받을 수 있다. @Published var dummies: [DummyData] = [] @Published var indexDatas: [IndexData] = [] @IBOutlet weak var myTableView: UITableView! override func viewDidLoad() { super.viewDidLoad() configureTableView() /* - sink는 @Published가 수정된 스레드에서 실행된다 - 그래서 Published변수 수정시 메인 스레드에서 수정해주자 - @Published 값을 메인 스레드에서 수정하든, 백그라운드에서 수정하든, .receive(on: .main)만 붙이면 sink는 메인에서 실행되고reloadData()도 안전하게 실행된다 */ // MARK: - 기존의 데이터를 받는 거를 CombineListViewController에서 다했더라면 이제는 customDataSource으로 따로 뺴두고, 로직은 extension으로 빼서 처리를 한 것이다. // $ 붙이면 데이터 이벤트를 받을 수 있는 상태가 됨 // sink는 구독하는 것이다. // AnyCancellable 구독한다고 한다. // store: 구독했던거에 대한 메모리 참조가 들어오게 되는데 이를 관리하기 위해 subscriptions에 넣어준다. /* 기존 방식 $dummies .receive(on: DispatchQueue.main) // 데이터 변경시마다 동작 .sink(receiveValue: { (changedDummies: [DummyData]) in print("changedDummies: \(changedDummies.count)") // sink는 메인스레드에서 동작해서 Dispatch안해도된다 self.myTableView.reloadData() }) .store(in: &amp;subscriptions) */ $dummies.receive(on: DispatchQueue.main) .sink(receiveValue: self.myTableView.customItemsWithCell( // 셀에 대한 종류를 정해주기 위해 바깥으로 뺀 형태 -&gt; makeCell을 데이터 타입마다 다르게 정의할 수 있다 makeCell: { myTableView, indexPath, cellData in // [guard let] 방식 guard let cell = myTableView.dequeueReusableCell(withIdentifier: CodeCell.reuseIdentifier, for: indexPath) as? CodeCell else { return UITableViewCell() } cell.titleLabel.text = cellData.title // 셀의 주 텍스트를 더미 데이터에서 가져오기 cell.bodyLabel.text = cellData.body // 셀의 서브 타이틀 설정 cell.detailTextLabel?.numberOfLines = 0 return cell })) .store(in: &amp;subscriptions) // 2초 뒤에 더미데이터 10개 추가 DispatchQueue.global().asyncAfter(deadline: .now() + 2, execute: { self.dummies += DummyData.getDumies(10) // self.indexDatas += IndexData.getDumies(10) }) } fileprivate func configureTableView() { // CodeCell에서는 이 줄만 필요 self.myTableView.register(CodeCell.self, forCellReuseIdentifier: CodeCell.reuseIdentifier) // self.myTableView.delegate = self } }]]></summary></entry></feed>
+<h1 id="uitextfield">UITextField</h1>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="UIComponent" /><summary type="html"><![CDATA[UITextView UITextField 차이 TextField는 placeholder를 사용할 수 있으나 TextView는 안되는것을 알게 되어 두 컴포넌트의 차이에 대해 알아보고자 정리하게 되었다. UITextView 공식문서를 살펴보면 A scrollable, multiline text region 1줄 이상으로 이루어진 스크롤 가능한 텍스트 영역 placeholder는 제공하지 않기 때문에 직접 구현해야 한다. placeholder 구현 방법 UITextView는 UITextViewDeleagate 프로토콜을 채택하고 있다. 그 중 textViewDidBeginEditing method를 사용해서 구현해보자. // init 시 상태를 lazy로 지정 private lazy var textView: UITextView = { let tv = UITextView() tv.text = "입력하세요.." tv.textColor = .secondaryLabel tv.delegate = self return textView }() init 시 상태를 lazy로 지정해주면서 layout 세팅을 진행하였다. textViewDidBeginEditing Tells the delegate when editing of the specified text view begins. Optional 설정으로 textView의 수정이 일어나면 실행되는 메서드 extension UploadViewController: UITextViewDelegate { func textViewDidBeginEditing(_ textView: UITextView) { guard textView.textColor == .secondaryLabel else { return } textView.text = nil textView.textColor = .label } } textColor가 .secondaryLabel라는 기본값으로 세팅되어 있으면 return 시키고, 아니라면 text를 비우고 Color도 검정색으로 바꾸어준다. UITextField]]></summary></entry></feed>

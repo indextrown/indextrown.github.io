@@ -1,6 +1,14 @@
 [
     
         {
+        "title"    : "[Xcode] fastlane 에러 해결",
+        "category" : "",
+        "tags"     : "Xcode",
+        "url"      : "/UIKit-fastlane/",
+        "date"     : "2025-05-26 00:00:00 +0000"
+        } ,
+    
+        {
         "title"    : "[Xcode] 프로젝트에 SwiftLint적용하기",
         "category" : "",
         "tags"     : "Xcode",
@@ -51,7 +59,7 @@
         {
         "title"    : "[Docker] code-server",
         "category" : "",
-        "tags"     : "UIKit, UIComponent",
+        "tags"     : "Docker",
         "url"      : "/Docker-code-server/",
         "date"     : "2025-05-19 00:00:00 +0000"
         } ,
