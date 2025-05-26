@@ -21,7 +21,7 @@ https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/03.cpp
 - numbers의 모든 수는 0 이상 100 이하이다.
 
 ### 입출력 예
-[2, 1, 3, 4, 1] -> [2, 3, 4, 5, 6, 7]
+[2, 1, 3, 4, 1] -> [2, 3, 4, 5, 6, 7]  
 [5, 0, 2, 7] -> [2, 5, 7, 9, 12]
 
 # 풀이
