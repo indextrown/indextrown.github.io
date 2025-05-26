@@ -35,6 +35,8 @@ https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/03.cpp
      3 4
      4
 */
+import Foundation
+
 func solution(_ numbers: [Int]) -> [Int] {
 
     // 배열 크기

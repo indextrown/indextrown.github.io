@@ -34,6 +34,31 @@ https://school.programmers.co.kr/learn/courses/30/lessons/42840
 
 # 풀이
 ```swift
+import Foundation
+
+func solution(_ answers: [Int]) -> [Int] {
+    
+    let firstPattern = [1, 2, 3, 4, 5]
+    let secondPattern = [2, 1, 2, 3, 2, 4, 2, 5]
+    let thirdParrern = [3, 3, 1, 1, 2, 2, 4, 4, 5, 5]
+    var scoreBox = Array(repeating: 0, count: 3)
+    var answer: [Int] = []
+    
+    for i in 0..<answers.count {
+        if answers[i] == firstPattern[i%firstPattern.count] { scoreBox[0] += 1 }
+        if answers[i] == secondPattern[i%secondPattern.count] { scoreBox[1] += 1 }
+        if answers[i] == thirdParrern[i%thirdParrern.count] { scoreBox[2] += 1 }
+    }
+    
+    let maxScore: Int = scoreBox.max()!
+    
+    for i in 0..<3 {
+        if maxScore == scoreBox[i] {
+            answer.append(i+1)
+        }
+    }
+    return answer
+}
 ```
 
 ```c++
