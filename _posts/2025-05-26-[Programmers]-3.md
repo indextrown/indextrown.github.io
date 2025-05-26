@@ -25,6 +25,34 @@ https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/03.cpp
 [5, 0, 2, 7] -> [2, 5, 7, 9, 12]
 
 # 풀이
+
+> **조합 nCr - 순서가 중요하지 않음**
+
+- 공통 공식:  
+  $$
+  C(n, r) = \frac{n!}{(n - r)! \cdot r!}
+  $$
+- 예시: 5명 중 2명을 뽑는 경우  
+  $$
+  C(5, 2) = \frac{5!}{3! \cdot 2!} = \frac{120}{6 \cdot 2} = 10
+  $$
+
+> **순열 nPr - 순서가 중요함**
+
+- 공통 공식:  
+  $$
+  P(n, r) = \frac{n!}{(n - r)!}
+  $$
+- 예시: 5명 중 2명을 뽑아 순서를 나누는 경우  
+  $$
+  P(5, 2) = \frac{5!}{3!} = \frac{120}{6} = 20
+  $$
+
+
+
+
+
+이 문제에서는 조합으로 풀면 된다.
 ```swift
 /*
      4 2 2 1 1 3 4
@@ -47,8 +75,9 @@ func solution(_ numbers: [Int]) -> [Int] {
     
     for i in 0..<cnt {
         for j in i+1..<cnt {
-            set.insert(numbers[i] + numbers[j]) // O(n^2)
-        }
+            // 모든 조합의 합
+            set.insert(numbers[i] + numbers[j]) // O(n^2) 
+        } 
     }
     return Array(set).sorted()                  // Set -> Array O(n)
                                                 // sorted() O(n^2 log n)

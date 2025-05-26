@@ -28,6 +28,8 @@ https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/02.cpp
 배열과 Set 사용법이 요구되었다.
 
 ```swift
+import Foundation
+
 func compare(_ a: Int, _ b: Int) -> Bool {
     return a > b
 }
