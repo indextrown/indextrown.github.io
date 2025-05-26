@@ -12,7 +12,7 @@ typora-root-url: ../
 
 <!-- <img src="{{ '/assets/img/2025-05-08-[UIKit]-tableView2/1.png' | relative_url }}" alt="이미지" width="30%"> -->
 
-## 문제
+# 문제
 https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/01.cpp  
 정수 배열 arr을 오름차순으로 정렬해서 반환하는 solution() 함수를 완성하라.
 
@@ -25,7 +25,8 @@ https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/01.cpp
 [2, 1, 1, 3, 2, 5,4] -> [1, 1, 2, 2, 3, 4, 5]
 [6, 1, 7] -> 1, 6, 7
 
-## 풀이
+# 풀이
+기본적인 정렬 사용법이 요구되었다.
 ```swift
 import Foundation
 

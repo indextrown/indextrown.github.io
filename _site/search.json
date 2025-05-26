@@ -9,6 +9,14 @@
         } ,
     
         {
+        "title"    : "[Programmers] 2. 배열 제어하기",
+        "category" : "",
+        "tags"     : "Programmers",
+        "url"      : "/Programmers-2/",
+        "date"     : "2025-05-26 00:00:00 +0000"
+        } ,
+    
+        {
         "title"    : "[Programmers] 1. 배열 정렬하기",
         "category" : "",
         "tags"     : "Programmers",
