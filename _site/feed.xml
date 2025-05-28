@@ -1,261 +1,170 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-05-26T16:14:42+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[Xcode] fastlane 에러 해결</title><link href="http://localhost:4000/UIKit-fastlaneError/" rel="alternate" type="text/html" title="[Xcode] fastlane 에러 해결" /><published>2025-05-26T00:00:00+00:00</published><updated>2025-05-26T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-fastlaneError</id><content type="html" xml:base="http://localhost:4000/UIKit-fastlaneError/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h1 id="fastlane-에러-해결">fastlane 에러 해결</h1>
-
-<h2 id="깃-저장소에서-관련-내용-삭제">깃 저장소에서 관련 내용 삭제</h2>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## 각 명령에서 질문 나오면 y 눌러주기 -&gt; 깃허브에서 제거됨</span>
-fastlane match nuke distribution
-fastlane match nuke development
-</code></pre></div></div>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## 인증서 &amp; 프로비저닝 프로파일 생성 -&gt; 깃허브에 저장됨</span>
-fastlane match appstore
-fastlane match development
-</code></pre></div></div>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## 팀원이 같은 인증서를 내려받을 때</span>
-fastlane match appstore <span class="nt">--readonly</span>
-fastlane match development <span class="nt">--readonly</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Xcode" /><summary type="html"><![CDATA[fastlane 에러 해결 깃 저장소에서 관련 내용 삭제 ## 각 명령에서 질문 나오면 y 눌러주기 -&gt; 깃허브에서 제거됨 fastlane match nuke distribution fastlane match nuke development ## 인증서 &amp; 프로비저닝 프로파일 생성 -&gt; 깃허브에 저장됨 fastlane match appstore fastlane match development ## 팀원이 같은 인증서를 내려받을 때 fastlane match appstore --readonly fastlane match development --readonly]]></summary></entry><entry><title type="html">[Programmers] 3. 두 수를 뽑아서 더하기</title><link href="http://localhost:4000/Programmers-3/" rel="alternate" type="text/html" title="[Programmers] 3. 두 수를 뽑아서 더하기" /><published>2025-05-26T00:00:00+00:00</published><updated>2025-05-26T00:00:00+00:00</updated><id>http://localhost:4000/%5BProgrammers%5D-3</id><content type="html" xml:base="http://localhost:4000/Programmers-3/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-05-28T04:37:04+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[Programmers] 5. 행렬의 곱셈</title><link href="http://localhost:4000/Programmers-5/" rel="alternate" type="text/html" title="[Programmers] 5. 행렬의 곱셈" /><published>2025-05-28T00:00:00+00:00</published><updated>2025-05-28T00:00:00+00:00</updated><id>http://localhost:4000/%5BProgrammers%5D-5</id><content type="html" xml:base="http://localhost:4000/Programmers-5/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
 <h1 id="문제">문제</h1>
-<p>https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/03.cpp  <br />
-정수 배열 numbers가 주어진다. numbers에서 서로 다른 인덱스에 있는 2개의 수를 뽑아 더해 만들 수 있는 모든 수를 배열에 오름차순으로 담아 반환하는 solution() 함수를 완성하라.</p>
+<p>https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/05.cpp  <br />
+https://school.programmers.co.kr/learn/courses/30/lessons/12949<br />
+2차원 배열 arr1과 arr2를 입력받아 arr1에 arr2를 행렬 곱한 결과를 반환하는 solution() 함수를 완성하라</p>
 
 <h3 id="제약조건">제약조건</h3>
 <ul>
-  <li>numbers의 길이는 2 이상 100 이하이다.</li>
-  <li>numbers의 모든 수는 0 이상 100 이하이다.</li>
+  <li>배열 arr1, arr2의 행과 열의 길이는 2이상 100 이하이다.</li>
+  <li>배열 arr1, arr2의 데이터는 -10 이상 20 이하인 자연수다.</li>
+  <li>행렬 곱 할 수 있는 배열만 주어진다.</li>
 </ul>
 
 <h3 id="입출력-예">입출력 예</h3>
-<p>[2, 1, 3, 4, 1] -&gt; [2, 3, 4, 5, 6, 7]<br />
-[5, 0, 2, 7] -&gt; [2, 5, 7, 9, 12]</p>
+<p>[[1, 4], [3, 2], [4, 1]] <br />
+[[3, 3], [3, 3]]<br />
+-&gt; [[15, 15], [15, 15], [15, 15]]</p>
+
+<p>[[2, 3, 2], [4, 2, 4], [3, 1, 4]]<br />
+[[5, 4, 3], [2, 4, 1], [3, 1, 1]]<br />
+-&gt; [[22, 22, 11], [36, 28, 18], [29, 20, 14]]</p>
 
 <h1 id="풀이">풀이</h1>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
-     4 2 2 1 1 3 4
-     2 2 1 1 3 4
-     2 1 1 3 4
-     1 1 3 4
-     1 3 4
-     3 4
-     4
-*/</span>
-<span class="kd">import</span> <span class="kt">Foundation</span>
+<p>행렬 ( A ) (크기 ( m \times n ))와 행렬 ( B ) (크기 ( n \times p ))의 곱은 행렬 ( C = AB ) (크기 ( m \times p ))로 정의된다.</p>
 
-<span class="kd">func</span> <span class="nf">solution</span><span class="p">(</span><span class="n">_</span> <span class="nv">numbers</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="p">{</span>
+\[C_{ij} = \sum_{k=1}^{n} A_{ik} \cdot B_{kj}\]
 
-    <span class="c1">// 배열 크기</span>
-    <span class="k">let</span> <span class="nv">cnt</span> <span class="o">=</span> <span class="n">numbers</span><span class="o">.</span><span class="n">count</span>
-    
-    <span class="c1">// 두 수의 합을 저장할 공간</span>
-    <span class="k">var</span> <span class="nv">set</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">Int</span><span class="o">&gt;</span><span class="p">()</span>
-    
-    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="o">..&lt;</span><span class="n">cnt</span> <span class="p">{</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="k">in</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">..&lt;</span><span class="n">cnt</span> <span class="p">{</span>
-            <span class="k">set</span><span class="o">.</span><span class="nf">insert</span><span class="p">(</span><span class="n">numbers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">numbers</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="c1">// O(n^2)</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="kt">Array</span><span class="p">(</span><span class="k">set</span><span class="p">)</span><span class="o">.</span><span class="nf">sorted</span><span class="p">()</span>                  <span class="c1">// Set -&gt; Array O(n)</span>
-                                                <span class="c1">// sorted() O(n^2 log n)</span>
-<span class="p">}</span>
+<p>즉, ( C )의 ( i )행 ( j )열 원소는 ( A )의 ( i )행과 ( B )의 ( j )열의 내적이다.</p>
 
-<span class="kd">func</span> <span class="nf">printSolution</span><span class="p">(</span><span class="n">_</span> <span class="nv">vec</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span> <span class="p">{</span>
-    <span class="nf">print</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="nf">joined</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">))</span>
-<span class="p">}</span>
+<hr />
 
-<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span> <span class="c1">// 2 3 4 5 6 7</span>
-    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">]))</span>    <span class="c1">// 2 5 7 9 12</span>
-<span class="p">}</span>
+<h2 id="-예시-1-2x2-행렬-곱셈">🔢 예시 1: 2x2 행렬 곱셈</h2>
 
-<span class="nf">main</span><span class="p">()</span>
-</code></pre></div></div>
+\[A =
+\begin{bmatrix}
+1 &amp; 2 \\\\
+3 &amp; 4
+\end{bmatrix},
+\quad
+B =
+\begin{bmatrix}
+5 &amp; 6 \\\\
+7 &amp; 8
+\end{bmatrix}\]
 
-<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;set&gt;</span><span class="cp">
-</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+\[AB =
+\begin{bmatrix}
+1 \cdot 5 + 2 \cdot 7 &amp; 1 \cdot 6 + 2 \cdot 8 \\\\
+3 \cdot 5 + 4 \cdot 7 &amp; 3 \cdot 6 + 4 \cdot 8
+\end{bmatrix}
+=
+\begin{bmatrix}
+19 &amp; 22 \\\\
+43 &amp; 50
+\end{bmatrix}\]
 
-<span class="c1">// 내가한 방법</span>
-<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">solution2</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">numbers</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">arr</span><span class="p">;</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">numbers</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">numbers</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
-        <span class="n">arr</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">numbers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">numbers</span><span class="p">[</span><span class="n">j</span><span class="p">]);</span> <span class="c1">// O(n^2)</span>
-    <span class="p">}</span>
-    <span class="n">sort</span><span class="p">(</span><span class="n">arr</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">arr</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>               <span class="c1">// O(n^2 log n^2) = O(n^2 log n)</span>
-    <span class="n">arr</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">arr</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">arr</span><span class="p">.</span><span class="n">end</span><span class="p">()),</span> <span class="n">arr</span><span class="p">.</span><span class="n">end</span><span class="p">());</span> <span class="c1">// O(n^2)</span>
-    <span class="k">return</span> <span class="n">arr</span><span class="p">;</span>
-<span class="p">}</span>
+<hr />
 
-<span class="c1">// 모범 답안</span>
-<span class="c1">// set은 중복값을 자동으로 제거해주고, 오름차순으로 데이터를 정렬해준다</span>
-<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">solution</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">numbers</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">set</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">sum</span><span class="p">;</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">numbers</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">numbers</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>  
-            <span class="n">sum</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">numbers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">numbers</span><span class="p">[</span><span class="n">j</span><span class="p">]);</span> <span class="c1">// O(n^2 log n)</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">answer</span><span class="p">(</span><span class="n">sum</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">sum</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
-    <span class="k">return</span> <span class="n">answer</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Programmers" /><summary type="html"><![CDATA[문제 https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/03.cpp 정수 배열 numbers가 주어진다. numbers에서 서로 다른 인덱스에 있는 2개의 수를 뽑아 더해 만들 수 있는 모든 수를 배열에 오름차순으로 담아 반환하는 solution() 함수를 완성하라. 제약조건 numbers의 길이는 2 이상 100 이하이다. numbers의 모든 수는 0 이상 100 이하이다. 입출력 예 [2, 1, 3, 4, 1] -&gt; [2, 3, 4, 5, 6, 7] [5, 0, 2, 7] -&gt; [2, 5, 7, 9, 12] 풀이 /* 4 2 2 1 1 3 4 2 2 1 1 3 4 2 1 1 3 4 1 1 3 4 1 3 4 3 4 4 */ import Foundation func solution(_ numbers: [Int]) -&gt; [Int] { // 배열 크기 let cnt = numbers.count // 두 수의 합을 저장할 공간 var set = Set&lt;Int&gt;() for i in 0..&lt;cnt { for j in i+1..&lt;cnt { set.insert(numbers[i] + numbers[j]) // O(n^2) } } return Array(set).sorted() // Set -&gt; Array O(n) // sorted() O(n^2 log n) } func printSolution(_ vec: [Int]) { print(vec.map { String($0) }.joined(separator: " ")) } func main() { printSolution(solution([2, 1, 3, 4, 1])) // 2 3 4 5 6 7 printSolution(solution([5, 0, 2, 7])) // 2 5 7 9 12 } main() #include &lt;iostream&gt; #include &lt;vector&gt; #include &lt;set&gt; using namespace std; // 내가한 방법 vector&lt;int&gt; solution2(vector&lt;int&gt; numbers) { vector&lt;int&gt; arr; for (int i=0; i&lt;numbers.size(); i++) { for (int j=i+1; j&lt;numbers.size(); j++) arr.push_back(numbers[i] + numbers[j]); // O(n^2) } sort(arr.begin(), arr.end()); // O(n^2 log n^2) = O(n^2 log n) arr.erase(unique(arr.begin(), arr.end()), arr.end()); // O(n^2) return arr; } // 모범 답안 // set은 중복값을 자동으로 제거해주고, 오름차순으로 데이터를 정렬해준다 vector&lt;int&gt; solution(vector&lt;int&gt; numbers) { set&lt;int&gt; sum; for (int i=0; i&lt;numbers.size(); i++) { for (int j=i+1; j&lt;numbers.size(); j++) { sum.insert(numbers[i] + numbers[j]); // O(n^2 log n) } } vector&lt;int&gt; answer(sum.begin(), sum.end()); return answer; }]]></summary></entry><entry><title type="html">[Programmers] 2. 배열 제어하기</title><link href="http://localhost:4000/Programmers-2/" rel="alternate" type="text/html" title="[Programmers] 2. 배열 제어하기" /><published>2025-05-26T00:00:00+00:00</published><updated>2025-05-26T00:00:00+00:00</updated><id>http://localhost:4000/%5BProgrammers%5D-2</id><content type="html" xml:base="http://localhost:4000/Programmers-2/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<h2 id="-예시-2-3x3-행렬-곱셈">🔢 예시 2: 3x3 행렬 곱셈</h2>
 
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+\[A =
+\begin{bmatrix}
+1 &amp; 2 &amp; 3 \\\\
+4 &amp; 5 &amp; 6 \\\\
+7 &amp; 8 &amp; 9
+\end{bmatrix},
+\quad
+B =
+\begin{bmatrix}
+9 &amp; 8 &amp; 7 \\\\
+6 &amp; 5 &amp; 4 \\\\
+3 &amp; 2 &amp; 1
+\end{bmatrix}\]
 
-<h1 id="문제">문제</h1>
-<p>https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/02.cpp  <br />
-정수 배열 lst가 주어진다. 배열의 중복값을 제거하고 배열 데이터를 내림차순으로 정렬해서 반환하는 solution()함수를 구현하라.</p>
+\[AB =
+\begin{bmatrix}
+30 &amp; 24 &amp; 18 \\\\
+84 &amp; 69 &amp; 54 \\\\
+138 &amp; 114 &amp; 90
+\end{bmatrix}\]
 
-<h3 id="제약조건">제약조건</h3>
-<ul>
-  <li>lst의 길이는 2 이상 1,000 이하이다.</li>
-  <li>lst의 원소 값은 -100,000 이상 100,000 이하이다.</li>
-</ul>
+<p>A 행렬의 크기가 (M<em>K)이고, B 행렬의 크기가 (K</em>N)일 때 두 행렬의 곱 연산은 행렬 A의 행의 개수(K)와 행렬 B의 열의 개수(k)가 같아야 하며 K를 기준으로 곱하기 때문에 행렬 곱 결과는 M * N이 된다.</p>
 
-<h3 id="입출력-예">입출력 예</h3>
-<p>[4, 2, 2, 1, 3, 4] -&gt; [4, 3, 2, 1]<br />
-[2, 1, 1, 3, 2, 5, 4] -&gt; [5, 4, 3, 2, 1]</p>
-
-<h1 id="풀이">풀이</h1>
-<p>배열과 Set 사용법이 요구되었다.</p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">compare</span><span class="p">(</span><span class="n">_</span> <span class="nv">a</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="n">_</span> <span class="nv">b</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span>
-<span class="p">}</span>
-
-<span class="kd">func</span> <span class="nf">solution</span><span class="p">(</span><span class="n">_</span> <span class="nv">lst</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="p">{</span>
-    <span class="k">let</span> <span class="nv">setList</span> <span class="o">=</span> <span class="kt">Array</span><span class="p">(</span><span class="kt">Set</span><span class="p">(</span><span class="n">lst</span><span class="p">))</span>                <span class="c1">// O(n) </span>
-    <span class="k">let</span> <span class="nv">sortedList</span> <span class="o">=</span> <span class="n">setList</span><span class="o">.</span><span class="nf">sorted</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">compare</span><span class="p">)</span> <span class="c1">// O(n logn) -&gt; Timsort</span>
-    <span class="k">return</span> <span class="n">sortedList</span>
-<span class="p">}</span>
-
-<span class="c1">// 결과를 출력하는 함수</span>
-<span class="kd">func</span> <span class="nf">printSolution</span><span class="p">(</span><span class="n">_</span> <span class="nv">vec</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span> <span class="p">{</span>
-    <span class="nf">print</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="nf">joined</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">))</span>
-<span class="p">}</span>
-
-<span class="c1">// 메인 함수</span>
-<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]))</span> <span class="c1">// 4 3 2 1</span>
-    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]))</span> <span class="c1">// 5 4 3 2 1</span>
-<span class="p">}</span>
-
-<span class="nf">main</span><span class="p">()</span>
-</code></pre></div></div>
-
-<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
-</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
-
-<span class="kt">bool</span> <span class="nf">compare</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="c1">// sort(시작 반복자, 끝 반복자)</span>
-<span class="c1">// sort(시작 반복자, 끝 반복자, 비교 함수)    비교 함수는 반환값이 false일 때 원소의 위치를 바꾼다</span>
-<span class="c1">// sort(v.rbegin(), v.rend())</span>
-<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">solution</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">lst</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">//sort(lst.rbegin(), lst.rend());</span>
-    <span class="n">sort</span><span class="p">(</span><span class="n">lst</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">lst</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">compare</span><span class="p">);</span>                <span class="c1">// O(n log n) -&gt; IntroSort</span>
-    <span class="n">lst</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">lst</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">lst</span><span class="p">.</span><span class="n">end</span><span class="p">()),</span> <span class="n">lst</span><span class="p">.</span><span class="n">end</span><span class="p">());</span> <span class="c1">// O(n)</span>
-    <span class="k">return</span> <span class="n">lst</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="cp">#include</span> <span class="cpf">&lt;iterator&gt;</span><span class="cp">
-</span><span class="kt">void</span> <span class="nf">print</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">copy</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">vec</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">std</span><span class="o">::</span><span class="n">ostream_iterator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">cout</span><span class="p">,</span> <span class="s">" "</span><span class="p">));</span>
-    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-    <span class="n">print</span><span class="p">(</span><span class="n">solution</span><span class="p">({</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">}));</span> <span class="c1">// 4 3 2 1</span>
-    <span class="n">print</span><span class="p">(</span><span class="n">solution</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">}));</span> <span class="c1">// 5 4 3 2 1</span>
-    
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Programmers" /><summary type="html"><![CDATA[문제 https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/02.cpp 정수 배열 lst가 주어진다. 배열의 중복값을 제거하고 배열 데이터를 내림차순으로 정렬해서 반환하는 solution()함수를 구현하라. 제약조건 lst의 길이는 2 이상 1,000 이하이다. lst의 원소 값은 -100,000 이상 100,000 이하이다. 입출력 예 [4, 2, 2, 1, 3, 4] -&gt; [4, 3, 2, 1] [2, 1, 1, 3, 2, 5, 4] -&gt; [5, 4, 3, 2, 1] 풀이 배열과 Set 사용법이 요구되었다. func compare(_ a: Int, _ b: Int) -&gt; Bool { return a &gt; b } func solution(_ lst: [Int]) -&gt; [Int] { let setList = Array(Set(lst)) // O(n) let sortedList = setList.sorted(by: compare) // O(n logn) -&gt; Timsort return sortedList } // 결과를 출력하는 함수 func printSolution(_ vec: [Int]) { print(vec.map { String($0) }.joined(separator: " ")) } // 메인 함수 func main() { printSolution(solution([4, 2, 2, 1, 1, 3, 4])) // 4 3 2 1 printSolution(solution([2, 1, 1, 3, 2, 5, 4])) // 5 4 3 2 1 } main() #include &lt;iostream&gt; #include &lt;vector&gt; using namespace std; bool compare(int a, int b) { return a &gt; b; } // sort(시작 반복자, 끝 반복자) // sort(시작 반복자, 끝 반복자, 비교 함수) 비교 함수는 반환값이 false일 때 원소의 위치를 바꾼다 // sort(v.rbegin(), v.rend()) vector&lt;int&gt; solution(vector&lt;int&gt; lst) { //sort(lst.rbegin(), lst.rend()); sort(lst.begin(), lst.end(), compare); // O(n log n) -&gt; IntroSort lst.erase(unique(lst.begin(), lst.end()), lst.end()); // O(n) return lst; } #include &lt;iterator&gt; void print(vector&lt;int&gt; vec) { copy(vec.begin(), vec.end(), std::ostream_iterator&lt;int&gt;(cout, " ")); cout &lt;&lt; endl; } int main() { print(solution({4, 2, 2, 1, 1, 3, 4})); // 4 3 2 1 print(solution({2, 1, 1, 3, 2, 5, 4})); // 5 4 3 2 1 return 0; }]]></summary></entry><entry><title type="html">[Programmers] 1. 배열 정렬하기</title><link href="http://localhost:4000/Programmers-1/" rel="alternate" type="text/html" title="[Programmers] 1. 배열 정렬하기" /><published>2025-05-26T00:00:00+00:00</published><updated>2025-05-26T00:00:00+00:00</updated><id>http://localhost:4000/%5BProgrammers%5D-1</id><content type="html" xml:base="http://localhost:4000/Programmers-1/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h1 id="문제">문제</h1>
-<p>https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/01.cpp  <br />
-정수 배열 arr을 오름차순으로 정렬해서 반환하는 solution() 함수를 완성하라.</p>
-
-<h3 id="제약조건">제약조건</h3>
-<ul>
-  <li>arr의 길이는 2 이상 10^5 이하이다.</li>
-  <li>arr의 원소 값은 -100,000 이상 100,000 이하이다.</li>
-</ul>
-
-<h3 id="입출력-예">입출력 예</h3>
-<p>[1, -5, 2, 4, 3] -&gt; [-5, 1, 2, 3, 4]  <br />
-[2, 1, 1, 3, 2, 5,4] -&gt; [1, 1, 2, 2, 3, 4, 5]<br />
-[6, 1, 7] -&gt; 1, 6, 7</p>
-
-<h1 id="풀이">풀이</h1>
-<p>기본적인 정렬 사용법이 요구되었다.</p>
 <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Foundation</span>
 
-<span class="kd">func</span> <span class="nf">solution</span><span class="p">(</span><span class="n">_</span> <span class="nv">arr</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">arr</span><span class="o">.</span><span class="nf">sorted</span><span class="p">()</span>
+<span class="kd">func</span> <span class="nf">solution</span><span class="p">(</span><span class="n">_</span> <span class="nv">arr1</span><span class="p">:</span> <span class="p">[[</span><span class="kt">Int</span><span class="p">]],</span> <span class="n">_</span> <span class="nv">arr2</span><span class="p">:</span> <span class="p">[[</span><span class="kt">Int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span> <span class="p">{</span>
+    
+    <span class="k">let</span> <span class="nv">rows</span> <span class="o">=</span> <span class="n">arr1</span><span class="o">.</span><span class="n">count</span>
+    <span class="k">let</span> <span class="nv">cols</span> <span class="o">=</span> <span class="n">arr2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">count</span>
+
+    <span class="c1">// 최종 행렬 곱 결과를 저장할 배열 선언</span>
+    <span class="k">var</span> <span class="nv">answer</span> <span class="o">=</span> <span class="kt">Array</span><span class="p">(</span><span class="nv">repeating</span><span class="p">:</span> <span class="kt">Array</span><span class="p">(</span><span class="nv">repeating</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">count</span><span class="p">:</span> <span class="n">cols</span><span class="p">),</span> <span class="nv">count</span><span class="p">:</span> <span class="n">rows</span><span class="p">)</span>
+    
+    <span class="c1">// arr1의 각 행과 arr2의 각 열에 대해 반복문 수행</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="k">in</span> <span class="mi">0</span><span class="o">..&lt;</span><span class="n">rows</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="k">in</span> <span class="mi">0</span><span class="o">..&lt;</span><span class="n">cols</span> <span class="p">{</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="k">in</span> <span class="mi">0</span><span class="o">..&lt;</span><span class="n">arr2</span><span class="o">.</span><span class="n">count</span> <span class="p">{</span>
+                <span class="n">answer</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">+=</span> <span class="n">arr1</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">arr2</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">col</span><span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>        
+    <span class="k">return</span> <span class="n">answer</span>
 <span class="p">}</span>
 
-<span class="c1">// 결과를 출력하는 함수</span>
-<span class="kd">func</span> <span class="nf">printSolution</span><span class="p">(</span><span class="n">_</span> <span class="nv">vec</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span> <span class="p">{</span>
-    <span class="nf">print</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="nf">joined</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">))</span>
-<span class="p">}</span>
-
-<span class="c1">// 메인 함수</span>
-<span class="kd">func</span> <span class="nf">start</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
-    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]))</span>
-    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">]))</span>
-<span class="p">}</span>
-
-<span class="kd">@main</span>
-<span class="kd">struct</span> <span class="kt">Main</span> <span class="p">{</span>
-    <span class="kd">static</span> <span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nf">start</span><span class="p">()</span>
+<span class="kd">func</span> <span class="nf">print2D</span><span class="p">(</span><span class="n">_</span> <span class="nv">vec</span><span class="p">:</span> <span class="p">[[</span><span class="kt">Int</span><span class="p">]])</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="k">in</span> <span class="n">vec</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="nf">joined</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">))</span>
     <span class="p">}</span>
+    <span class="nf">print</span><span class="p">()</span>
 <span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nf">print2D</span><span class="p">(</span><span class="nf">solution</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="p">],</span>
+        <span class="p">[</span>
+            <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="p">]))</span>
+    
+    <span class="nf">print2D</span><span class="p">(</span><span class="nf">solution</span><span class="p">(</span>
+        <span class="p">[</span>
+           <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+           <span class="p">[</span><span class="mi">4</span> <span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+           <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+        <span class="p">],</span>
+        <span class="p">[</span>
+            <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="p">]))</span>
+<span class="p">}</span>
+
+<span class="nf">main</span><span class="p">()</span>
 </code></pre></div></div>
 
-<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp">
 #include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
-</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
 
-<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">solution</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">arr</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">sort</span><span class="p">(</span><span class="n">arr</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">arr</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
-    <span class="k">return</span> <span class="n">arr</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="c1">// 테스트 코드</span>
-<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
-</span><span class="kt">void</span> <span class="nf">print</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">copy</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">vec</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">std</span><span class="o">::</span><span class="n">ostream_iterator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">cout</span><span class="p">,</span> <span class="s">" "</span><span class="p">));</span>
-    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-    <span class="n">print</span><span class="p">(</span><span class="n">solution</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">}));</span>      <span class="c1">// -5 1 2 3 4</span>
-    <span class="n">print</span><span class="p">(</span><span class="n">solution</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">}));</span> <span class="c1">// 1 1 2 2 3 4 5</span>
-    <span class="n">print</span><span class="p">(</span><span class="n">solution</span><span class="p">({</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">}));</span>             <span class="c1">// 1 6 7</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span> <span class="n">solution</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span> <span class="n">arr1</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span> <span class="n">arr2</span><span class="p">)</span> <span class="p">{</span>
     
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="c1">// 최종 행렬 곱 결과를 저장할 벡터 선언</span>
+    <span class="n">vector</span><span class="o">&lt;</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span> <span class="n">answer</span><span class="p">;</span>
+    
+    <span class="c1">// arr1, arr2 행렬 곱을 수행했을 때 최종 행렬의 크기만큼 공간을 할당</span>
+    <span class="n">answer</span><span class="p">.</span><span class="n">assign</span><span class="p">(</span><span class="n">arr1</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">arr2</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">size</span><span class="p">(),</span> <span class="mi">0</span><span class="p">));</span>
+    
+    <span class="c1">// arr1의 각 행과 arr2의 각 열에 대해 반복문 수행</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">arr1</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">arr2</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">size</span><span class="p">();</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">arr2</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">answer</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">arr1</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">arr2</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">j</span><span class="p">];</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">answer</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Programmers" /><summary type="html"><![CDATA[문제 https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/01.cpp 정수 배열 arr을 오름차순으로 정렬해서 반환하는 solution() 함수를 완성하라. 제약조건 arr의 길이는 2 이상 10^5 이하이다. arr의 원소 값은 -100,000 이상 100,000 이하이다. 입출력 예 [1, -5, 2, 4, 3] -&gt; [-5, 1, 2, 3, 4] [2, 1, 1, 3, 2, 5,4] -&gt; [1, 1, 2, 2, 3, 4, 5] [6, 1, 7] -&gt; 1, 6, 7 풀이 기본적인 정렬 사용법이 요구되었다. import Foundation func solution(_ arr: [Int]) -&gt; [Int] { return arr.sorted() } // 결과를 출력하는 함수 func printSolution(_ vec: [Int]) { print(vec.map { String($0) }.joined(separator: " ")) } // 메인 함수 func start() { printSolution(solution([1, -5, 2, 4, 3])) printSolution(solution([2, 1, 1, 3, 2, 5, 4])) printSolution(solution([6, 1, 7])) } @main struct Main { static func main() { start() } } #include &lt;iostream&gt; #include &lt;vector&gt; using namespace std; vector&lt;int&gt; solution(vector&lt;int&gt; arr) { sort(arr.begin(), arr.end()); return arr; } // 테스트 코드 #include &lt;iostream&gt; void print(vector&lt;int&gt; vec) { copy(vec.begin(), vec.end(), std::ostream_iterator&lt;int&gt;(cout, " ")); cout &lt;&lt; endl; } int main() { print(solution({1, -5, 2, 4, 3})); // -5 1 2 3 4 print(solution({2, 1, 1, 3, 2, 5, 4})); // 1 1 2 2 3 4 5 print(solution({6, 1, 7})); // 1 6 7 return 0; }]]></summary></entry><entry><title type="html">[Programmers] 4. 모의고사</title><link href="http://localhost:4000/Programmers-4/" rel="alternate" type="text/html" title="[Programmers] 4. 모의고사" /><published>2025-05-26T00:00:00+00:00</published><updated>2025-05-26T00:00:00+00:00</updated><id>http://localhost:4000/%5BProgrammers%5D-4</id><content type="html" xml:base="http://localhost:4000/Programmers-4/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Programmers" /><summary type="html"><![CDATA[문제 https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/05.cpp https://school.programmers.co.kr/learn/courses/30/lessons/12949 2차원 배열 arr1과 arr2를 입력받아 arr1에 arr2를 행렬 곱한 결과를 반환하는 solution() 함수를 완성하라 제약조건 배열 arr1, arr2의 행과 열의 길이는 2이상 100 이하이다. 배열 arr1, arr2의 데이터는 -10 이상 20 이하인 자연수다. 행렬 곱 할 수 있는 배열만 주어진다. 입출력 예 [[1, 4], [3, 2], [4, 1]] [[3, 3], [3, 3]] -&gt; [[15, 15], [15, 15], [15, 15]] [[2, 3, 2], [4, 2, 4], [3, 1, 4]] [[5, 4, 3], [2, 4, 1], [3, 1, 1]] -&gt; [[22, 22, 11], [36, 28, 18], [29, 20, 14]] 풀이 행렬 ( A ) (크기 ( m \times n ))와 행렬 ( B ) (크기 ( n \times p ))의 곱은 행렬 ( C = AB ) (크기 ( m \times p ))로 정의된다. \[C_{ij} = \sum_{k=1}^{n} A_{ik} \cdot B_{kj}\] 즉, ( C )의 ( i )행 ( j )열 원소는 ( A )의 ( i )행과 ( B )의 ( j )열의 내적이다. 🔢 예시 1: 2x2 행렬 곱셈 \[A = \begin{bmatrix} 1 &amp; 2 \\\\ 3 &amp; 4 \end{bmatrix}, \quad B = \begin{bmatrix} 5 &amp; 6 \\\\ 7 &amp; 8 \end{bmatrix}\] \[AB = \begin{bmatrix} 1 \cdot 5 + 2 \cdot 7 &amp; 1 \cdot 6 + 2 \cdot 8 \\\\ 3 \cdot 5 + 4 \cdot 7 &amp; 3 \cdot 6 + 4 \cdot 8 \end{bmatrix} = \begin{bmatrix} 19 &amp; 22 \\\\ 43 &amp; 50 \end{bmatrix}\] 🔢 예시 2: 3x3 행렬 곱셈 \[A = \begin{bmatrix} 1 &amp; 2 &amp; 3 \\\\ 4 &amp; 5 &amp; 6 \\\\ 7 &amp; 8 &amp; 9 \end{bmatrix}, \quad B = \begin{bmatrix} 9 &amp; 8 &amp; 7 \\\\ 6 &amp; 5 &amp; 4 \\\\ 3 &amp; 2 &amp; 1 \end{bmatrix}\] \[AB = \begin{bmatrix} 30 &amp; 24 &amp; 18 \\\\ 84 &amp; 69 &amp; 54 \\\\ 138 &amp; 114 &amp; 90 \end{bmatrix}\] A 행렬의 크기가 (MK)이고, B 행렬의 크기가 (KN)일 때 두 행렬의 곱 연산은 행렬 A의 행의 개수(K)와 행렬 B의 열의 개수(k)가 같아야 하며 K를 기준으로 곱하기 때문에 행렬 곱 결과는 M * N이 된다. import Foundation func solution(_ arr1: [[Int]], _ arr2: [[Int]]) -&gt; [[Int]] { let rows = arr1.count let cols = arr2[0].count // 최종 행렬 곱 결과를 저장할 배열 선언 var answer = Array(repeating: Array(repeating: 0, count: cols), count: rows) // arr1의 각 행과 arr2의 각 열에 대해 반복문 수행 for row in 0..&lt;rows { for col in 0..&lt;cols { for k in 0..&lt;arr2.count { answer[row][col] += arr1[row][k] * arr2[k][col] } } } return answer } func print2D(_ vec: [[Int]]) { for row in vec { print(row.map { String($0) }.joined(separator: " ")) } print() } func main() { print2D(solution( [ [1, 4], [2, 3], [4, 1] ], [ [3, 3], [3, 3] ])) print2D(solution( [ [2, 3, 2], [4 ,2, 4], [3, 1, 4] ], [ [5, 4, 3], [2, 4, 1], [3, 1, 1] ])) } main() #include &lt;string&gt; #include &lt;vector&gt; using namespace std; vector&lt;vector&lt;int&gt;&gt; solution(vector&lt;vector&lt;int&gt;&gt; arr1, vector&lt;vector&lt;int&gt;&gt; arr2) { // 최종 행렬 곱 결과를 저장할 벡터 선언 vector&lt;vector&lt;int&gt;&gt; answer; // arr1, arr2 행렬 곱을 수행했을 때 최종 행렬의 크기만큼 공간을 할당 answer.assign(arr1.size(), vector&lt;int&gt;(arr2[1].size(), 0)); // arr1의 각 행과 arr2의 각 열에 대해 반복문 수행 for (int i=0; i&lt;arr1.size(); i++) { for (int j=0; j&lt;arr2[0].size(); j++) { for (int k=0; k&lt;arr2.size(); k++) { answer[i][j] += arr1[i][k] * arr2[k][j]; } } } return answer; }]]></summary></entry><entry><title type="html">[Programmers] 4. 모의고사</title><link href="http://localhost:4000/Programmers-4/" rel="alternate" type="text/html" title="[Programmers] 4. 모의고사" /><published>2025-05-26T00:00:00+00:00</published><updated>2025-05-26T00:00:00+00:00</updated><id>http://localhost:4000/%5BProgrammers%5D-4</id><content type="html" xml:base="http://localhost:4000/Programmers-4/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
@@ -357,7 +266,291 @@ https://school.programmers.co.kr/learn/courses/30/lessons/42840  <br />
     <span class="n">print</span><span class="p">(</span><span class="n">solution</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">}));</span>     <span class="c1">// 1, 2, 3</span>
     <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Programmers" /><summary type="html"><![CDATA[문제 https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/04.cpp https://school.programmers.co.kr/learn/courses/30/lessons/42840 수포자는 수학을 포기한 사람의 준말입니다. 수포자 삼인방은 모의고사에 수학 문제를 전부 찍으려 합니다. 수포자는 1번 문제부터 마지막 문제까지 다음과 같이 찍습니다. 1번 수포자가 찍는 방식: 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, … 2번 수포자가 찍는 방식: 2, 1, 2, 3, 2, 4, 2, 5, 2, 1, 2, 3, 2, 4, 2, 5, … 3번 수포자가 찍는 방식: 3, 3, 1, 1, 2, 2, 4, 4, 5, 5, 3, 3, 1, 1, 2, 2, 4, 4, 5, 5, … 1번 문제부터 마지막 문제까지의 정답이 순서대로 들은 배열 answers가 주어졌을 때, 가장 많은 문제를 맞힌 사람이 누구인지 배열에 담아 return 하도록 solution 함수를 작성해주세요. 제약조건 시험은 최대 10,000 문제로 구성되어있습니다. 문제의 정답은 1, 2, 3, 4, 5중 하나입니다. 가장 높은 점수를 받은 사람이 여럿일 경우, return하는 값을 오름차순 정렬해주세요. 입출력 예 [1, 2, 3, 4, 5] -&gt; [1] [1, 3, 2, 4, 2] -&gt; [1, 2, 3] 풀이 import Foundation func solution(_ answers: [Int]) -&gt; [Int] { let firstPattern = [1, 2, 3, 4, 5] let secondPattern = [2, 1, 2, 3, 2, 4, 2, 5] let thirdParrern = [3, 3, 1, 1, 2, 2, 4, 4, 5, 5] var scoreBox = Array(repeating: 0, count: 3) var answer: [Int] = [] for i in 0..&lt;answers.count { if answers[i] == firstPattern[i%firstPattern.count] { scoreBox[0] += 1 } if answers[i] == secondPattern[i%secondPattern.count] { scoreBox[1] += 1 } if answers[i] == thirdParrern[i%thirdParrern.count] { scoreBox[2] += 1 } } let maxScore: Int = scoreBox.max()! for i in 0..&lt;3 { if maxScore == scoreBox[i] { answer.append(i+1) } } return answer } #include &lt;string&gt; #include &lt;vector&gt; #include &lt;algorithm&gt; using namespace std; vector&lt;int&gt; solution(vector&lt;int&gt; answers) { vector&lt;int&gt; firstVec({1, 2, 3, 4, 5}); vector&lt;int&gt; secondVec({2, 1, 2, 3, 2, 4, 2, 5}); vector&lt;int&gt; thirdVec({3, 3, 1, 1, 2, 2, 4, 4, 5, 5}); vector&lt;int&gt; scoreBox(3, 0); // 실제 정답과 비교하여 수포자들의 패턴을 비교해서 맞춘 개수 vector&lt;int&gt; answer; // 가장 문제를 많이 맞춘 사람이 저장될 벡터 for (int i=0; i&lt;answers.size(); i++) { if (answers[i] == firstVec[i%firstVec.size()]) { scoreBox[0] += 1; } if (answers[i] == secondVec[i%secondVec.size()]) { scoreBox[1] += 1; } if (answers[i] == thirdVec[i%thirdVec.size()]) { scoreBox[2] += 1; } } // 가장 많이 맞춘 수포자가 얻은 점수 int maxScore = *max_element(scoreBox.begin(), scoreBox.end()); // 가장 많이 맞춘 수포자의 번호를 저장 for (int i=0; i&lt;3; i++) { if (scoreBox[i] == maxScore) { answer.push_back(i+1); } } return answer; } #include &lt;iostream&gt; void print(vector&lt;int&gt; vec) { copy(vec.begin(), vec.end(), std::ostream_iterator&lt;int&gt;(cout, " ")); cout &lt;&lt; endl; } int main() { print(solution({1, 2, 3, 4, 5})); // 1 print(solution({1, 3, 2, 4, 2})); // 1, 2, 3 return 0; }]]></summary></entry><entry><title type="html">[Xcode] 프로젝트에 SwiftLint적용하기</title><link href="http://localhost:4000/UIKit-SwiftLint/" rel="alternate" type="text/html" title="[Xcode] 프로젝트에 SwiftLint적용하기" /><published>2025-05-25T00:00:00+00:00</published><updated>2025-05-25T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-SwiftLint</id><content type="html" xml:base="http://localhost:4000/UIKit-SwiftLint/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Programmers" /><summary type="html"><![CDATA[문제 https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/04.cpp https://school.programmers.co.kr/learn/courses/30/lessons/42840 수포자는 수학을 포기한 사람의 준말입니다. 수포자 삼인방은 모의고사에 수학 문제를 전부 찍으려 합니다. 수포자는 1번 문제부터 마지막 문제까지 다음과 같이 찍습니다. 1번 수포자가 찍는 방식: 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, … 2번 수포자가 찍는 방식: 2, 1, 2, 3, 2, 4, 2, 5, 2, 1, 2, 3, 2, 4, 2, 5, … 3번 수포자가 찍는 방식: 3, 3, 1, 1, 2, 2, 4, 4, 5, 5, 3, 3, 1, 1, 2, 2, 4, 4, 5, 5, … 1번 문제부터 마지막 문제까지의 정답이 순서대로 들은 배열 answers가 주어졌을 때, 가장 많은 문제를 맞힌 사람이 누구인지 배열에 담아 return 하도록 solution 함수를 작성해주세요. 제약조건 시험은 최대 10,000 문제로 구성되어있습니다. 문제의 정답은 1, 2, 3, 4, 5중 하나입니다. 가장 높은 점수를 받은 사람이 여럿일 경우, return하는 값을 오름차순 정렬해주세요. 입출력 예 [1, 2, 3, 4, 5] -&gt; [1] [1, 3, 2, 4, 2] -&gt; [1, 2, 3] 풀이 import Foundation func solution(_ answers: [Int]) -&gt; [Int] { let firstPattern = [1, 2, 3, 4, 5] let secondPattern = [2, 1, 2, 3, 2, 4, 2, 5] let thirdParrern = [3, 3, 1, 1, 2, 2, 4, 4, 5, 5] var scoreBox = Array(repeating: 0, count: 3) var answer: [Int] = [] for i in 0..&lt;answers.count { if answers[i] == firstPattern[i%firstPattern.count] { scoreBox[0] += 1 } if answers[i] == secondPattern[i%secondPattern.count] { scoreBox[1] += 1 } if answers[i] == thirdParrern[i%thirdParrern.count] { scoreBox[2] += 1 } } let maxScore: Int = scoreBox.max()! for i in 0..&lt;3 { if maxScore == scoreBox[i] { answer.append(i+1) } } return answer } #include &lt;string&gt; #include &lt;vector&gt; #include &lt;algorithm&gt; using namespace std; vector&lt;int&gt; solution(vector&lt;int&gt; answers) { vector&lt;int&gt; firstVec({1, 2, 3, 4, 5}); vector&lt;int&gt; secondVec({2, 1, 2, 3, 2, 4, 2, 5}); vector&lt;int&gt; thirdVec({3, 3, 1, 1, 2, 2, 4, 4, 5, 5}); vector&lt;int&gt; scoreBox(3, 0); // 실제 정답과 비교하여 수포자들의 패턴을 비교해서 맞춘 개수 vector&lt;int&gt; answer; // 가장 문제를 많이 맞춘 사람이 저장될 벡터 for (int i=0; i&lt;answers.size(); i++) { if (answers[i] == firstVec[i%firstVec.size()]) { scoreBox[0] += 1; } if (answers[i] == secondVec[i%secondVec.size()]) { scoreBox[1] += 1; } if (answers[i] == thirdVec[i%thirdVec.size()]) { scoreBox[2] += 1; } } // 가장 많이 맞춘 수포자가 얻은 점수 int maxScore = *max_element(scoreBox.begin(), scoreBox.end()); // 가장 많이 맞춘 수포자의 번호를 저장 for (int i=0; i&lt;3; i++) { if (scoreBox[i] == maxScore) { answer.push_back(i+1); } } return answer; } #include &lt;iostream&gt; void print(vector&lt;int&gt; vec) { copy(vec.begin(), vec.end(), std::ostream_iterator&lt;int&gt;(cout, " ")); cout &lt;&lt; endl; } int main() { print(solution({1, 2, 3, 4, 5})); // 1 print(solution({1, 3, 2, 4, 2})); // 1, 2, 3 return 0; }]]></summary></entry><entry><title type="html">[Programmers] 3. 두 수를 뽑아서 더하기</title><link href="http://localhost:4000/Programmers-3/" rel="alternate" type="text/html" title="[Programmers] 3. 두 수를 뽑아서 더하기" /><published>2025-05-26T00:00:00+00:00</published><updated>2025-05-26T00:00:00+00:00</updated><id>http://localhost:4000/%5BProgrammers%5D-3</id><content type="html" xml:base="http://localhost:4000/Programmers-3/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h1 id="문제">문제</h1>
+<p>https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/03.cpp  <br />
+정수 배열 numbers가 주어진다. numbers에서 서로 다른 인덱스에 있는 2개의 수를 뽑아 더해 만들 수 있는 모든 수를 배열에 오름차순으로 담아 반환하는 solution() 함수를 완성하라.</p>
+
+<h3 id="제약조건">제약조건</h3>
+<ul>
+  <li>numbers의 길이는 2 이상 100 이하이다.</li>
+  <li>numbers의 모든 수는 0 이상 100 이하이다.</li>
+</ul>
+
+<h3 id="입출력-예">입출력 예</h3>
+<p>[2, 1, 3, 4, 1] -&gt; [2, 3, 4, 5, 6, 7]  <br />
+[5, 0, 2, 7] -&gt; [2, 5, 7, 9, 12]</p>
+
+<h1 id="풀이">풀이</h1>
+
+<blockquote>
+  <p><strong>조합 nCr - 순서가 중요하지 않음</strong></p>
+</blockquote>
+
+<ul>
+  <li>공통 공식:  <br />
+\(C(n, r) = \frac{n!}{(n - r)! \cdot r!}\)</li>
+  <li>예시: 5명 중 2명을 뽑는 경우  <br />
+\(C(5, 2) = \frac{5!}{3! \cdot 2!} = \frac{120}{6 \cdot 2} = 10\)</li>
+</ul>
+
+<blockquote>
+  <p><strong>순열 nPr - 순서가 중요함</strong></p>
+</blockquote>
+
+<ul>
+  <li>공통 공식:  <br />
+\(P(n, r) = \frac{n!}{(n - r)!}\)</li>
+  <li>예시: 5명 중 2명을 뽑아 순서를 나누는 경우  <br />
+\(P(5, 2) = \frac{5!}{3!} = \frac{120}{6} = 20\)</li>
+</ul>
+
+<p>이 문제에서는 조합으로 풀면 된다.</p>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+     4 2 2 1 1 3 4
+     2 2 1 1 3 4
+     2 1 1 3 4
+     1 1 3 4
+     1 3 4
+     3 4
+     4
+*/</span>
+<span class="kd">import</span> <span class="kt">Foundation</span>
+
+<span class="kd">func</span> <span class="nf">solution</span><span class="p">(</span><span class="n">_</span> <span class="nv">numbers</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="p">{</span>
+
+    <span class="c1">// 배열 크기</span>
+    <span class="k">let</span> <span class="nv">cnt</span> <span class="o">=</span> <span class="n">numbers</span><span class="o">.</span><span class="n">count</span>
+    
+    <span class="c1">// 두 수의 합을 저장할 공간</span>
+    <span class="k">var</span> <span class="nv">set</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">Int</span><span class="o">&gt;</span><span class="p">()</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="o">..&lt;</span><span class="n">cnt</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="k">in</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">..&lt;</span><span class="n">cnt</span> <span class="p">{</span>
+            <span class="c1">// 모든 조합의 합</span>
+            <span class="k">set</span><span class="o">.</span><span class="nf">insert</span><span class="p">(</span><span class="n">numbers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">numbers</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="c1">// O(n^2) </span>
+        <span class="p">}</span> 
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kt">Array</span><span class="p">(</span><span class="k">set</span><span class="p">)</span><span class="o">.</span><span class="nf">sorted</span><span class="p">()</span>                  <span class="c1">// Set -&gt; Array O(n)</span>
+                                                <span class="c1">// sorted() O(n^2 log n)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">printSolution</span><span class="p">(</span><span class="n">_</span> <span class="nv">vec</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span> <span class="p">{</span>
+    <span class="nf">print</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="nf">joined</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">))</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span> <span class="c1">// 2 3 4 5 6 7</span>
+    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">]))</span>    <span class="c1">// 2 5 7 9 12</span>
+<span class="p">}</span>
+
+<span class="nf">main</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;set&gt;</span><span class="cp">
+</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="c1">// 내가한 방법</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">solution2</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">numbers</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">arr</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">numbers</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">numbers</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">arr</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">numbers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">numbers</span><span class="p">[</span><span class="n">j</span><span class="p">]);</span> <span class="c1">// O(n^2)</span>
+    <span class="p">}</span>
+    <span class="n">sort</span><span class="p">(</span><span class="n">arr</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">arr</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>               <span class="c1">// O(n^2 log n^2) = O(n^2 log n)</span>
+    <span class="n">arr</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">arr</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">arr</span><span class="p">.</span><span class="n">end</span><span class="p">()),</span> <span class="n">arr</span><span class="p">.</span><span class="n">end</span><span class="p">());</span> <span class="c1">// O(n^2)</span>
+    <span class="k">return</span> <span class="n">arr</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 모범 답안</span>
+<span class="c1">// set은 중복값을 자동으로 제거해주고, 오름차순으로 데이터를 정렬해준다</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">solution</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">numbers</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">set</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">sum</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">numbers</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">numbers</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>  
+            <span class="n">sum</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">numbers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">numbers</span><span class="p">[</span><span class="n">j</span><span class="p">]);</span> <span class="c1">// O(n^2 log n)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">answer</span><span class="p">(</span><span class="n">sum</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">sum</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
+    <span class="k">return</span> <span class="n">answer</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Programmers" /><summary type="html"><![CDATA[문제 https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/03.cpp 정수 배열 numbers가 주어진다. numbers에서 서로 다른 인덱스에 있는 2개의 수를 뽑아 더해 만들 수 있는 모든 수를 배열에 오름차순으로 담아 반환하는 solution() 함수를 완성하라. 제약조건 numbers의 길이는 2 이상 100 이하이다. numbers의 모든 수는 0 이상 100 이하이다. 입출력 예 [2, 1, 3, 4, 1] -&gt; [2, 3, 4, 5, 6, 7] [5, 0, 2, 7] -&gt; [2, 5, 7, 9, 12] 풀이 조합 nCr - 순서가 중요하지 않음 공통 공식: \(C(n, r) = \frac{n!}{(n - r)! \cdot r!}\) 예시: 5명 중 2명을 뽑는 경우 \(C(5, 2) = \frac{5!}{3! \cdot 2!} = \frac{120}{6 \cdot 2} = 10\) 순열 nPr - 순서가 중요함 공통 공식: \(P(n, r) = \frac{n!}{(n - r)!}\) 예시: 5명 중 2명을 뽑아 순서를 나누는 경우 \(P(5, 2) = \frac{5!}{3!} = \frac{120}{6} = 20\) 이 문제에서는 조합으로 풀면 된다. /* 4 2 2 1 1 3 4 2 2 1 1 3 4 2 1 1 3 4 1 1 3 4 1 3 4 3 4 4 */ import Foundation func solution(_ numbers: [Int]) -&gt; [Int] { // 배열 크기 let cnt = numbers.count // 두 수의 합을 저장할 공간 var set = Set&lt;Int&gt;() for i in 0..&lt;cnt { for j in i+1..&lt;cnt { // 모든 조합의 합 set.insert(numbers[i] + numbers[j]) // O(n^2) } } return Array(set).sorted() // Set -&gt; Array O(n) // sorted() O(n^2 log n) } func printSolution(_ vec: [Int]) { print(vec.map { String($0) }.joined(separator: " ")) } func main() { printSolution(solution([2, 1, 3, 4, 1])) // 2 3 4 5 6 7 printSolution(solution([5, 0, 2, 7])) // 2 5 7 9 12 } main() #include &lt;iostream&gt; #include &lt;vector&gt; #include &lt;set&gt; using namespace std; // 내가한 방법 vector&lt;int&gt; solution2(vector&lt;int&gt; numbers) { vector&lt;int&gt; arr; for (int i=0; i&lt;numbers.size(); i++) { for (int j=i+1; j&lt;numbers.size(); j++) arr.push_back(numbers[i] + numbers[j]); // O(n^2) } sort(arr.begin(), arr.end()); // O(n^2 log n^2) = O(n^2 log n) arr.erase(unique(arr.begin(), arr.end()), arr.end()); // O(n^2) return arr; } // 모범 답안 // set은 중복값을 자동으로 제거해주고, 오름차순으로 데이터를 정렬해준다 vector&lt;int&gt; solution(vector&lt;int&gt; numbers) { set&lt;int&gt; sum; for (int i=0; i&lt;numbers.size(); i++) { for (int j=i+1; j&lt;numbers.size(); j++) { sum.insert(numbers[i] + numbers[j]); // O(n^2 log n) } } vector&lt;int&gt; answer(sum.begin(), sum.end()); return answer; }]]></summary></entry><entry><title type="html">[Programmers] 2. 배열 제어하기</title><link href="http://localhost:4000/Programmers-2/" rel="alternate" type="text/html" title="[Programmers] 2. 배열 제어하기" /><published>2025-05-26T00:00:00+00:00</published><updated>2025-05-26T00:00:00+00:00</updated><id>http://localhost:4000/%5BProgrammers%5D-2</id><content type="html" xml:base="http://localhost:4000/Programmers-2/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h1 id="문제">문제</h1>
+<p>https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/02.cpp  <br />
+정수 배열 lst가 주어진다. 배열의 중복값을 제거하고 배열 데이터를 내림차순으로 정렬해서 반환하는 solution()함수를 구현하라.</p>
+
+<h3 id="제약조건">제약조건</h3>
+<ul>
+  <li>lst의 길이는 2 이상 1,000 이하이다.</li>
+  <li>lst의 원소 값은 -100,000 이상 100,000 이하이다.</li>
+</ul>
+
+<h3 id="입출력-예">입출력 예</h3>
+<p>[4, 2, 2, 1, 3, 4] -&gt; [4, 3, 2, 1]  <br />
+[2, 1, 1, 3, 2, 5, 4] -&gt; [5, 4, 3, 2, 1]</p>
+
+<h1 id="풀이">풀이</h1>
+<p>배열과 Set 사용법이 요구되었다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Foundation</span>
+
+<span class="kd">func</span> <span class="nf">compare</span><span class="p">(</span><span class="n">_</span> <span class="nv">a</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="n">_</span> <span class="nv">b</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">solution</span><span class="p">(</span><span class="n">_</span> <span class="nv">lst</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">setList</span> <span class="o">=</span> <span class="kt">Array</span><span class="p">(</span><span class="kt">Set</span><span class="p">(</span><span class="n">lst</span><span class="p">))</span>                <span class="c1">// O(n) </span>
+    <span class="k">let</span> <span class="nv">sortedList</span> <span class="o">=</span> <span class="n">setList</span><span class="o">.</span><span class="nf">sorted</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">compare</span><span class="p">)</span> <span class="c1">// O(n logn) -&gt; Timsort</span>
+    <span class="k">return</span> <span class="n">sortedList</span>
+<span class="p">}</span>
+
+<span class="c1">// 결과를 출력하는 함수</span>
+<span class="kd">func</span> <span class="nf">printSolution</span><span class="p">(</span><span class="n">_</span> <span class="nv">vec</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span> <span class="p">{</span>
+    <span class="nf">print</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="nf">joined</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">))</span>
+<span class="p">}</span>
+
+<span class="c1">// 메인 함수</span>
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]))</span> <span class="c1">// 4 3 2 1</span>
+    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]))</span> <span class="c1">// 5 4 3 2 1</span>
+<span class="p">}</span>
+
+<span class="nf">main</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
+</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="kt">bool</span> <span class="nf">compare</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// sort(시작 반복자, 끝 반복자)</span>
+<span class="c1">// sort(시작 반복자, 끝 반복자, 비교 함수)    비교 함수는 반환값이 false일 때 원소의 위치를 바꾼다</span>
+<span class="c1">// sort(v.rbegin(), v.rend())</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">solution</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">lst</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//sort(lst.rbegin(), lst.rend());</span>
+    <span class="n">sort</span><span class="p">(</span><span class="n">lst</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">lst</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">compare</span><span class="p">);</span>                <span class="c1">// O(n log n) -&gt; IntroSort</span>
+    <span class="n">lst</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">lst</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">lst</span><span class="p">.</span><span class="n">end</span><span class="p">()),</span> <span class="n">lst</span><span class="p">.</span><span class="n">end</span><span class="p">());</span> <span class="c1">// O(n)</span>
+    <span class="k">return</span> <span class="n">lst</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;iterator&gt;</span><span class="cp">
+</span><span class="kt">void</span> <span class="nf">print</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">copy</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">vec</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">std</span><span class="o">::</span><span class="n">ostream_iterator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">cout</span><span class="p">,</span> <span class="s">" "</span><span class="p">));</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">print</span><span class="p">(</span><span class="n">solution</span><span class="p">({</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">}));</span> <span class="c1">// 4 3 2 1</span>
+    <span class="n">print</span><span class="p">(</span><span class="n">solution</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">}));</span> <span class="c1">// 5 4 3 2 1</span>
+    
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Programmers" /><summary type="html"><![CDATA[문제 https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/02.cpp 정수 배열 lst가 주어진다. 배열의 중복값을 제거하고 배열 데이터를 내림차순으로 정렬해서 반환하는 solution()함수를 구현하라. 제약조건 lst의 길이는 2 이상 1,000 이하이다. lst의 원소 값은 -100,000 이상 100,000 이하이다. 입출력 예 [4, 2, 2, 1, 3, 4] -&gt; [4, 3, 2, 1] [2, 1, 1, 3, 2, 5, 4] -&gt; [5, 4, 3, 2, 1] 풀이 배열과 Set 사용법이 요구되었다. import Foundation func compare(_ a: Int, _ b: Int) -&gt; Bool { return a &gt; b } func solution(_ lst: [Int]) -&gt; [Int] { let setList = Array(Set(lst)) // O(n) let sortedList = setList.sorted(by: compare) // O(n logn) -&gt; Timsort return sortedList } // 결과를 출력하는 함수 func printSolution(_ vec: [Int]) { print(vec.map { String($0) }.joined(separator: " ")) } // 메인 함수 func main() { printSolution(solution([4, 2, 2, 1, 1, 3, 4])) // 4 3 2 1 printSolution(solution([2, 1, 1, 3, 2, 5, 4])) // 5 4 3 2 1 } main() #include &lt;iostream&gt; #include &lt;vector&gt; using namespace std; bool compare(int a, int b) { return a &gt; b; } // sort(시작 반복자, 끝 반복자) // sort(시작 반복자, 끝 반복자, 비교 함수) 비교 함수는 반환값이 false일 때 원소의 위치를 바꾼다 // sort(v.rbegin(), v.rend()) vector&lt;int&gt; solution(vector&lt;int&gt; lst) { //sort(lst.rbegin(), lst.rend()); sort(lst.begin(), lst.end(), compare); // O(n log n) -&gt; IntroSort lst.erase(unique(lst.begin(), lst.end()), lst.end()); // O(n) return lst; } #include &lt;iterator&gt; void print(vector&lt;int&gt; vec) { copy(vec.begin(), vec.end(), std::ostream_iterator&lt;int&gt;(cout, " ")); cout &lt;&lt; endl; } int main() { print(solution({4, 2, 2, 1, 1, 3, 4})); // 4 3 2 1 print(solution({2, 1, 1, 3, 2, 5, 4})); // 5 4 3 2 1 return 0; }]]></summary></entry><entry><title type="html">[Programmers] 1. 배열 정렬하기</title><link href="http://localhost:4000/Programmers-1/" rel="alternate" type="text/html" title="[Programmers] 1. 배열 정렬하기" /><published>2025-05-26T00:00:00+00:00</published><updated>2025-05-26T00:00:00+00:00</updated><id>http://localhost:4000/%5BProgrammers%5D-1</id><content type="html" xml:base="http://localhost:4000/Programmers-1/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h1 id="문제">문제</h1>
+<p>https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/01.cpp  <br />
+정수 배열 arr을 오름차순으로 정렬해서 반환하는 solution() 함수를 완성하라.</p>
+
+<h3 id="제약조건">제약조건</h3>
+<ul>
+  <li>arr의 길이는 2 이상 10^5 이하이다.</li>
+  <li>arr의 원소 값은 -100,000 이상 100,000 이하이다.</li>
+</ul>
+
+<h3 id="입출력-예">입출력 예</h3>
+<p>[1, -5, 2, 4, 3] -&gt; [-5, 1, 2, 3, 4]  <br />
+[2, 1, 1, 3, 2, 5,4] -&gt; [1, 1, 2, 2, 3, 4, 5]  <br />
+[6, 1, 7] -&gt; 1, 6, 7</p>
+
+<h1 id="풀이">풀이</h1>
+<p>기본적인 정렬 사용법이 요구되었다.</p>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Foundation</span>
+
+<span class="kd">func</span> <span class="nf">solution</span><span class="p">(</span><span class="n">_</span> <span class="nv">arr</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">arr</span><span class="o">.</span><span class="nf">sorted</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="c1">// 결과를 출력하는 함수</span>
+<span class="kd">func</span> <span class="nf">printSolution</span><span class="p">(</span><span class="n">_</span> <span class="nv">vec</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span> <span class="p">{</span>
+    <span class="nf">print</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="nf">joined</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">))</span>
+<span class="p">}</span>
+
+<span class="c1">// 메인 함수</span>
+<span class="kd">func</span> <span class="nf">start</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
+    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]))</span>
+    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">]))</span>
+<span class="p">}</span>
+
+<span class="kd">@main</span>
+<span class="kd">struct</span> <span class="kt">Main</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">start</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
+</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">solution</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">arr</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">sort</span><span class="p">(</span><span class="n">arr</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">arr</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
+    <span class="k">return</span> <span class="n">arr</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 테스트 코드</span>
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span><span class="kt">void</span> <span class="nf">print</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">copy</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">vec</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">std</span><span class="o">::</span><span class="n">ostream_iterator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">cout</span><span class="p">,</span> <span class="s">" "</span><span class="p">));</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">print</span><span class="p">(</span><span class="n">solution</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">}));</span>      <span class="c1">// -5 1 2 3 4</span>
+    <span class="n">print</span><span class="p">(</span><span class="n">solution</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">}));</span> <span class="c1">// 1 1 2 2 3 4 5</span>
+    <span class="n">print</span><span class="p">(</span><span class="n">solution</span><span class="p">({</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">}));</span>             <span class="c1">// 1 6 7</span>
+    
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Programmers" /><summary type="html"><![CDATA[문제 https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/01.cpp 정수 배열 arr을 오름차순으로 정렬해서 반환하는 solution() 함수를 완성하라. 제약조건 arr의 길이는 2 이상 10^5 이하이다. arr의 원소 값은 -100,000 이상 100,000 이하이다. 입출력 예 [1, -5, 2, 4, 3] -&gt; [-5, 1, 2, 3, 4] [2, 1, 1, 3, 2, 5,4] -&gt; [1, 1, 2, 2, 3, 4, 5] [6, 1, 7] -&gt; 1, 6, 7 풀이 기본적인 정렬 사용법이 요구되었다. import Foundation func solution(_ arr: [Int]) -&gt; [Int] { return arr.sorted() } // 결과를 출력하는 함수 func printSolution(_ vec: [Int]) { print(vec.map { String($0) }.joined(separator: " ")) } // 메인 함수 func start() { printSolution(solution([1, -5, 2, 4, 3])) printSolution(solution([2, 1, 1, 3, 2, 5, 4])) printSolution(solution([6, 1, 7])) } @main struct Main { static func main() { start() } } #include &lt;iostream&gt; #include &lt;vector&gt; using namespace std; vector&lt;int&gt; solution(vector&lt;int&gt; arr) { sort(arr.begin(), arr.end()); return arr; } // 테스트 코드 #include &lt;iostream&gt; void print(vector&lt;int&gt; vec) { copy(vec.begin(), vec.end(), std::ostream_iterator&lt;int&gt;(cout, " ")); cout &lt;&lt; endl; } int main() { print(solution({1, -5, 2, 4, 3})); // -5 1 2 3 4 print(solution({2, 1, 1, 3, 2, 5, 4})); // 1 1 2 2 3 4 5 print(solution({6, 1, 7})); // 1 6 7 return 0; }]]></summary></entry><entry><title type="html">[Xcode] fastlane 에러 해결</title><link href="http://localhost:4000/UIKit-fastlaneError/" rel="alternate" type="text/html" title="[Xcode] fastlane 에러 해결" /><published>2025-05-26T00:00:00+00:00</published><updated>2025-05-26T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-fastlaneError</id><content type="html" xml:base="http://localhost:4000/UIKit-fastlaneError/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h1 id="fastlane-에러-해결">fastlane 에러 해결</h1>
+
+<h2 id="깃-저장소에서-관련-내용-삭제">깃 저장소에서 관련 내용 삭제</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## 각 명령에서 질문 나오면 y 눌러주기 -&gt; 깃허브에서 제거됨</span>
+fastlane match nuke distribution
+fastlane match nuke development
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## 인증서 &amp; 프로비저닝 프로파일 생성 -&gt; 깃허브에 저장됨</span>
+fastlane match appstore
+fastlane match development
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## 팀원이 같은 인증서를 내려받을 때</span>
+fastlane match appstore <span class="nt">--readonly</span>
+fastlane match development <span class="nt">--readonly</span>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Xcode" /><summary type="html"><![CDATA[fastlane 에러 해결 깃 저장소에서 관련 내용 삭제 ## 각 명령에서 질문 나오면 y 눌러주기 -&gt; 깃허브에서 제거됨 fastlane match nuke distribution fastlane match nuke development ## 인증서 &amp; 프로비저닝 프로파일 생성 -&gt; 깃허브에 저장됨 fastlane match appstore fastlane match development ## 팀원이 같은 인증서를 내려받을 때 fastlane match appstore --readonly fastlane match development --readonly]]></summary></entry><entry><title type="html">[Xcode] 프로젝트에 SwiftLint적용하기</title><link href="http://localhost:4000/UIKit-SwiftLint/" rel="alternate" type="text/html" title="[Xcode] 프로젝트에 SwiftLint적용하기" /><published>2025-05-25T00:00:00+00:00</published><updated>2025-05-25T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-SwiftLint</id><content type="html" xml:base="http://localhost:4000/UIKit-SwiftLint/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
@@ -1274,57 +1467,4 @@ Remote Notifications 체크해준다.</p>
   <li>https://dokit.tistory.com/50</li>
   <li>https://velog.io/@niro/Firebase-Push-Notification-알림-보내기-with-SwiftUI</li>
   <li>https://yagom.net/forums/topic/push-알림을-보낼-때-fcm-과-apns-의-차이점이-있나요/</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><summary type="html"><![CDATA[iOS 푸시알림 FCM, APNS iOS에서 푸시 종류는 2가지가 있다. 로컬에서 직접 보내는 알림 서버에서 보내는 알림 서버에서 보내는 APNS(Apple Push Notification Service) FCM(Firebase Cloud Messaging) -&gt; 이번 포스팅에서는 FCM을 활용한 2번 방식을 진행할 예정이다. ​ APNS 란? APNS (Apple Push Notification Service) 는 iOS의 모든 원격 알림이 반드시 거쳐야 하는 애플 공식 푸시 전달 서버이다.. 즉, 푸시 메시지를 내가 직접 사용자 기기로 보내는 게 아니라 → APNS에 요청 → APNS가 사용자 기기로 전송 하는 방식이다. FCM 란? FCM은 Google에서 제공하는 클라우드 기반 메시징 서비스로, iOS의 APNS를 포함해 Android, Web 등 다양한 플랫폼에 푸시 메시지를 전송할 수 있도록 중간 서버 역할을 해준다. iOS에서 FCM을 통해 푸시 알림을 보내면, FCM 내부적으로 APNS를 거쳐서 사용자 기기에 도달한다. FCM이 APNS 대신 해주는 것들 애플 인증서 등록 및 관리 APNS에 메시지 전송 요청 안드로이드, iOS 둘 다 지원 (멀티 플랫폼) 클라우드 환경에서 손쉽게 운영 왜 FCM을 쓰는가? APNS 서버 직접 구축이 복잡하고 부담스러울 때 iOS &amp; Android를 동시에 지원하는 일관된 환경이 필요할 때 푸시 알림 시스템을 빠르게 구축하고 싶을 때 Firebase Analytics, A/B 테스트 같은 연계 기능을 활용할 때 푸시 알림의 기본 동작 흐름 앱이 APNS에 Device Token 요청 이 토큰은 앱이 설치된 기기의 주소 역할을 한다. APNS가 앱에게 Device Token 전달 앱이 Device Token을 푸시 서버(FCM 등)에 전달 이 서버가 실제 푸시 메시지를 보낼 주체이다. APNS를 통한 푸시 알림 동작 구조 푸시 서버(예: FCM)가 메시지와 Device Token을 APNS에 전송 이때 APNS와 푸시 서버는 TLS 인증으로 보안 통신 서버에는 APNS 인증 정보(p8 키 or 인증서)가 등록되어 있어야 함 APNS는 해당 디바이스로 푸시 메시지를 전송 디바이스에서 푸시 알림 수신 실습 identifiers에서 해당 프로젝트 누른 후 push notification 체크박스 체크 해준다. keys에서 키를 발급 해준다. 완료하면 Download버튼이 생긴다 이를 통해 p8파일을 다운로드 한다. firebase 프로젝트 -&gt; 프로젝트 설정 -&gt; 클라우드 메시징에서 APNS인증키를 등록해준다. 업로드를 눌러서 완료한다. Push Notifications Background Modes xcode -&gt; target -&gt; Push Notifications, Background Mode 추가한다. Remote Notifications 체크해준다. AppDelegate.swift import UIKit import FirebaseCore import FirebaseMessaging import UserNotifications @main class AppDelegate: UIResponder, UIApplicationDelegate { func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -&gt; Bool { // Firebase 초기화 FirebaseApp.configure() // 알림 권한 요청 UNUserNotificationCenter.current().delegate = self UNUserNotificationCenter.current().requestAuthorization( options: [.alert, .badge, .sound] ) { granted, error in print("✅ 알림 권한 요청 결과: \(granted)") if granted { DispatchQueue.main.async { UIApplication.shared.registerForRemoteNotifications() } } } // FCM 설정 Messaging.messaging().delegate = self return true } } extension AppDelegate: UNUserNotificationCenterDelegate { // APNs로부터 device token 받았을 때 FCM에 등록 func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) { print("📮 APNS Token 수신: \(deviceToken)") Messaging.messaging().apnsToken = deviceToken } // 앱이 실행 중일 때 알림 수신 (배너로 표시되게 설정) func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -&gt; Void) { completionHandler([.list, .banner, .sound]) } } extension AppDelegate: MessagingDelegate { // FCM 토큰 갱신될 때 호출 func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) { print("📌 FCM Token: \(fcmToken ?? "nil")") // 필요 시 NotificationCenter로 다른 컴포넌트에 전달 NotificationCenter.default.post( name: Notification.Name("FCMToken"), object: nil, userInfo: ["token": fcmToken ?? ""] ) } } 빌드하면 나오는 FCM을 복사한다. FCM.py import firebase_admin from firebase_admin import credentials, messaging # 1. 서비스 계정 키 경로 (.json) cred = credentials.Certificate("파이어베이스 설정 -&gt; 서비스 계정 -&gt; 새 비공키 키 생성시 .json파일 다운 가능 -&gt; 해당 경로 입력") firebase_admin.initialize_app(cred) # 2. 대상 유저의 FCM 토큰 fcm_token = "빌드하면 나오는 FCM 입력" # 3. 전송할 메시지 title = "새 댓글이 달렸어요!" body = "당신의 게시글에 누군가 댓글을 남겼습니다." # 4. 알림 메시지 구성 message = messaging.Message( token=fcm_token, notification=messaging.Notification( title=title, body=body, ) ) # 5. 메시지 전송 try: response = messaging.send(message) print("✅ 메시지 전송 성공:", response) except Exception as e: print("❌ 메시지 전송 실패:", e) 앱이 종료되어있을 때 앱 실행중일 때 Reference https://bannavi.tistory.com/558 https://dokit.tistory.com/49 https://dokit.tistory.com/50 https://velog.io/@niro/Firebase-Push-Notification-알림-보내기-with-SwiftUI https://yagom.net/forums/topic/push-알림을-보낼-때-fcm-과-apns-의-차이점이-있나요/]]></summary></entry><entry><title type="html">[Baekjoon] 백준 2828 사과 담기 게임</title><link href="http://localhost:4000/Baekjoon-2828/" rel="alternate" type="text/html" title="[Baekjoon] 백준 2828 사과 담기 게임" /><published>2025-05-22T00:00:00+00:00</published><updated>2025-05-22T00:00:00+00:00</updated><id>http://localhost:4000/%5BBaekjoon%5D-2828</id><content type="html" xml:base="http://localhost:4000/Baekjoon-2828/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h2 id="문제">문제</h2>
-<p><a href="https://www.acmicpc.net/problem/2828">사과 담기 게임</a></p>
-
-<p><img src="/assets/img/2025-05-22-%5BBaekjoon%5D-2828/image-20250522131128824.png" alt="이미지" width="100%" /><br />
-스크린 위에서 사과 여러개가 떨어질 때 바구니로 사과를 담기 위한 이동거리의 최솟값을 구하라</p>
-
-<h2 id="풀이">풀이</h2>
-<p>시작지점을 left와 right를 방정식으로 나타낼 수 있다.<br />
-left = 1<br />
-right = left + m - 1</p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
- 5 1
- 3
- 1
- 5
- 3
- */</span>
-
-<span class="k">let</span> <span class="nv">input</span> <span class="o">=</span> <span class="nf">readLine</span><span class="p">()</span><span class="o">!.</span><span class="nf">split</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">Int</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span><span class="o">!</span> <span class="p">}</span>
-<span class="k">let</span> <span class="nv">n</span> <span class="o">=</span> <span class="n">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>          <span class="c1">// screen</span>
-<span class="k">let</span> <span class="nv">m</span> <span class="o">=</span> <span class="n">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>          <span class="c1">// basket</span>
-<span class="k">let</span> <span class="nv">j</span> <span class="o">=</span> <span class="kt">Int</span><span class="p">(</span><span class="nf">readLine</span><span class="p">()</span><span class="o">!</span><span class="p">)</span><span class="o">!</span> <span class="c1">// count</span>
-
-<span class="k">var</span> <span class="nv">left</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="k">var</span> <span class="nv">right</span> <span class="o">=</span> <span class="k">left</span> <span class="o">+</span> <span class="n">m</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1">// 그냉 m으로 해도 된다</span>
-<span class="k">var</span> <span class="nv">totalMove</span> <span class="o">=</span> <span class="mi">0</span>
-
-<span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mi">0</span><span class="o">..&lt;</span><span class="n">j</span> <span class="p">{</span>
-    <span class="c1">// 사과가 떨어지는 위치</span>
-    <span class="k">let</span> <span class="nv">pos</span> <span class="o">=</span> <span class="kt">Int</span><span class="p">(</span><span class="nf">readLine</span><span class="p">()</span><span class="o">!</span><span class="p">)</span><span class="o">!</span>
-    
-    <span class="c1">// 사과의 위치가 이미 바구니가 있는 위치이면 아래 바구니 이동 로직을 무시</span>
-    <span class="k">if</span> <span class="n">pos</span> <span class="o">&gt;=</span> <span class="k">left</span> <span class="o">&amp;&amp;</span> <span class="n">pos</span> <span class="o">&lt;=</span> <span class="k">right</span> <span class="p">{</span> <span class="k">continue</span> <span class="p">}</span>
-   
-    <span class="c1">// 포지션이 바구니 안에 있으면 이동 안함</span>
-    <span class="k">if</span> <span class="n">pos</span> <span class="o">&lt;</span> <span class="k">left</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">move</span> <span class="o">=</span> <span class="k">left</span> <span class="o">-</span> <span class="n">pos</span>
-        <span class="k">left</span> <span class="o">-=</span> <span class="n">move</span>
-        <span class="k">right</span> <span class="o">-=</span> <span class="n">move</span>
-        <span class="n">totalMove</span> <span class="o">+=</span> <span class="n">move</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">pos</span> <span class="o">&gt;</span> <span class="k">right</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">move</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">-</span> <span class="k">right</span>
-        <span class="k">right</span> <span class="o">+=</span> <span class="n">move</span>
-        <span class="k">left</span> <span class="o">+=</span> <span class="n">move</span>
-        <span class="n">totalMove</span> <span class="o">+=</span> <span class="n">move</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="nf">print</span><span class="p">(</span><span class="n">totalMove</span><span class="p">)</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Baekjoon" /><summary type="html"><![CDATA[문제 사과 담기 게임 스크린 위에서 사과 여러개가 떨어질 때 바구니로 사과를 담기 위한 이동거리의 최솟값을 구하라 풀이 시작지점을 left와 right를 방정식으로 나타낼 수 있다. left = 1 right = left + m - 1 /* 5 1 3 1 5 3 */ let input = readLine()!.split(separator: " ").map { Int($0)! } let n = input[0] // screen let m = input[1] // basket let j = Int(readLine()!)! // count var left = 1 var right = left + m - 1 // 그냉 m으로 해도 된다 var totalMove = 0 for _ in 0..&lt;j { // 사과가 떨어지는 위치 let pos = Int(readLine()!)! // 사과의 위치가 이미 바구니가 있는 위치이면 아래 바구니 이동 로직을 무시 if pos &gt;= left &amp;&amp; pos &lt;= right { continue } // 포지션이 바구니 안에 있으면 이동 안함 if pos &lt; left { let move = left - pos left -= move right -= move totalMove += move } else if pos &gt; right { let move = pos - right right += move left += move totalMove += move } } print(totalMove)]]></summary></entry></feed>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><summary type="html"><![CDATA[iOS 푸시알림 FCM, APNS iOS에서 푸시 종류는 2가지가 있다. 로컬에서 직접 보내는 알림 서버에서 보내는 알림 서버에서 보내는 APNS(Apple Push Notification Service) FCM(Firebase Cloud Messaging) -&gt; 이번 포스팅에서는 FCM을 활용한 2번 방식을 진행할 예정이다. ​ APNS 란? APNS (Apple Push Notification Service) 는 iOS의 모든 원격 알림이 반드시 거쳐야 하는 애플 공식 푸시 전달 서버이다.. 즉, 푸시 메시지를 내가 직접 사용자 기기로 보내는 게 아니라 → APNS에 요청 → APNS가 사용자 기기로 전송 하는 방식이다. FCM 란? FCM은 Google에서 제공하는 클라우드 기반 메시징 서비스로, iOS의 APNS를 포함해 Android, Web 등 다양한 플랫폼에 푸시 메시지를 전송할 수 있도록 중간 서버 역할을 해준다. iOS에서 FCM을 통해 푸시 알림을 보내면, FCM 내부적으로 APNS를 거쳐서 사용자 기기에 도달한다. FCM이 APNS 대신 해주는 것들 애플 인증서 등록 및 관리 APNS에 메시지 전송 요청 안드로이드, iOS 둘 다 지원 (멀티 플랫폼) 클라우드 환경에서 손쉽게 운영 왜 FCM을 쓰는가? APNS 서버 직접 구축이 복잡하고 부담스러울 때 iOS &amp; Android를 동시에 지원하는 일관된 환경이 필요할 때 푸시 알림 시스템을 빠르게 구축하고 싶을 때 Firebase Analytics, A/B 테스트 같은 연계 기능을 활용할 때 푸시 알림의 기본 동작 흐름 앱이 APNS에 Device Token 요청 이 토큰은 앱이 설치된 기기의 주소 역할을 한다. APNS가 앱에게 Device Token 전달 앱이 Device Token을 푸시 서버(FCM 등)에 전달 이 서버가 실제 푸시 메시지를 보낼 주체이다. APNS를 통한 푸시 알림 동작 구조 푸시 서버(예: FCM)가 메시지와 Device Token을 APNS에 전송 이때 APNS와 푸시 서버는 TLS 인증으로 보안 통신 서버에는 APNS 인증 정보(p8 키 or 인증서)가 등록되어 있어야 함 APNS는 해당 디바이스로 푸시 메시지를 전송 디바이스에서 푸시 알림 수신 실습 identifiers에서 해당 프로젝트 누른 후 push notification 체크박스 체크 해준다. keys에서 키를 발급 해준다. 완료하면 Download버튼이 생긴다 이를 통해 p8파일을 다운로드 한다. firebase 프로젝트 -&gt; 프로젝트 설정 -&gt; 클라우드 메시징에서 APNS인증키를 등록해준다. 업로드를 눌러서 완료한다. Push Notifications Background Modes xcode -&gt; target -&gt; Push Notifications, Background Mode 추가한다. Remote Notifications 체크해준다. AppDelegate.swift import UIKit import FirebaseCore import FirebaseMessaging import UserNotifications @main class AppDelegate: UIResponder, UIApplicationDelegate { func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -&gt; Bool { // Firebase 초기화 FirebaseApp.configure() // 알림 권한 요청 UNUserNotificationCenter.current().delegate = self UNUserNotificationCenter.current().requestAuthorization( options: [.alert, .badge, .sound] ) { granted, error in print("✅ 알림 권한 요청 결과: \(granted)") if granted { DispatchQueue.main.async { UIApplication.shared.registerForRemoteNotifications() } } } // FCM 설정 Messaging.messaging().delegate = self return true } } extension AppDelegate: UNUserNotificationCenterDelegate { // APNs로부터 device token 받았을 때 FCM에 등록 func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) { print("📮 APNS Token 수신: \(deviceToken)") Messaging.messaging().apnsToken = deviceToken } // 앱이 실행 중일 때 알림 수신 (배너로 표시되게 설정) func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -&gt; Void) { completionHandler([.list, .banner, .sound]) } } extension AppDelegate: MessagingDelegate { // FCM 토큰 갱신될 때 호출 func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) { print("📌 FCM Token: \(fcmToken ?? "nil")") // 필요 시 NotificationCenter로 다른 컴포넌트에 전달 NotificationCenter.default.post( name: Notification.Name("FCMToken"), object: nil, userInfo: ["token": fcmToken ?? ""] ) } } 빌드하면 나오는 FCM을 복사한다. FCM.py import firebase_admin from firebase_admin import credentials, messaging # 1. 서비스 계정 키 경로 (.json) cred = credentials.Certificate("파이어베이스 설정 -&gt; 서비스 계정 -&gt; 새 비공키 키 생성시 .json파일 다운 가능 -&gt; 해당 경로 입력") firebase_admin.initialize_app(cred) # 2. 대상 유저의 FCM 토큰 fcm_token = "빌드하면 나오는 FCM 입력" # 3. 전송할 메시지 title = "새 댓글이 달렸어요!" body = "당신의 게시글에 누군가 댓글을 남겼습니다." # 4. 알림 메시지 구성 message = messaging.Message( token=fcm_token, notification=messaging.Notification( title=title, body=body, ) ) # 5. 메시지 전송 try: response = messaging.send(message) print("✅ 메시지 전송 성공:", response) except Exception as e: print("❌ 메시지 전송 실패:", e) 앱이 종료되어있을 때 앱 실행중일 때 Reference https://bannavi.tistory.com/558 https://dokit.tistory.com/49 https://dokit.tistory.com/50 https://velog.io/@niro/Firebase-Push-Notification-알림-보내기-with-SwiftUI https://yagom.net/forums/topic/push-알림을-보낼-때-fcm-과-apns-의-차이점이-있나요/]]></summary></entry></feed>
