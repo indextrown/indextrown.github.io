@@ -1,0 +1,968 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>[RxSwift] 3. RX + MVVM + Input/output 패턴 - DongHyeon Kim’s Blog</title>
+<meta name="description" content="RX - MVVM 예시  기존 코드 - view와 viewModel 구분 없이 하나의 코드로 작성 import UIKit import FirebaseAuth import RxSwift  final class SettingViewController: UIViewController {          private let disposeBaag = DisposeBag()          weak var coordinator: HomeCoordinator?      private let viewModel = SettingViewModel()     private let homeViewModel: HomeViewModelType          init(homeViewModel: HomeViewModelType) {         self.homeViewModel = homeViewModel         super.init(nibName: nil, bundle: nil)     }          required init?(coder: NSCoder) {         fatalError(&quot;init(coder:) has not been implemented&quot;)     }          // MARK: - UI Component     private lazy var logoutBtn: UIButton = {         let button = UIButton(type: .system)         button.setTitle(&quot;로그아웃&quot;, for: .normal)         button.addTarget(self, action: #selector(logout), for: .touchUpInside)         return button     }()      // MARK: - LifeCycle     override func viewDidLoad() {         super.viewDidLoad()         makeUI()         constraints()     }          // MARK: - UI Setting     private func makeUI() {         view.backgroundColor = .background                  [logoutBtn].forEach {             view.addSubview($0)             $0.translatesAutoresizingMaskIntoConstraints = false         }     }          private func constraints() {         NSLayoutConstraint.activate([             logoutBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor),             logoutBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor),         ])     }              @objc func logout() {         do {             UserDefaultsManager.shared.removeUser()             UserDefaultsManager.shared.removeGroup()             try Auth.auth().signOut()             print(&quot;로그아웃 성공&quot;)             coordinator?.showLogin()             homeViewModel.stopObservingGroup()                                   } catch let signOutError as NSError {             print(&quot;로그아웃 실패: %@&quot;, signOutError)         }     } }  #Preview {     SettingViewController(homeViewModel: StubHomeViewModel(previewPost: .samplePosts[0])) }   개선 코드 - view와 viewModel 구분 // View import UIKit import FirebaseAuth import RxSwift  final class SettingViewController: UIViewController {          private let disposeBaag = DisposeBag()          weak var coordinator: HomeCoordinator?      private let viewModel = SettingViewModel()     private let homeViewModel: HomeViewModelType          init(homeViewModel: HomeViewModelType) {         self.homeViewModel = homeViewModel         super.init(nibName: nil, bundle: nil)     }          required init?(coder: NSCoder) {         fatalError(&quot;init(coder:) has not been implemented&quot;)     }          // MARK: - UI Component     private lazy var logoutBtn: UIButton = {         let button = UIButton(type: .system)         button.setTitle(&quot;로그아웃&quot;, for: .normal)         return button     }()      // MARK: - LifeCycle     override func viewDidLoad() {         super.viewDidLoad()         makeUI()         constraints()         bindViewModdel()     }          // MARK: - UI Setting     private func makeUI() {         view.backgroundColor = .background                  [logoutBtn].forEach {             view.addSubview($0)             $0.translatesAutoresizingMaskIntoConstraints = false         }     }          private func constraints() {         NSLayoutConstraint.activate([             logoutBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor),             logoutBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor),         ])     }          // MARK: - Binding     private func bindViewModdel() {                  // [Input] 로그아웃 버튼 탭 이벤트를 ViewModel에 전달         logoutBtn.rx.tap             .bind(onNext: { [weak self] in                 guard let self = self else { return }                 self.viewModel.logout()             })             .disposed(by: disposeBaag)                  // [Output] 로그아웃 처리 결과에 따라 UI 반응         viewModel.logoutResult             .observe(on: MainScheduler.instance)             .subscribe(onNext: { [weak self] result in                 guard let self = self else { return }                                  switch result {                 case .success:                     print(&quot;로그아웃 성공&quot;)                     self.coordinator?.showLogin()                 case .failure(let error):                     print(&quot;로그아웃 실패: \(error.localizedDescription)&quot;)                 }             })             .disposed(by: disposeBaag)     } }   // ViewModel import FirebaseAuth import RxSwift import RxCocoa  protocol SettingViewModelType {     func logout() }  final class SettingViewModel: SettingViewModelType {          // 로그아웃 결과 이벤트     // 로그아웃 결과는 상태가 아닌 한번 일어나는 일회성 이벤트     let logoutResult = PublishRelay&lt;Result&lt;Void, Error&gt;&gt;()          func logout() {         do {             try Auth.auth().signOut()             logoutResult.accept(.success(()))             UserDefaultsManager.shared.removeUser()             UserDefaultsManager.shared.removeGroup()         } catch {             logoutResult.accept(.failure(error))         }     } }   개선 코드 - view와 viewModel 구분 및 Input/Output 패턴 추가 // View import UIKit import FirebaseAuth import RxSwift  final class SettingViewController: UIViewController {          private let disposeBaag = DisposeBag()          weak var coordinator: HomeCoordinator?      private let viewModel = SettingViewModel()     private let homeViewModel: HomeViewModelType          init(homeViewModel: HomeViewModelType) {         self.homeViewModel = homeViewModel         super.init(nibName: nil, bundle: nil)     }          required init?(coder: NSCoder) {         fatalError(&quot;init(coder:) has not been implemented&quot;)     }          // MARK: - UI Component     private lazy var logoutBtn: UIButton = {         let button = UIButton(type: .system)         button.setTitle(&quot;로그아웃&quot;, for: .normal)         return button     }()      // MARK: - LifeCycle     override func viewDidLoad() {         super.viewDidLoad()         makeUI()         constraints()         bindViewModel()     }          // MARK: - UI Setting     private func makeUI() {         view.backgroundColor = .background                  [logoutBtn].forEach {             view.addSubview($0)             $0.translatesAutoresizingMaskIntoConstraints = false         }     }          private func constraints() {         NSLayoutConstraint.activate([             logoutBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor),             logoutBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor),         ])     }          // MARK: - Binding     private func bindViewModel() {         // Input: 버튼 탭 이벤트를 viewModel로 전달         let input = SettingViewModel.Input(logoutTapped: logoutBtn.rx.tap.asObservable())                  // Output: transform으로부터 결과 스트림 반환         let output = viewModel.transform(input: input)                      // Output에 따라 UI 처리         output.logoutResult             .drive(onNext: { [weak self] result in                 guard let self = self else { return }                                  switch result {                 case .success:                     print(&quot;로그아웃 성공&quot;)                     self.coordinator?.showLogin()                 case .failure(let error):                     print(&quot;로그아웃 실패: \(error.localizedDescription)&quot;)                 }                              }).disposed(by: disposeBaag)     } }   // ViewModel import FirebaseAuth import RxSwift import RxCocoa  final class SettingViewModel {          // Rx 리소스 해제를 위한 DisposeBag     private let disposeBag = DisposeBag()          // View로부터 전달받을 사용자 이벤트 정의     struct Input {         // 로그아웃 버튼 탭이벤트         let logoutTapped: Observable&lt;Void&gt;     }          // View에 전달할 출력 데이터 정의     struct Output {         // 로그아웃 성공 또는 실패에 대한 결과 스트림         // Driver를 사용하여 메인스레드에서 UI 바인딩에 안전하게 처리         let logoutResult: Driver&lt;Result&lt;Void, LoginError&gt;&gt;     }          /// Input을 받아 내부 로직을 수행 후 Output을 반환하는 함수     /// - Parameter input: View에서 발생한 이벤트     /// - Returns: 로그아웃 결과를 포함하는 Output     func transform(input: Input) -&gt; Output {                  // 로그아웃 버튼 탭시 로직을 수행하고 결과를 result로 반환         let result = input.logoutTapped             .map { _ -&gt; Result&lt;Void, LoginError&gt; in                 do {                     try Auth.auth().signOut()                     UserDefaultsManager.shared.removeUser()                     UserDefaultsManager.shared.removeGroup()                     return .success(())                 } catch {                     return .failure(.logoutError)                 }                 // 에러가 발생하더라도 UI가 멈추지 않고 기본 오류값으로 처리             }.asDriver(onErrorJustReturn: .failure(.logoutError))                  // View에서 사용할 Output rntjd         return Output(logoutResult: result)     } }">
+
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[RxSwift] 3. RX + MVVM + Input/output 패턴">
+<meta property="og:url" content="http://localhost:4000/RxSwift-RxSwift-3/">
+
+
+  <meta property="og:description" content="RX - MVVM 예시  기존 코드 - view와 viewModel 구분 없이 하나의 코드로 작성 import UIKit import FirebaseAuth import RxSwift  final class SettingViewController: UIViewController {          private let disposeBaag = DisposeBag()          weak var coordinator: HomeCoordinator?      private let viewModel = SettingViewModel()     private let homeViewModel: HomeViewModelType          init(homeViewModel: HomeViewModelType) {         self.homeViewModel = homeViewModel         super.init(nibName: nil, bundle: nil)     }          required init?(coder: NSCoder) {         fatalError(&quot;init(coder:) has not been implemented&quot;)     }          // MARK: - UI Component     private lazy var logoutBtn: UIButton = {         let button = UIButton(type: .system)         button.setTitle(&quot;로그아웃&quot;, for: .normal)         button.addTarget(self, action: #selector(logout), for: .touchUpInside)         return button     }()      // MARK: - LifeCycle     override func viewDidLoad() {         super.viewDidLoad()         makeUI()         constraints()     }          // MARK: - UI Setting     private func makeUI() {         view.backgroundColor = .background                  [logoutBtn].forEach {             view.addSubview($0)             $0.translatesAutoresizingMaskIntoConstraints = false         }     }          private func constraints() {         NSLayoutConstraint.activate([             logoutBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor),             logoutBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor),         ])     }              @objc func logout() {         do {             UserDefaultsManager.shared.removeUser()             UserDefaultsManager.shared.removeGroup()             try Auth.auth().signOut()             print(&quot;로그아웃 성공&quot;)             coordinator?.showLogin()             homeViewModel.stopObservingGroup()                                   } catch let signOutError as NSError {             print(&quot;로그아웃 실패: %@&quot;, signOutError)         }     } }  #Preview {     SettingViewController(homeViewModel: StubHomeViewModel(previewPost: .samplePosts[0])) }   개선 코드 - view와 viewModel 구분 // View import UIKit import FirebaseAuth import RxSwift  final class SettingViewController: UIViewController {          private let disposeBaag = DisposeBag()          weak var coordinator: HomeCoordinator?      private let viewModel = SettingViewModel()     private let homeViewModel: HomeViewModelType          init(homeViewModel: HomeViewModelType) {         self.homeViewModel = homeViewModel         super.init(nibName: nil, bundle: nil)     }          required init?(coder: NSCoder) {         fatalError(&quot;init(coder:) has not been implemented&quot;)     }          // MARK: - UI Component     private lazy var logoutBtn: UIButton = {         let button = UIButton(type: .system)         button.setTitle(&quot;로그아웃&quot;, for: .normal)         return button     }()      // MARK: - LifeCycle     override func viewDidLoad() {         super.viewDidLoad()         makeUI()         constraints()         bindViewModdel()     }          // MARK: - UI Setting     private func makeUI() {         view.backgroundColor = .background                  [logoutBtn].forEach {             view.addSubview($0)             $0.translatesAutoresizingMaskIntoConstraints = false         }     }          private func constraints() {         NSLayoutConstraint.activate([             logoutBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor),             logoutBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor),         ])     }          // MARK: - Binding     private func bindViewModdel() {                  // [Input] 로그아웃 버튼 탭 이벤트를 ViewModel에 전달         logoutBtn.rx.tap             .bind(onNext: { [weak self] in                 guard let self = self else { return }                 self.viewModel.logout()             })             .disposed(by: disposeBaag)                  // [Output] 로그아웃 처리 결과에 따라 UI 반응         viewModel.logoutResult             .observe(on: MainScheduler.instance)             .subscribe(onNext: { [weak self] result in                 guard let self = self else { return }                                  switch result {                 case .success:                     print(&quot;로그아웃 성공&quot;)                     self.coordinator?.showLogin()                 case .failure(let error):                     print(&quot;로그아웃 실패: \(error.localizedDescription)&quot;)                 }             })             .disposed(by: disposeBaag)     } }   // ViewModel import FirebaseAuth import RxSwift import RxCocoa  protocol SettingViewModelType {     func logout() }  final class SettingViewModel: SettingViewModelType {          // 로그아웃 결과 이벤트     // 로그아웃 결과는 상태가 아닌 한번 일어나는 일회성 이벤트     let logoutResult = PublishRelay&lt;Result&lt;Void, Error&gt;&gt;()          func logout() {         do {             try Auth.auth().signOut()             logoutResult.accept(.success(()))             UserDefaultsManager.shared.removeUser()             UserDefaultsManager.shared.removeGroup()         } catch {             logoutResult.accept(.failure(error))         }     } }   개선 코드 - view와 viewModel 구분 및 Input/Output 패턴 추가 // View import UIKit import FirebaseAuth import RxSwift  final class SettingViewController: UIViewController {          private let disposeBaag = DisposeBag()          weak var coordinator: HomeCoordinator?      private let viewModel = SettingViewModel()     private let homeViewModel: HomeViewModelType          init(homeViewModel: HomeViewModelType) {         self.homeViewModel = homeViewModel         super.init(nibName: nil, bundle: nil)     }          required init?(coder: NSCoder) {         fatalError(&quot;init(coder:) has not been implemented&quot;)     }          // MARK: - UI Component     private lazy var logoutBtn: UIButton = {         let button = UIButton(type: .system)         button.setTitle(&quot;로그아웃&quot;, for: .normal)         return button     }()      // MARK: - LifeCycle     override func viewDidLoad() {         super.viewDidLoad()         makeUI()         constraints()         bindViewModel()     }          // MARK: - UI Setting     private func makeUI() {         view.backgroundColor = .background                  [logoutBtn].forEach {             view.addSubview($0)             $0.translatesAutoresizingMaskIntoConstraints = false         }     }          private func constraints() {         NSLayoutConstraint.activate([             logoutBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor),             logoutBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor),         ])     }          // MARK: - Binding     private func bindViewModel() {         // Input: 버튼 탭 이벤트를 viewModel로 전달         let input = SettingViewModel.Input(logoutTapped: logoutBtn.rx.tap.asObservable())                  // Output: transform으로부터 결과 스트림 반환         let output = viewModel.transform(input: input)                      // Output에 따라 UI 처리         output.logoutResult             .drive(onNext: { [weak self] result in                 guard let self = self else { return }                                  switch result {                 case .success:                     print(&quot;로그아웃 성공&quot;)                     self.coordinator?.showLogin()                 case .failure(let error):                     print(&quot;로그아웃 실패: \(error.localizedDescription)&quot;)                 }                              }).disposed(by: disposeBaag)     } }   // ViewModel import FirebaseAuth import RxSwift import RxCocoa  final class SettingViewModel {          // Rx 리소스 해제를 위한 DisposeBag     private let disposeBag = DisposeBag()          // View로부터 전달받을 사용자 이벤트 정의     struct Input {         // 로그아웃 버튼 탭이벤트         let logoutTapped: Observable&lt;Void&gt;     }          // View에 전달할 출력 데이터 정의     struct Output {         // 로그아웃 성공 또는 실패에 대한 결과 스트림         // Driver를 사용하여 메인스레드에서 UI 바인딩에 안전하게 처리         let logoutResult: Driver&lt;Result&lt;Void, LoginError&gt;&gt;     }          /// Input을 받아 내부 로직을 수행 후 Output을 반환하는 함수     /// - Parameter input: View에서 발생한 이벤트     /// - Returns: 로그아웃 결과를 포함하는 Output     func transform(input: Input) -&gt; Output {                  // 로그아웃 버튼 탭시 로직을 수행하고 결과를 result로 반환         let result = input.logoutTapped             .map { _ -&gt; Result&lt;Void, LoginError&gt; in                 do {                     try Auth.auth().signOut()                     UserDefaultsManager.shared.removeUser()                     UserDefaultsManager.shared.removeGroup()                     return .success(())                 } catch {                     return .failure(.logoutError)                 }                 // 에러가 발생하더라도 UI가 멈추지 않고 기본 오류값으로 처리             }.asDriver(onErrorJustReturn: .failure(.logoutError))                  // View에서 사용할 Output rntjd         return Output(logoutResult: result)     } }">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-05-28T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/RxSwift-RxSwift-3/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li><li class="masthead__menu-item">
+              <a href="/projects/">Projects</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[RxSwift] 3. RX + MVVM + Input/output 패턴">
+    <meta itemprop="description" content="RX - MVVM 예시기존 코드 - view와 viewModel 구분 없이 하나의 코드로 작성import UIKitimport FirebaseAuthimport RxSwiftfinal class SettingViewController: UIViewController {        private let disposeBaag = DisposeBag()        weak var coordinator: HomeCoordinator?    private let viewModel = SettingViewModel()    private let homeViewModel: HomeViewModelType        init(homeViewModel: HomeViewModelType) {        self.homeViewModel = homeViewModel        super.init(nibName: nil, bundle: nil)    }        required init?(coder: NSCoder) {        fatalError(&quot;init(coder:) has not been implemented&quot;)    }        // MARK: - UI Component    private lazy var logoutBtn: UIButton = {        let button = UIButton(type: .system)        button.setTitle(&quot;로그아웃&quot;, for: .normal)        button.addTarget(self, action: #selector(logout), for: .touchUpInside)        return button    }()    // MARK: - LifeCycle    override func viewDidLoad() {        super.viewDidLoad()        makeUI()        constraints()    }        // MARK: - UI Setting    private func makeUI() {        view.backgroundColor = .background                [logoutBtn].forEach {            view.addSubview($0)            $0.translatesAutoresizingMaskIntoConstraints = false        }    }        private func constraints() {        NSLayoutConstraint.activate([            logoutBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor),            logoutBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor),        ])    }           @objc func logout() {        do {            UserDefaultsManager.shared.removeUser()            UserDefaultsManager.shared.removeGroup()            try Auth.auth().signOut()            print(&quot;로그아웃 성공&quot;)            coordinator?.showLogin()            homeViewModel.stopObservingGroup()                                } catch let signOutError as NSError {            print(&quot;로그아웃 실패: %@&quot;, signOutError)        }    }}#Preview {    SettingViewController(homeViewModel: StubHomeViewModel(previewPost: .samplePosts[0]))}개선 코드 - view와 viewModel 구분// Viewimport UIKitimport FirebaseAuthimport RxSwiftfinal class SettingViewController: UIViewController {        private let disposeBaag = DisposeBag()        weak var coordinator: HomeCoordinator?    private let viewModel = SettingViewModel()    private let homeViewModel: HomeViewModelType        init(homeViewModel: HomeViewModelType) {        self.homeViewModel = homeViewModel        super.init(nibName: nil, bundle: nil)    }        required init?(coder: NSCoder) {        fatalError(&quot;init(coder:) has not been implemented&quot;)    }        // MARK: - UI Component    private lazy var logoutBtn: UIButton = {        let button = UIButton(type: .system)        button.setTitle(&quot;로그아웃&quot;, for: .normal)        return button    }()    // MARK: - LifeCycle    override func viewDidLoad() {        super.viewDidLoad()        makeUI()        constraints()        bindViewModdel()    }        // MARK: - UI Setting    private func makeUI() {        view.backgroundColor = .background                [logoutBtn].forEach {            view.addSubview($0)            $0.translatesAutoresizingMaskIntoConstraints = false        }    }        private func constraints() {        NSLayoutConstraint.activate([            logoutBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor),            logoutBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor),        ])    }        // MARK: - Binding    private func bindViewModdel() {                // [Input] 로그아웃 버튼 탭 이벤트를 ViewModel에 전달        logoutBtn.rx.tap            .bind(onNext: { [weak self] in                guard let self = self else { return }                self.viewModel.logout()            })            .disposed(by: disposeBaag)                // [Output] 로그아웃 처리 결과에 따라 UI 반응        viewModel.logoutResult            .observe(on: MainScheduler.instance)            .subscribe(onNext: { [weak self] result in                guard let self = self else { return }                                switch result {                case .success:                    print(&quot;로그아웃 성공&quot;)                    self.coordinator?.showLogin()                case .failure(let error):                    print(&quot;로그아웃 실패: \(error.localizedDescription)&quot;)                }            })            .disposed(by: disposeBaag)    }}// ViewModelimport FirebaseAuthimport RxSwiftimport RxCocoaprotocol SettingViewModelType {    func logout()}final class SettingViewModel: SettingViewModelType {        // 로그아웃 결과 이벤트    // 로그아웃 결과는 상태가 아닌 한번 일어나는 일회성 이벤트    let logoutResult = PublishRelay&lt;Result&lt;Void, Error&gt;&gt;()        func logout() {        do {            try Auth.auth().signOut()            logoutResult.accept(.success(()))            UserDefaultsManager.shared.removeUser()            UserDefaultsManager.shared.removeGroup()        } catch {            logoutResult.accept(.failure(error))        }    }}개선 코드 - view와 viewModel 구분 및 Input/Output 패턴 추가// Viewimport UIKitimport FirebaseAuthimport RxSwiftfinal class SettingViewController: UIViewController {        private let disposeBaag = DisposeBag()        weak var coordinator: HomeCoordinator?    private let viewModel = SettingViewModel()    private let homeViewModel: HomeViewModelType        init(homeViewModel: HomeViewModelType) {        self.homeViewModel = homeViewModel        super.init(nibName: nil, bundle: nil)    }        required init?(coder: NSCoder) {        fatalError(&quot;init(coder:) has not been implemented&quot;)    }        // MARK: - UI Component    private lazy var logoutBtn: UIButton = {        let button = UIButton(type: .system)        button.setTitle(&quot;로그아웃&quot;, for: .normal)        return button    }()    // MARK: - LifeCycle    override func viewDidLoad() {        super.viewDidLoad()        makeUI()        constraints()        bindViewModel()    }        // MARK: - UI Setting    private func makeUI() {        view.backgroundColor = .background                [logoutBtn].forEach {            view.addSubview($0)            $0.translatesAutoresizingMaskIntoConstraints = false        }    }        private func constraints() {        NSLayoutConstraint.activate([            logoutBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor),            logoutBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor),        ])    }        // MARK: - Binding    private func bindViewModel() {        // Input: 버튼 탭 이벤트를 viewModel로 전달        let input = SettingViewModel.Input(logoutTapped: logoutBtn.rx.tap.asObservable())                // Output: transform으로부터 결과 스트림 반환        let output = viewModel.transform(input: input)                    // Output에 따라 UI 처리        output.logoutResult            .drive(onNext: { [weak self] result in                guard let self = self else { return }                                switch result {                case .success:                    print(&quot;로그아웃 성공&quot;)                    self.coordinator?.showLogin()                case .failure(let error):                    print(&quot;로그아웃 실패: \(error.localizedDescription)&quot;)                }                            }).disposed(by: disposeBaag)    }}// ViewModelimport FirebaseAuthimport RxSwiftimport RxCocoafinal class SettingViewModel {        // Rx 리소스 해제를 위한 DisposeBag    private let disposeBag = DisposeBag()        // View로부터 전달받을 사용자 이벤트 정의    struct Input {        // 로그아웃 버튼 탭이벤트        let logoutTapped: Observable&lt;Void&gt;    }        // View에 전달할 출력 데이터 정의    struct Output {        // 로그아웃 성공 또는 실패에 대한 결과 스트림        // Driver를 사용하여 메인스레드에서 UI 바인딩에 안전하게 처리        let logoutResult: Driver&lt;Result&lt;Void, LoginError&gt;&gt;    }        /// Input을 받아 내부 로직을 수행 후 Output을 반환하는 함수    /// - Parameter input: View에서 발생한 이벤트    /// - Returns: 로그아웃 결과를 포함하는 Output    func transform(input: Input) -&gt; Output {                // 로그아웃 버튼 탭시 로직을 수행하고 결과를 result로 반환        let result = input.logoutTapped            .map { _ -&gt; Result&lt;Void, LoginError&gt; in                do {                    try Auth.auth().signOut()                    UserDefaultsManager.shared.removeUser()                    UserDefaultsManager.shared.removeGroup()                    return .success(())                } catch {                    return .failure(.logoutError)                }                // 에러가 발생하더라도 UI가 멈추지 않고 기본 오류값으로 처리            }.asDriver(onErrorJustReturn: .failure(.logoutError))                // View에서 사용할 Output rntjd        return Output(logoutResult: result)    }}">
+    <meta itemprop="datePublished" content="2025-05-28T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/RxSwift-RxSwift-3/" class="u-url" itemprop="url">[RxSwift] 3. RX + MVVM + Input/output 패턴
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=ReactiveX">ReactiveX</a>
+    
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=RxSwift">RxSwift</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-05-28T00:00:00+00:00">May 28, 2025</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <h1 id="rx---mvvm-예시">RX - MVVM 예시</h1>
+
+<h3 id="기존-코드---view와-viewmodel-구분-없이-하나의-코드로-작성">기존 코드 - view와 viewModel 구분 없이 하나의 코드로 작성</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+<span class="kd">import</span> <span class="kt">FirebaseAuth</span>
+<span class="kd">import</span> <span class="kt">RxSwift</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">SettingViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">disposeBaag</span> <span class="o">=</span> <span class="kt">DisposeBag</span><span class="p">()</span>
+    
+    <span class="k">weak</span> <span class="k">var</span> <span class="nv">coordinator</span><span class="p">:</span> <span class="kt">HomeCoordinator</span><span class="p">?</span>
+
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">viewModel</span> <span class="o">=</span> <span class="kt">SettingViewModel</span><span class="p">()</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">homeViewModel</span><span class="p">:</span> <span class="kt">HomeViewModelType</span>
+    
+    <span class="nf">init</span><span class="p">(</span><span class="nv">homeViewModel</span><span class="p">:</span> <span class="kt">HomeViewModelType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">homeViewModel</span> <span class="o">=</span> <span class="n">homeViewModel</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">nibName</span><span class="p">:</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">bundle</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">required</span> <span class="nf">init</span><span class="p">?(</span><span class="nv">coder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">fatalError</span><span class="p">(</span><span class="s">"init(coder:) has not been implemented"</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - UI Component</span>
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">logoutBtn</span><span class="p">:</span> <span class="kt">UIButton</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">button</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="o">.</span><span class="n">system</span><span class="p">)</span>
+        <span class="n">button</span><span class="o">.</span><span class="nf">setTitle</span><span class="p">(</span><span class="s">"로그아웃"</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">normal</span><span class="p">)</span>
+        <span class="n">button</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="n">logout</span><span class="p">),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+    <span class="p">}()</span>
+
+    <span class="c1">// MARK: - LifeCycle</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="nf">makeUI</span><span class="p">()</span>
+        <span class="nf">constraints</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - UI Setting</span>
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">background</span>
+        
+        <span class="p">[</span><span class="n">logoutBtn</span><span class="p">]</span><span class="o">.</span><span class="n">forEach</span> <span class="p">{</span>
+            <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span>
+            <span class="nv">$0</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">constraints</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">logoutBtn</span><span class="o">.</span><span class="n">centerXAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">centerXAnchor</span><span class="p">),</span>
+            <span class="n">logoutBtn</span><span class="o">.</span><span class="n">centerYAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">centerYAnchor</span><span class="p">),</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+
+       
+    <span class="kd">@objc</span> <span class="kd">func</span> <span class="nf">logout</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">do</span> <span class="p">{</span>
+            <span class="kt">UserDefaultsManager</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">removeUser</span><span class="p">()</span>
+            <span class="kt">UserDefaultsManager</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">removeGroup</span><span class="p">()</span>
+            <span class="k">try</span> <span class="kt">Auth</span><span class="o">.</span><span class="nf">auth</span><span class="p">()</span><span class="o">.</span><span class="nf">signOut</span><span class="p">()</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"로그아웃 성공"</span><span class="p">)</span>
+            <span class="n">coordinator</span><span class="p">?</span><span class="o">.</span><span class="nf">showLogin</span><span class="p">()</span>
+            <span class="n">homeViewModel</span><span class="o">.</span><span class="nf">stopObservingGroup</span><span class="p">()</span>
+            
+            
+        <span class="p">}</span> <span class="k">catch</span> <span class="k">let</span> <span class="nv">signOutError</span> <span class="k">as</span> <span class="kt">NSError</span> <span class="p">{</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"로그아웃 실패: %@"</span><span class="p">,</span> <span class="n">signOutError</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cp">#Preview {</span>
+    <span class="kt">SettingViewController</span><span class="p">(</span><span class="nv">homeViewModel</span><span class="p">:</span> <span class="kt">StubHomeViewModel</span><span class="p">(</span><span class="nv">previewPost</span><span class="p">:</span> <span class="o">.</span><span class="n">samplePosts</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="개선-코드---view와-viewmodel-구분">개선 코드 - view와 viewModel 구분</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// View</span>
+<span class="kd">import</span> <span class="kt">UIKit</span>
+<span class="kd">import</span> <span class="kt">FirebaseAuth</span>
+<span class="kd">import</span> <span class="kt">RxSwift</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">SettingViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">disposeBaag</span> <span class="o">=</span> <span class="kt">DisposeBag</span><span class="p">()</span>
+    
+    <span class="k">weak</span> <span class="k">var</span> <span class="nv">coordinator</span><span class="p">:</span> <span class="kt">HomeCoordinator</span><span class="p">?</span>
+
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">viewModel</span> <span class="o">=</span> <span class="kt">SettingViewModel</span><span class="p">()</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">homeViewModel</span><span class="p">:</span> <span class="kt">HomeViewModelType</span>
+    
+    <span class="nf">init</span><span class="p">(</span><span class="nv">homeViewModel</span><span class="p">:</span> <span class="kt">HomeViewModelType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">homeViewModel</span> <span class="o">=</span> <span class="n">homeViewModel</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">nibName</span><span class="p">:</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">bundle</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">required</span> <span class="nf">init</span><span class="p">?(</span><span class="nv">coder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">fatalError</span><span class="p">(</span><span class="s">"init(coder:) has not been implemented"</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - UI Component</span>
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">logoutBtn</span><span class="p">:</span> <span class="kt">UIButton</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">button</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="o">.</span><span class="n">system</span><span class="p">)</span>
+        <span class="n">button</span><span class="o">.</span><span class="nf">setTitle</span><span class="p">(</span><span class="s">"로그아웃"</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">normal</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+    <span class="p">}()</span>
+
+    <span class="c1">// MARK: - LifeCycle</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="nf">makeUI</span><span class="p">()</span>
+        <span class="nf">constraints</span><span class="p">()</span>
+        <span class="nf">bindViewModdel</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - UI Setting</span>
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">background</span>
+        
+        <span class="p">[</span><span class="n">logoutBtn</span><span class="p">]</span><span class="o">.</span><span class="n">forEach</span> <span class="p">{</span>
+            <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span>
+            <span class="nv">$0</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">constraints</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">logoutBtn</span><span class="o">.</span><span class="n">centerXAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">centerXAnchor</span><span class="p">),</span>
+            <span class="n">logoutBtn</span><span class="o">.</span><span class="n">centerYAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">centerYAnchor</span><span class="p">),</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - Binding</span>
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">bindViewModdel</span><span class="p">()</span> <span class="p">{</span>
+        
+        <span class="c1">// [Input] 로그아웃 버튼 탭 이벤트를 ViewModel에 전달</span>
+        <span class="n">logoutBtn</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">tap</span>
+            <span class="o">.</span><span class="nf">bind</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="k">in</span>
+                <span class="k">guard</span> <span class="k">let</span> <span class="nv">self</span> <span class="o">=</span> <span class="k">self</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">viewModel</span><span class="o">.</span><span class="nf">logout</span><span class="p">()</span>
+            <span class="p">})</span>
+            <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBaag</span><span class="p">)</span>
+        
+        <span class="c1">// [Output] 로그아웃 처리 결과에 따라 UI 반응</span>
+        <span class="n">viewModel</span><span class="o">.</span><span class="n">logoutResult</span>
+            <span class="o">.</span><span class="nf">observe</span><span class="p">(</span><span class="nv">on</span><span class="p">:</span> <span class="kt">MainScheduler</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>
+            <span class="o">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">result</span> <span class="k">in</span>
+                <span class="k">guard</span> <span class="k">let</span> <span class="nv">self</span> <span class="o">=</span> <span class="k">self</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+                
+                <span class="k">switch</span> <span class="n">result</span> <span class="p">{</span>
+                <span class="k">case</span> <span class="o">.</span><span class="nv">success</span><span class="p">:</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"로그아웃 성공"</span><span class="p">)</span>
+                    <span class="k">self</span><span class="o">.</span><span class="n">coordinator</span><span class="p">?</span><span class="o">.</span><span class="nf">showLogin</span><span class="p">()</span>
+                <span class="k">case</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="k">let</span> <span class="nv">error</span><span class="p">):</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"로그아웃 실패: </span><span class="se">\(</span><span class="n">error</span><span class="o">.</span><span class="n">localizedDescription</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">})</span>
+            <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBaag</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="c1">// ViewModel</span>
+<span class="kd">import</span> <span class="kt">FirebaseAuth</span>
+<span class="kd">import</span> <span class="kt">RxSwift</span>
+<span class="kd">import</span> <span class="kt">RxCocoa</span>
+
+<span class="kd">protocol</span> <span class="kt">SettingViewModelType</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">logout</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">SettingViewModel</span><span class="p">:</span> <span class="kt">SettingViewModelType</span> <span class="p">{</span>
+    
+    <span class="c1">// 로그아웃 결과 이벤트</span>
+    <span class="c1">// 로그아웃 결과는 상태가 아닌 한번 일어나는 일회성 이벤트</span>
+    <span class="k">let</span> <span class="nv">logoutResult</span> <span class="o">=</span> <span class="kt">PublishRelay</span><span class="o">&lt;</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Void</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;&gt;</span><span class="p">()</span>
+    
+    <span class="kd">func</span> <span class="nf">logout</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">do</span> <span class="p">{</span>
+            <span class="k">try</span> <span class="kt">Auth</span><span class="o">.</span><span class="nf">auth</span><span class="p">()</span><span class="o">.</span><span class="nf">signOut</span><span class="p">()</span>
+            <span class="n">logoutResult</span><span class="o">.</span><span class="nf">accept</span><span class="p">(</span><span class="o">.</span><span class="nf">success</span><span class="p">(()))</span>
+            <span class="kt">UserDefaultsManager</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">removeUser</span><span class="p">()</span>
+            <span class="kt">UserDefaultsManager</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">removeGroup</span><span class="p">()</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">{</span>
+            <span class="n">logoutResult</span><span class="o">.</span><span class="nf">accept</span><span class="p">(</span><span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="개선-코드---view와-viewmodel-구분-및-inputoutput-패턴-추가">개선 코드 - view와 viewModel 구분 및 Input/Output 패턴 추가</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// View</span>
+<span class="kd">import</span> <span class="kt">UIKit</span>
+<span class="kd">import</span> <span class="kt">FirebaseAuth</span>
+<span class="kd">import</span> <span class="kt">RxSwift</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">SettingViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">disposeBaag</span> <span class="o">=</span> <span class="kt">DisposeBag</span><span class="p">()</span>
+    
+    <span class="k">weak</span> <span class="k">var</span> <span class="nv">coordinator</span><span class="p">:</span> <span class="kt">HomeCoordinator</span><span class="p">?</span>
+
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">viewModel</span> <span class="o">=</span> <span class="kt">SettingViewModel</span><span class="p">()</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">homeViewModel</span><span class="p">:</span> <span class="kt">HomeViewModelType</span>
+    
+    <span class="nf">init</span><span class="p">(</span><span class="nv">homeViewModel</span><span class="p">:</span> <span class="kt">HomeViewModelType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">homeViewModel</span> <span class="o">=</span> <span class="n">homeViewModel</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">nibName</span><span class="p">:</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">bundle</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">required</span> <span class="nf">init</span><span class="p">?(</span><span class="nv">coder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">fatalError</span><span class="p">(</span><span class="s">"init(coder:) has not been implemented"</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - UI Component</span>
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">logoutBtn</span><span class="p">:</span> <span class="kt">UIButton</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">button</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="o">.</span><span class="n">system</span><span class="p">)</span>
+        <span class="n">button</span><span class="o">.</span><span class="nf">setTitle</span><span class="p">(</span><span class="s">"로그아웃"</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">normal</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">button</span>
+    <span class="p">}()</span>
+
+    <span class="c1">// MARK: - LifeCycle</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="nf">makeUI</span><span class="p">()</span>
+        <span class="nf">constraints</span><span class="p">()</span>
+        <span class="nf">bindViewModel</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - UI Setting</span>
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">background</span>
+        
+        <span class="p">[</span><span class="n">logoutBtn</span><span class="p">]</span><span class="o">.</span><span class="n">forEach</span> <span class="p">{</span>
+            <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span>
+            <span class="nv">$0</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">constraints</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">logoutBtn</span><span class="o">.</span><span class="n">centerXAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">centerXAnchor</span><span class="p">),</span>
+            <span class="n">logoutBtn</span><span class="o">.</span><span class="n">centerYAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">centerYAnchor</span><span class="p">),</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - Binding</span>
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">bindViewModel</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Input: 버튼 탭 이벤트를 viewModel로 전달</span>
+        <span class="k">let</span> <span class="nv">input</span> <span class="o">=</span> <span class="kt">SettingViewModel</span><span class="o">.</span><span class="kt">Input</span><span class="p">(</span><span class="nv">logoutTapped</span><span class="p">:</span> <span class="n">logoutBtn</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">tap</span><span class="o">.</span><span class="nf">asObservable</span><span class="p">())</span>
+        
+        <span class="c1">// Output: transform으로부터 결과 스트림 반환</span>
+        <span class="k">let</span> <span class="nv">output</span> <span class="o">=</span> <span class="n">viewModel</span><span class="o">.</span><span class="nf">transform</span><span class="p">(</span><span class="nv">input</span><span class="p">:</span> <span class="n">input</span><span class="p">)</span>
+            
+        <span class="c1">// Output에 따라 UI 처리</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">logoutResult</span>
+            <span class="o">.</span><span class="nf">drive</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">result</span> <span class="k">in</span>
+                <span class="k">guard</span> <span class="k">let</span> <span class="nv">self</span> <span class="o">=</span> <span class="k">self</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+                
+                <span class="k">switch</span> <span class="n">result</span> <span class="p">{</span>
+                <span class="k">case</span> <span class="o">.</span><span class="nv">success</span><span class="p">:</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"로그아웃 성공"</span><span class="p">)</span>
+                    <span class="k">self</span><span class="o">.</span><span class="n">coordinator</span><span class="p">?</span><span class="o">.</span><span class="nf">showLogin</span><span class="p">()</span>
+                <span class="k">case</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="k">let</span> <span class="nv">error</span><span class="p">):</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="s">"로그아웃 실패: </span><span class="se">\(</span><span class="n">error</span><span class="o">.</span><span class="n">localizedDescription</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+                <span class="p">}</span>
+                
+            <span class="p">})</span><span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBaag</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="c1">// ViewModel</span>
+<span class="kd">import</span> <span class="kt">FirebaseAuth</span>
+<span class="kd">import</span> <span class="kt">RxSwift</span>
+<span class="kd">import</span> <span class="kt">RxCocoa</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">SettingViewModel</span> <span class="p">{</span>
+    
+    <span class="c1">// Rx 리소스 해제를 위한 DisposeBag</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">disposeBag</span> <span class="o">=</span> <span class="kt">DisposeBag</span><span class="p">()</span>
+    
+    <span class="c1">// View로부터 전달받을 사용자 이벤트 정의</span>
+    <span class="kd">struct</span> <span class="kt">Input</span> <span class="p">{</span>
+        <span class="c1">// 로그아웃 버튼 탭이벤트</span>
+        <span class="k">let</span> <span class="nv">logoutTapped</span><span class="p">:</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">Void</span><span class="o">&gt;</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// View에 전달할 출력 데이터 정의</span>
+    <span class="kd">struct</span> <span class="kt">Output</span> <span class="p">{</span>
+        <span class="c1">// 로그아웃 성공 또는 실패에 대한 결과 스트림</span>
+        <span class="c1">// Driver를 사용하여 메인스레드에서 UI 바인딩에 안전하게 처리</span>
+        <span class="k">let</span> <span class="nv">logoutResult</span><span class="p">:</span> <span class="kt">Driver</span><span class="o">&lt;</span><span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Void</span><span class="p">,</span> <span class="kt">LoginError</span><span class="o">&gt;&gt;</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// Input을 받아 내부 로직을 수행 후 Output을 반환하는 함수</span>
+    <span class="c1">/// - Parameter input: View에서 발생한 이벤트</span>
+    <span class="c1">/// - Returns: 로그아웃 결과를 포함하는 Output</span>
+    <span class="kd">func</span> <span class="nf">transform</span><span class="p">(</span><span class="nv">input</span><span class="p">:</span> <span class="kt">Input</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Output</span> <span class="p">{</span>
+        
+        <span class="c1">// 로그아웃 버튼 탭시 로직을 수행하고 결과를 result로 반환</span>
+        <span class="k">let</span> <span class="nv">result</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="n">logoutTapped</span>
+            <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">_</span> <span class="o">-&gt;</span> <span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Void</span><span class="p">,</span> <span class="kt">LoginError</span><span class="o">&gt;</span> <span class="k">in</span>
+                <span class="k">do</span> <span class="p">{</span>
+                    <span class="k">try</span> <span class="kt">Auth</span><span class="o">.</span><span class="nf">auth</span><span class="p">()</span><span class="o">.</span><span class="nf">signOut</span><span class="p">()</span>
+                    <span class="kt">UserDefaultsManager</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">removeUser</span><span class="p">()</span>
+                    <span class="kt">UserDefaultsManager</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="nf">removeGroup</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="o">.</span><span class="nf">success</span><span class="p">(())</span>
+                <span class="p">}</span> <span class="k">catch</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="o">.</span><span class="n">logoutError</span><span class="p">)</span>
+                <span class="p">}</span>
+                <span class="c1">// 에러가 발생하더라도 UI가 멈추지 않고 기본 오류값으로 처리</span>
+            <span class="p">}</span><span class="o">.</span><span class="nf">asDriver</span><span class="p">(</span><span class="nv">onErrorJustReturn</span><span class="p">:</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="o">.</span><span class="n">logoutError</span><span class="p">))</span>
+        
+        <span class="c1">// View에서 사용할 Output rntjd</span>
+        <span class="k">return</span> <span class="kt">Output</span><span class="p">(</span><span class="nv">logoutResult</span><span class="p">:</span> <span class="n">result</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/Programmers-5/" class="pagination--pager" title="[Programmers] 5. 행렬의 곱셈
+">Previous</a>
+    
+    
+      <a href="/UIKit-%EB%84%A4%EB%B9%84%EA%B2%8C%EC%9D%B4%EC%85%98-%EB%B2%84%ED%8A%BC/" class="pagination--pager" title="[UIComponent] 네비게이션 버튼
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>
