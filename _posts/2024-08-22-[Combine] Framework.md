@@ -15,7 +15,7 @@ header:
 # Combine이란
 2019년에 Apple에서 출시한 비동기처리 이벤트를 처리하기 위한 first-party 프레임워크이다.  
 Combine은 앱 내에서 일어나는 이벤트들의 진행 결과 등을 선언적으로 코딩할 수 있게끔 도와준다.  
-어떠한 이벤트를 추적할 떄 Delegate패턴을 사용하거나, Completion 클로저를 사용하는 대신 Combine을 활용해볼 수 있다.
+어떠한 이벤트를 추적할 때 Delegate패턴을 사용하거나, Completion 클로저를 사용하는 대신 Combine을 활용해볼 수 있다.
 
 # Combine 주요 개념
 ### Stream
