@@ -1,6 +1,7 @@
 ---
-title: "[RxSwift] 2. RxSwift개념"
+title: "[RxSwift] 2. 개념 및 예제"
 tags: 
+- ReactiveX
 - RxSwift
 header: 
   teaser: 
@@ -19,7 +20,7 @@ typora-root-url: ../
 - 중간처리 - 연산자
 
 ## 3. 큰 개념
-### 보내는 것 - 옴저버블(총알 = 구독 가능한 것)
+### 보내는 것 - 옵저버블(총알 = 구독 가능한 것)
 1. Observable
   - 가장 기본 베이스, 생성하자마자 이벤트를 전달한다
   - .onNext(), .onError(), .onCompleted()를 통해 이벤트를 받을 수 있다
@@ -63,7 +64,7 @@ typora-root-url: ../
     - PublishSubjcet - 단방향 이벤트
       - 구독 이후 이벤트만 받음(초기값 없음)
       - 주로 이벤트 전달용
-    
+
       ```swift
       // 1. PublishSubject는 구독 이후에 발생한 이벤트만 전달
       let publishSubject = PublishSubject<String>()
@@ -80,55 +81,55 @@ typora-root-url: ../
 
 3. Relay
   - Subject의 변형으로, error가 없고 UI바인딩에 최적화
-
   - PublishRelay 
     - 단방향 이벤트 전달(버튼 클릭)
 
-    ```swift
-    // 1. PublishRelay는 error가 없고 UI에 최적화된 Subject
-    let publishRelay = PublishRelay<String>()
+      ```swift
+      // 1. PublishRelay는 error가 없고 UI에 최적화된 Subject
+      let publishRelay = PublishRelay<String>()
 
-    // 2. 구독 설정
-    publishRelay
-        .subscribe(onNext: { print("PublishRelay:", $0) })
-        .disposed(by: disposeBag)
+      // 2. 구독 설정
+      publishRelay
+          .subscribe(onNext: { print("PublishRelay:", $0) })
+          .disposed(by: disposeBag)
 
-    // 3. 이벤트 발생 → accept()로 전달
-    publishRelay.accept("이벤트 발생!")
-    ```
+      // 3. 이벤트 발생 → accept()로 전달
+      publishRelay.accept("이벤트 발생!")
+      ```
+    
 
-  - BehaviorRelay
-    - 상태 저장, 초기값 필수 -> accept() 사용
+    - BehaviorRelay
+    - 상태 저장, 초기값 필수 -> accept() 사용  
 
-    ```swift
-    // 1. BehaviorRelay는 초기값이 필요하며, 상태 저장에 적합
-    let behaviorRelay = BehaviorRelay<String>(value: "기본값")
+      ```swift
+      // 1. BehaviorRelay는 초기값이 필요하며, 상태 저장에 적합
+      let behaviorRelay = BehaviorRelay<String>(value: "기본값")
 
-    // 2. 구독 설정 → "기본값"이 바로 전달됨
-    behaviorRelay
-        .subscribe(onNext: { print("BehaviorRelay:", $0) })
-        .disposed(by: disposeBag)
+      // 2. 구독 설정 → "기본값"이 바로 전달됨
+      behaviorRelay
+          .subscribe(onNext: { print("BehaviorRelay:", $0) })
+          .disposed(by: disposeBag)
 
-    // 3. 값 업데이트 → accept() 사용
-    behaviorRelay.accept("업데이트된 값")
-    ```
+      // 3. 값 업데이트 → accept() 사용
+      behaviorRelay.accept("업데이트된 값")
+      ```
 
 4. Driver
   - 메인스레드, share(1)
   - UI 바인딩 전용으로 사용되는 옵저버블
 
-    ```swift
-      // 1. Relay에서 값을 가져와 Driver로 변환
-    let textRelay = BehaviorRelay<String>(value: "Hello")
+        ```swift
+          // 1. Relay에서 값을 가져와 Driver로 변환
+        let textRelay = BehaviorRelay<String>(value: "Hello")
 
-    // 2. Driver로 변환 (에러 없이, MainThread에서 작동)
-    let textDriver = textRelay.asDriver()
+        // 2. Driver로 변환 (에러 없이, MainThread에서 작동)
+        let textDriver = textRelay.asDriver()
 
-    // 3. UI 요소에 drive (drive는 MainThread에서 UI 바인딩 시 사용)
-    textDriver
-        .drive(label.rx.text)
-        .disposed(by: disposeBag)
-    ```
+        // 3. UI 요소에 drive (drive는 MainThread에서 UI 바인딩 시 사용)
+        textDriver
+            .drive(label.rx.text)
+            .disposed(by: disposeBag)
+      ```
 
 ### 구독
 1. subscribe(onNext:)
@@ -139,32 +140,32 @@ typora-root-url: ../
   - 모든 Observable계열 구독 가능
   - bind(onNext:) 보다 범용적, 완료/에러 받을 수 있다
 
-    ```swift
-    // 1. onNext만 사용하는 기본적인 구독
-    let observable = Observable.just("Hello, RxSwift!")
+        ```swift
+        // 1. onNext만 사용하는 기본적인 구독
+        let observable = Observable.just("Hello, RxSwift!")
 
-    observable
-        .subscribe(onNext: { value in
-            print("onNext:", value)
-        })
-        .disposed(by: disposeBag)
+        observable
+            .subscribe(onNext: { value in
+                print("onNext:", value)
+            })
+            .disposed(by: disposeBag)
 
-    // 2. onNext, onError, onCompleted 모두 명시
-    let observable = Observable<String>.create { observer in
-        observer.onNext("첫 번째 이벤트")
-        observer.onCompleted()
-        return Disposables.create()
-    }
+        // 2. onNext, onError, onCompleted 모두 명시
+        let observable = Observable<String>.create { observer in
+            observer.onNext("첫 번째 이벤트")
+            observer.onCompleted()
+            return Disposables.create()
+        }
 
-    observable
-        .subscribe(
-            onNext: { print("onNext:", $0) },
-            onError: { print("onError:", $0.localizedDescription) },
-            onCompleted: { print("onCompleted") },
-            onDisposed: { print("onDisposed") }
-        )
-        .disposed(by: disposeBag)
-  ```
+        observable
+            .subscribe(
+                onNext: { print("onNext:", $0) },
+                onError: { print("onError:", $0.localizedDescription) },
+                onCompleted: { print("onCompleted") },
+                onDisposed: { print("onDisposed") }
+            )
+            .disposed(by: disposeBag)
+      ```
 
 
 2. bind(to:)

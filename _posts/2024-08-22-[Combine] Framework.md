@@ -1,6 +1,7 @@
 ---
-title: "[Combine] 개념 및 예제"
+title: "[Combine] 2. 개념 및 예제"
 tags: 
+- ReactiveX
 - Combine
 use_math: true
 header: 

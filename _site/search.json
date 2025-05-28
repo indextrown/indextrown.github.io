@@ -273,19 +273,11 @@
         } ,
     
         {
-        "title"    : "[RxSwift] 2. RxSwift개념",
+        "title"    : "[RxSwift] 2. 개념 및 예제",
         "category" : "",
-        "tags"     : "RxSwift",
+        "tags"     : "ReactiveX, RxSwift",
         "url"      : "/RxSwift-RxSwift-2/",
         "date"     : "2025-04-21 00:00:00 +0000"
-        } ,
-    
-        {
-        "title"    : "[ReactiveX] 1. 반응형 프로그래밍이란?",
-        "category" : "",
-        "tags"     : "RxSwift, Combine",
-        "url"      : "/ReactiveX-ReactiveX-1/",
-        "date"     : "2025-03-25 00:00:00 +0000"
         } ,
     
         {
@@ -529,11 +521,19 @@
         } ,
     
         {
-        "title"    : "[Combine] 개념 및 예제",
+        "title"    : "[Combine] 2. 개념 및 예제",
         "category" : "",
-        "tags"     : "Combine",
+        "tags"     : "ReactiveX, Combine",
         "url"      : "/Combine-Framework/",
         "date"     : "2024-08-22 00:00:00 +0000"
+        } ,
+    
+        {
+        "title"    : "[ReactiveX] 1. 반응형 프로그래밍이란?",
+        "category" : "",
+        "tags"     : "ReactiveX, RxSwift, Combine",
+        "url"      : "/ReactiveX-ReactiveX-1/",
+        "date"     : "2024-08-21 00:00:00 +0000"
         } 
     
 ]
