@@ -4,7 +4,39 @@
         xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     
     <url>
-        <loc>http://localhost:4000/Xcode-XcodeError-copy/</loc>
+        <loc>http://localhost:4000/CustomView-CalendarView/</loc>
+        
+        <lastmod>2025-05-30T00:00:00+00:00</lastmod>
+        
+
+        
+        <changefreq>weekly</changefreq>
+        
+
+        
+        <priority>0.5</priority>
+        
+
+    </url>
+    
+    <url>
+        <loc>http://localhost:4000/Ubuntu-Ubuntu1/</loc>
+        
+        <lastmod>2025-05-29T00:00:00+00:00</lastmod>
+        
+
+        
+        <changefreq>weekly</changefreq>
+        
+
+        
+        <priority>0.5</priority>
+        
+
+    </url>
+    
+    <url>
+        <loc>http://localhost:4000/Xcode-XcodeError/</loc>
         
         <lastmod>2025-05-28T00:00:00+00:00</lastmod>
         

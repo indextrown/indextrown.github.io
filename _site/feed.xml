@@ -1,21 +1,235 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-05-28T13:05:32+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[Xcode] 라이브러리 설치 에</title><link href="http://localhost:4000/Xcode-XcodeError-copy/" rel="alternate" type="text/html" title="[Xcode] 라이브러리 설치 에" /><published>2025-05-28T00:00:00+00:00</published><updated>2025-05-28T00:00:00+00:00</updated><id>http://localhost:4000/%5BXcode%5D-XcodeError%20copy</id><content type="html" xml:base="http://localhost:4000/Xcode-XcodeError-copy/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-05-30T05:57:30+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[CustomView] 커스텀 캘린더뷰 만들기</title><link href="http://localhost:4000/CustomView-CalendarView/" rel="alternate" type="text/html" title="[CustomView] 커스텀 캘린더뷰 만들기" /><published>2025-05-30T00:00:00+00:00</published><updated>2025-05-30T00:00:00+00:00</updated><id>http://localhost:4000/%5BCustomView%5D-CalendarView</id><content type="html" xml:base="http://localhost:4000/CustomView-CalendarView/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
-<h1 id="해결법">해결법</h1>
+<h1 id="ios-16부터-기본-제공되는-캘린더">iOS 16부터 기본 제공되는 캘린더</h1>
 
-<p>✅ Package.resolved 삭제 명령어<br />
-rm -f ./Package.resolved<br />
-rm -f ./EUMMEYO.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved<br />
-두 파일이 둘 다 존재할 수 있으니, 둘 다 삭제하는 게 좋습니다.<br />
-✅ 이후 조치<br />
-Xcode 완전히 종료 (⌘ + Q)<br />
-다시 Xcode 실행<br />
-메뉴에서 → File → Packages → Resolve Package Versions 선택<br />
-🔁 그래도 안 되면?<br />
-Xcode &gt; Preferences &gt; Locations &gt; DerivedData 열기 → 전체 삭제<br />
-또는 터미널에서:<br />
-rm -rf ~/Library/Developer/Xcode/DerivedData</p>]]></content><author><name>Dong Hyeon</name></author><category term="Xcode" /><summary type="html"><![CDATA[해결법 ✅ Package.resolved 삭제 명령어 rm -f ./Package.resolved rm -f ./EUMMEYO.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved 두 파일이 둘 다 존재할 수 있으니, 둘 다 삭제하는 게 좋습니다. ✅ 이후 조치 Xcode 완전히 종료 (⌘ + Q) 다시 Xcode 실행 메뉴에서 → File → Packages → Resolve Package Versions 선택 🔁 그래도 안 되면? Xcode &gt; Preferences &gt; Locations &gt; DerivedData 열기 → 전체 삭제 또는 터미널에서: rm -rf ~/Library/Developer/Xcode/DerivedData]]></summary></entry><entry><title type="html">[RxSwift] 3. RX + MVVM + Input/output 패턴</title><link href="http://localhost:4000/RxSwift-RxSwift-3/" rel="alternate" type="text/html" title="[RxSwift] 3. RX + MVVM + Input/output 패턴" /><published>2025-05-28T00:00:00+00:00</published><updated>2025-05-28T00:00:00+00:00</updated><id>http://localhost:4000/%5BRxSwift%5D-RxSwift-3</id><content type="html" xml:base="http://localhost:4000/RxSwift-RxSwift-3/"><![CDATA[<h1 id="rx---mvvm-예시">RX - MVVM 예시</h1>
+<h3 id="기본-캘린더">기본 캘린더</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">BasicCalendarViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="c1">// MARK: - UI Conponent</span>
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">calendarView</span><span class="p">:</span> <span class="kt">UICalendarView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="kt">UICalendarView</span><span class="p">()</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="c1">/// 점이나 뱃지 표시 등 달력 Custom 하기 위해 설정해야 하는 속성</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">wantsDateDecorations</span> <span class="o">=</span> <span class="kc">true</span>
+        <span class="k">return</span> <span class="n">view</span>
+    <span class="p">}()</span>
+   
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        
+        <span class="nf">makeUI</span><span class="p">()</span>
+        <span class="nf">constraints</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
+        <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="n">calendarView</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">constraints</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">calendarViewConstraints</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">calendarView</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">),</span>
+            <span class="n">calendarView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="n">calendarView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">20</span><span class="p">)</span>
+        <span class="p">]</span>
+        
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">(</span><span class="n">calendarViewConstraints</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="uicalendarselectionsingledatedelegate를-설정하여-날짜-선택시-이모지-표시">UICalendarSelectionSingleDateDelegate를 설정하여 날짜 선택시 이모지 표시</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">BasicCalendarViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="c1">/// 현재 선택된 날짜</span>
+    <span class="k">var</span> <span class="nv">selectedDate</span><span class="p">:</span> <span class="kt">DateComponents</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+    
+    <span class="c1">// MARK: - UI Conponent</span>
+    <span class="c1">/// 날짜별 데코레이션(점, 이모지 등)을 지원하는 캘린더 뷰</span>
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">calendarView</span><span class="p">:</span> <span class="kt">UICalendarView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="kt">UICalendarView</span><span class="p">()</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">locale</span> <span class="o">=</span> <span class="kt">Locale</span><span class="p">(</span><span class="nv">identifier</span><span class="p">:</span> <span class="s">"ko_KR"</span><span class="p">)</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="c1">/// 점이나 뱃지 표시 등 달력 Custom 하기 위해 설정해야 하는 속성</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">wantsDateDecorations</span> <span class="o">=</span> <span class="kc">true</span>
+        <span class="k">return</span> <span class="n">view</span>
+    <span class="p">}()</span>
+   
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        
+        <span class="k">self</span><span class="o">.</span><span class="nf">makeUI</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">constraints</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">setCalendar</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 캘린더 delegate 및 날짜 선택 동작 설정</span>
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">setCalendar</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">calendarView</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
+        
+        <span class="c1">/// 한 번에 한 날짜만 선택 가능</span>
+        <span class="k">let</span> <span class="nv">dateSection</span> <span class="o">=</span> <span class="kt">UICalendarSelectionSingleDate</span><span class="p">(</span><span class="nv">delegate</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span>
+        <span class="c1">/// 선택 이벤트(날짜 선택 시 콜백)를 BasicCalendarViewController에서 직접 처리하겠다</span>
+        <span class="n">calendarView</span><span class="o">.</span><span class="n">selectionBehavior</span> <span class="o">=</span> <span class="n">dateSection</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
+        <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="n">calendarView</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">constraints</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">calendarViewConstraints</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">calendarView</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">),</span>
+            <span class="n">calendarView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="n">calendarView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">20</span><span class="p">)</span>
+        <span class="p">]</span>
+        
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">(</span><span class="n">calendarViewConstraints</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 특정 날짜 셀만 데코레이션 새로고침(이모지 추가)</span>
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">reloadDateView</span><span class="p">(</span><span class="nv">date</span><span class="p">:</span> <span class="kt">Date</span><span class="p">?)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="n">date</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+        <span class="k">let</span> <span class="nv">calendar</span> <span class="o">=</span> <span class="kt">Calendar</span><span class="o">.</span><span class="n">current</span>
+        <span class="n">calendarView</span><span class="o">.</span><span class="nf">reloadDecorations</span><span class="p">(</span><span class="nv">forDateComponents</span><span class="p">:</span> <span class="p">[</span><span class="n">calendar</span><span class="o">.</span><span class="nf">dateComponents</span><span class="p">([</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="o">.</span><span class="n">year</span><span class="p">],</span> <span class="nv">from</span><span class="p">:</span> <span class="n">date</span><span class="o">!</span><span class="p">)],</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - 캘린더 Delegate</span>
+<span class="kd">extension</span> <span class="kt">BasicCalendarViewController</span><span class="p">:</span> <span class="kt">UICalendarViewDelegate</span><span class="p">,</span> <span class="kt">UICalendarSelectionSingleDateDelegate</span> <span class="p">{</span>
+    
+    <span class="c1">/// 날짜별 데코레이션 표시 커스텀(필요시 구현)</span>
+    <span class="c1">/// 선택된 날자의 셀에 이모지로 커스텀 데코레이션을 보여준다</span>
+    <span class="kd">func</span> <span class="nf">calendarView</span><span class="p">(</span><span class="n">_</span> <span class="nv">calendarView</span><span class="p">:</span> <span class="kt">UICalendarView</span><span class="p">,</span> <span class="n">decorationFor</span> <span class="nv">dateComponents</span><span class="p">:</span> <span class="kt">DateComponents</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UICalendarView</span><span class="o">.</span><span class="kt">Decoration</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="k">let</span> <span class="nv">selectedDate</span> <span class="o">=</span> <span class="n">selectedDate</span><span class="p">,</span> <span class="n">selectedDate</span> <span class="o">==</span> <span class="n">dateComponents</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="o">.</span><span class="n">customView</span> <span class="p">{</span>
+                <span class="k">let</span> <span class="nv">label</span> <span class="o">=</span> <span class="kt">UILabel</span><span class="p">()</span>
+                <span class="n">label</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">"🐶"</span>
+                <span class="n">label</span><span class="o">.</span><span class="n">textAlignment</span> <span class="o">=</span> <span class="o">.</span><span class="n">center</span>
+                <span class="k">return</span> <span class="n">label</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="kc">nil</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 날짜 선택 시 동작</span>
+    <span class="kd">func</span> <span class="nf">dateSelection</span><span class="p">(</span><span class="n">_</span> <span class="nv">selection</span><span class="p">:</span> <span class="kt">UICalendarSelectionSingleDate</span><span class="p">,</span> <span class="n">didSelectDate</span> <span class="nv">dateComponents</span><span class="p">:</span> <span class="kt">DateComponents</span><span class="p">?)</span> <span class="p">{</span>
+        <span class="c1">/// selection 객체에 저장</span>
+        <span class="n">selection</span><span class="o">.</span><span class="nf">setSelected</span><span class="p">(</span><span class="n">dateComponents</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+        <span class="c1">/// selectedDate 프로퍼티를 업데이트</span>
+        <span class="n">selectedDate</span> <span class="o">=</span> <span class="n">dateComponents</span>
+        <span class="c1">/// 선택한 날짜 셀의 데코레이션만 새로고침(🐶 이모지가 바로 반영되게)</span>
+        <span class="nf">reloadDateView</span><span class="p">(</span><span class="nv">date</span><span class="p">:</span> <span class="kt">Calendar</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="nf">date</span><span class="p">(</span><span class="nv">from</span><span class="p">:</span> <span class="n">dateComponents</span><span class="o">!</span><span class="p">))</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/2025-05-30-%5BCustomView%5D-CalendarView/image-20250530145103523.png" alt="이미지" width="50%" /></p>
+
+<h2 id="reference">Reference</h2>
+
+<ul>
+  <li>https://ohwhatisthis.tistory.com/23</li>
+  <li>https://maramincho.tistory.com/106</li>
+  <li>https://dongdida.tistory.com/128</li>
+  <li>https://velog.io/@xanxnu/iOSSwift-UICalendarView-사용해-보기</li>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="CustomView" /><summary type="html"><![CDATA[iOS 16부터 기본 제공되는 캘린더 기본 캘린더 import UIKit final class BasicCalendarViewController: UIViewController { // MARK: - UI Conponent private lazy var calendarView: UICalendarView = { let view = UICalendarView() view.translatesAutoresizingMaskIntoConstraints = false /// 점이나 뱃지 표시 등 달력 Custom 하기 위해 설정해야 하는 속성 view.wantsDateDecorations = true return view }() override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() } private func makeUI() { view.backgroundColor = .white view.addSubview(calendarView) } private func constraints() { let calendarViewConstraints = [ calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), calendarView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20), calendarView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20) ] NSLayoutConstraint.activate(calendarViewConstraints) } } UICalendarSelectionSingleDateDelegate를 설정하여 날짜 선택시 이모지 표시 import UIKit final class BasicCalendarViewController: UIViewController { /// 현재 선택된 날짜 var selectedDate: DateComponents? = nil // MARK: - UI Conponent /// 날짜별 데코레이션(점, 이모지 등)을 지원하는 캘린더 뷰 private lazy var calendarView: UICalendarView = { let view = UICalendarView() view.locale = Locale(identifier: "ko_KR") view.translatesAutoresizingMaskIntoConstraints = false /// 점이나 뱃지 표시 등 달력 Custom 하기 위해 설정해야 하는 속성 view.wantsDateDecorations = true return view }() override func viewDidLoad() { super.viewDidLoad() self.makeUI() self.constraints() self.setCalendar() } /// 캘린더 delegate 및 날짜 선택 동작 설정 private func setCalendar() { self.calendarView.delegate = self /// 한 번에 한 날짜만 선택 가능 let dateSection = UICalendarSelectionSingleDate(delegate: self) /// 선택 이벤트(날짜 선택 시 콜백)를 BasicCalendarViewController에서 직접 처리하겠다 calendarView.selectionBehavior = dateSection } private func makeUI() { view.backgroundColor = .white view.addSubview(calendarView) } private func constraints() { let calendarViewConstraints = [ calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), calendarView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20), calendarView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20) ] NSLayoutConstraint.activate(calendarViewConstraints) } /// 특정 날짜 셀만 데코레이션 새로고침(이모지 추가) private func reloadDateView(date: Date?) { if date == nil { return } let calendar = Calendar.current calendarView.reloadDecorations(forDateComponents: [calendar.dateComponents([.day, .month, .year], from: date!)], animated: true) } } // MARK: - 캘린더 Delegate extension BasicCalendarViewController: UICalendarViewDelegate, UICalendarSelectionSingleDateDelegate { /// 날짜별 데코레이션 표시 커스텀(필요시 구현) /// 선택된 날자의 셀에 이모지로 커스텀 데코레이션을 보여준다 func calendarView(_ calendarView: UICalendarView, decorationFor dateComponents: DateComponents) -&gt; UICalendarView.Decoration? { if let selectedDate = selectedDate, selectedDate == dateComponents { return .customView { let label = UILabel() label.text = "🐶" label.textAlignment = .center return label } } return nil } /// 날짜 선택 시 동작 func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) { /// selection 객체에 저장 selection.setSelected(dateComponents, animated: true) /// selectedDate 프로퍼티를 업데이트 selectedDate = dateComponents /// 선택한 날짜 셀의 데코레이션만 새로고침(🐶 이모지가 바로 반영되게) reloadDateView(date: Calendar.current.date(from: dateComponents!)) } } Reference https://ohwhatisthis.tistory.com/23 https://maramincho.tistory.com/106 https://dongdida.tistory.com/128 https://velog.io/@xanxnu/iOSSwift-UICalendarView-사용해-보기]]></summary></entry><entry><title type="html">[Ubuntu] 우분투 원격 서버 설정</title><link href="http://localhost:4000/Ubuntu-Ubuntu1/" rel="alternate" type="text/html" title="[Ubuntu] 우분투 원격 서버 설정" /><published>2025-05-29T00:00:00+00:00</published><updated>2025-05-29T00:00:00+00:00</updated><id>http://localhost:4000/%5BUbuntu%5D-Ubuntu1</id><content type="html" xml:base="http://localhost:4000/Ubuntu-Ubuntu1/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h1 id="우분투-원격-서버-설정">우분투 원격 서버 설정</h1>
+
+<p><a href="http://172.30.1.254:8899">kt 공유기 링크</a><br />
+장치설정 -&gt; 트래픽 관리 -&gt; 포트포워딩 추가</p>
+
+<p><img src="/assets/img/2025-05-28-%5BUbuntu%5D-Ubuntu1/image-20250529234134757.png" alt="이미지" width="30%" /></p>
+
+<h2 id="cui-세팅-및-접속">CUI 세팅 및 접속</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt <span class="nb">install </span>openssh-server
+
+<span class="c"># 직접 실행</span>
+<span class="nb">sudo </span>systemctl start ssh
+
+<span class="c"># 부팅 시 자동 실행</span>
+<span class="nb">sudo </span>systemctl <span class="nb">enable </span>ssh
+
+<span class="c"># 서버 접속</span>
+ssh 로그인유저@링크 <span class="nt">-p</span> 포트번호  
+</code></pre></div></div>
+
+<h2 id="gui-세틸-및-접속">GUI 세틸 및 접속</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># xrdp, xfce4, lightdm</span>
+<span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt <span class="nb">install </span>xrdp xfce4 lightdm <span class="nt">-y</span>
+
+<span class="c"># .xsession 파일 재설정</span>
+<span class="nb">echo</span> <span class="s2">"startxfce4"</span> <span class="o">&gt;</span> ~/.xsession
+<span class="nb">chmod</span> +x ~/.xsession
+
+<span class="c"># 권한/세션 파일 정리</span>
+<span class="nb">rm</span> <span class="nt">-f</span> ~/.Xauthority ~/.ICEauthority
+
+<span class="c"># xrdp 서비스 재시작</span>
+<span class="nb">sudo </span>systemctl restart xrdp
+
+<span class="c"># lightdm 디스플레이 매니저로 고정</span>
+<span class="nb">sudo </span>dpkg-reconfigure lightdm
+
+<span class="c"># Windows APP 프로그램으로 GUI 접속 진행</span>
+</code></pre></div></div>
+
+<h2 id="우분투-wake-on-lan-설정">우분투 wake on lan 설정</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ethtool 설치</span>
+<span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt <span class="nb">install </span>ethtool <span class="nt">-y</span>
+
+<span class="c"># 현재 설정 확인 (유선 NIC명 확인, 예: enp1s0) -&gt; enp1s0, eth0 등 유선랜 이름 확인</span>
+ip <span class="nb">link</span>
+
+<span class="c"># "Wake-on: g" 라고 나오면 WOL 지원</span>
+<span class="nb">sudo </span>ethtool enp1s0
+
+<span class="c"># d로 되있으면 wake on lan 활성화</span>
+<span class="nb">sudo </span>ethtool <span class="nt">-s</span> enp1s0 wol g
+<span class="nb">sudo </span>ethtool enp1s0
+
+<span class="c"># 재부팅 시 자동으로 WOL이 켜지도록,</span>
+<span class="nb">sudo </span>nmcli connection show
+
+<span class="c"># NAME            UUID                                  TYPE      DEVICE </span>
+<span class="c"># netplan-enp1s0  cac41fbe-bc18-3d87-bba7-af2af7f8ffab  ethernet  enp1s0 </span>
+<span class="c"># lo              5ee3992e-8232-483a-88d7-6cf21f44d700  loopback  lo     </span>
+
+<span class="c"># 아래 명령어를 입력</span>
+<span class="nb">sudo </span>nmcli connection modify <span class="s2">"netplan-enp1s0"</span> 802-3-ethernet.wake-on-lan magic
+<span class="nb">sudo </span>systemctl restart NetworkManager
+
+
+
+
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Xcode" /><summary type="html"><![CDATA[우분투 원격 서버 설정 kt 공유기 링크 장치설정 -&gt; 트래픽 관리 -&gt; 포트포워딩 추가 CUI 세팅 및 접속 sudo apt update sudo apt install openssh-server # 직접 실행 sudo systemctl start ssh # 부팅 시 자동 실행 sudo systemctl enable ssh # 서버 접속 ssh 로그인유저@링크 -p 포트번호 GUI 세틸 및 접속 # xrdp, xfce4, lightdm sudo apt update sudo apt install xrdp xfce4 lightdm -y # .xsession 파일 재설정 echo "startxfce4" &gt; ~/.xsession chmod +x ~/.xsession # 권한/세션 파일 정리 rm -f ~/.Xauthority ~/.ICEauthority # xrdp 서비스 재시작 sudo systemctl restart xrdp # lightdm 디스플레이 매니저로 고정 sudo dpkg-reconfigure lightdm # Windows APP 프로그램으로 GUI 접속 진행 우분투 wake on lan 설정 # ethtool 설치 sudo apt update sudo apt install ethtool -y # 현재 설정 확인 (유선 NIC명 확인, 예: enp1s0) -&gt; enp1s0, eth0 등 유선랜 이름 확인 ip link # "Wake-on: g" 라고 나오면 WOL 지원 sudo ethtool enp1s0 # d로 되있으면 wake on lan 활성화 sudo ethtool -s enp1s0 wol g sudo ethtool enp1s0 # 재부팅 시 자동으로 WOL이 켜지도록, sudo nmcli connection show # NAME UUID TYPE DEVICE # netplan-enp1s0 cac41fbe-bc18-3d87-bba7-af2af7f8ffab ethernet enp1s0 # lo 5ee3992e-8232-483a-88d7-6cf21f44d700 loopback lo # 아래 명령어를 입력 sudo nmcli connection modify "netplan-enp1s0" 802-3-ethernet.wake-on-lan magic sudo systemctl restart NetworkManager]]></summary></entry><entry><title type="html">[UIComponent] 네비게이션 버튼</title><link href="http://localhost:4000/UIKit-%EB%84%A4%EB%B9%84%EA%B2%8C%EC%9D%B4%EC%85%98-%EB%B2%84%ED%8A%BC/" rel="alternate" type="text/html" title="[UIComponent] 네비게이션 버튼" /><published>2025-05-28T00:00:00+00:00</published><updated>2025-05-28T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-%EB%84%A4%EB%B9%84%EA%B2%8C%EC%9D%B4%EC%85%98%20%EB%B2%84%ED%8A%BC</id><content type="html" xml:base="http://localhost:4000/UIKit-%EB%84%A4%EB%B9%84%EA%B2%8C%EC%9D%B4%EC%85%98-%EB%B2%84%ED%8A%BC/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<p>##</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">func</span> <span class="nf">setupNavigation</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">navigationItem</span><span class="o">.</span><span class="n">rightBarButtonItem</span> <span class="o">=</span> <span class="kt">UIBarButtonItem</span><span class="p">(</span>
+            <span class="nv">image</span><span class="p">:</span> <span class="kt">UIImage</span><span class="p">(</span><span class="nv">systemName</span><span class="p">:</span> <span class="s">"gearshape.fill"</span><span class="p">),</span>
+            <span class="nv">style</span><span class="p">:</span> <span class="o">.</span><span class="n">plain</span><span class="p">,</span>
+            <span class="nv">target</span><span class="p">:</span> <span class="k">self</span><span class="p">,</span>
+            <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">}</span>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="UIComponent" /><summary type="html"><![CDATA[## private func setupNavigation() { self.navigationItem.rightBarButtonItem = UIBarButtonItem( image: UIImage(systemName: "gearshape.fill"), style: .plain, target: self, action: #selector(test) ) }]]></summary></entry><entry><title type="html">[RxSwift] 3. RX + MVVM + Input/output 패턴</title><link href="http://localhost:4000/RxSwift-RxSwift-3/" rel="alternate" type="text/html" title="[RxSwift] 3. RX + MVVM + Input/output 패턴" /><published>2025-05-28T00:00:00+00:00</published><updated>2025-05-28T00:00:00+00:00</updated><id>http://localhost:4000/%5BRxSwift%5D-RxSwift-3</id><content type="html" xml:base="http://localhost:4000/RxSwift-RxSwift-3/"><![CDATA[<h1 id="rx---mvvm-예시">RX - MVVM 예시</h1>
 
 <h3 id="기존-코드---view와-viewmodel-구분-없이-하나의-코드로-작성">기존 코드 - view와 viewModel 구분 없이 하나의 코드로 작성</h3>
 <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
@@ -587,21 +801,24 @@ B =
 
 <ul>
   <li>https://ios-development.tistory.com/793</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Library" /><summary type="html"><![CDATA[Kingfisher 기능 이미지 로드 기능(url을 넘겨주면 이미지를 로드한다) 이미지 캐시 기능 UIImageView에 편리하게 round 처리 기능 이미지 다운로드 기능 이미지 로드 기능 private func loadImage() { guard let url = URL(string: "https:\\...") myImageView.kf.setImage(with: url) } Indicator 기능 myImageView.kf.indicatorType = .activity myImageView.kf.setImage( with: url, placeHolder: nil, options: nil. completionHandler: nil ) 예제코드 import UIKit import Kingfisher final class KingfisherViewController: UIViewController { private lazy var myImageView: UIImageView = { let image = UIImageView() image.layer.cornerRadius = 30 image.clipsToBounds = true return image }() override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() loadImage() } private func makeUI() { view.backgroundColor = .white view.addSubview(myImageView) myImageView.translatesAutoresizingMaskIntoConstraints = false } private func constraints() { NSLayoutConstraint.activate([ myImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor), myImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor), myImageView.widthAnchor.constraint(equalToConstant: 300), myImageView.heightAnchor.constraint(equalToConstant: 200) ]) } private func loadImage() { guard let url = URL(string: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQv8sv01DK7BoJGaJMZ972ig5mQ_JBbqxdINQ&amp;s") else { return } myImageView.kf.setImage(with: url) } } #Preview { KingfisherViewController() } Reference https://ios-development.tistory.com/793]]></summary></entry><entry><title type="html">[UIComponent] 네비게이션 버튼</title><link href="http://localhost:4000/UIKit-%EB%84%A4%EB%B9%84%EA%B2%8C%EC%9D%B4%EC%85%98-%EB%B2%84%ED%8A%BC/" rel="alternate" type="text/html" title="[UIComponent] 네비게이션 버튼" /><published>2025-05-28T00:00:00+00:00</published><updated>2025-05-28T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-%EB%84%A4%EB%B9%84%EA%B2%8C%EC%9D%B4%EC%85%98%20%EB%B2%84%ED%8A%BC</id><content type="html" xml:base="http://localhost:4000/UIKit-%EB%84%A4%EB%B9%84%EA%B2%8C%EC%9D%B4%EC%85%98-%EB%B2%84%ED%8A%BC/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Library" /><summary type="html"><![CDATA[Kingfisher 기능 이미지 로드 기능(url을 넘겨주면 이미지를 로드한다) 이미지 캐시 기능 UIImageView에 편리하게 round 처리 기능 이미지 다운로드 기능 이미지 로드 기능 private func loadImage() { guard let url = URL(string: "https:\\...") myImageView.kf.setImage(with: url) } Indicator 기능 myImageView.kf.indicatorType = .activity myImageView.kf.setImage( with: url, placeHolder: nil, options: nil. completionHandler: nil ) 예제코드 import UIKit import Kingfisher final class KingfisherViewController: UIViewController { private lazy var myImageView: UIImageView = { let image = UIImageView() image.layer.cornerRadius = 30 image.clipsToBounds = true return image }() override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() loadImage() } private func makeUI() { view.backgroundColor = .white view.addSubview(myImageView) myImageView.translatesAutoresizingMaskIntoConstraints = false } private func constraints() { NSLayoutConstraint.activate([ myImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor), myImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor), myImageView.widthAnchor.constraint(equalToConstant: 300), myImageView.heightAnchor.constraint(equalToConstant: 200) ]) } private func loadImage() { guard let url = URL(string: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQv8sv01DK7BoJGaJMZ972ig5mQ_JBbqxdINQ&amp;s") else { return } myImageView.kf.setImage(with: url) } } #Preview { KingfisherViewController() } Reference https://ios-development.tistory.com/793]]></summary></entry><entry><title type="html">[Xcode] 라이브러리 설치 에러 해결</title><link href="http://localhost:4000/Xcode-XcodeError/" rel="alternate" type="text/html" title="[Xcode] 라이브러리 설치 에러 해결" /><published>2025-05-28T00:00:00+00:00</published><updated>2025-05-28T00:00:00+00:00</updated><id>http://localhost:4000/%5BXcode%5D-XcodeError</id><content type="html" xml:base="http://localhost:4000/Xcode-XcodeError/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
-<p>##</p>
+<h1 id="해결법">해결법</h1>
 
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">func</span> <span class="nf">setupNavigation</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">navigationItem</span><span class="o">.</span><span class="n">rightBarButtonItem</span> <span class="o">=</span> <span class="kt">UIBarButtonItem</span><span class="p">(</span>
-            <span class="nv">image</span><span class="p">:</span> <span class="kt">UIImage</span><span class="p">(</span><span class="nv">systemName</span><span class="p">:</span> <span class="s">"gearshape.fill"</span><span class="p">),</span>
-            <span class="nv">style</span><span class="p">:</span> <span class="o">.</span><span class="n">plain</span><span class="p">,</span>
-            <span class="nv">target</span><span class="p">:</span> <span class="k">self</span><span class="p">,</span>
-            <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
-        <span class="p">)</span>
-    <span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="UIComponent" /><summary type="html"><![CDATA[## private func setupNavigation() { self.navigationItem.rightBarButtonItem = UIBarButtonItem( image: UIImage(systemName: "gearshape.fill"), style: .plain, target: self, action: #selector(test) ) }]]></summary></entry><entry><title type="html">[Xcode] fastlane 에러 해결</title><link href="http://localhost:4000/UIKit-fastlaneError/" rel="alternate" type="text/html" title="[Xcode] fastlane 에러 해결" /><published>2025-05-26T00:00:00+00:00</published><updated>2025-05-26T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-fastlaneError</id><content type="html" xml:base="http://localhost:4000/UIKit-fastlaneError/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+<p>✅ Package.resolved 삭제 명령어<br />
+rm -f ./Package.resolved<br />
+rm -f ./EUMMEYO.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved<br />
+두 파일이 둘 다 존재할 수 있으니, 둘 다 삭제하는 게 좋습니다.<br />
+✅ 이후 조치<br />
+Xcode 완전히 종료 (⌘ + Q)<br />
+다시 Xcode 실행<br />
+메뉴에서 → File → Packages → Resolve Package Versions 선택<br />
+🔁 그래도 안 되면?<br />
+Xcode &gt; Preferences &gt; Locations &gt; DerivedData 열기 → 전체 삭제<br />
+또는 터미널에서:<br />
+rm -rf ~/Library/Developer/Xcode/DerivedData</p>]]></content><author><name>Dong Hyeon</name></author><category term="Xcode" /><summary type="html"><![CDATA[해결법 ✅ Package.resolved 삭제 명령어 rm -f ./Package.resolved rm -f ./EUMMEYO.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved 두 파일이 둘 다 존재할 수 있으니, 둘 다 삭제하는 게 좋습니다. ✅ 이후 조치 Xcode 완전히 종료 (⌘ + Q) 다시 Xcode 실행 메뉴에서 → File → Packages → Resolve Package Versions 선택 🔁 그래도 안 되면? Xcode &gt; Preferences &gt; Locations &gt; DerivedData 열기 → 전체 삭제 또는 터미널에서: rm -rf ~/Library/Developer/Xcode/DerivedData]]></summary></entry><entry><title type="html">[Xcode] fastlane 에러 해결</title><link href="http://localhost:4000/UIKit-fastlaneError/" rel="alternate" type="text/html" title="[Xcode] fastlane 에러 해결" /><published>2025-05-26T00:00:00+00:00</published><updated>2025-05-26T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-fastlaneError</id><content type="html" xml:base="http://localhost:4000/UIKit-fastlaneError/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
@@ -813,178 +1030,4 @@ fastlane match development <span class="nt">--readonly</span>
     
     <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Programmers" /><summary type="html"><![CDATA[문제 https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/02.cpp 정수 배열 lst가 주어진다. 배열의 중복값을 제거하고 배열 데이터를 내림차순으로 정렬해서 반환하는 solution()함수를 구현하라. 제약조건 lst의 길이는 2 이상 1,000 이하이다. lst의 원소 값은 -100,000 이상 100,000 이하이다. 입출력 예 [4, 2, 2, 1, 3, 4] -&gt; [4, 3, 2, 1] [2, 1, 1, 3, 2, 5, 4] -&gt; [5, 4, 3, 2, 1] 풀이 배열과 Set 사용법이 요구되었다. import Foundation func compare(_ a: Int, _ b: Int) -&gt; Bool { return a &gt; b } func solution(_ lst: [Int]) -&gt; [Int] { let setList = Array(Set(lst)) // O(n) let sortedList = setList.sorted(by: compare) // O(n logn) -&gt; Timsort return sortedList } // 결과를 출력하는 함수 func printSolution(_ vec: [Int]) { print(vec.map { String($0) }.joined(separator: " ")) } // 메인 함수 func main() { printSolution(solution([4, 2, 2, 1, 1, 3, 4])) // 4 3 2 1 printSolution(solution([2, 1, 1, 3, 2, 5, 4])) // 5 4 3 2 1 } main() #include &lt;iostream&gt; #include &lt;vector&gt; using namespace std; bool compare(int a, int b) { return a &gt; b; } // sort(시작 반복자, 끝 반복자) // sort(시작 반복자, 끝 반복자, 비교 함수) 비교 함수는 반환값이 false일 때 원소의 위치를 바꾼다 // sort(v.rbegin(), v.rend()) vector&lt;int&gt; solution(vector&lt;int&gt; lst) { //sort(lst.rbegin(), lst.rend()); sort(lst.begin(), lst.end(), compare); // O(n log n) -&gt; IntroSort lst.erase(unique(lst.begin(), lst.end()), lst.end()); // O(n) return lst; } #include &lt;iterator&gt; void print(vector&lt;int&gt; vec) { copy(vec.begin(), vec.end(), std::ostream_iterator&lt;int&gt;(cout, " ")); cout &lt;&lt; endl; } int main() { print(solution({4, 2, 2, 1, 1, 3, 4})); // 4 3 2 1 print(solution({2, 1, 1, 3, 2, 5, 4})); // 5 4 3 2 1 return 0; }]]></summary></entry><entry><title type="html">[Programmers] 1. 배열 정렬하기</title><link href="http://localhost:4000/Programmers-1/" rel="alternate" type="text/html" title="[Programmers] 1. 배열 정렬하기" /><published>2025-05-26T00:00:00+00:00</published><updated>2025-05-26T00:00:00+00:00</updated><id>http://localhost:4000/%5BProgrammers%5D-1</id><content type="html" xml:base="http://localhost:4000/Programmers-1/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h1 id="문제">문제</h1>
-<p>https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/01.cpp  <br />
-정수 배열 arr을 오름차순으로 정렬해서 반환하는 solution() 함수를 완성하라.</p>
-
-<h3 id="제약조건">제약조건</h3>
-<ul>
-  <li>arr의 길이는 2 이상 10^5 이하이다.</li>
-  <li>arr의 원소 값은 -100,000 이상 100,000 이하이다.</li>
-</ul>
-
-<h3 id="입출력-예">입출력 예</h3>
-<p>[1, -5, 2, 4, 3] -&gt; [-5, 1, 2, 3, 4]  <br />
-[2, 1, 1, 3, 2, 5,4] -&gt; [1, 1, 2, 2, 3, 4, 5]  <br />
-[6, 1, 7] -&gt; 1, 6, 7</p>
-
-<h1 id="풀이">풀이</h1>
-<p>기본적인 정렬 사용법이 요구되었다.</p>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Foundation</span>
-
-<span class="kd">func</span> <span class="nf">solution</span><span class="p">(</span><span class="n">_</span> <span class="nv">arr</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">arr</span><span class="o">.</span><span class="nf">sorted</span><span class="p">()</span>
-<span class="p">}</span>
-
-<span class="c1">// 결과를 출력하는 함수</span>
-<span class="kd">func</span> <span class="nf">printSolution</span><span class="p">(</span><span class="n">_</span> <span class="nv">vec</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span> <span class="p">{</span>
-    <span class="nf">print</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="nf">joined</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">))</span>
-<span class="p">}</span>
-
-<span class="c1">// 메인 함수</span>
-<span class="kd">func</span> <span class="nf">start</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
-    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]))</span>
-    <span class="nf">printSolution</span><span class="p">(</span><span class="nf">solution</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">]))</span>
-<span class="p">}</span>
-
-<span class="kd">@main</span>
-<span class="kd">struct</span> <span class="kt">Main</span> <span class="p">{</span>
-    <span class="kd">static</span> <span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nf">start</span><span class="p">()</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
-</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
-
-<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">solution</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">arr</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">sort</span><span class="p">(</span><span class="n">arr</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">arr</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
-    <span class="k">return</span> <span class="n">arr</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="c1">// 테스트 코드</span>
-<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
-</span><span class="kt">void</span> <span class="nf">print</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">copy</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">vec</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">std</span><span class="o">::</span><span class="n">ostream_iterator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">cout</span><span class="p">,</span> <span class="s">" "</span><span class="p">));</span>
-    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-    <span class="n">print</span><span class="p">(</span><span class="n">solution</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">}));</span>      <span class="c1">// -5 1 2 3 4</span>
-    <span class="n">print</span><span class="p">(</span><span class="n">solution</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">}));</span> <span class="c1">// 1 1 2 2 3 4 5</span>
-    <span class="n">print</span><span class="p">(</span><span class="n">solution</span><span class="p">({</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">}));</span>             <span class="c1">// 1 6 7</span>
-    
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Programmers" /><summary type="html"><![CDATA[문제 https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/01.cpp 정수 배열 arr을 오름차순으로 정렬해서 반환하는 solution() 함수를 완성하라. 제약조건 arr의 길이는 2 이상 10^5 이하이다. arr의 원소 값은 -100,000 이상 100,000 이하이다. 입출력 예 [1, -5, 2, 4, 3] -&gt; [-5, 1, 2, 3, 4] [2, 1, 1, 3, 2, 5,4] -&gt; [1, 1, 2, 2, 3, 4, 5] [6, 1, 7] -&gt; 1, 6, 7 풀이 기본적인 정렬 사용법이 요구되었다. import Foundation func solution(_ arr: [Int]) -&gt; [Int] { return arr.sorted() } // 결과를 출력하는 함수 func printSolution(_ vec: [Int]) { print(vec.map { String($0) }.joined(separator: " ")) } // 메인 함수 func start() { printSolution(solution([1, -5, 2, 4, 3])) printSolution(solution([2, 1, 1, 3, 2, 5, 4])) printSolution(solution([6, 1, 7])) } @main struct Main { static func main() { start() } } #include &lt;iostream&gt; #include &lt;vector&gt; using namespace std; vector&lt;int&gt; solution(vector&lt;int&gt; arr) { sort(arr.begin(), arr.end()); return arr; } // 테스트 코드 #include &lt;iostream&gt; void print(vector&lt;int&gt; vec) { copy(vec.begin(), vec.end(), std::ostream_iterator&lt;int&gt;(cout, " ")); cout &lt;&lt; endl; } int main() { print(solution({1, -5, 2, 4, 3})); // -5 1 2 3 4 print(solution({2, 1, 1, 3, 2, 5, 4})); // 1 1 2 2 3 4 5 print(solution({6, 1, 7})); // 1 6 7 return 0; }]]></summary></entry><entry><title type="html">[Programmers] 4. 모의고사</title><link href="http://localhost:4000/Programmers-4/" rel="alternate" type="text/html" title="[Programmers] 4. 모의고사" /><published>2025-05-26T00:00:00+00:00</published><updated>2025-05-26T00:00:00+00:00</updated><id>http://localhost:4000/%5BProgrammers%5D-4</id><content type="html" xml:base="http://localhost:4000/Programmers-4/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h1 id="문제">문제</h1>
-<p>https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/04.cpp  <br />
-https://school.programmers.co.kr/learn/courses/30/lessons/42840  <br />
-수포자는 수학을 포기한 사람의 준말입니다. 수포자 삼인방은 모의고사에 수학 문제를 전부 찍으려 합니다.   <br />
-수포자는 1번 문제부터 마지막 문제까지 다음과 같이 찍습니다.</p>
-
-<p>1번 수포자가 찍는 방식: 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, …  <br />
-2번 수포자가 찍는 방식: 2, 1, 2, 3, 2, 4, 2, 5, 2, 1, 2, 3, 2, 4, 2, 5, …  <br />
-3번 수포자가 찍는 방식: 3, 3, 1, 1, 2, 2, 4, 4, 5, 5, 3, 3, 1, 1, 2, 2, 4, 4, 5, 5, …  <br />
-1번 문제부터 마지막 문제까지의 정답이 순서대로 들은 배열 answers가 주어졌을 때, 가장 많은 문제를 맞힌 사람이 누구인지 배열에 담아 return 하도록 solution 함수를 작성해주세요.</p>
-
-<h3 id="제약조건">제약조건</h3>
-<ul>
-  <li>시험은 최대 10,000 문제로 구성되어있습니다.</li>
-  <li>문제의 정답은 1, 2, 3, 4, 5중 하나입니다.</li>
-  <li>가장 높은 점수를 받은 사람이 여럿일 경우, return하는 값을 오름차순 정렬해주세요.</li>
-</ul>
-
-<h3 id="입출력-예">입출력 예</h3>
-<p>[1, 2, 3, 4, 5]	-&gt; [1]  <br />
-[1, 3, 2, 4, 2] -&gt; [1, 2, 3]</p>
-
-<h1 id="풀이">풀이</h1>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Foundation</span>
-
-<span class="kd">func</span> <span class="nf">solution</span><span class="p">(</span><span class="n">_</span> <span class="nv">answers</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="p">{</span>
-    
-    <span class="k">let</span> <span class="nv">firstPattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
-    <span class="k">let</span> <span class="nv">secondPattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
-    <span class="k">let</span> <span class="nv">thirdParrern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
-    <span class="k">var</span> <span class="nv">scoreBox</span> <span class="o">=</span> <span class="kt">Array</span><span class="p">(</span><span class="nv">repeating</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">count</span><span class="p">:</span> <span class="mi">3</span><span class="p">)</span>
-    <span class="k">var</span> <span class="nv">answer</span><span class="p">:</span> <span class="p">[</span><span class="kt">Int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    
-    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="o">..&lt;</span><span class="n">answers</span><span class="o">.</span><span class="n">count</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="n">answers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">firstPattern</span><span class="p">[</span><span class="n">i</span><span class="o">%</span><span class="n">firstPattern</span><span class="o">.</span><span class="n">count</span><span class="p">]</span> <span class="p">{</span> <span class="n">scoreBox</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span> <span class="p">}</span>
-        <span class="k">if</span> <span class="n">answers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">secondPattern</span><span class="p">[</span><span class="n">i</span><span class="o">%</span><span class="n">secondPattern</span><span class="o">.</span><span class="n">count</span><span class="p">]</span> <span class="p">{</span> <span class="n">scoreBox</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span> <span class="p">}</span>
-        <span class="k">if</span> <span class="n">answers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">thirdParrern</span><span class="p">[</span><span class="n">i</span><span class="o">%</span><span class="n">thirdParrern</span><span class="o">.</span><span class="n">count</span><span class="p">]</span> <span class="p">{</span> <span class="n">scoreBox</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span> <span class="p">}</span>
-    <span class="p">}</span>
-    
-    <span class="k">let</span> <span class="nv">maxScore</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="n">scoreBox</span><span class="o">.</span><span class="nf">max</span><span class="p">()</span><span class="o">!</span>
-    
-    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0</span><span class="o">..&lt;</span><span class="mi">3</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="n">maxScore</span> <span class="o">==</span> <span class="n">scoreBox</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">{</span>
-            <span class="n">answer</span><span class="o">.</span><span class="nf">append</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="n">answer</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;algorithm&gt;</span><span class="cp">
-</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
-
-<span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">solution</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">answers</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">firstVec</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">});</span>
-    <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">secondVec</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">});</span>
-    <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">thirdVec</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">});</span>
-    <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">scoreBox</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>  <span class="c1">// 실제 정답과 비교하여 수포자들의 패턴을 비교해서 맞춘 개수</span>
-    <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">answer</span><span class="p">;</span>          <span class="c1">// 가장 문제를 많이 맞춘 사람이 저장될 벡터</span>
-    
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">answers</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">answers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">firstVec</span><span class="p">[</span><span class="n">i</span><span class="o">%</span><span class="n">firstVec</span><span class="p">.</span><span class="n">size</span><span class="p">()])</span> <span class="p">{</span>
-            <span class="n">scoreBox</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
-        <span class="p">}</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">answers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">secondVec</span><span class="p">[</span><span class="n">i</span><span class="o">%</span><span class="n">secondVec</span><span class="p">.</span><span class="n">size</span><span class="p">()])</span> <span class="p">{</span>
-            <span class="n">scoreBox</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
-        <span class="p">}</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">answers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">thirdVec</span><span class="p">[</span><span class="n">i</span><span class="o">%</span><span class="n">thirdVec</span><span class="p">.</span><span class="n">size</span><span class="p">()])</span> <span class="p">{</span>
-            <span class="n">scoreBox</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="c1">// 가장 많이 맞춘 수포자가 얻은 점수</span>
-    <span class="kt">int</span> <span class="n">maxScore</span> <span class="o">=</span> <span class="o">*</span><span class="n">max_element</span><span class="p">(</span><span class="n">scoreBox</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">scoreBox</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
-    
-    <span class="c1">// 가장 많이 맞춘 수포자의 번호를 저장</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">scoreBox</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">maxScore</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">answer</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    
-    <span class="k">return</span> <span class="n">answer</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
-</span><span class="kt">void</span> <span class="nf">print</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">copy</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">vec</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">std</span><span class="o">::</span><span class="n">ostream_iterator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">cout</span><span class="p">,</span> <span class="s">" "</span><span class="p">));</span>
-    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
-<span class="p">{</span>
-    <span class="n">print</span><span class="p">(</span><span class="n">solution</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">}));</span>     <span class="c1">// 1</span>
-    <span class="n">print</span><span class="p">(</span><span class="n">solution</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">}));</span>     <span class="c1">// 1, 2, 3</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Programmers" /><summary type="html"><![CDATA[문제 https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/04.cpp https://school.programmers.co.kr/learn/courses/30/lessons/42840 수포자는 수학을 포기한 사람의 준말입니다. 수포자 삼인방은 모의고사에 수학 문제를 전부 찍으려 합니다. 수포자는 1번 문제부터 마지막 문제까지 다음과 같이 찍습니다. 1번 수포자가 찍는 방식: 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, … 2번 수포자가 찍는 방식: 2, 1, 2, 3, 2, 4, 2, 5, 2, 1, 2, 3, 2, 4, 2, 5, … 3번 수포자가 찍는 방식: 3, 3, 1, 1, 2, 2, 4, 4, 5, 5, 3, 3, 1, 1, 2, 2, 4, 4, 5, 5, … 1번 문제부터 마지막 문제까지의 정답이 순서대로 들은 배열 answers가 주어졌을 때, 가장 많은 문제를 맞힌 사람이 누구인지 배열에 담아 return 하도록 solution 함수를 작성해주세요. 제약조건 시험은 최대 10,000 문제로 구성되어있습니다. 문제의 정답은 1, 2, 3, 4, 5중 하나입니다. 가장 높은 점수를 받은 사람이 여럿일 경우, return하는 값을 오름차순 정렬해주세요. 입출력 예 [1, 2, 3, 4, 5] -&gt; [1] [1, 3, 2, 4, 2] -&gt; [1, 2, 3] 풀이 import Foundation func solution(_ answers: [Int]) -&gt; [Int] { let firstPattern = [1, 2, 3, 4, 5] let secondPattern = [2, 1, 2, 3, 2, 4, 2, 5] let thirdParrern = [3, 3, 1, 1, 2, 2, 4, 4, 5, 5] var scoreBox = Array(repeating: 0, count: 3) var answer: [Int] = [] for i in 0..&lt;answers.count { if answers[i] == firstPattern[i%firstPattern.count] { scoreBox[0] += 1 } if answers[i] == secondPattern[i%secondPattern.count] { scoreBox[1] += 1 } if answers[i] == thirdParrern[i%thirdParrern.count] { scoreBox[2] += 1 } } let maxScore: Int = scoreBox.max()! for i in 0..&lt;3 { if maxScore == scoreBox[i] { answer.append(i+1) } } return answer } #include &lt;string&gt; #include &lt;vector&gt; #include &lt;algorithm&gt; using namespace std; vector&lt;int&gt; solution(vector&lt;int&gt; answers) { vector&lt;int&gt; firstVec({1, 2, 3, 4, 5}); vector&lt;int&gt; secondVec({2, 1, 2, 3, 2, 4, 2, 5}); vector&lt;int&gt; thirdVec({3, 3, 1, 1, 2, 2, 4, 4, 5, 5}); vector&lt;int&gt; scoreBox(3, 0); // 실제 정답과 비교하여 수포자들의 패턴을 비교해서 맞춘 개수 vector&lt;int&gt; answer; // 가장 문제를 많이 맞춘 사람이 저장될 벡터 for (int i=0; i&lt;answers.size(); i++) { if (answers[i] == firstVec[i%firstVec.size()]) { scoreBox[0] += 1; } if (answers[i] == secondVec[i%secondVec.size()]) { scoreBox[1] += 1; } if (answers[i] == thirdVec[i%thirdVec.size()]) { scoreBox[2] += 1; } } // 가장 많이 맞춘 수포자가 얻은 점수 int maxScore = *max_element(scoreBox.begin(), scoreBox.end()); // 가장 많이 맞춘 수포자의 번호를 저장 for (int i=0; i&lt;3; i++) { if (scoreBox[i] == maxScore) { answer.push_back(i+1); } } return answer; } #include &lt;iostream&gt; void print(vector&lt;int&gt; vec) { copy(vec.begin(), vec.end(), std::ostream_iterator&lt;int&gt;(cout, " ")); cout &lt;&lt; endl; } int main() { print(solution({1, 2, 3, 4, 5})); // 1 print(solution({1, 3, 2, 4, 2})); // 1, 2, 3 return 0; }]]></summary></entry></feed>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Programmers" /><summary type="html"><![CDATA[문제 https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/02.cpp 정수 배열 lst가 주어진다. 배열의 중복값을 제거하고 배열 데이터를 내림차순으로 정렬해서 반환하는 solution()함수를 구현하라. 제약조건 lst의 길이는 2 이상 1,000 이하이다. lst의 원소 값은 -100,000 이상 100,000 이하이다. 입출력 예 [4, 2, 2, 1, 3, 4] -&gt; [4, 3, 2, 1] [2, 1, 1, 3, 2, 5, 4] -&gt; [5, 4, 3, 2, 1] 풀이 배열과 Set 사용법이 요구되었다. import Foundation func compare(_ a: Int, _ b: Int) -&gt; Bool { return a &gt; b } func solution(_ lst: [Int]) -&gt; [Int] { let setList = Array(Set(lst)) // O(n) let sortedList = setList.sorted(by: compare) // O(n logn) -&gt; Timsort return sortedList } // 결과를 출력하는 함수 func printSolution(_ vec: [Int]) { print(vec.map { String($0) }.joined(separator: " ")) } // 메인 함수 func main() { printSolution(solution([4, 2, 2, 1, 1, 3, 4])) // 4 3 2 1 printSolution(solution([2, 1, 1, 3, 2, 5, 4])) // 5 4 3 2 1 } main() #include &lt;iostream&gt; #include &lt;vector&gt; using namespace std; bool compare(int a, int b) { return a &gt; b; } // sort(시작 반복자, 끝 반복자) // sort(시작 반복자, 끝 반복자, 비교 함수) 비교 함수는 반환값이 false일 때 원소의 위치를 바꾼다 // sort(v.rbegin(), v.rend()) vector&lt;int&gt; solution(vector&lt;int&gt; lst) { //sort(lst.rbegin(), lst.rend()); sort(lst.begin(), lst.end(), compare); // O(n log n) -&gt; IntroSort lst.erase(unique(lst.begin(), lst.end()), lst.end()); // O(n) return lst; } #include &lt;iterator&gt; void print(vector&lt;int&gt; vec) { copy(vec.begin(), vec.end(), std::ostream_iterator&lt;int&gt;(cout, " ")); cout &lt;&lt; endl; } int main() { print(solution({4, 2, 2, 1, 1, 3, 4})); // 4 3 2 1 print(solution({2, 1, 1, 3, 2, 5, 4})); // 5 4 3 2 1 return 0; }]]></summary></entry></feed>

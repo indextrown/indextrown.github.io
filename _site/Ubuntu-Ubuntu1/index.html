@@ -9,8 +9,8 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>[Xcode] 라이브러리 설치 에 - DongHyeon Kim’s Blog</title>
-<meta name="description" content="해결법  ✅ Package.resolved 삭제 명령어 rm -f ./Package.resolved rm -f ./EUMMEYO.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved 두 파일이 둘 다 존재할 수 있으니, 둘 다 삭제하는 게 좋습니다. ✅ 이후 조치 Xcode 완전히 종료 (⌘ + Q) 다시 Xcode 실행 메뉴에서 → File → Packages → Resolve Package Versions 선택 🔁 그래도 안 되면? Xcode &gt; Preferences &gt; Locations &gt; DerivedData 열기 → 전체 삭제 또는 터미널에서: rm -rf ~/Library/Developer/Xcode/DerivedData">
+<!-- begin _includes/seo.html --><title>[Ubuntu] 우분투 원격 서버 설정 - DongHyeon Kim’s Blog</title>
+<meta name="description" content="우분투 원격 서버 설정  kt 공유기 링크 장치설정 -&gt; 트래픽 관리 -&gt; 포트포워딩 추가    CUI 세팅 및 접속 sudo apt update sudo apt install openssh-server  # 직접 실행 sudo systemctl start ssh  # 부팅 시 자동 실행 sudo systemctl enable ssh  # 서버 접속 ssh 로그인유저@링크 -p 포트번호     GUI 세틸 및 접속 # xrdp, xfce4, lightdm sudo apt update sudo apt install xrdp xfce4 lightdm -y  # .xsession 파일 재설정 echo &quot;startxfce4&quot; &gt; ~/.xsession chmod +x ~/.xsession  # 권한/세션 파일 정리 rm -f ~/.Xauthority ~/.ICEauthority  # xrdp 서비스 재시작 sudo systemctl restart xrdp  # lightdm 디스플레이 매니저로 고정 sudo dpkg-reconfigure lightdm  # Windows APP 프로그램으로 GUI 접속 진행   우분투 wake on lan 설정 # ethtool 설치 sudo apt update sudo apt install ethtool -y  # 현재 설정 확인 (유선 NIC명 확인, 예: enp1s0) -&gt; enp1s0, eth0 등 유선랜 이름 확인 ip link  # &quot;Wake-on: g&quot; 라고 나오면 WOL 지원 sudo ethtool enp1s0  # d로 되있으면 wake on lan 활성화 sudo ethtool -s enp1s0 wol g sudo ethtool enp1s0  # 재부팅 시 자동으로 WOL이 켜지도록, sudo nmcli connection show  # NAME            UUID                                  TYPE      DEVICE  # netplan-enp1s0  cac41fbe-bc18-3d87-bba7-af2af7f8ffab  ethernet  enp1s0  # lo              5ee3992e-8232-483a-88d7-6cf21f44d700  loopback  lo       # 아래 명령어를 입력 sudo nmcli connection modify &quot;netplan-enp1s0&quot; 802-3-ethernet.wake-on-lan magic sudo systemctl restart NetworkManager">
 
 
   <meta name="author" content="Dong Hyeon">
@@ -22,30 +22,30 @@
 <meta property="og:type" content="article">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="DongHyeon Kim's Blog">
-<meta property="og:title" content="[Xcode] 라이브러리 설치 에">
-<meta property="og:url" content="http://localhost:4000/Xcode-XcodeError-copy/">
+<meta property="og:title" content="[Ubuntu] 우분투 원격 서버 설정">
+<meta property="og:url" content="http://localhost:4000/Ubuntu-Ubuntu1/">
 
 
-  <meta property="og:description" content="해결법  ✅ Package.resolved 삭제 명령어 rm -f ./Package.resolved rm -f ./EUMMEYO.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved 두 파일이 둘 다 존재할 수 있으니, 둘 다 삭제하는 게 좋습니다. ✅ 이후 조치 Xcode 완전히 종료 (⌘ + Q) 다시 Xcode 실행 메뉴에서 → File → Packages → Resolve Package Versions 선택 🔁 그래도 안 되면? Xcode &gt; Preferences &gt; Locations &gt; DerivedData 열기 → 전체 삭제 또는 터미널에서: rm -rf ~/Library/Developer/Xcode/DerivedData">
-
-
-
-
-
-
-
-  <meta property="article:published_time" content="2025-05-28T00:00:00+00:00">
+  <meta property="og:description" content="우분투 원격 서버 설정  kt 공유기 링크 장치설정 -&gt; 트래픽 관리 -&gt; 포트포워딩 추가    CUI 세팅 및 접속 sudo apt update sudo apt install openssh-server  # 직접 실행 sudo systemctl start ssh  # 부팅 시 자동 실행 sudo systemctl enable ssh  # 서버 접속 ssh 로그인유저@링크 -p 포트번호     GUI 세틸 및 접속 # xrdp, xfce4, lightdm sudo apt update sudo apt install xrdp xfce4 lightdm -y  # .xsession 파일 재설정 echo &quot;startxfce4&quot; &gt; ~/.xsession chmod +x ~/.xsession  # 권한/세션 파일 정리 rm -f ~/.Xauthority ~/.ICEauthority  # xrdp 서비스 재시작 sudo systemctl restart xrdp  # lightdm 디스플레이 매니저로 고정 sudo dpkg-reconfigure lightdm  # Windows APP 프로그램으로 GUI 접속 진행   우분투 wake on lan 설정 # ethtool 설치 sudo apt update sudo apt install ethtool -y  # 현재 설정 확인 (유선 NIC명 확인, 예: enp1s0) -&gt; enp1s0, eth0 등 유선랜 이름 확인 ip link  # &quot;Wake-on: g&quot; 라고 나오면 WOL 지원 sudo ethtool enp1s0  # d로 되있으면 wake on lan 활성화 sudo ethtool -s enp1s0 wol g sudo ethtool enp1s0  # 재부팅 시 자동으로 WOL이 켜지도록, sudo nmcli connection show  # NAME            UUID                                  TYPE      DEVICE  # netplan-enp1s0  cac41fbe-bc18-3d87-bba7-af2af7f8ffab  ethernet  enp1s0  # lo              5ee3992e-8232-483a-88d7-6cf21f44d700  loopback  lo       # 아래 명령어를 입력 sudo nmcli connection modify &quot;netplan-enp1s0&quot; 802-3-ethernet.wake-on-lan magic sudo systemctl restart NetworkManager">
 
 
 
 
 
-  
+
+
+  <meta property="article:published_time" content="2025-05-29T00:00:00+00:00">
+
+
+
+
 
   
 
+  
 
-<link rel="canonical" href="http://localhost:4000/Xcode-XcodeError-copy/">
+
+<link rel="canonical" href="http://localhost:4000/Ubuntu-Ubuntu1/">
 
 
 
@@ -456,16 +456,16 @@ checkbox.addEventListener('change', function() {
 
 
   <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="[Xcode] 라이브러리 설치 에">
-    <meta itemprop="description" content="해결법✅ Package.resolved 삭제 명령어rm -f ./Package.resolvedrm -f ./EUMMEYO.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved두 파일이 둘 다 존재할 수 있으니, 둘 다 삭제하는 게 좋습니다.✅ 이후 조치Xcode 완전히 종료 (⌘ + Q)다시 Xcode 실행메뉴에서 → File → Packages → Resolve Package Versions 선택🔁 그래도 안 되면?Xcode &gt; Preferences &gt; Locations &gt; DerivedData 열기 → 전체 삭제또는 터미널에서:rm -rf ~/Library/Developer/Xcode/DerivedData">
-    <meta itemprop="datePublished" content="2025-05-28T00:00:00+00:00">
+    <meta itemprop="headline" content="[Ubuntu] 우분투 원격 서버 설정">
+    <meta itemprop="description" content="우분투 원격 서버 설정kt 공유기 링크장치설정 -&gt; 트래픽 관리 -&gt; 포트포워딩 추가CUI 세팅 및 접속sudo apt updatesudo apt install openssh-server# 직접 실행sudo systemctl start ssh# 부팅 시 자동 실행sudo systemctl enable ssh# 서버 접속ssh 로그인유저@링크 -p 포트번호  GUI 세틸 및 접속# xrdp, xfce4, lightdmsudo apt updatesudo apt install xrdp xfce4 lightdm -y# .xsession 파일 재설정echo &quot;startxfce4&quot; &gt; ~/.xsessionchmod +x ~/.xsession# 권한/세션 파일 정리rm -f ~/.Xauthority ~/.ICEauthority# xrdp 서비스 재시작sudo systemctl restart xrdp# lightdm 디스플레이 매니저로 고정sudo dpkg-reconfigure lightdm# Windows APP 프로그램으로 GUI 접속 진행우분투 wake on lan 설정# ethtool 설치sudo apt updatesudo apt install ethtool -y# 현재 설정 확인 (유선 NIC명 확인, 예: enp1s0) -&gt; enp1s0, eth0 등 유선랜 이름 확인ip link# &quot;Wake-on: g&quot; 라고 나오면 WOL 지원sudo ethtool enp1s0# d로 되있으면 wake on lan 활성화sudo ethtool -s enp1s0 wol gsudo ethtool enp1s0# 재부팅 시 자동으로 WOL이 켜지도록,sudo nmcli connection show# NAME            UUID                                  TYPE      DEVICE # netplan-enp1s0  cac41fbe-bc18-3d87-bba7-af2af7f8ffab  ethernet  enp1s0 # lo              5ee3992e-8232-483a-88d7-6cf21f44d700  loopback  lo     # 아래 명령어를 입력sudo nmcli connection modify &quot;netplan-enp1s0&quot; 802-3-ethernet.wake-on-lan magicsudo systemctl restart NetworkManager">
+    <meta itemprop="datePublished" content="2025-05-29T00:00:00+00:00">
     
 
     <div class="page__inner-wrap">
       
         <header>
           <h1 id="page-title" class="page__title p-name" itemprop="headline">
-            <a href="http://localhost:4000/Xcode-XcodeError-copy/" class="u-url" itemprop="url">[Xcode] 라이브러리 설치 에
+            <a href="http://localhost:4000/Ubuntu-Ubuntu1/" class="u-url" itemprop="url">[Ubuntu] 우분투 원격 서버 설정
 </a>
           </h1>
           <footer class="page__meta">
@@ -491,7 +491,7 @@ checkbox.addEventListener('change', function() {
 <!--  -->
             
 
-  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-05-28T00:00:00+00:00">May 28, 2025</time></p>
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-05-29T00:00:00+00:00">May 29, 2025</time></p>
 
           </footer>
         </header>
@@ -503,21 +503,78 @@ checkbox.addEventListener('change', function() {
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
-<h1 id="해결법">해결법</h1>
+<h1 id="우분투-원격-서버-설정">우분투 원격 서버 설정</h1>
 
-<p>✅ Package.resolved 삭제 명령어<br />
-rm -f ./Package.resolved<br />
-rm -f ./EUMMEYO.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved<br />
-두 파일이 둘 다 존재할 수 있으니, 둘 다 삭제하는 게 좋습니다.<br />
-✅ 이후 조치<br />
-Xcode 완전히 종료 (⌘ + Q)<br />
-다시 Xcode 실행<br />
-메뉴에서 → File → Packages → Resolve Package Versions 선택<br />
-🔁 그래도 안 되면?<br />
-Xcode &gt; Preferences &gt; Locations &gt; DerivedData 열기 → 전체 삭제<br />
-또는 터미널에서:<br />
-rm -rf ~/Library/Developer/Xcode/DerivedData</p>
+<p><a href="http://172.30.1.254:8899">kt 공유기 링크</a><br />
+장치설정 -&gt; 트래픽 관리 -&gt; 포트포워딩 추가</p>
 
+<p><img src="/assets/img/2025-05-28-%5BUbuntu%5D-Ubuntu1/image-20250529234134757.png" alt="이미지" width="30%" /></p>
+
+<h2 id="cui-세팅-및-접속">CUI 세팅 및 접속</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt <span class="nb">install </span>openssh-server
+
+<span class="c"># 직접 실행</span>
+<span class="nb">sudo </span>systemctl start ssh
+
+<span class="c"># 부팅 시 자동 실행</span>
+<span class="nb">sudo </span>systemctl <span class="nb">enable </span>ssh
+
+<span class="c"># 서버 접속</span>
+ssh 로그인유저@링크 <span class="nt">-p</span> 포트번호  
+</code></pre></div></div>
+
+<h2 id="gui-세틸-및-접속">GUI 세틸 및 접속</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># xrdp, xfce4, lightdm</span>
+<span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt <span class="nb">install </span>xrdp xfce4 lightdm <span class="nt">-y</span>
+
+<span class="c"># .xsession 파일 재설정</span>
+<span class="nb">echo</span> <span class="s2">"startxfce4"</span> <span class="o">&gt;</span> ~/.xsession
+<span class="nb">chmod</span> +x ~/.xsession
+
+<span class="c"># 권한/세션 파일 정리</span>
+<span class="nb">rm</span> <span class="nt">-f</span> ~/.Xauthority ~/.ICEauthority
+
+<span class="c"># xrdp 서비스 재시작</span>
+<span class="nb">sudo </span>systemctl restart xrdp
+
+<span class="c"># lightdm 디스플레이 매니저로 고정</span>
+<span class="nb">sudo </span>dpkg-reconfigure lightdm
+
+<span class="c"># Windows APP 프로그램으로 GUI 접속 진행</span>
+</code></pre></div></div>
+
+<h2 id="우분투-wake-on-lan-설정">우분투 wake on lan 설정</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ethtool 설치</span>
+<span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt <span class="nb">install </span>ethtool <span class="nt">-y</span>
+
+<span class="c"># 현재 설정 확인 (유선 NIC명 확인, 예: enp1s0) -&gt; enp1s0, eth0 등 유선랜 이름 확인</span>
+ip <span class="nb">link</span>
+
+<span class="c"># "Wake-on: g" 라고 나오면 WOL 지원</span>
+<span class="nb">sudo </span>ethtool enp1s0
+
+<span class="c"># d로 되있으면 wake on lan 활성화</span>
+<span class="nb">sudo </span>ethtool <span class="nt">-s</span> enp1s0 wol g
+<span class="nb">sudo </span>ethtool enp1s0
+
+<span class="c"># 재부팅 시 자동으로 WOL이 켜지도록,</span>
+<span class="nb">sudo </span>nmcli connection show
+
+<span class="c"># NAME            UUID                                  TYPE      DEVICE </span>
+<span class="c"># netplan-enp1s0  cac41fbe-bc18-3d87-bba7-af2af7f8ffab  ethernet  enp1s0 </span>
+<span class="c"># lo              5ee3992e-8232-483a-88d7-6cf21f44d700  loopback  lo     </span>
+
+<span class="c"># 아래 명령어를 입력</span>
+<span class="nb">sudo </span>nmcli connection modify <span class="s2">"netplan-enp1s0"</span> 802-3-ethernet.wake-on-lan magic
+<span class="nb">sudo </span>systemctl restart NetworkManager
+
+
+
+
+</code></pre></div></div>
 
         
       </section>
@@ -527,11 +584,12 @@ rm -rf ~/Library/Developer/Xcode/DerivedData</p>
       
   <nav class="pagination">
     
-      <a href="/UIKit-%EB%84%A4%EB%B9%84%EA%B2%8C%EC%9D%B4%EC%85%98-%EB%B2%84%ED%8A%BC/" class="pagination--pager" title="[UIComponent] 네비게이션 버튼
+      <a href="/Xcode-XcodeError/" class="pagination--pager" title="[Xcode] 라이브러리 설치 에러 해결
 ">Previous</a>
     
     
-      <a href="#" class="pagination--pager disabled">Next</a>
+      <a href="/CustomView-CalendarView/" class="pagination--pager" title="[CustomView] 커스텀 캘린더뷰 만들기
+">Next</a>
     
   </nav>
 

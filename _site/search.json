@@ -1,10 +1,26 @@
 [
     
         {
-        "title"    : "[Xcode] 라이브러리 설치 에",
+        "title"    : "[CustomView] 커스텀 캘린더뷰 만들기",
+        "category" : "",
+        "tags"     : "CustomView",
+        "url"      : "/CustomView-CalendarView/",
+        "date"     : "2025-05-30 00:00:00 +0000"
+        } ,
+    
+        {
+        "title"    : "[Ubuntu] 우분투 원격 서버 설정",
         "category" : "",
         "tags"     : "Xcode",
-        "url"      : "/Xcode-XcodeError-copy/",
+        "url"      : "/Ubuntu-Ubuntu1/",
+        "date"     : "2025-05-29 00:00:00 +0000"
+        } ,
+    
+        {
+        "title"    : "[Xcode] 라이브러리 설치 에러 해결",
+        "category" : "",
+        "tags"     : "Xcode",
+        "url"      : "/Xcode-XcodeError/",
         "date"     : "2025-05-28 00:00:00 +0000"
         } ,
     
