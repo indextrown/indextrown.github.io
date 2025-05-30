@@ -145,6 +145,11 @@ extension BasicCalendarViewController: UICalendarViewDelegate, UICalendarSelecti
 
 <img src="{{ '/assets/img/2025-05-30-[CustomView]-CalendarView/image-20250530145103523.png' | relative_url }}" alt="이미지" width="50%">
 
+<div align="center">참고: 한국어로 설정해도 시뮬레이터에서는 요일이 영어로 보이는 버그가 있다.
+</div>
+
+
+
 ## Reference
 
 - https://ohwhatisthis.tistory.com/23
