@@ -3,7 +3,7 @@ title: "[CleanArchitecture] SOLID, MVVM, CleanArchitecture"
 tags: 
 - CleanArchitecture
 header: 
-  teaser: 
+  teaser: /assets/img/2025-05-24-[CleanArchitecture]-Clean Architecture/image-20250524210248333.png
 typora-root-url: ../
 
 ---
