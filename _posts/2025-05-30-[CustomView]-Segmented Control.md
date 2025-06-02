@@ -1,5 +1,5 @@
 ---
-title: "[CustomView] Segmented Control"
+title: "[CustomView] Segmented Control 기본"
 tags: 
 - CustomView
 header: 

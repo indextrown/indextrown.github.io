@@ -1,7 +1,15 @@
 [
     
         {
-        "title"    : "[CustomView] Segmented Control",
+        "title"    : "[CustomView] Segmented Control 커스텀 with PageViewController",
+        "category" : "",
+        "tags"     : "CustomView",
+        "url"      : "/CustomView-Segmented-Control2/",
+        "date"     : "2025-05-30 00:00:00 +0000"
+        } ,
+    
+        {
+        "title"    : "[CustomView] Segmented Control 기본",
         "category" : "",
         "tags"     : "CustomView",
         "url"      : "/CustomView-Segmented-Control/",
