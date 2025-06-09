@@ -6,11 +6,15 @@ tags:
 use_math: true
 header: 
   teaser: 
+typora-root-url: ../
 
 ---
 
-## Swift 메모리 구조
-Swift에서 메모리는 주로 네 가지 영역으로 나눌 수 있다.
+## OS 메모리 구조
+<img src="{{ '/assets/img/2025-02-10-[Swift]Memory/스크린샷 2025-06-10 오전 12.12.15.png' | relative_url }}" alt="이미지" width="100%">
+
+- Swift에서 메모리는 주로 4개의 영역으로 나눌 수 있다.
+
 
 ---
 
@@ -29,7 +33,7 @@ Swift에서 메모리는 주로 네 가지 영역으로 나눌 수 있다.
   // 전역 변수: 데이터 영역 (.data), Read-Write
   var name: String = "Index"
   var age: Int = 26
-
+  
   struct People {
       // 타입(static) 상수: 읽기 전용 데이터 영역 (.rodata), Read-Only
       static let country: String = "Korea"
@@ -39,7 +43,7 @@ Swift에서 메모리는 주로 네 가지 영역으로 나눌 수 있다.
       // — 함수 내부(let localPeople)일 경우 스택 (Read-Write)
       var name: String
   }
-
+  
   // 전역 상수: 데이터 영역 (.data), Read-Only*
   let people = People(name: "Index")
   ```
@@ -63,7 +67,7 @@ Swift에서 메모리는 주로 네 가지 영역으로 나눌 수 있다.
       let country: String = "korea"
       let age: Int = 26
   }
-
+  
   // 인스턴스는 Heap 영역에 할당 된다. 
   // Heap 메모리는 가상 메모리의 크기에 의해 결정되며, Heap 메모리의 크기는 실행 시점에 결정된다.
   let people = People()
