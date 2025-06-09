@@ -441,57 +441,57 @@
         } ,
     
         {
-        "title"    : "[Swift] 메모리",
+        "title"    : "[Swift] 7. 메모리",
         "category" : "",
-        "tags"     : "Swift",
+        "tags"     : "Swift, Grammer",
         "url"      : "/Swift-07-%E1%84%86%E1%85%A6%E1%84%86%E1%85%A9%E1%84%85%E1%85%B5/",
         "date"     : "2025-02-10 00:00:00 +0000"
         } ,
     
         {
-        "title"    : "[Swift] 반복문",
+        "title"    : "[Swift] 6. 반복문",
         "category" : "",
-        "tags"     : "Swift",
+        "tags"     : "Swift, Grammer",
         "url"      : "/Swift-06-%E1%84%87%E1%85%A1%E1%86%AB%E1%84%87%E1%85%A9%E1%86%A8%E1%84%86%E1%85%AE%E1%86%AB/",
         "date"     : "2025-02-10 00:00:00 +0000"
         } ,
     
         {
-        "title"    : "[Swift] (삼항/범위/패턴매칭)연산자",
+        "title"    : "[Swift] 4. (삼항/범위/패턴매칭)연산자",
         "category" : "",
-        "tags"     : "Swift",
+        "tags"     : "Swift, Grammer",
         "url"      : "/Swift-05-%E1%84%89%E1%85%A1%E1%86%B7%E1%84%92%E1%85%A1%E1%86%BC%E1%84%87%E1%85%A5%E1%86%B7%E1%84%8B%E1%85%B1%E1%84%91%E1%85%A2%E1%84%90%E1%85%A5%E1%86%AB%E1%84%86%E1%85%A2%E1%84%8E%E1%85%B5%E1%86%BC-%E1%84%8B%E1%85%A7%E1%86%AB%E1%84%89%E1%85%A1%E1%86%AB%E1%84%8C%E1%85%A1/",
         "date"     : "2025-02-10 00:00:00 +0000"
         } ,
     
         {
-        "title"    : "[Swift] 튜플(Tuple)",
+        "title"    : "[Swift] 4. 튜플(Tuple)",
         "category" : "",
-        "tags"     : "Swift",
+        "tags"     : "Swift, Grammer",
         "url"      : "/Swift-04-%E1%84%90%E1%85%B2%E1%84%91%E1%85%B3%E1%86%AF/",
         "date"     : "2025-02-10 00:00:00 +0000"
         } ,
     
         {
-        "title"    : "[Swift] 프로그래밍 기본 원리와 조건문",
+        "title"    : "[Swift] 3, 프로그래밍 기본 원리와 조건문",
         "category" : "",
-        "tags"     : "Swift",
+        "tags"     : "Swift, Grammer",
         "url"      : "/Swift-03-%E1%84%91%E1%85%B3%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%85%E1%85%A2%E1%84%86%E1%85%B5%E1%86%BC-%E1%84%80%E1%85%B5%E1%84%87%E1%85%A9%E1%86%AB-%E1%84%8B%E1%85%AF%E1%86%AB%E1%84%85%E1%85%B5%E1%84%8B%E1%85%AA-%E1%84%8C%E1%85%A9%E1%84%80%E1%85%A5%E1%86%AB%E1%84%86%E1%85%AE%E1%86%AB/",
         "date"     : "2025-02-10 00:00:00 +0000"
         } ,
     
         {
-        "title"    : "[Swift] 기본 연산자",
+        "title"    : "[Swift] 2, 기본 연산자",
         "category" : "",
-        "tags"     : "Swift",
+        "tags"     : "Swift, Grammer",
         "url"      : "/Swift-02-%E1%84%80%E1%85%B5%E1%84%87%E1%85%A9%E1%86%AB-%E1%84%8B%E1%85%A7%E1%86%AB%E1%84%89%E1%85%A1%E1%86%AB%E1%84%8C%E1%85%A1/",
         "date"     : "2025-02-10 00:00:00 +0000"
         } ,
     
         {
-        "title"    : "[Swift] 변수와 상수 그리고 타입",
+        "title"    : "[Swift] 1. 변수와 상수 그리고 타입",
         "category" : "",
-        "tags"     : "Swift",
+        "tags"     : "Swift, Grammer",
         "url"      : "/Swift-01-%E1%84%87%E1%85%A7%E1%86%AB%E1%84%89%E1%85%AE%E1%84%8B%E1%85%AA-%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%AE-%E1%84%80%E1%85%B3%E1%84%85%E1%85%B5%E1%84%80%E1%85%A9-%E1%84%90%E1%85%A1%E1%84%8B%E1%85%B5%E1%86%B8/",
         "date"     : "2025-02-10 00:00:00 +0000"
         } ,
