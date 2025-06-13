@@ -1,6 +1,14 @@
 [
     
         {
+        "title"    : "[Haruhancut] Widget",
+        "category" : "",
+        "tags"     : "Haruhancut",
+        "url"      : "/Haruhancut-Widget/",
+        "date"     : "2025-05-30 00:00:00 +0000"
+        } ,
+    
+        {
         "title"    : "[CustomView] Segmented Control 커스텀 with PageViewController",
         "category" : "",
         "tags"     : "CustomView",
