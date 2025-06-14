@@ -14,26 +14,25 @@ typora-root-url: ../
 ' | relative_url }}" alt="커스텀셀" width="70%">
 
 ## 1. ReactiveX란 무엇인가?
-RxSwift를 알기 위해 ReactiveX에 대해 알아야 한다.
-ReactiveX 혹은 Reactive Extension, 혹은 Rx라고도 부른다. 
-Rx는 마이크로소프트에서 개발한 비동기 이벤트를 핸들링해주는 오픈소스 라이브러리이다.
+RxSwift를 알기 위해 [ReactiveX](https://reactivex.io/intro.html)에 대해 알아야 한다. ReactiveX 혹은 Reactive Extension, 혹은 Rx라고도 부른다. Rx는 마이크로소프트에서 개발한 비동기 이벤트를 핸들링해주는 오픈소스 라이브러리이다.
 
-Rx 공식 홈페이지에서는 다음과 같이 설명한다.
+<!-- ### Rx 공식 홈페이지에서는 다음과 같이 설명한다.
 > An API for asynchronous programming
-with observable streams
+with observable streams -->
 
 ### 옵저버 패턴
-Rx는 비동기 이벤트 핸들링을 위해 Observer(옵저버) 디자인 패턴을 사용한다.
+Rx는 비동기 이벤트 핸들링을 위해 **Observer(옵저버) 디자인 패턴**을 사용한다.
 > Observer 패턴이란 관찰자(옵저버)가 대상이 되는 객체를 등록 함으로서 해당 객체의 상태 변화를 관찰하고 관찰 대상인 객체가 상태 변화로 이벤트를 발생시킬 때 이 이벤트를 감지하여 처리한다.
 
-이런 옵저버 패턴은 네트워크 통신과 같은 비동기 이벤트와 함께 사용하면 좋은 궁합을 보여주는 데, 네트워크 통신과 같이 비교적 시간이 오래 걸리는 작업으로 값이 미래에 준비되는 상황에서 값이 준비될 때까지 대상을 관찰하다가 값이 도착했을 때 도착한 것을 감지하고 처리할 수 있다. Rx에서는 이런 관찰자를 Observer, 관찰 가능한 대상을 Observable 라고 한다.
+<img src="{{ '/assets/img/2024-08-21-[ReactiveX]-ReactiveX-1/RX공부.png' | relative_url }}" alt="커스텀셀" width="100%">
+
+이런 옵저버 패턴은 네트워크 통신과 같은 비동기 이벤트와 함께 사용하면 좋은 궁합을 보여주는 데, 네트워크 통신과 같이 비교적 시간이 오래 걸리는 작업으로 값이 미래에 준비되는 상황에서 값이 준비될 때까지 대상을 관찰하다가 값이 도착했을 때 도착한 것을 감지하고 처리할 수 있다. Rx에서는 이런 관찰자를 **Observer**, 관찰 가능한 대상을 **Observable** 라고 한다.
 
 ### Q. 비동기 이벤트는 옵저버 패턴이 아니라도 단순 escaping 클로저로 가능한거 아닌가?
-escaping 클로저로도 비동기 이벤트를 처리할 수는 있지만, escaping 클로저의 가장 큰 단점은 연쇄적인 비동기 이벤트가 발생하였을 때 중첩된 형태의 클로저는 코드의 가독성 저해와 개발자의 실수를 유발시키는 요인이 될 수 있다.
+escaping 클로저로도 비동기 이벤트를 처리할 수는 있지만, escaping 클로저의 가장 큰 단점은 연쇄적인 비동기 이벤트가 발생하였을 때 중첩된 형태의 클로저는 **코드의 가독성 저해와 개발자의 실수를 유발**시키는 요인이 될 수 있다.
 
+### @escaping 콜백지옥 예시
 ```swift
-// 콜백지옥 예시
-// 콜백지옥 예시
 func fetchUser(completion: @escaping (String) -> Void) {
     DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
         completion("User123")
@@ -65,12 +64,92 @@ fetchUser { user in
 }
 ```
 
-Rx는 비동기 이벤트 핸들링을 위한 간단하고 강력한 기능을 제공하는데, Rx의 Observable는 데이터 변화에 대한 값을 방출하는 data flow, 즉 Stream을 만들어 낼 수 있다. 이러한 Stream은 데이터를 전달할 수 있는 통로를 만들어 Observer에게 전달될 수 있도록 한다.
-Rx가 좀 더 강력한기능을 제공할 수 있는 이유는 Stream을 통과 하면서 다양한 Operator(연산자)를 거치면 데이터를 입맛에 맞게 조작하거나 변형을 가해서 Obserber에게 전달할 수 있기 때문이다.
+### RxSwift에서 콜백지옥 탈출 예시
+```swift
+import RxSwift
 
+let disposeBag = DisposeBag()
 
+// Observable 생성
+func fetchUser() -> Observable<String> {
+    return Observable.just("User123").delay(.seconds(1), scheduler: MainScheduler.instance)
+}
 
-## 2. 반응형 프로그래밍이란?
+func fetchPosts(for user: String) -> Observable<[String]> {
+    return Observable.just(["Post1", "Post2"]).delay(.seconds(1), scheduler: MainScheduler.instance)
+}
+
+func fetchComments(for post: String) -> Observable<[String]> {
+    return Observable.just(["Comment1", "Comment2"]).delay(.seconds(1), scheduler: MainScheduler.instance)
+}
+
+// Observable<T> 자체가 스트림(Stream)이다. 
+// - 스트림이란 시간이 지나면서 이벤트(값)을 방출(push)하는 데이터 흐름이다.
+// flatMap을 활용한 체이닝
+fetchUser()                            // ✅ 스트림의 시작: Observable<String> 생성
+    .do(onNext: { print("Fetched user: \($0)") })
+    .flatMap { user in                 // ✅ 스트림 변형(연결): user → Observable<[String]>로 변환
+        fetchPosts(for: user) 
+    }
+    .do(onNext: { print("Fetched posts: \($0)") })
+    .flatMap { posts in               // ✅ 스트림 변형(연결): posts → Observable<[String]>로 변환
+        fetchComments(for: posts[0])
+    }
+    .subscribe(onNext: { comments in // ✅ 스트림 소비: 최종 값 소비
+        print("Fetched comments: \(comments)")
+    })
+    .disposed(by: disposeBag)       // ✅ 스트림 구독 유지 및 해제 관리
+```
+RxSwift는 비동기 이벤트를 처리하는 데 있어 간단하면서도 강력한 방식을 제공한다.   
+Observable은 데이터의 흐름을 스트림(Stream) 형태로 나타내며,   
+ 이 스트림은 데이터가 변경될 때마다 값을 방출하고, 이를 Observer가 구독하여 처리할 수 있다.
+
+특히 RxSwift는 **flatMap, map, filter** 같은 다양한 **Operator(연산자)**를 제공하여, 연속된 비동기 작업을 중첩 없이 깔끔하게 연결할 수 있게 해준다.  
+이러한 구조 덕분에 중간 작업 삽입, 데이터 가공, 조건 처리 등이 매우 유연하게 이루어지며, 결과적으로 코드의 가독성과 유지보수성이 크게 향상된다.
+
+--- 
+
+## 2. 함수형 패러다임
+> 함수형 패러다임에서 함수는 하나의 일급 객체로서 변수나 상수에 함수를 할당 가능하고 다른 함수의 전달인자로서 매개변수에 전달 가능하다.  
+
+Rx 이야기를 하면서 함수형 패러다임 이야기가 나오는 이유는 Rx를 강력하게 만드는 기능 중 하나가 **함수형 패러다임**이다.  
+
+ex) 비동기 네트워크 통신으로 서버로부터 데이터를 가져오는 상황을 가정해보자. 
+서버로부터 가져온 데이터를 사용자의 입맛에 맞게 가공해보자.
+- 사용자에게 불필요한 정보는 걸러낸다. (filter)
+- 가져온 데이터를 다른 데이터 타입으로 변환한다. (map)
+- 데이터를 하나 받은 후 어떤 동작을 수행한다. (onNext)
+- 네트워크 통신이 완료된 후에 어떤 동작을 수행한다. (onComplete)
+- 네트워크 통신에 실패한 경우 어떤 동작을 수행한다. (onError)
+
+위의 과정은 하나의 stream을 만들고, 이러한 연속적인 Operator의 적용은 함수의 연쇄적인 체이닝을 통해 구현할 수 있고, stream을 선언적으로 표현할 수 있도록 한다. 다시 말해 **Rx는 이런 함수형 패러다임과 어울리는 궁합이다**.
+
+### Rx에서 함수의 연쇄적인 체이닝 예시
+```swift
+import Foundation
+import Rxswift
+
+let disposeBag = DisposeBag()
+
+Observable.from([1, 2, 3, 4, 5])
+    .filter { $0.isMultiple(of: 2) } // 짝수만 필터링
+    .map { String($0) }              // 문자열로 변환
+    .subscribe(onNext: { 문자열숫자 in
+        print(문자열숫자)
+    })
+    .disposed(by: disposeBag)
+
+// 2
+// 4
+```
+
+--- 
+
+<img src="{{ '/assets/img/2025-03-25-[RxSwift]-RxSwift-1/image.png
+
+' | relative_url }}" alt="커스텀셀" width="70%">
+
+## 3. 반응형 프로그래밍이란?
 데이터의 흐름 및 변경사항을 전파하는 데 중점을 둔 프로그래밍 패러다임이다.   
 이 패러다임을 사용할 경우, 주변 환경/데이터 변화가 생길 때 연결된 실행 모델들이 이 이벤트를 받아 동작하도록 설계하는 방식이다. 
 
