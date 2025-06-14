@@ -149,9 +149,9 @@ Observable.from([1, 2, 3, 4, 5])
 
 <br/><br/><br/>
 
-<img src="{{ '/assets/img/2024-08-21-[ReactiveX]-ReactiveX-1/image-2-9912617.png
+<img src="{{ '/assets/img/2024-08-21-[ReactiveX]-ReactiveX-1/image-2-9913496.png' | relative_url }}" alt="커스텀셀" width="100%">
 
-' | relative_url }}" alt="커스텀셀" width="100%">
+
 
 ## 3. 반응형 프로그래밍이란?
 
