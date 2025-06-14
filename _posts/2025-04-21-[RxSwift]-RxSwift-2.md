@@ -8,7 +8,30 @@ header:
 typora-root-url: ../
 ---
 
-<img src="/assets/img/2025-03-25-[RxSwift]-RxSwift-1/image.png" alt="clean1" style="width: 70%;">
+<img src="{{ '/assets/img/2025-03-25-[RxSwift]-RxSwift-1/image.png' | relative_url }}" alt="커스텀셀" width="70%">
+
+## 1. Observable & Observer
+- 데이터를 연결해줄 수 있는 이벤트가 있고, 이 이벤트에 따라 변경되는 뷰, 로직이 있다.
+- 즉 이벤트를 방출할 수 있는 Observable가 있고, 이벤트를 처리하는 Observer가 있다.
+- Observable와 Observer를 통해 데이터의 흐름(=Stream)을 통제할 수 있고
+- Operator를 통해 Stream을 변경, 조작할 수 있다.
+
+### 사용자에게 텍스트 필드로 입력값을 받아서, 해당 입력값으로 닉네임을 저장할 때 아래의 그림과 같다.
+
+<img src="{{ '/assets/img/2025-04-21-[RxSwift]-RxSwift-2/RxObservable.drawio-9895447.png' | relative_url }}" alt="커스텀셀" width="70%">
+
+```swift
+// 코드로 구현
+nicknameTextField.rx.text
+    .orEmpty
+    .withUnretained(self)
+    .bind { vc, value in
+        vc.nickname = value
+    }
+    .disposed(by: disposeBag)
+```
+- 하지만 Observable은 subscribe를 하지 못하기 때문에 이벤트 방출만 할 수 있고 이벤트에 대한 처리는 할 수 없다.
+- Observer역시 받은 이벤트를 다른 Observer에게 전달하지 못한다.
 
 
 ## 1. Rx란?
@@ -29,20 +52,41 @@ typora-root-url: ../
 
     ```swift
     // 1. Observable은 가장 기본적인 Rx 스트림
-    let observable = Observable<Int>.just(1)
+    // 내부에서 [1, 2, 3]을 한번 방출하고 끝
+    let observable = Observable<[Int]>.just([1, 2, 3])
     
     // 2. subscribe를 통해 값을 받아 처리
     observable
-        .subscribe(onNext: { value in
-            print("Received: \(value)")
-        })
-        .disposed(by: disposeBag)
+        .subscribe(
+            onNext: { value in
+                print("Received: \(value)")
+            },
+            onError: { error in
+                print("❌ onError: \(error.localizedDescription)")
+            },
+            onCompleted: {
+                print("✅ Stream Completed")
+            },
+            onDisposed: {
+                print("🧹 Subscription Disposed")
+            }
+        ).disposed(by: disposeBag)
     ```
 
 2. Subject
+
+  - 기본 Observable은 생성될 때 방출할 값이 정해져 있고, 외부에서 값을 주입할 수 없다. 그래서 외부에서 직접 값을 전달하고 싶을 때는 Subject를 사용한다.
+  - Subject는 값을 방출할 수도 있고, 다른 Observable처럼 구독도 받을 수 있는 양방향 통로다.
   - Observable(구독 가능한 것)이면서 Observer(관찰자)
   - 일단 연결을 해두고 원하는 시점에 이벤트를 보낸다.
   - 외부에서 직접 값을 넣고, 동적인 스트림 생성(양방향)
+      ```swift
+    // "Hello"라는 값을 한번 방출하고 끝. 외부에서 바꿀 수 없음
+    Observable.just("Hello")
+    
+    // 외부에서 onNext("Hello")로 값을 보내면 그때 스트림이 시작됨
+    PublishSubject<String>()
+    ```
     - BehaviorSubject - 상태
       - 초기값 필수
       - 구독 시, 가장 최신값 1개를 즉시 전달받음
@@ -64,19 +108,22 @@ typora-root-url: ../
     - PublishSubjcet - 단방향 이벤트
       - 구독 이후 이벤트만 받음(초기값 없음)
       - 주로 이벤트 전달용
-
+    
       ```swift
       // 1. PublishSubject는 구독 이후에 발생한 이벤트만 전달
       let publishSubject = PublishSubject<String>()
-
+    
       // 2. 구독 설정
       publishSubject
           .subscribe(onNext: { print("PublishSubject:", $0) })
           .disposed(by: disposeBag)
-
-      // 3. 이벤트 발생 (구독 이후라 전달됨)
+    
+      // 3. 이벤트 직접 발생 (구독 이후라 전달됨)
       publishSubject.onNext("첫 번째 이벤트")
-      ```
+    
+      // subject는 구독을 받고, 동시에 외부에서 onNext로 값을 직접 보낼 수 있는 Observable
+      // Observable처럼 구독자를 가질 수 있고, Observer처럼 값을 외부에서 직접 넣을 수 있음 (onNext() 등)
+    ```
 
 
 3. Relay
@@ -87,12 +134,12 @@ typora-root-url: ../
       ```swift
       // 1. PublishRelay는 error가 없고 UI에 최적화된 Subject
       let publishRelay = PublishRelay<String>()
-
+      
       // 2. 구독 설정
       publishRelay
           .subscribe(onNext: { print("PublishRelay:", $0) })
           .disposed(by: disposeBag)
-
+      
       // 3. 이벤트 발생 → accept()로 전달
       publishRelay.accept("이벤트 발생!")
       ```
@@ -104,12 +151,12 @@ typora-root-url: ../
       ```swift
       // 1. BehaviorRelay는 초기값이 필요하며, 상태 저장에 적합
       let behaviorRelay = BehaviorRelay<String>(value: "기본값")
-
+      
       // 2. 구독 설정 → "기본값"이 바로 전달됨
       behaviorRelay
           .subscribe(onNext: { print("BehaviorRelay:", $0) })
           .disposed(by: disposeBag)
-
+      
       // 3. 값 업데이트 → accept() 사용
       behaviorRelay.accept("업데이트된 값")
       ```
@@ -121,15 +168,15 @@ typora-root-url: ../
         ```swift
           // 1. Relay에서 값을 가져와 Driver로 변환
         let textRelay = BehaviorRelay<String>(value: "Hello")
-
+      
         // 2. Driver로 변환 (에러 없이, MainThread에서 작동)
         let textDriver = textRelay.asDriver()
-
+      
         // 3. UI 요소에 drive (drive는 MainThread에서 UI 바인딩 시 사용)
         textDriver
             .drive(label.rx.text)
             .disposed(by: disposeBag)
-      ```
+        ```
 
 ### 구독
 1. subscribe(onNext:)
@@ -143,20 +190,20 @@ typora-root-url: ../
         ```swift
         // 1. onNext만 사용하는 기본적인 구독
         let observable = Observable.just("Hello, RxSwift!")
-
+      
         observable
             .subscribe(onNext: { value in
                 print("onNext:", value)
             })
             .disposed(by: disposeBag)
-
+      
         // 2. onNext, onError, onCompleted 모두 명시
         let observable = Observable<String>.create { observer in
             observer.onNext("첫 번째 이벤트")
             observer.onCompleted()
             return Disposables.create()
         }
-
+      
         observable
             .subscribe(
                 onNext: { print("onNext:", $0) },
@@ -165,7 +212,7 @@ typora-root-url: ../
                 onDisposed: { print("onDisposed") }
             )
             .disposed(by: disposeBag)
-      ```
+        ```
 
 
 2. bind(to:)
@@ -205,3 +252,6 @@ typora-root-url: ../
       })
       .disposed(by: disposeBag)
   ```
+
+  ## Reference
+  - https://so-kyte.tistory.com/192
