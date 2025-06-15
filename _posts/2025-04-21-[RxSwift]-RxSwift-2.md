@@ -18,31 +18,204 @@ typora-root-url: ../
 
 ### 사용자에게 텍스트 필드로 입력값을 받아서, 해당 입력값으로 닉네임을 저장할 때 아래의 그림과 같다.
 
-<img src="{{ '/assets/img/2025-04-21-[RxSwift]-RxSwift-2/RxObservable.drawio-9895447.png' | relative_url }}" alt="커스텀셀" width="70%">
+<img src="{{ '/assets/img/2025-04-21-[RxSwift]-RxSwift-2/good.png' | relative_url }}" alt="커스텀셀" width="70%">
+
+<img src="{{ '/assets/img/2025-04-21-[RxSwift]-RxSwift-2/good-9965934.png' | relative_url }}" alt="커스텀셀" width="70%">
+예시로 표현하자면 유투버(Observable)은 영상을 올리고, 구독자(Observer)는 그 영상을 구독하고 알림을 받는다.
+
+<img src="{{ '/assets/img/2025-04-21-[RxSwift]-RxSwift-2/bad2-9966743.png' | relative_url }}" alt="커스텀셀" width="70%">
+반대로 구독자(Observer)는 영상을 올리고 유투버(Observable)가 그 영상을 구독할 수 없다,
 
 ```swift
-// 코드로 구현
-nicknameTextField.rx.text
+// 가능한 방식
+nicknameTextField.rx.text            // ControlProperty<String> - UIKit 요소를 Rx로 다룰 수 있게 만든 특별한 Observable
     .orEmpty
-    .withUnretained(self)
-    .bind { vc, value in
+    .withUnretained(self)            // 메모리 누수 방지 + self 캡처
+    .bind(onNext: { vc, value in     // 텍스트 변경시마다 nickname에 저장
         vc.nickname = value
+    })
+    .disposed(by: disposeBag)        // 구독해제는 disposeBag에 맞김
+
+// 불가능한 방식
+nicknameTextField.rx.text = nickname
+```
+- Observable은 subscribe를 하지 못하기 때문에 이벤트 방출만 할 수 있고 이벤트에 대한 처리는 할 수 없다.
+- Observer역시 받은 이벤트를 다른 Observer에게 전달하지 못한다.
+- nicknameTextField.rx.text = nickname 처럼 (Observable)에 바로 nickname이벤트 전달이 안된다.
+- 이를 해결하기 위해 Observer와 Observable 역할을 모두 할 수 있는 Subject가 등장하였다.
+
+---
+
+## Subject
+- Subject는 이벤트를 발행(emit)하고 구독(subscribe)모두 할 수 있는 중간 다리 역할을 한다.
+    - Observable처럼 이벤트를 방출할 수 있고
+    - Observer처럼 다른 Observable로부터 이벤트를 받을 수 있다.    
+    - 즉 입출력이 모두 가능한 특별한 Observable 이다.
+- Subject는 4가지 종류가 있다.
+    - Publish Subject: 구독 이후에 발생한 이벤트만 전달
+    - Behavior Subject: 구독 시 마지막 이벤트 + 이후 이벤트 전달
+    - Replay Subject: 지정한 수만큼 과거 이벤트를 버퍼로 저장해 구독 시 전달
+    - Async Subject: 완료 시점에 발생한 마지막 값만 전달
+- 하지만 UI에 좀 더 적합한 형태가 필요하였고 Subject를 Wrapping한 Relay를 제공한다.
+
+---
+
+## Relay
+- Relay는 두 가지 종류가 있다.
+    - Publish Relay
+    - Behavior Relay
+- Subject와 거의 유사하지만 UI에 특화된 형태이다.
+- Subject와의 가장 큰 차이점은:
+    - Relay는 .completed와 .error 이벤트를 전달하거나 처리하지 않는다.
+
+## ❓왜 .error와 .completed를 막았을까?
+- 일반적인 Subject는 .onNext, .onCompleted, .onError 3가지 이벤트를 처리한다.
+- 그러나 UI에서 사용하는 스트림은 에러나 종료가 발생하지 않고 계속 살아 있어야 한다.
+- 만약 .error 또는 .completed 이벤트가 전달되면
+    - 스트림이 종료(disposed)되고
+    - 이후 .next 이벤트를 받을 수 없고
+    - Rx의 반응형 업데이트 흐름이 끊기게 된다.
+
+## Relay 주요 특징
+- .next 이벤트만 전달하며, accept(_:) 메서드를 통해 값을 방출한다.
+- .error, .completed는 전달하지 않기 때문에 dispose되지 않습니다.
+    - 그렇기에 Relay는 명시적으로 disposeBag에 담거나, deinit시점에 수동으로 정리해주어야 한다.
+- 항상 살아 있는 스트림이므로 UI 바인딩에 안정적으로 사용된다.
+
+---
+
+## Driver
+- UI 바인딩 특화된 Observable로, 메인스레드 보장 + 에러 무시 + 공유를 기본으로 가진 RXCocoa 전용 타입이다.
+    - 메인스레드 보장 -> .observe(on: MainScheduler.instance)가 내장
+    - 에러 발생 x -> .onError가 자동으로 무시되거나 기본값으로 대체됨
+    - 공유(share) -> 여러 곳에서 구독해도 side effect 없이 공유됨 (hot observable)
+    - Subscrive만 가능하고 값 변경 불가
+    - bind와 다르게 stream 공유가 된다.
+        - bind는 subscribe의 별칭
+        - drive는 내부적으로 share(replay: 1, scope: .whileConnected)가 구현되어 있다.
+
+## Driver가 필요한 이유
+- 일반 Observable은
+    - UI 스레드 보장 안되고
+    - 에러 발생시 스트림 끈힉고
+    - 매 구독마다 실행(side effect)이 발생할 수 있다.
+- 그래서 UI에 직접 바인딩시 Driver가 훨씬 안전하다.
+- Relay는 값을 저장 & 전달하는(Input)용
+- Driver는 UI 바인딩에 최적화된 Observable(Output)용
+
+| 항목         | `Relay`                | `Driver`                       |
+| ---------- | ---------------------- | ------------------------------ |
+| 주 용도       | ViewModel **Input 처리** | ViewModel → View **Output 전달** |
+| 에러 처리      | `.error` 불가            | `.error` 불가 + **자동 대체 필요**     |
+| 스레드 보장     | ❌ MainScheduler 보장 없음  | ✅ 항상 MainScheduler에서 실행        |
+| 공유 여부      | ❌ 직접 `.share()` 필요     | ✅ 내부적으로 `share(replay:1)` 적용됨  |
+| 값 수동 전달    | ✅ `.accept()` 사용 가능    | ❌ 수동 값 전달 불가 (`drive`로만 가능)    |
+| bind 가능 대상 | `Relay`, `Binder` 등    | `Binder`, `drive(to:)`         |
+
+--- 
+
+<br/><br/><br/>
+
+
+
+
+<!-- |  RxSwift  |  RxCocoa   |
+| :-------: | :--------: |
+| Subscribe | Bind/Drive |
+|  Subject  |   Relay    | -->
+
+## 구독 방식
+
+### 1. Subscribe
+```swift
+button.rx.tap // ControlEvent<Void> (Observable<Void>를 래핑한 타입)으로 내부적으로 .error 이벤트를 방출하지 않도록 설계되어 있어 스트림이 끊기지 않는다
+    .observe(on: MainScheduler.instance) 
+    .withUnretained(self)
+    .subscribe { vc, _ in
+        vc.label.text = "hello world
     }
     .disposed(by: disposeBag)
 ```
-- 하지만 Observable은 subscribe를 하지 못하기 때문에 이벤트 방출만 할 수 있고 이벤트에 대한 처리는 할 수 없다.
-- Observer역시 받은 이벤트를 다른 Observer에게 전달하지 못한다.
+- button.rx.tap은 Observable<Void> 타입의 ControlEvent 버튼이 탭될 때마다 이벤트를 방출한다.
+- 이 Observable를 구독한다.
+- Background Schedular에서 동작할 가능성(네트워크 통신)이 있기 때문에 Observable 데이터 흐름을 MainSchedular(메인 스레드)에서 동작할 수 있도록 변경한다.
+
+## 2. bind
+```swift
+// bind(onNext:)
+button.rx.tap 
+    .withUnretained(self)
+    .bind(onNext: { vc, _ in
+        vc.label.text = "hello"
+    })
+    .disposed(by: disposeBag)
+```
+- subscribe와 유사하지만 MainSchedular(메인 스레드)동작 보장과 Error 이벤트를 방출하지 않는 특성을 통해 스트림이 끊기지 않는다.
+
+```swift
+// bind(to:)
+// 예시1
+button.rx.tap // ControlEvent<Void> (Observable<Void>를 래핑한 타입)
+    .map { "hello world" }
+    .bind(to: label.rx.text) 
+    .disposed(by: disposeBag)
+// 예시2
+viewModel.nickname // Observable<String>
+    .bind(to: nicknameLabel.rx.text) // Binder<String>
+    .disposed(by: disposeBag)
+```
+- tap의 ControlEvent<Void>를 map Operator를 통해 데이터의 흐름을 조작한다.
+- ControlEvent<Void> 타입이 String 타입으로 변경 되면서 label.rx.text로 간단히 bind 가능하다.
+- bind(to:), bind(onNext:) 두 형태 모두 메인 스레드에서 실행되고 에러를 무시하기 때문에, UI 바인딩에 적합하다.
+
+|                          bind(to:)                           |                        bind(onNext:)                         |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+|              observable.bind(to: label.rx.text)              |          observable.bind(onNext: { value in ... })           |
+|                          UI 바인딩                           |                      클로저에서 값 처리                      |
+| `Binder<T>` 타입의 대상에만 가능 자동으로 메인 스레드에서 동작 에러 무시 | 직접 처리 가능 (print, 가공, 저장 등)<br/>에러 무시<br/>메인 스레드에서 동작 보장 |
+
+### ✅ 정리
+- bind(onNext:): 클로저 내에서 직접 처리할 때 사용
+- bind(to:): 값을 다른 Rx 객체(UI 속성, Relay 등)에 전달할 때 사용
+- 둘 다:
+    - MainSchedular에서 항상 동작하고
+    - .error 이벤트를 방출하지 않으며
+- → 결과적으로 스트림이 끊기지 않으며, UI 바인딩에 매우 안정적
 
 
-## 1. Rx란?
-파이프라인 연결이다
 
-## 2. 구성
+
+## drive
+```swift
+viewModel.nicknameDriver // Driver<String>
+    .drive(nicknameLabel.rx.text)   // drive(to: Binder<String>)
+    .disposed(by: disposeBag)
+```
+- drive는 Driver 전용 구독 연산자로,
+    - MainSchedular에서 항상 동작하고
+    - .error 이벤트를 방출하지 않으며
+    - 내부적으로 share(replay: 1)가 적용되어 여러 구독자에게 안전하게 공유된다.
+- bind(to:)와 유사하지만 Driver의 안정성을 최대한 활용하기 위한 전용 바인딩 방법이다.
+- 오직 Driver 타입에서만 사용할 수 있으며, 일반 Observable에는 사용할 수 없다.
+
+
+
+
+
+
+<!-- ## 1. Rx란?
+파이프라인 연결이다 -->
+
+--- 
+
+## 에제
+
+## 1. 구성
 - 보내는 것 - Observable
 - 연결 - subScribe
 - 중간처리 - 연산자
 
-## 3. 큰 개념
+## 2. 큰 개념
 ### 보내는 것 - 옵저버블(총알 = 구독 가능한 것)
 1. Observable
   - 가장 기본 베이스, 생성하자마자 이벤트를 전달한다
@@ -239,19 +412,41 @@ nicknameTextField.rx.text
 
 4. 비교
 
-  ```swift
-  // 1. 자동 UI 업데이트 (bind to UI)
-  viewModel.username // Observable<String>
-      .bind(to: label.rx.text) // 📲 label.text = 값
-      .disposed(by: disposeBag)
+    ```swift
+    // 1. 자동 UI 업데이트 (bind to UI)
+    viewModel.username // Observable<String>
+        .bind(to: label.rx.text) // 📲 label.text = 값
+        .disposed(by: disposeBag)
 
-  // 2. 내가 직접 프린트 (bind with closure)
-  viewModel.username
-      .bind(onNext: { name in
-          print("유저 이름은 \(name)")
-      })
-      .disposed(by: disposeBag)
-  ```
+    // 2. 내가 직접 프린트 (bind with closure)
+    viewModel.username
+        .bind(onNext: { name in
+            print("유저 이름은 \(name)")
+        })
+        .disposed(by: disposeBag)
+    ```
 
-  ## Reference
-  - https://so-kyte.tistory.com/192
+5. drive (RxCocoa 전용 UI 바인딩 방식)
+- Driver 타입만 사용할 수 있는 구독 방식
+- UI 업데이트에 특화 → MainThread 보장 + 에러 자동 무시 + 공유(share) 내장
+- .asDriver(onErrorJustReturn:) 또는 .asDriver()를 통해 변환 후 사용
+- UI 요소(UILabel, UIButton, UISwitch, etc.)에 직접 바인딩 가능
+- 내부적으로 bind(to:)와 매우 유사하지만, Driver만 사용할 수 있음
+
+    ```swift
+    // 예시 1: ViewModel의 Driver<String>을 UILabel에 바인딩
+    viewModel.nicknameDriver
+        .drive(nicknameLabel.rx.text)
+        .disposed(by: disposeBag)
+
+    // 예시 2: ViewModel의 Driver<Void>을 버튼 클릭에 바인딩
+    viewModel.didTapSomething
+        .drive(onNext: {
+            print("탭 감지됨!")
+        })
+        .disposed(by: disposeBag)
+    ```
+
+
+## Reference
+- https://so-kyte.tistory.com/192
