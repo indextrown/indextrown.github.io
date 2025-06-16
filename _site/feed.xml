@@ -1,4 +1,191 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-06-15T09:05:08+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[RxDataSource] 1. Delegate, DataSource</title><link href="http://localhost:4000/RxDataSource-RxDataSource-1/" rel="alternate" type="text/html" title="[RxDataSource] 1. Delegate, DataSource" /><published>2025-06-15T00:00:00+00:00</published><updated>2025-06-15T00:00:00+00:00</updated><id>http://localhost:4000/%5BRxDataSource%5D-RxDataSource-1</id><content type="html" xml:base="http://localhost:4000/RxDataSource-RxDataSource-1/"><![CDATA[<!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-06-16T07:17:13+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[RxDataSource] 2. CustomDatasource 만들어보기</title><link href="http://localhost:4000/RxDataSource-RxDataSource-2/" rel="alternate" type="text/html" title="[RxDataSource] 2. CustomDatasource 만들어보기" /><published>2025-06-16T00:00:00+00:00</published><updated>2025-06-16T00:00:00+00:00</updated><id>http://localhost:4000/%5BRxDataSource%5D-RxDataSource-2</id><content type="html" xml:base="http://localhost:4000/RxDataSource-RxDataSource-2/"><![CDATA[<!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
+
+<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h2 id="커스텀-데이터소스-만들어보기">커스텀 데이터소스 만들어보기</h2>
+
+<h3 id="model">Model</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">struct</span> <span class="kt">Todo</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">id</span><span class="p">:</span> <span class="kt">Int</span>
+    <span class="k">let</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span>
+    <span class="k">let</span> <span class="nv">isDone</span><span class="p">:</span> <span class="kt">Bool</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="cell">Cell</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="c1">// MARK: - Cell</span>
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">RxCell</span><span class="p">:</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
+    
+    <span class="c1">// 디버깅용</span>
+    <span class="k">var</span> <span class="nv">cellData</span><span class="p">:</span> <span class="kt">Todo</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">isDoneSwitch</span><span class="p">:</span> <span class="kt">UISwitch</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">sw</span> <span class="o">=</span> <span class="kt">UISwitch</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">sw</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">titleLabel</span><span class="p">:</span> <span class="kt">UILabel</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">label</span> <span class="o">=</span> <span class="kt">UILabel</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">label</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">idLabel</span><span class="p">:</span> <span class="kt">UILabel</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">label</span> <span class="o">=</span> <span class="kt">UILabel</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">label</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">vStack</span><span class="p">:</span> <span class="kt">UIStackView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">st</span> <span class="o">=</span> <span class="kt">UIStackView</span><span class="p">(</span><span class="nv">arrangedSubviews</span><span class="p">:</span> <span class="p">[</span><span class="n">titleLabel</span><span class="p">,</span> <span class="n">idLabel</span><span class="p">])</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="o">.</span><span class="n">vertical</span>
+        <span class="k">return</span> <span class="n">st</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">hStack</span><span class="p">:</span> <span class="kt">UIStackView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">st</span> <span class="o">=</span> <span class="kt">UIStackView</span><span class="p">(</span><span class="nv">arrangedSubviews</span><span class="p">:</span> <span class="p">[</span><span class="n">vStack</span><span class="p">,</span> <span class="n">isDoneSwitch</span><span class="p">])</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="o">.</span><span class="n">horizontal</span>
+        <span class="k">return</span> <span class="n">st</span>
+    <span class="p">}()</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">prepareForReuse</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">prepareForReuse</span><span class="p">()</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"prepareForReuse() - cellData.id: </span><span class="se">\(</span><span class="n">cellData</span><span class="p">?</span><span class="o">.</span><span class="n">id</span> <span class="p">??</span> <span class="mi">0</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// 원래는 awakefromnib을 타지만 코드로 UI를 진행한다면 awakefromnib을 타지 않는다.</span>
+    <span class="k">override</span> <span class="nf">init</span><span class="p">(</span><span class="nv">style</span><span class="p">:</span> <span class="kt">UITableViewCell</span><span class="o">.</span><span class="kt">CellStyle</span><span class="p">,</span> <span class="nv">reuseIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">?)</span> <span class="p">{</span>
+        <span class="c1">/// 부모의 로직을 싱행시키는 의미</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">style</span><span class="p">:</span> <span class="n">style</span><span class="p">,</span> <span class="nv">reuseIdentifier</span><span class="p">:</span> <span class="n">reuseIdentifier</span><span class="p">)</span>
+        <span class="nf">makeUI</span><span class="p">()</span>
+        <span class="nf">constraints</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">required</span> <span class="nf">init</span><span class="p">?(</span><span class="nv">coder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">fatalError</span><span class="p">(</span><span class="s">"init(coder:) has not been implemented"</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="p">[</span><span class="n">hStack</span><span class="p">]</span><span class="o">.</span><span class="n">forEach</span> <span class="p">{</span>
+            <span class="n">contentView</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span>
+            <span class="nv">$0</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">constraints</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">hStack</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">contentView</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">10</span><span class="p">),</span>
+            <span class="n">hStack</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">contentView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">10</span><span class="p">),</span>
+            <span class="n">hStack</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">contentView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">10</span><span class="p">),</span>
+            <span class="n">hStack</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">contentView</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">10</span><span class="p">),</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">RxCell</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">configure</span><span class="p">(</span><span class="n">with</span> <span class="nv">todo</span><span class="p">:</span> <span class="kt">Todo</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">cellData</span> <span class="o">=</span> <span class="n">todo</span>
+        <span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">todo</span><span class="o">.</span><span class="n">title</span>
+        <span class="n">idLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">"ID: </span><span class="se">\(</span><span class="n">todo</span><span class="o">.</span><span class="n">id</span><span class="se">)</span><span class="s">"</span>
+        <span class="n">isDoneSwitch</span><span class="o">.</span><span class="n">isOn</span> <span class="o">=</span> <span class="n">todo</span><span class="o">.</span><span class="n">isDone</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="customdatasource">CustomDataSource</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">final</span> <span class="kd">class</span> <span class="kt">CustomDataSource</span><span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">UITableViewDataSource</span> <span class="p">{</span>
+    
+    <span class="k">var</span> <span class="nv">todoList</span><span class="p">:</span> <span class="p">[</span><span class="kt">Todo</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">var</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+    
+    <span class="nf">init</span><span class="p">(</span><span class="nv">todoList</span><span class="p">:</span> <span class="p">[</span><span class="kt">Todo</span><span class="p">],</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">todoList</span> <span class="o">=</span> <span class="n">todoList</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">tableView</span> <span class="o">=</span> <span class="n">tableView</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="n">register</span><span class="o">&lt;</span><span class="kt">T</span><span class="p">:</span> <span class="kt">UITableViewCell</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">cellType</span><span class="p">:</span> <span class="kt">T</span><span class="o">.</span><span class="k">Type</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">tableView</span><span class="p">?</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="n">cellType</span><span class="p">,</span> <span class="nv">forCellReuseIdentifier</span><span class="p">:</span> <span class="kt">T</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - UITableView Datasource Methods</span>
+    <span class="c1">/// 하나의 섹션에 몇개의 rows가 있냐</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">numberOfRowsInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">todoList</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+    
+    
+    <span class="c1">// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라</span>
+    <span class="c1">/// - indexPath: 셀의 위치를 나타내는 인덱스 경로</span>
+    <span class="c1">/// - returns: 구성된 UITableViewCell 객체</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">cellForRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
+        
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="kt">RxCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">RxCell</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
+        <span class="p">}</span>
+        
+        <span class="k">let</span> <span class="nv">cellData</span><span class="p">:</span> <span class="kt">Todo</span> <span class="o">=</span> <span class="n">todoList</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">]</span>
+        <span class="n">cell</span><span class="o">.</span><span class="nf">configure</span><span class="p">(</span><span class="nv">with</span><span class="p">:</span> <span class="n">cellData</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">cell</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="viewcontroller">ViewController</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">final</span> <span class="kd">class</span> <span class="kt">CustomDataSourceVC</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">todoList</span><span class="p">:</span> <span class="p">[</span><span class="kt">Todo</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="kt">Todo</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">title</span><span class="p">:</span> <span class="s">"RxSwift 공부하기"</span><span class="p">,</span> <span class="nv">isDone</span><span class="p">:</span> <span class="kc">false</span><span class="p">),</span>
+        <span class="kt">Todo</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nv">title</span><span class="p">:</span> <span class="s">"UI 구성하기"</span><span class="p">,</span> <span class="nv">isDone</span><span class="p">:</span> <span class="kc">false</span><span class="p">),</span>
+        <span class="kt">Todo</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nv">title</span><span class="p">:</span> <span class="s">"코드 리뷰"</span><span class="p">,</span> <span class="nv">isDone</span><span class="p">:</span> <span class="kc">false</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="kd">private</span> <span class="k">var</span> <span class="nv">customDataSource</span><span class="p">:</span> <span class="kt">CustomDataSource</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+    
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">myTableView</span><span class="p">:</span> <span class="kt">UITableView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">tv</span> <span class="o">=</span> <span class="kt">UITableView</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">tv</span>
+    <span class="p">}()</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="nf">makeUI</span><span class="p">()</span>
+        <span class="nf">constraints</span><span class="p">()</span>
+        <span class="nf">setCustomDataSource</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">setCustomDataSource</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// 1️⃣ dataSource 생성</span>
+        <span class="k">let</span> <span class="nv">dataSource</span> <span class="o">=</span> <span class="kt">CustomDataSource</span><span class="p">(</span><span class="nv">todoList</span><span class="p">:</span> <span class="n">todoList</span><span class="p">,</span> <span class="nv">tableView</span><span class="p">:</span> <span class="n">myTableView</span><span class="p">)</span>
+        
+        <span class="c1">// 2️⃣ register 호출 (이 시점에 tableView는 이미 존재함)</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="nv">cellType</span><span class="p">:</span> <span class="kt">RxCell</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>
+        
+        <span class="c1">// 3️⃣ 연결</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">customDataSource</span> <span class="o">=</span> <span class="n">dataSource</span>
+        <span class="n">myTableView</span><span class="o">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="n">dataSource</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="p">[</span><span class="n">myTableView</span><span class="p">]</span><span class="o">.</span><span class="n">forEach</span> <span class="p">{</span>
+            <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span>
+            <span class="nv">$0</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">constraints</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">myTableView</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">),</span>
+            <span class="n">myTableView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">),</span>
+            <span class="n">myTableView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">),</span>
+            <span class="n">myTableView</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">)</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+<p>현재 CustomDataSource단점이 Todos에만 연결되어 있고, 어떤 셀을 보여줄것인지에 대한 것이 제한적이다. 매개변수를 활용하여 유연하게 만들어보자. 즉 로직을 밖으로 빼자</p>]]></content><author><name>Dong Hyeon</name></author><category term="ReactiveX" /><category term="RxDataSource" /><summary type="html"><![CDATA[커스텀 데이터소스 만들어보기 Model struct Todo { let id: Int let title: String let isDone: Bool } Cell import UIKit // MARK: - Cell final class RxCell: UITableViewCell { // 디버깅용 var cellData: Todo? = nil private lazy var isDoneSwitch: UISwitch = { let sw = UISwitch() return sw }() private lazy var titleLabel: UILabel = { let label = UILabel() return label }() private lazy var idLabel: UILabel = { let label = UILabel() return label }() private lazy var vStack: UIStackView = { let st = UIStackView(arrangedSubviews: [titleLabel, idLabel]) st.axis = .vertical return st }() private lazy var hStack: UIStackView = { let st = UIStackView(arrangedSubviews: [vStack, isDoneSwitch]) st.axis = .horizontal return st }() override func prepareForReuse() { super.prepareForReuse() print(#fileID, #function, #line, "prepareForReuse() - cellData.id: \(cellData?.id ?? 0)") } // 원래는 awakefromnib을 타지만 코드로 UI를 진행한다면 awakefromnib을 타지 않는다. override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) { /// 부모의 로직을 싱행시키는 의미 super.init(style: style, reuseIdentifier: reuseIdentifier) makeUI() constraints() } required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") } private func makeUI() { [hStack].forEach { contentView.addSubview($0) $0.translatesAutoresizingMaskIntoConstraints = false } } private func constraints() { NSLayoutConstraint.activate([ hStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10), hStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10), hStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10), hStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10), ]) } } extension RxCell { func configure(with todo: Todo) { self.cellData = todo titleLabel.text = todo.title idLabel.text = "ID: \(todo.id)" isDoneSwitch.isOn = todo.isDone } } CustomDataSource final class CustomDataSource: NSObject, UITableViewDataSource { var todoList: [Todo] = [] var tableView: UITableView? = nil init(todoList: [Todo], tableView: UITableView) { self.todoList = todoList self.tableView = tableView } func register&lt;T: UITableViewCell&gt;(cellType: T.Type) { tableView?.register(cellType, forCellReuseIdentifier: T.reuseIdentifier) } // MARK: - UITableView Datasource Methods /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return todoList.count } // 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 /// - returns: 구성된 UITableViewCell 객체 func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { guard let cell = tableView.dequeueReusableCell(withIdentifier: RxCell.reuseIdentifier, for: indexPath) as? RxCell else { return UITableViewCell() } let cellData: Todo = todoList[indexPath.row] cell.configure(with: cellData) return cell } } ViewController final class CustomDataSourceVC: UIViewController { private let todoList: [Todo] = [ Todo(id: 0, title: "RxSwift 공부하기", isDone: false), Todo(id: 1, title: "UI 구성하기", isDone: false), Todo(id: 2, title: "코드 리뷰", isDone: false) ] private var customDataSource: CustomDataSource? = nil private let myTableView: UITableView = { let tv = UITableView() return tv }() override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() setCustomDataSource() } private func setCustomDataSource() { // 1️⃣ dataSource 생성 let dataSource = CustomDataSource(todoList: todoList, tableView: myTableView) // 2️⃣ register 호출 (이 시점에 tableView는 이미 존재함) dataSource.register(cellType: RxCell.self) // 3️⃣ 연결 self.customDataSource = dataSource myTableView.dataSource = dataSource } private func makeUI() { [myTableView].forEach { view.addSubview($0) $0.translatesAutoresizingMaskIntoConstraints = false } } private func constraints() { NSLayoutConstraint.activate([ myTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), myTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor), myTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor), myTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor) ]) } } 현재 CustomDataSource단점이 Todos에만 연결되어 있고, 어떤 셀을 보여줄것인지에 대한 것이 제한적이다. 매개변수를 활용하여 유연하게 만들어보자. 즉 로직을 밖으로 빼자]]></summary></entry><entry><title type="html">[RxDataSource] 1. Delegate, DataSource</title><link href="http://localhost:4000/RxDataSource-RxDataSource-1/" rel="alternate" type="text/html" title="[RxDataSource] 1. Delegate, DataSource" /><published>2025-06-15T00:00:00+00:00</published><updated>2025-06-15T00:00:00+00:00</updated><id>http://localhost:4000/%5BRxDataSource%5D-RxDataSource-1</id><content type="html" xml:base="http://localhost:4000/RxDataSource-RxDataSource-1/"><![CDATA[<!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
 
 <!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
@@ -86,7 +273,6 @@ numberOfRowsInSection – 셀의 개수<br />
 cellForRowAt – 각 셀에 들어갈 내용과 셀 객체 반환</p>
 
 <h2 id="예시">예시</h2>
-
 <p>UITableView나 UICollectionView는 셀을 스크롤할 때마다 필요한 셀만 메모리에 올리고, 보이지 않으면 메모리에서 제거한 뒤 재활용한다.<br />
 이로 인해 성능을 크게 향상시킬 수 있으며, 이 재활용 과정에서 각 셀의 개수와 내용은 dataSource가, 셀 선택 등의 사용자 이벤트는 delegate가 처리한다.</p>]]></content><author><name>Dong Hyeon</name></author><category term="ReactiveX" /><category term="RxDataSource" /><summary type="html"><![CDATA[iOS 메모리 재활용 iOS와 같은 휴대용 기기에서 메모리를 많이 사용하는 앱이 있을 경우 시스템이 앱을 종료시킬 수 있다. 이는 메모리 사용량이 배터리 소모와 직결되기 때문이다. 따라서 iOS는 화면에 보일때만 메모리에 올리고 안보일때는 메모리에서 내리자 = 즉 재활용(dequeReusable)하자는 개념이 등장했다. 재사용 큐(dequeueReusableCell) 개념 UITableView는 메모리 효율을 위해 스크롤이 끝난 셀을 메모리에서 제거하지 않고 재사용한다. 재사용 가능한 셀들을 큐에 저장되며, 새로운 셀이 필요하면 다시 꺼내서 데이터를 덮어씌운다. 화면에 막 등장하려는 셀 (셀6) 아직 완전히 보이지 않더라도, 곧 보여질 예정이라 미리 메모리에 할당됨 (preload 개념) 아직 안 보이는 셀 (셀7) 이 셀은 아직 메모리에 올라가지 않음 스크롤로 화면에 나타나게 되면 그때 cellForRowAt이 호출되어 메모리에 할당됨 let cell = tableView.dequeueReusableCell(withIdentifier: “MyCell”, for: indexPath) // 셀 재활용 핵심 코드 시점 메서드 / 동작 설명 셀 사라질 때 prepareForReuse() 셀의 상태 초기화 셀 필요할 때 dequeueReusableCell 재사용 큐에서 꺼냄 (없으면 새로 생성) 셀 화면 진입 시 cellForRowAt 셀에 실제 데이터를 채워 넣음 Delegate란? delegate는 대리자라는 뜻으로 어떤 객체의 특정 행동을 대신 처리해주는 객체이다. 예를 들어 UITableView는 셀을 선택시 어떤 동작을 할지 알지 못한다. 대신 그 역할을 외부 객체(보통 viewController)에게 위임한다. 이런 위임 구조가 delegate 패턴이다. 즉 delegate는 사용자의 행동(이벤트)에 대한 처리를 맡는다 ex) 셀 선택시 스크롤이 시작되었을 때 등 DataSource란? dataSource는 delegate와 비슷하게 동작하지만, 데이터 자체에 대한 정보를 제공한다. 예를 들어 UITableView나 UICollectionView는 수많은 데이터를 표시할 수 있는 UI 컴포넌트인데, 다음과 같은 질문을 던진다. 몇 개의 셀을 보여줘야 하지? 각 셀에는 어떤 내용을 넣어야 하지? 이러한 질문에 답해주는 것이 바로 DataSource이다. DataSource는 주로 다음 두 가지 메서드를 구현해야 한다. numberOfRowsInSection – 셀의 개수 cellForRowAt – 각 셀에 들어갈 내용과 셀 객체 반환 예시 UITableView나 UICollectionView는 셀을 스크롤할 때마다 필요한 셀만 메모리에 올리고, 보이지 않으면 메모리에서 제거한 뒤 재활용한다. 이로 인해 성능을 크게 향상시킬 수 있으며, 이 재활용 과정에서 각 셀의 개수와 내용은 dataSource가, 셀 선택 등의 사용자 이벤트는 delegate가 처리한다.]]></summary></entry><entry><title type="html">[TableView] 14. DiffableDataSource</title><link href="http://localhost:4000/UIKit-tableView14/" rel="alternate" type="text/html" title="[TableView] 14. DiffableDataSource" /><published>2025-06-14T00:00:00+00:00</published><updated>2025-06-14T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-tableView14</id><content type="html" xml:base="http://localhost:4000/UIKit-tableView14/"><![CDATA[<!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
 
@@ -389,318 +575,7 @@ cellForRowAt – 각 셀에 들어갈 내용과 셀 객체 반환</p>
 <h2 id="reference">Reference</h2>
 <ul>
   <li>https://ios-development.tistory.com/963</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="CustomView" /><summary type="html"><![CDATA[UIKit 세그먼 컨트롤 커스텀 사용법 // // CustomSegmentControlVC.swift // UIComponentTutorial // // Created by 김동현 on 6/2/25. // import UIKit final class CustomSegmentControl: UISegmentedControl { // MARK: - UI private let underlineView: UIView = { let view = UIView() view.backgroundColor = .black return view }() private var underlineLeadingConstraint: NSLayoutConstraint! private var underlineWidthConstraint: NSLayoutConstraint! private let underlineHeight: CGFloat = 4.0 // 원하는 두께로 변경 override init(frame: CGRect) { super.init(frame: frame) setup() } override init(items: [Any]?) { super.init(items: items) setup() } required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") } private func setup() { self.removeBackgroundAndDivider() underlineView.backgroundColor = .black underlineView.translatesAutoresizingMaskIntoConstraints = false underlineView.layer.cornerRadius = 0 addSubview(underlineView) NSLayoutConstraint.activate([ ]) // 초기 제약조건 let width = bounds.width &gt; 0 ? bounds.width / CGFloat(numberOfSegments) : 0 underlineLeadingConstraint = underlineView.leadingAnchor.constraint(equalTo: leadingAnchor) underlineWidthConstraint = underlineView.widthAnchor.constraint(equalToConstant: width) NSLayoutConstraint.activate([ underlineLeadingConstraint, underlineWidthConstraint, underlineView.bottomAnchor.constraint(equalTo: bottomAnchor), underlineView.heightAnchor.constraint(equalToConstant: 20) ]) } override func layoutSubviews() { super.layoutSubviews() // 항상 최신 크기/위치 반영 updateUnderlinePosition(animated: false) } func updateUnderlinePosition(animated: Bool = true) { let width = bounds.width / CGFloat(numberOfSegments) let leading = CGFloat(selectedSegmentIndex) * width underlineWidthConstraint.constant = width underlineLeadingConstraint.constant = leading if animated { UIView.animate(withDuration: 0.15) { self.layoutIfNeeded() } } else { self.layoutIfNeeded() } } private func removeBackgroundAndDivider() { let image = UIImage() setBackgroundImage(image, for: .normal, barMetrics: .default) setBackgroundImage(image, for: .selected, barMetrics: .default) setBackgroundImage(image, for: .highlighted, barMetrics: .default) setDividerImage(image, forLeftSegmentState: .selected, rightSegmentState: .normal, barMetrics: .default) } } final class CustomSegmentControlVC: UIViewController { private let segmentedControl: UISegmentedControl = { let segment = UISegmentedControl(items: ["첫번째", "두번째", "세번째"]) segment.translatesAutoresizingMaskIntoConstraints = false segment.selectedSegmentIndex = 0 // 스타일 커스텀 segment.setTitleTextAttributes([ NSAttributedString.Key.foregroundColor: UIColor.gray ], for: .normal) segment.setTitleTextAttributes([ NSAttributedString.Key.foregroundColor: UIColor.invertedSystemBackground, .font: UIFont.systemFont(ofSize: 15, weight: .bold) ], for: .selected) segment.selectedSegmentTintColor = .clear let image = UIImage() segment.setBackgroundImage(image, for: .normal, barMetrics: .default) segment.setBackgroundImage(image, for: .selected, barMetrics: .default) segment.setBackgroundImage(image, for: .highlighted, barMetrics: .default) segment.setDividerImage(image, forLeftSegmentState: .selected, rightSegmentState: .normal, barMetrics: .default) return segment }() private let underlineView: UIView = { let view = UIView() view.backgroundColor = .invertedSystemBackground view.layer.cornerRadius = 0 return view }() private let vc1: UIViewController = { let vc = UIViewController() vc.view.backgroundColor = .red return vc }() private let vc2: UIViewController = { let vc = UIViewController() vc.view.backgroundColor = .blue return vc }() private let vc3: UIViewController = { let vc = UIViewController() vc.view.backgroundColor = .green return vc }() var dataViewControllers: [UIViewController] { [vc1, vc2, vc3] } private lazy var pageViewController: UIPageViewController = { let vc = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal) vc.setViewControllers([self.dataViewControllers[0]], direction: .forward, animated: true) vc.delegate = self vc.dataSource = self vc.view.translatesAutoresizingMaskIntoConstraints = false return vc }() var currentPage: Int = 0 { didSet { let direction: UIPageViewController.NavigationDirection = oldValue &lt;= self.currentPage ? .forward : .reverse self.pageViewController.setViewControllers( [dataViewControllers[self.currentPage]], direction: direction, animated: true, completion: nil ) moveUnderline(animated: true) } } override func viewDidLoad() { super.viewDidLoad() self.view.addSubview(self.segmentedControl) self.view.addSubview(self.underlineView) self.view.addSubview(self.pageViewController.view) NSLayoutConstraint.activate([ segmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor), segmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor), segmentedControl.topAnchor.constraint(equalTo: view.topAnchor, constant: 80), segmentedControl.heightAnchor.constraint(equalToConstant: 50), pageViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor), pageViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor), pageViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor), pageViewController.view.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor), ]) // 언더라인의 높이와 최초 위치 설정 (width, x는 viewDidLayoutSubviews에서) underlineView.frame = CGRect(x: 0, y: 0, width: 0, height: 4) segmentedControl.addTarget(self, action: #selector(changeValue(control:)), for: .valueChanged) segmentedControl.selectedSegmentIndex = 0 changeValue(control: segmentedControl) } override func viewDidLayoutSubviews() { super.viewDidLayoutSubviews() // 최초 렌더링 시 언더라인 위치 정확히 세팅 moveUnderline(animated: false) // 언더라인의 y위치를 세그먼트 하단에 맞추기 let segFrame = segmentedControl.frame underlineView.frame.origin.y = segFrame.maxY - 4 underlineView.frame.size.height = 4 } @objc private func changeValue(control: UISegmentedControl) { self.currentPage = control.selectedSegmentIndex } /// 언더라인 이동 (frame 연산) private func moveUnderline(animated: Bool) { let segFrame = segmentedControl.frame let segmentCount = CGFloat(segmentedControl.numberOfSegments) let segmentWidth = segFrame.width / segmentCount let targetX = segFrame.minX + segmentWidth * CGFloat(segmentedControl.selectedSegmentIndex) let newFrame = CGRect(x: targetX, y: segFrame.maxY - 4, width: segmentWidth, height: 4) if animated { UIView.animate(withDuration: 0.2) { self.underlineView.frame = newFrame } } else { self.underlineView.frame = newFrame } } } extension CustomSegmentControlVC: UIPageViewControllerDataSource, UIPageViewControllerDelegate { func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -&gt; UIViewController? { guard let index = self.dataViewControllers.firstIndex(of: viewController), index - 1 &gt;= 0 else { return nil } return self.dataViewControllers[index - 1] } func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -&gt; UIViewController? { guard let index = self.dataViewControllers.firstIndex(of: viewController), index + 1 &lt; self.dataViewControllers.count else { return nil } return self.dataViewControllers[index + 1] } func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) { guard let viewController = pageViewController.viewControllers?[0], let index = self.dataViewControllers.firstIndex(of: viewController) else { return } self.currentPage = index self.segmentedControl.selectedSegmentIndex = index self.moveUnderline(animated: true) } } #Preview { CustomSegmentControlVC() } extension UIColor { static var invertedSystemBackground: UIColor { return UIColor { traitCollection in switch traitCollection.userInterfaceStyle { case .dark: // 다크 모드에서는 밝은 배경색 return .white default: // 라이트 모드에서는 어두운 배경색 return .black } } } } Reference https://ios-development.tistory.com/963]]></summary></entry><entry><title type="html">[Haruhancut] Widget</title><link href="http://localhost:4000/Haruhancut-Widget/" rel="alternate" type="text/html" title="[Haruhancut] Widget" /><published>2025-05-30T00:00:00+00:00</published><updated>2025-05-30T00:00:00+00:00</updated><id>http://localhost:4000/%5BHaruhancut%5D-Widget</id><content type="html" xml:base="http://localhost:4000/Haruhancut-Widget/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h2 id="widget-도입">Widget 도입</h2>
-<p>하루한컷 앱에 위젯을 추가하여 앱의 사진을 위젯으로 보여주려고 한다.</p>
-
-<h2 id="기존-번들-식별자에-app-groups-체크-및-저장">기존 번들 식별자에 App Groups 체크 및 저장</h2>
-<p>Identifiers에서 com.indextrown.Haruhancut를 찾아서 App Groups 체크박스를 추가 및 저장한다.</p>
-
-<h3 id="1-위젯용-번들-식별자-준비">1. 위젯용 번들 식별자 준비</h3>
-<p><img src="/assets/img/2025-05-30-%5BHaruhancut%5D-Widget/image-20250610145644562.png" alt="이미지" width="30%" /><br />
-com.indextrown.Haruhancut.WidgetExtension로 번들 식별자를 만들고 App Groups만 체크해준다.<br />
-이제 프로비저닝 프로파일을 만들건데 편의를 위해 fastlane을 사용하겠다.</p>
-
-<h3 id="2-프로비저닝-프로파일-만들기">2. 프로비저닝 프로파일 만들기</h3>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 기존 프로젝트가 이거면  </span>
-<span class="c"># match Development com.indextrown.Haruhancut</span>
-
-<span class="c"># 위젯은 아래와 같이 프로비저닝 프로파일을 만들어준다.   </span>
-<span class="c"># match Development com.indextrown.Haruhancut.WidgetExtension</span>
-
-<span class="c"># 개발용</span>
-fastlane match development <span class="nt">--app_identifier</span> <span class="s2">"com.indextrown.Haruhancut.WidgetExtension"</span>
-
-<span class="c"># 배포용</span>
-fastlane match appstore <span class="nt">--app_identifier</span> <span class="s2">"com.indextrown.Haruhancut.WidgetExtension"</span>
-
-<span class="c"># ⚠️Provisioning profile "" doesn't include signing ...발생시</span>
-fastlane match development <span class="nt">--force</span>
-fastlane match appstore <span class="nt">--force</span>  
-</code></pre></div></div>
-
-<h3 id="3-widget-extension-생성">3. Widget Extension 생성</h3>
-
-<ul>
-  <li>Targets목록 아래 + 버튼 눌러서 WIdget Extension 생성한다.</li>
-</ul>
-
-<h3 id="4-app-groups-설정">4. App Groups 설정</h3>
-<p>기존 프로젝트와 WIdgetExtension 프로젝트에 각각 App Groups 추가한다.</p>
-
-<h2 id="widgetkit">WidgetKit</h2>
-<ul>
-  <li>iOS 14부터 도입되었으며 SwiftUI로만 구현 가능하다.</li>
-  <li>UIViewRepresentable 불가능하다.</li>
-</ul>
-
-<h3 id="widget-configuration속성-편집에-대한-기능">Widget COnfiguration(속성 편집에 대한 기능)</h3>
-<ul>
-  <li>Static configuration
-    <ul>
-      <li>위젯 편집 항목이 나타나지 않으며, 사용자가 설정을 변경할 수 있는 옵션이 없다.</li>
-    </ul>
-  </li>
-  <li>Intent Configuration
-    <ul>
-      <li>위젯 편집 기능을 통해 여러 Intent 값을 수정할 수 있도록 위젯을 구성할 수 있다.</li>
-      <li>iOS 17부터 AppIntentCOnfiguration으로 변경</li>
-    </ul>
-  </li>
-  <li>Activity Configuration
-    <ul>
-      <li>Live Activity</li>
-    </ul>
-  </li>
-</ul>
-
-<h3 id="widget은-크게-4가지의-struct로-구성">Widget은 크게 4가지의 struct로 구성</h3>
-
-<p><img src="/assets/img/2025-05-30-%5BHaruhancut%5D-Widget/image-20250610173933798.png" alt="이미지" width="30%" /></p>
-
-<ul>
-  <li>Provider에서 사용자가 설정한 시간에 맞춰 위젯을 업데이트할 수 있게 한다</li>
-  <li>Entry에서 위젯에 필요한 데이터를 제공한다</li>
-  <li>EntryView는 Entry를 통해 구성하며, UI를 담당하는 역할과 유사하다</li>
-  <li>Widget에서는 static, intent, activity인지에 따라 최종적인 위젯을 구성한다</li>
-</ul>
-
-<h2 id="reference">Reference</h2>
-<ul>
-  <li>https://velog.io/@s_sub/새싹-iOS-20주차</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Haruhancut" /><summary type="html"><![CDATA[Widget 도입 하루한컷 앱에 위젯을 추가하여 앱의 사진을 위젯으로 보여주려고 한다. 기존 번들 식별자에 App Groups 체크 및 저장 Identifiers에서 com.indextrown.Haruhancut를 찾아서 App Groups 체크박스를 추가 및 저장한다. 1. 위젯용 번들 식별자 준비 com.indextrown.Haruhancut.WidgetExtension로 번들 식별자를 만들고 App Groups만 체크해준다. 이제 프로비저닝 프로파일을 만들건데 편의를 위해 fastlane을 사용하겠다. 2. 프로비저닝 프로파일 만들기 # 기존 프로젝트가 이거면 # match Development com.indextrown.Haruhancut # 위젯은 아래와 같이 프로비저닝 프로파일을 만들어준다. # match Development com.indextrown.Haruhancut.WidgetExtension # 개발용 fastlane match development --app_identifier "com.indextrown.Haruhancut.WidgetExtension" # 배포용 fastlane match appstore --app_identifier "com.indextrown.Haruhancut.WidgetExtension" # ⚠️Provisioning profile "" doesn't include signing ...발생시 fastlane match development --force fastlane match appstore --force 3. Widget Extension 생성 Targets목록 아래 + 버튼 눌러서 WIdget Extension 생성한다. 4. App Groups 설정 기존 프로젝트와 WIdgetExtension 프로젝트에 각각 App Groups 추가한다. WidgetKit iOS 14부터 도입되었으며 SwiftUI로만 구현 가능하다. UIViewRepresentable 불가능하다. Widget COnfiguration(속성 편집에 대한 기능) Static configuration 위젯 편집 항목이 나타나지 않으며, 사용자가 설정을 변경할 수 있는 옵션이 없다. Intent Configuration 위젯 편집 기능을 통해 여러 Intent 값을 수정할 수 있도록 위젯을 구성할 수 있다. iOS 17부터 AppIntentCOnfiguration으로 변경 Activity Configuration Live Activity Widget은 크게 4가지의 struct로 구성 Provider에서 사용자가 설정한 시간에 맞춰 위젯을 업데이트할 수 있게 한다 Entry에서 위젯에 필요한 데이터를 제공한다 EntryView는 Entry를 통해 구성하며, UI를 담당하는 역할과 유사하다 Widget에서는 static, intent, activity인지에 따라 최종적인 위젯을 구성한다 Reference https://velog.io/@s_sub/새싹-iOS-20주차]]></summary></entry><entry><title type="html">[CustomView] 커스텀 캘린더뷰 만들기</title><link href="http://localhost:4000/CustomView-CalendarView/" rel="alternate" type="text/html" title="[CustomView] 커스텀 캘린더뷰 만들기" /><published>2025-05-30T00:00:00+00:00</published><updated>2025-05-30T00:00:00+00:00</updated><id>http://localhost:4000/%5BCustomView%5D-CalendarView</id><content type="html" xml:base="http://localhost:4000/CustomView-CalendarView/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h1 id="ios-16부터-기본-제공되는-캘린더">iOS 16부터 기본 제공되는 캘린더</h1>
-
-<h3 id="기본-캘린더">기본 캘린더</h3>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
-
-<span class="kd">final</span> <span class="kd">class</span> <span class="kt">BasicCalendarViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
-    
-    <span class="c1">// MARK: - UI Conponent</span>
-    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">calendarView</span><span class="p">:</span> <span class="kt">UICalendarView</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="kt">UICalendarView</span><span class="p">()</span>
-        <span class="n">view</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
-        <span class="c1">/// 점이나 뱃지 표시 등 달력 Custom 하기 위해 설정해야 하는 속성</span>
-        <span class="n">view</span><span class="o">.</span><span class="n">wantsDateDecorations</span> <span class="o">=</span> <span class="kc">true</span>
-        <span class="k">return</span> <span class="n">view</span>
-    <span class="p">}()</span>
-   
-    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
-        
-        <span class="nf">makeUI</span><span class="p">()</span>
-        <span class="nf">constraints</span><span class="p">()</span>
-    <span class="p">}</span>
-    
-    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
-        <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="n">calendarView</span><span class="p">)</span>
-    <span class="p">}</span>
-    
-    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">constraints</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">calendarViewConstraints</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">calendarView</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">),</span>
-            <span class="n">calendarView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">20</span><span class="p">),</span>
-            <span class="n">calendarView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">20</span><span class="p">)</span>
-        <span class="p">]</span>
-        
-        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">(</span><span class="n">calendarViewConstraints</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<h3 id="uicalendarselectionsingledatedelegate를-설정하여-날짜-선택시-이모지-표시">UICalendarSelectionSingleDateDelegate를 설정하여 날짜 선택시 이모지 표시</h3>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
-
-<span class="kd">final</span> <span class="kd">class</span> <span class="kt">BasicCalendarViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
-    
-    <span class="c1">/// 현재 선택된 날짜</span>
-    <span class="k">var</span> <span class="nv">selectedDate</span><span class="p">:</span> <span class="kt">DateComponents</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
-    
-    <span class="c1">// MARK: - UI Conponent</span>
-    <span class="c1">/// 날짜별 데코레이션(점, 이모지 등)을 지원하는 캘린더 뷰</span>
-    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">calendarView</span><span class="p">:</span> <span class="kt">UICalendarView</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="kt">UICalendarView</span><span class="p">()</span>
-        <span class="n">view</span><span class="o">.</span><span class="n">locale</span> <span class="o">=</span> <span class="kt">Locale</span><span class="p">(</span><span class="nv">identifier</span><span class="p">:</span> <span class="s">"ko_KR"</span><span class="p">)</span>
-        <span class="n">view</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
-        <span class="c1">/// 점이나 뱃지 표시 등 달력 Custom 하기 위해 설정해야 하는 속성</span>
-        <span class="n">view</span><span class="o">.</span><span class="n">wantsDateDecorations</span> <span class="o">=</span> <span class="kc">true</span>
-        <span class="k">return</span> <span class="n">view</span>
-    <span class="p">}()</span>
-   
-    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
-        
-        <span class="k">self</span><span class="o">.</span><span class="nf">makeUI</span><span class="p">()</span>
-        <span class="k">self</span><span class="o">.</span><span class="nf">constraints</span><span class="p">()</span>
-        <span class="k">self</span><span class="o">.</span><span class="nf">setCalendar</span><span class="p">()</span>
-    <span class="p">}</span>
-    
-    <span class="c1">/// 캘린더 delegate 및 날짜 선택 동작 설정</span>
-    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">setCalendar</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">calendarView</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
-        
-        <span class="c1">/// 한 번에 한 날짜만 선택 가능</span>
-        <span class="k">let</span> <span class="nv">dateSection</span> <span class="o">=</span> <span class="kt">UICalendarSelectionSingleDate</span><span class="p">(</span><span class="nv">delegate</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span>
-        <span class="c1">/// 선택 이벤트(날짜 선택 시 콜백)를 BasicCalendarViewController에서 직접 처리하겠다</span>
-        <span class="n">calendarView</span><span class="o">.</span><span class="n">selectionBehavior</span> <span class="o">=</span> <span class="n">dateSection</span>
-    <span class="p">}</span>
-    
-    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
-        <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="n">calendarView</span><span class="p">)</span>
-    <span class="p">}</span>
-    
-    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">constraints</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">calendarViewConstraints</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">calendarView</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">),</span>
-            <span class="n">calendarView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">20</span><span class="p">),</span>
-            <span class="n">calendarView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">20</span><span class="p">)</span>
-        <span class="p">]</span>
-        
-        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">(</span><span class="n">calendarViewConstraints</span><span class="p">)</span>
-    <span class="p">}</span>
-    
-    <span class="c1">/// 특정 날짜 셀만 데코레이션 새로고침(이모지 추가)</span>
-    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">reloadDateView</span><span class="p">(</span><span class="nv">date</span><span class="p">:</span> <span class="kt">Date</span><span class="p">?)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="n">date</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
-        <span class="k">let</span> <span class="nv">calendar</span> <span class="o">=</span> <span class="kt">Calendar</span><span class="o">.</span><span class="n">current</span>
-        <span class="n">calendarView</span><span class="o">.</span><span class="nf">reloadDecorations</span><span class="p">(</span><span class="nv">forDateComponents</span><span class="p">:</span> <span class="p">[</span><span class="n">calendar</span><span class="o">.</span><span class="nf">dateComponents</span><span class="p">([</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="o">.</span><span class="n">year</span><span class="p">],</span> <span class="nv">from</span><span class="p">:</span> <span class="n">date</span><span class="o">!</span><span class="p">)],</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="c1">// MARK: - 캘린더 Delegate</span>
-<span class="kd">extension</span> <span class="kt">BasicCalendarViewController</span><span class="p">:</span> <span class="kt">UICalendarViewDelegate</span><span class="p">,</span> <span class="kt">UICalendarSelectionSingleDateDelegate</span> <span class="p">{</span>
-    
-    <span class="c1">/// 날짜별 데코레이션 표시 커스텀(필요시 구현)</span>
-    <span class="c1">/// 선택된 날자의 셀에 이모지로 커스텀 데코레이션을 보여준다</span>
-    <span class="kd">func</span> <span class="nf">calendarView</span><span class="p">(</span><span class="n">_</span> <span class="nv">calendarView</span><span class="p">:</span> <span class="kt">UICalendarView</span><span class="p">,</span> <span class="n">decorationFor</span> <span class="nv">dateComponents</span><span class="p">:</span> <span class="kt">DateComponents</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UICalendarView</span><span class="o">.</span><span class="kt">Decoration</span><span class="p">?</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="k">let</span> <span class="nv">selectedDate</span> <span class="o">=</span> <span class="n">selectedDate</span><span class="p">,</span> <span class="n">selectedDate</span> <span class="o">==</span> <span class="n">dateComponents</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="o">.</span><span class="n">customView</span> <span class="p">{</span>
-                <span class="k">let</span> <span class="nv">label</span> <span class="o">=</span> <span class="kt">UILabel</span><span class="p">()</span>
-                <span class="n">label</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">"🐶"</span>
-                <span class="n">label</span><span class="o">.</span><span class="n">textAlignment</span> <span class="o">=</span> <span class="o">.</span><span class="n">center</span>
-                <span class="k">return</span> <span class="n">label</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="kc">nil</span>
-    <span class="p">}</span>
-    
-    <span class="c1">/// 날짜 선택 시 동작</span>
-    <span class="kd">func</span> <span class="nf">dateSelection</span><span class="p">(</span><span class="n">_</span> <span class="nv">selection</span><span class="p">:</span> <span class="kt">UICalendarSelectionSingleDate</span><span class="p">,</span> <span class="n">didSelectDate</span> <span class="nv">dateComponents</span><span class="p">:</span> <span class="kt">DateComponents</span><span class="p">?)</span> <span class="p">{</span>
-        <span class="c1">/// selection 객체에 저장</span>
-        <span class="n">selection</span><span class="o">.</span><span class="nf">setSelected</span><span class="p">(</span><span class="n">dateComponents</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
-        <span class="c1">/// selectedDate 프로퍼티를 업데이트</span>
-        <span class="n">selectedDate</span> <span class="o">=</span> <span class="n">dateComponents</span>
-        <span class="c1">/// 선택한 날짜 셀의 데코레이션만 새로고침(🐶 이모지가 바로 반영되게)</span>
-        <span class="nf">reloadDateView</span><span class="p">(</span><span class="nv">date</span><span class="p">:</span> <span class="kt">Calendar</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="nf">date</span><span class="p">(</span><span class="nv">from</span><span class="p">:</span> <span class="n">dateComponents</span><span class="o">!</span><span class="p">))</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p><img src="/assets/img/2025-05-30-%5BCustomView%5D-CalendarView/image-20250530145103523.png" alt="이미지" width="50%" /></p>
-
-<div align="center">참고: 한국어로 설정해도 시뮬레이터에서는 요일이 영어로 보이는 버그가 있다.
-</div>
-
-<p><img src="/assets/img/2025-05-30-%5BCustomView%5D-CalendarView/image-20250604141453258.png" alt="이미지" width="50%" /></p>
-
-<h3 id="커스텀-캘린더">커스텀 캘린더</h3>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//</span>
-<span class="c1">//  1. CustomCalendar.swift</span>
-<span class="c1">//  UIComponentTutorial</span>
-<span class="c1">//</span>
-<span class="c1">//  Created by 김동현 on 6/4/25.</span>
-<span class="c1">//</span>
-
-<span class="kd">import</span> <span class="kt">UIKit</span>
-<span class="kd">import</span> <span class="kt">FSCalendar</span>
-
-<span class="kd">final</span> <span class="kd">class</span> <span class="kt">CustomCalendarVC</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
-    
-    <span class="c1">// MARK: - UI Component</span>
-    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">calendarView</span><span class="p">:</span> <span class="kt">FSCalendar</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">calendar</span> <span class="o">=</span> <span class="kt">FSCalendar</span><span class="p">()</span>
-        
-        <span class="c1">// 첫 열을 월요일로 설정</span>
-        <span class="n">calendar</span><span class="o">.</span><span class="n">firstWeekday</span> <span class="o">=</span> <span class="mi">2</span>
-        
-        <span class="c1">// week 또는 month 가능</span>
-        <span class="n">calendar</span><span class="o">.</span><span class="n">scope</span> <span class="o">=</span> <span class="o">.</span><span class="n">month</span>
-        
-        <span class="n">calendar</span><span class="o">.</span><span class="n">scrollEnabled</span> <span class="o">=</span> <span class="kc">true</span>
-        <span class="n">calendar</span><span class="o">.</span><span class="n">locale</span> <span class="o">=</span> <span class="kt">Locale</span><span class="p">(</span><span class="nv">identifier</span><span class="p">:</span> <span class="s">"ko_KR"</span><span class="p">)</span>
-        
-        <span class="c1">// 현재 달의 날짜들만 표기하도록 설정</span>
-        <span class="n">calendar</span><span class="o">.</span><span class="n">placeholderType</span> <span class="o">=</span> <span class="o">.</span><span class="k">none</span>
-        
-        <span class="c1">// 헤더뷰 설정</span>
-        <span class="n">calendar</span><span class="o">.</span><span class="n">headerHeight</span> <span class="o">=</span> <span class="mi">55</span>
-        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">headerDateFormat</span> <span class="o">=</span> <span class="s">"MM월"</span>
-        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">headerTitleColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span>
-        
-        <span class="c1">// 요일 UI 설정</span>
-        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">weekdayFont</span> <span class="o">=</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">light</span><span class="p">)</span>
-        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">weekdayTextColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span>
-        
-        <span class="c1">// 날짜별 UI 설정</span>
-        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">titleTodayColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
-        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">titleFont</span> <span class="o">=</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">light</span><span class="p">)</span>
-        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">subtitleFont</span> <span class="o">=</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">light</span><span class="p">)</span>
-        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">subtitleTodayColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">systemYellow</span>
-        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">todayColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">gray</span>
-        
-        <span class="c1">// 일요일 라벨의 textColor는 red로 설정</span>
-        <span class="n">calendar</span><span class="o">.</span><span class="n">calendarWeekdayView</span><span class="o">.</span><span class="n">weekdayLabels</span><span class="o">.</span><span class="n">last</span><span class="o">!.</span><span class="n">textColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">red</span>
-        <span class="k">return</span> <span class="n">calendar</span>
-    <span class="p">}()</span>
-    
-    <span class="c1">// MARK: - Life Cycle</span>
-    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
-        <span class="nf">makeUI</span><span class="p">()</span>
-        <span class="nf">constraints</span><span class="p">()</span>
-    <span class="p">}</span>
-    
-    <span class="c1">// MARK: - UI Setting</span>
-    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
-        
-        <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="n">calendarView</span><span class="p">)</span>
-        <span class="n">calendarView</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
-    <span class="p">}</span>
-    
-    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">constraints</span><span class="p">()</span> <span class="p">{</span>
-        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
-            <span class="n">calendarView</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">0</span><span class="p">),</span>
-            <span class="n">calendarView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">20</span><span class="p">),</span>
-            <span class="n">calendarView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">20</span><span class="p">),</span>
-            <span class="n">calendarView</span><span class="o">.</span><span class="n">heightAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalToConstant</span><span class="p">:</span> <span class="mi">500</span><span class="p">)</span>
-        <span class="p">])</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="cp">#Preview {</span>
-    <span class="kt">CustomCalendarVC</span><span class="p">()</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<h2 id="reference">Reference</h2>
-
-<ul>
-  <li>https://ohwhatisthis.tistory.com/23</li>
-  <li>https://maramincho.tistory.com/106</li>
-  <li>https://dongdida.tistory.com/128</li>
-  <li>https://velog.io/@xanxnu/iOSSwift-UICalendarView-사용해-보기</li>
-  <li>https://lsj8706.tistory.com/4</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="CustomView" /><summary type="html"><![CDATA[iOS 16부터 기본 제공되는 캘린더 기본 캘린더 import UIKit final class BasicCalendarViewController: UIViewController { // MARK: - UI Conponent private lazy var calendarView: UICalendarView = { let view = UICalendarView() view.translatesAutoresizingMaskIntoConstraints = false /// 점이나 뱃지 표시 등 달력 Custom 하기 위해 설정해야 하는 속성 view.wantsDateDecorations = true return view }() override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() } private func makeUI() { view.backgroundColor = .white view.addSubview(calendarView) } private func constraints() { let calendarViewConstraints = [ calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), calendarView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20), calendarView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20) ] NSLayoutConstraint.activate(calendarViewConstraints) } } UICalendarSelectionSingleDateDelegate를 설정하여 날짜 선택시 이모지 표시 import UIKit final class BasicCalendarViewController: UIViewController { /// 현재 선택된 날짜 var selectedDate: DateComponents? = nil // MARK: - UI Conponent /// 날짜별 데코레이션(점, 이모지 등)을 지원하는 캘린더 뷰 private lazy var calendarView: UICalendarView = { let view = UICalendarView() view.locale = Locale(identifier: "ko_KR") view.translatesAutoresizingMaskIntoConstraints = false /// 점이나 뱃지 표시 등 달력 Custom 하기 위해 설정해야 하는 속성 view.wantsDateDecorations = true return view }() override func viewDidLoad() { super.viewDidLoad() self.makeUI() self.constraints() self.setCalendar() } /// 캘린더 delegate 및 날짜 선택 동작 설정 private func setCalendar() { self.calendarView.delegate = self /// 한 번에 한 날짜만 선택 가능 let dateSection = UICalendarSelectionSingleDate(delegate: self) /// 선택 이벤트(날짜 선택 시 콜백)를 BasicCalendarViewController에서 직접 처리하겠다 calendarView.selectionBehavior = dateSection } private func makeUI() { view.backgroundColor = .white view.addSubview(calendarView) } private func constraints() { let calendarViewConstraints = [ calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), calendarView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20), calendarView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20) ] NSLayoutConstraint.activate(calendarViewConstraints) } /// 특정 날짜 셀만 데코레이션 새로고침(이모지 추가) private func reloadDateView(date: Date?) { if date == nil { return } let calendar = Calendar.current calendarView.reloadDecorations(forDateComponents: [calendar.dateComponents([.day, .month, .year], from: date!)], animated: true) } } // MARK: - 캘린더 Delegate extension BasicCalendarViewController: UICalendarViewDelegate, UICalendarSelectionSingleDateDelegate { /// 날짜별 데코레이션 표시 커스텀(필요시 구현) /// 선택된 날자의 셀에 이모지로 커스텀 데코레이션을 보여준다 func calendarView(_ calendarView: UICalendarView, decorationFor dateComponents: DateComponents) -&gt; UICalendarView.Decoration? { if let selectedDate = selectedDate, selectedDate == dateComponents { return .customView { let label = UILabel() label.text = "🐶" label.textAlignment = .center return label } } return nil } /// 날짜 선택 시 동작 func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) { /// selection 객체에 저장 selection.setSelected(dateComponents, animated: true) /// selectedDate 프로퍼티를 업데이트 selectedDate = dateComponents /// 선택한 날짜 셀의 데코레이션만 새로고침(🐶 이모지가 바로 반영되게) reloadDateView(date: Calendar.current.date(from: dateComponents!)) } } 참고: 한국어로 설정해도 시뮬레이터에서는 요일이 영어로 보이는 버그가 있다. 커스텀 캘린더 // // 1. CustomCalendar.swift // UIComponentTutorial // // Created by 김동현 on 6/4/25. // import UIKit import FSCalendar final class CustomCalendarVC: UIViewController { // MARK: - UI Component private lazy var calendarView: FSCalendar = { let calendar = FSCalendar() // 첫 열을 월요일로 설정 calendar.firstWeekday = 2 // week 또는 month 가능 calendar.scope = .month calendar.scrollEnabled = true calendar.locale = Locale(identifier: "ko_KR") // 현재 달의 날짜들만 표기하도록 설정 calendar.placeholderType = .none // 헤더뷰 설정 calendar.headerHeight = 55 calendar.appearance.headerDateFormat = "MM월" calendar.appearance.headerTitleColor = .black // 요일 UI 설정 calendar.appearance.weekdayFont = UIFont.systemFont(ofSize: 17, weight: .light) calendar.appearance.weekdayTextColor = .black // 날짜별 UI 설정 calendar.appearance.titleTodayColor = .white calendar.appearance.titleFont = UIFont.systemFont(ofSize: 16, weight: .light) calendar.appearance.subtitleFont = UIFont.systemFont(ofSize: 10, weight: .light) calendar.appearance.subtitleTodayColor = .systemYellow calendar.appearance.todayColor = .gray // 일요일 라벨의 textColor는 red로 설정 calendar.calendarWeekdayView.weekdayLabels.last!.textColor = .red return calendar }() // MARK: - Life Cycle override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() } // MARK: - UI Setting private func makeUI() { view.backgroundColor = .white view.addSubview(calendarView) calendarView.translatesAutoresizingMaskIntoConstraints = false } private func constraints() { NSLayoutConstraint.activate([ calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0), calendarView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20), calendarView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20), calendarView.heightAnchor.constraint(equalToConstant: 500) ]) } } #Preview { CustomCalendarVC() } Reference https://ohwhatisthis.tistory.com/23 https://maramincho.tistory.com/106 https://dongdida.tistory.com/128 https://velog.io/@xanxnu/iOSSwift-UICalendarView-사용해-보기 https://lsj8706.tistory.com/4]]></summary></entry><entry><title type="html">[CustomView] Segmented Control 기본</title><link href="http://localhost:4000/CustomView-Segmented-Control/" rel="alternate" type="text/html" title="[CustomView] Segmented Control 기본" /><published>2025-05-30T00:00:00+00:00</published><updated>2025-05-30T00:00:00+00:00</updated><id>http://localhost:4000/%5BCustomView%5D-Segmented%20Control</id><content type="html" xml:base="http://localhost:4000/CustomView-Segmented-Control/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="CustomView" /><summary type="html"><![CDATA[UIKit 세그먼 컨트롤 커스텀 사용법 // // CustomSegmentControlVC.swift // UIComponentTutorial // // Created by 김동현 on 6/2/25. // import UIKit final class CustomSegmentControl: UISegmentedControl { // MARK: - UI private let underlineView: UIView = { let view = UIView() view.backgroundColor = .black return view }() private var underlineLeadingConstraint: NSLayoutConstraint! private var underlineWidthConstraint: NSLayoutConstraint! private let underlineHeight: CGFloat = 4.0 // 원하는 두께로 변경 override init(frame: CGRect) { super.init(frame: frame) setup() } override init(items: [Any]?) { super.init(items: items) setup() } required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") } private func setup() { self.removeBackgroundAndDivider() underlineView.backgroundColor = .black underlineView.translatesAutoresizingMaskIntoConstraints = false underlineView.layer.cornerRadius = 0 addSubview(underlineView) NSLayoutConstraint.activate([ ]) // 초기 제약조건 let width = bounds.width &gt; 0 ? bounds.width / CGFloat(numberOfSegments) : 0 underlineLeadingConstraint = underlineView.leadingAnchor.constraint(equalTo: leadingAnchor) underlineWidthConstraint = underlineView.widthAnchor.constraint(equalToConstant: width) NSLayoutConstraint.activate([ underlineLeadingConstraint, underlineWidthConstraint, underlineView.bottomAnchor.constraint(equalTo: bottomAnchor), underlineView.heightAnchor.constraint(equalToConstant: 20) ]) } override func layoutSubviews() { super.layoutSubviews() // 항상 최신 크기/위치 반영 updateUnderlinePosition(animated: false) } func updateUnderlinePosition(animated: Bool = true) { let width = bounds.width / CGFloat(numberOfSegments) let leading = CGFloat(selectedSegmentIndex) * width underlineWidthConstraint.constant = width underlineLeadingConstraint.constant = leading if animated { UIView.animate(withDuration: 0.15) { self.layoutIfNeeded() } } else { self.layoutIfNeeded() } } private func removeBackgroundAndDivider() { let image = UIImage() setBackgroundImage(image, for: .normal, barMetrics: .default) setBackgroundImage(image, for: .selected, barMetrics: .default) setBackgroundImage(image, for: .highlighted, barMetrics: .default) setDividerImage(image, forLeftSegmentState: .selected, rightSegmentState: .normal, barMetrics: .default) } } final class CustomSegmentControlVC: UIViewController { private let segmentedControl: UISegmentedControl = { let segment = UISegmentedControl(items: ["첫번째", "두번째", "세번째"]) segment.translatesAutoresizingMaskIntoConstraints = false segment.selectedSegmentIndex = 0 // 스타일 커스텀 segment.setTitleTextAttributes([ NSAttributedString.Key.foregroundColor: UIColor.gray ], for: .normal) segment.setTitleTextAttributes([ NSAttributedString.Key.foregroundColor: UIColor.invertedSystemBackground, .font: UIFont.systemFont(ofSize: 15, weight: .bold) ], for: .selected) segment.selectedSegmentTintColor = .clear let image = UIImage() segment.setBackgroundImage(image, for: .normal, barMetrics: .default) segment.setBackgroundImage(image, for: .selected, barMetrics: .default) segment.setBackgroundImage(image, for: .highlighted, barMetrics: .default) segment.setDividerImage(image, forLeftSegmentState: .selected, rightSegmentState: .normal, barMetrics: .default) return segment }() private let underlineView: UIView = { let view = UIView() view.backgroundColor = .invertedSystemBackground view.layer.cornerRadius = 0 return view }() private let vc1: UIViewController = { let vc = UIViewController() vc.view.backgroundColor = .red return vc }() private let vc2: UIViewController = { let vc = UIViewController() vc.view.backgroundColor = .blue return vc }() private let vc3: UIViewController = { let vc = UIViewController() vc.view.backgroundColor = .green return vc }() var dataViewControllers: [UIViewController] { [vc1, vc2, vc3] } private lazy var pageViewController: UIPageViewController = { let vc = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal) vc.setViewControllers([self.dataViewControllers[0]], direction: .forward, animated: true) vc.delegate = self vc.dataSource = self vc.view.translatesAutoresizingMaskIntoConstraints = false return vc }() var currentPage: Int = 0 { didSet { let direction: UIPageViewController.NavigationDirection = oldValue &lt;= self.currentPage ? .forward : .reverse self.pageViewController.setViewControllers( [dataViewControllers[self.currentPage]], direction: direction, animated: true, completion: nil ) moveUnderline(animated: true) } } override func viewDidLoad() { super.viewDidLoad() self.view.addSubview(self.segmentedControl) self.view.addSubview(self.underlineView) self.view.addSubview(self.pageViewController.view) NSLayoutConstraint.activate([ segmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor), segmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor), segmentedControl.topAnchor.constraint(equalTo: view.topAnchor, constant: 80), segmentedControl.heightAnchor.constraint(equalToConstant: 50), pageViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor), pageViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor), pageViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor), pageViewController.view.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor), ]) // 언더라인의 높이와 최초 위치 설정 (width, x는 viewDidLayoutSubviews에서) underlineView.frame = CGRect(x: 0, y: 0, width: 0, height: 4) segmentedControl.addTarget(self, action: #selector(changeValue(control:)), for: .valueChanged) segmentedControl.selectedSegmentIndex = 0 changeValue(control: segmentedControl) } override func viewDidLayoutSubviews() { super.viewDidLayoutSubviews() // 최초 렌더링 시 언더라인 위치 정확히 세팅 moveUnderline(animated: false) // 언더라인의 y위치를 세그먼트 하단에 맞추기 let segFrame = segmentedControl.frame underlineView.frame.origin.y = segFrame.maxY - 4 underlineView.frame.size.height = 4 } @objc private func changeValue(control: UISegmentedControl) { self.currentPage = control.selectedSegmentIndex } /// 언더라인 이동 (frame 연산) private func moveUnderline(animated: Bool) { let segFrame = segmentedControl.frame let segmentCount = CGFloat(segmentedControl.numberOfSegments) let segmentWidth = segFrame.width / segmentCount let targetX = segFrame.minX + segmentWidth * CGFloat(segmentedControl.selectedSegmentIndex) let newFrame = CGRect(x: targetX, y: segFrame.maxY - 4, width: segmentWidth, height: 4) if animated { UIView.animate(withDuration: 0.2) { self.underlineView.frame = newFrame } } else { self.underlineView.frame = newFrame } } } extension CustomSegmentControlVC: UIPageViewControllerDataSource, UIPageViewControllerDelegate { func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -&gt; UIViewController? { guard let index = self.dataViewControllers.firstIndex(of: viewController), index - 1 &gt;= 0 else { return nil } return self.dataViewControllers[index - 1] } func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -&gt; UIViewController? { guard let index = self.dataViewControllers.firstIndex(of: viewController), index + 1 &lt; self.dataViewControllers.count else { return nil } return self.dataViewControllers[index + 1] } func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) { guard let viewController = pageViewController.viewControllers?[0], let index = self.dataViewControllers.firstIndex(of: viewController) else { return } self.currentPage = index self.segmentedControl.selectedSegmentIndex = index self.moveUnderline(animated: true) } } #Preview { CustomSegmentControlVC() } extension UIColor { static var invertedSystemBackground: UIColor { return UIColor { traitCollection in switch traitCollection.userInterfaceStyle { case .dark: // 다크 모드에서는 밝은 배경색 return .white default: // 라이트 모드에서는 어두운 배경색 return .black } } } } Reference https://ios-development.tistory.com/963]]></summary></entry><entry><title type="html">[CustomView] Segmented Control 기본</title><link href="http://localhost:4000/CustomView-Segmented-Control/" rel="alternate" type="text/html" title="[CustomView] Segmented Control 기본" /><published>2025-05-30T00:00:00+00:00</published><updated>2025-05-30T00:00:00+00:00</updated><id>http://localhost:4000/%5BCustomView%5D-Segmented%20Control</id><content type="html" xml:base="http://localhost:4000/CustomView-Segmented-Control/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
@@ -1074,7 +949,318 @@ fastlane match appstore <span class="nt">--force</span>
   <li>https://chokotingchock.tistory.com/entry/스위프트-UIKit-custom-segmented-control</li>
   <li>https://velog.io/@panther222128/UISegmentedControl-and-UITableView</li>
   <li>https://ios-development.tistory.com/962</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="CustomView" /><summary type="html"><![CDATA[UIKit 세그먼 컨트롤 커스텀 사용법 import UIKit final class SegmentControlVC: UIViewController { // MARK: - UI Component private lazy var segmentControl: UISegmentedControl = { let segment = UISegmentedControl() segment.insertSegment(withTitle: "피드", at: 0, animated: true) segment.insertSegment(withTitle: "캘린더", at: 1, animated: true) segment.selectedSegmentIndex = 0 /// 탭의 글자 색상 및 폰트 커스텀 (일반/선택 상태별로 다르게) segment.setTitleTextAttributes([ NSAttributedString.Key.foregroundColor: UIColor.systemGray2, NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1) ], for: .normal) segment.setTitleTextAttributes([ NSAttributedString.Key.foregroundColor: UIColor.black, NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1) ], for: .selected) /// Segment 선택되었을 때 변하는 tintColor 제거 segment.selectedSegmentTintColor = .clear /// divider 제거 segment.setDividerImage(UIImage(), forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: .default) /// 값이 변경될 때 underline 애니메이션을 위한 타겟 액션 등록 segment.addTarget(self, action: #selector(changeUnderLinePosition), for: .valueChanged) return segment }() private let underLineView: UIView = { let view = UIView() view.backgroundColor = .black return view }() override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() } private func makeUI() { view.backgroundColor = .white [segmentControl, underLineView].forEach { view.addSubview($0) $0.translatesAutoresizingMaskIntoConstraints = false } // 세그먼트 회색 이미지를 흰색으로 설정 segmentControl.setBackgroundImage(imageWithColor(.white), for: .normal, barMetrics: .default) } private func constraints() { NSLayoutConstraint.activate([ /// segmentControl: 화면 중앙, 가로 폭은 safeArea의 40%, 높이 20 segmentControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), segmentControl.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor), segmentControl.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.4), segmentControl.heightAnchor.constraint(equalToConstant: 20), /// underLineView: 세그먼트 하단에 배치, 가로폭은 세그먼트의 50% (즉, 한 탭과 크기 동일), 높이 2 underLineView.topAnchor.constraint(equalTo: segmentControl.bottomAnchor, constant: 10), underLineView.leadingAnchor.constraint(equalTo: segmentControl.leadingAnchor), underLineView.widthAnchor.constraint(equalTo: segmentControl.widthAnchor, multiplier: 0.5), underLineView.heightAnchor.constraint(equalToConstant: 2) ]) } @objc private func changeUnderLinePosition(_ segment: UISegmentedControl) { let halfWidth = segmentControl.frame.width / 2 let xPosition = segmentControl.frame.origin.x + (halfWidth * CGFloat(segmentControl.selectedSegmentIndex)) UIView.animate(withDuration: 0.2) { self.underLineView.frame.origin.x = xPosition } } } extension SegmentControlVC { // 흰색 배경 이미지를 만들어주는 함수 /// 원하는 색의 1x32 사이즈 이미지를 만드는 함수 (세그먼트 배경 이미지용) private func imageWithColor(_ color: UIColor, size: CGSize = CGSize(width: 1, height: 32)) -&gt; UIImage { UIGraphicsBeginImageContextWithOptions(size, false, 0) color.setFill() UIRectFill(CGRect(origin: .zero, size: size)) let image = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage() UIGraphicsEndImageContext() return image } } #Preview { SegmentControlVC() } import UIKit final class SegmentControlVC: UIViewController { // MARK: - UI Component private lazy var segmentControl: UISegmentedControl = { let segment = UISegmentedControl() segment.insertSegment(withTitle: "피드", at: 0, animated: true) segment.insertSegment(withTitle: "캘린더", at: 1, animated: true) segment.selectedSegmentIndex = 0 /// 탭의 글자 색상 및 폰트 커스텀 (일반/선택 상태별로 다르게) segment.setTitleTextAttributes([ NSAttributedString.Key.foregroundColor: UIColor.systemGray2, NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1) ], for: .normal) segment.setTitleTextAttributes([ NSAttributedString.Key.foregroundColor: UIColor.black, NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1) ], for: .selected) /// Segment 선택되었을 때 변하는 tintColor 제거 segment.selectedSegmentTintColor = .clear /// divider 제거 segment.setDividerImage(UIImage(), forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: .default) /// 값이 변경될 때 underline 애니메이션을 위한 타겟 액션 등록 segment.addTarget(self, action: #selector(changeUnderLinePosition), for: .valueChanged) segment.addTarget(self, action: #selector(segmentChanged), for: .valueChanged) return segment }() private let underLineView: UIView = { let view = UIView() view.backgroundColor = .black return view }() private let aView: UIView = { let view = UIView() view.backgroundColor = .systemTeal return view }() private let bView: UIView = { let view = UIView() view.backgroundColor = .systemYellow return view }() // MARK: - LifeCycle override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() updateViewForSelectedSegment() } private func makeUI() { view.backgroundColor = .white [segmentControl, underLineView, aView, bView].forEach { view.addSubview($0) $0.translatesAutoresizingMaskIntoConstraints = false } // 세그먼트 회색 이미지를 흰색으로 설정 segmentControl.setBackgroundImage(imageWithColor(.white), for: .normal, barMetrics: .default) } private func constraints() { NSLayoutConstraint.activate([ /// segmentControl: 화면 중앙, 가로 폭은 safeArea의 40%, 높이 20 segmentControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), segmentControl.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor), segmentControl.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.4), segmentControl.heightAnchor.constraint(equalToConstant: 20), /// underLineView: 세그먼트 하단에 배치, 가로폭은 세그먼트의 50% (즉, 한 탭과 크기 동일), 높이 2 underLineView.topAnchor.constraint(equalTo: segmentControl.bottomAnchor, constant: 10), underLineView.leadingAnchor.constraint(equalTo: segmentControl.leadingAnchor), underLineView.widthAnchor.constraint(equalTo: segmentControl.widthAnchor, multiplier: 0.5), underLineView.heightAnchor.constraint(equalToConstant: 2), // aView aView.topAnchor.constraint(equalTo: underLineView.bottomAnchor, constant: 0), aView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor), aView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor), aView.bottomAnchor.constraint(equalTo: view.bottomAnchor), // bView bView.topAnchor.constraint(equalTo: underLineView.bottomAnchor, constant: 0), bView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor), bView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor), bView.bottomAnchor.constraint(equalTo: view.bottomAnchor), ]) } } extension SegmentControlVC { /// 세그먼트 값 변경 시 언더라인(Indicator) 이동 애니메이션 @objc private func changeUnderLinePosition(_ segment: UISegmentedControl) { let halfWidth = segmentControl.frame.width / 2 let xPosition = segmentControl.frame.origin.x + (halfWidth * CGFloat(segmentControl.selectedSegmentIndex)) UIView.animate(withDuration: 0.2) { self.underLineView.frame.origin.x = xPosition } } // 흰색 배경 이미지를 만들어주는 함수 /// 원하는 색의 1x32 사이즈 이미지를 만드는 함수 (세그먼트 배경 이미지용) private func imageWithColor(_ color: UIColor, size: CGSize = CGSize(width: 1, height: 32)) -&gt; UIImage { UIGraphicsBeginImageContextWithOptions(size, false, 0) color.setFill() UIRectFill(CGRect(origin: .zero, size: size)) let image = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage() UIGraphicsEndImageContext() return image } // 세그먼트 탭 전환시 뷰 보이기 /숨기기 @objc private func segmentChanged(_ segment: UISegmentedControl) { updateViewForSelectedSegment() } /// 현재 선택된 인덱스에 따라 aView/bView만 보이도록 처리 private func updateViewForSelectedSegment() { aView.isHidden = segmentControl.selectedSegmentIndex != 0 bView.isHidden = segmentControl.selectedSegmentIndex != 1 } } #Preview { SegmentControlVC() } 커스텀View /// 상단 탭바+Indicator 커스텀 UIView (재사용 가능) final class SegmentedTabBarView: UIView { // MARK: - Properties private let segmentControl: UISegmentedControl private let underlineView: UIView = { let view = UIView() view.backgroundColor = .mainWhite return view }() private var underlineLeadingConstraint: NSLayoutConstraint! // 선택된 인덱스 콜백 var onIndexChanged: ((Int) -&gt; Void)? // MARK: - Init init(items: [String]) { self.segmentControl = UISegmentedControl(items: items) super.init(frame: .zero) makeUI() constraints() setSelected(index: 0, animated: false) } required init?(coder: NSCoder) { fatalError() } // MARK: - UI private func makeUI() { // 커스텀 스타일 segmentControl.selectedSegmentIndex = 0 // 미선택시 segmentControl.setTitleTextAttributes([ .foregroundColor: UIColor.systemGray2, .font: UIFont.hcFont(.light, size: 20.scaled) ], for: .normal) // 선택시 segmentControl.setTitleTextAttributes([ .foregroundColor: UIColor.mainWhite, .font: UIFont.hcFont(.bold, size: 20.scaled) ], for: .selected) segmentControl.selectedSegmentTintColor = .clear segmentControl.setDividerImage(UIImage(), forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: .default) segmentControl.setBackgroundImage(imageWithColor(.mainBlack), for: .normal, barMetrics: .default) segmentControl.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged) addSubview(segmentControl) addSubview(underlineView) } private func constraints() { segmentControl.translatesAutoresizingMaskIntoConstraints = false underlineView.translatesAutoresizingMaskIntoConstraints = false NSLayoutConstraint.activate([ segmentControl.topAnchor.constraint(equalTo: topAnchor), segmentControl.leadingAnchor.constraint(equalTo: leadingAnchor), segmentControl.trailingAnchor.constraint(equalTo: trailingAnchor), segmentControl.bottomAnchor.constraint(equalTo: bottomAnchor), underlineView.topAnchor.constraint(equalTo: segmentControl.bottomAnchor, constant: 5), underlineView.heightAnchor.constraint(equalToConstant: 2), underlineView.widthAnchor.constraint(equalTo: segmentControl.widthAnchor, multiplier: 1 / CGFloat(segmentControl.numberOfSegments)) ]) // 밑줄의 leading 제약조건은 따로 저장해 이동시킨다 underlineLeadingConstraint = underlineView.leadingAnchor.constraint(equalTo: segmentControl.leadingAnchor) underlineLeadingConstraint.isActive = true } // MARK: - Action @objc private func segmentChanged(_ sender: UISegmentedControl) { setSelected(index: sender.selectedSegmentIndex, animated: true) onIndexChanged?(sender.selectedSegmentIndex) } // 인덱스 바꾸기 + 밑줄 이동 func setSelected(index: Int, animated: Bool) { let segmentWidth = segmentControl.frame.width / CGFloat(segmentControl.numberOfSegments) underlineLeadingConstraint.constant = segmentWidth * CGFloat(index) if animated { UIView.animate(withDuration: 0.2) { self.layoutIfNeeded() } } else { self.layoutIfNeeded() } segmentControl.selectedSegmentIndex = index } // 유틸: 흰색 배경 이미지 만들기 private func imageWithColor(_ color: UIColor, size: CGSize = CGSize(width: 1, height: 32)) -&gt; UIImage { UIGraphicsBeginImageContextWithOptions(size, false, 0) color.setFill() UIRectFill(CGRect(origin: .zero, size: size)) let image = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage() UIGraphicsEndImageContext() return image } } // SegmentedTabBarView.swift extension SegmentedTabBarView { /// 원하는 segment의 title을 동적으로 변경 func setSegmentTitle(_ title: String, at index: Int) { segmentControl.setTitle(title, forSegmentAt: index) } } Reference https://chokotingchock.tistory.com/entry/스위프트-UIKit-custom-segmented-control https://velog.io/@panther222128/UISegmentedControl-and-UITableView https://ios-development.tistory.com/962]]></summary></entry><entry><title type="html">[Ubuntu] 우분투 원격 서버 설정</title><link href="http://localhost:4000/Ubuntu-Ubuntu1/" rel="alternate" type="text/html" title="[Ubuntu] 우분투 원격 서버 설정" /><published>2025-05-29T00:00:00+00:00</published><updated>2025-05-29T00:00:00+00:00</updated><id>http://localhost:4000/%5BUbuntu%5D-Ubuntu1</id><content type="html" xml:base="http://localhost:4000/Ubuntu-Ubuntu1/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="CustomView" /><summary type="html"><![CDATA[UIKit 세그먼 컨트롤 커스텀 사용법 import UIKit final class SegmentControlVC: UIViewController { // MARK: - UI Component private lazy var segmentControl: UISegmentedControl = { let segment = UISegmentedControl() segment.insertSegment(withTitle: "피드", at: 0, animated: true) segment.insertSegment(withTitle: "캘린더", at: 1, animated: true) segment.selectedSegmentIndex = 0 /// 탭의 글자 색상 및 폰트 커스텀 (일반/선택 상태별로 다르게) segment.setTitleTextAttributes([ NSAttributedString.Key.foregroundColor: UIColor.systemGray2, NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1) ], for: .normal) segment.setTitleTextAttributes([ NSAttributedString.Key.foregroundColor: UIColor.black, NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1) ], for: .selected) /// Segment 선택되었을 때 변하는 tintColor 제거 segment.selectedSegmentTintColor = .clear /// divider 제거 segment.setDividerImage(UIImage(), forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: .default) /// 값이 변경될 때 underline 애니메이션을 위한 타겟 액션 등록 segment.addTarget(self, action: #selector(changeUnderLinePosition), for: .valueChanged) return segment }() private let underLineView: UIView = { let view = UIView() view.backgroundColor = .black return view }() override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() } private func makeUI() { view.backgroundColor = .white [segmentControl, underLineView].forEach { view.addSubview($0) $0.translatesAutoresizingMaskIntoConstraints = false } // 세그먼트 회색 이미지를 흰색으로 설정 segmentControl.setBackgroundImage(imageWithColor(.white), for: .normal, barMetrics: .default) } private func constraints() { NSLayoutConstraint.activate([ /// segmentControl: 화면 중앙, 가로 폭은 safeArea의 40%, 높이 20 segmentControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), segmentControl.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor), segmentControl.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.4), segmentControl.heightAnchor.constraint(equalToConstant: 20), /// underLineView: 세그먼트 하단에 배치, 가로폭은 세그먼트의 50% (즉, 한 탭과 크기 동일), 높이 2 underLineView.topAnchor.constraint(equalTo: segmentControl.bottomAnchor, constant: 10), underLineView.leadingAnchor.constraint(equalTo: segmentControl.leadingAnchor), underLineView.widthAnchor.constraint(equalTo: segmentControl.widthAnchor, multiplier: 0.5), underLineView.heightAnchor.constraint(equalToConstant: 2) ]) } @objc private func changeUnderLinePosition(_ segment: UISegmentedControl) { let halfWidth = segmentControl.frame.width / 2 let xPosition = segmentControl.frame.origin.x + (halfWidth * CGFloat(segmentControl.selectedSegmentIndex)) UIView.animate(withDuration: 0.2) { self.underLineView.frame.origin.x = xPosition } } } extension SegmentControlVC { // 흰색 배경 이미지를 만들어주는 함수 /// 원하는 색의 1x32 사이즈 이미지를 만드는 함수 (세그먼트 배경 이미지용) private func imageWithColor(_ color: UIColor, size: CGSize = CGSize(width: 1, height: 32)) -&gt; UIImage { UIGraphicsBeginImageContextWithOptions(size, false, 0) color.setFill() UIRectFill(CGRect(origin: .zero, size: size)) let image = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage() UIGraphicsEndImageContext() return image } } #Preview { SegmentControlVC() } import UIKit final class SegmentControlVC: UIViewController { // MARK: - UI Component private lazy var segmentControl: UISegmentedControl = { let segment = UISegmentedControl() segment.insertSegment(withTitle: "피드", at: 0, animated: true) segment.insertSegment(withTitle: "캘린더", at: 1, animated: true) segment.selectedSegmentIndex = 0 /// 탭의 글자 색상 및 폰트 커스텀 (일반/선택 상태별로 다르게) segment.setTitleTextAttributes([ NSAttributedString.Key.foregroundColor: UIColor.systemGray2, NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1) ], for: .normal) segment.setTitleTextAttributes([ NSAttributedString.Key.foregroundColor: UIColor.black, NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1) ], for: .selected) /// Segment 선택되었을 때 변하는 tintColor 제거 segment.selectedSegmentTintColor = .clear /// divider 제거 segment.setDividerImage(UIImage(), forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: .default) /// 값이 변경될 때 underline 애니메이션을 위한 타겟 액션 등록 segment.addTarget(self, action: #selector(changeUnderLinePosition), for: .valueChanged) segment.addTarget(self, action: #selector(segmentChanged), for: .valueChanged) return segment }() private let underLineView: UIView = { let view = UIView() view.backgroundColor = .black return view }() private let aView: UIView = { let view = UIView() view.backgroundColor = .systemTeal return view }() private let bView: UIView = { let view = UIView() view.backgroundColor = .systemYellow return view }() // MARK: - LifeCycle override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() updateViewForSelectedSegment() } private func makeUI() { view.backgroundColor = .white [segmentControl, underLineView, aView, bView].forEach { view.addSubview($0) $0.translatesAutoresizingMaskIntoConstraints = false } // 세그먼트 회색 이미지를 흰색으로 설정 segmentControl.setBackgroundImage(imageWithColor(.white), for: .normal, barMetrics: .default) } private func constraints() { NSLayoutConstraint.activate([ /// segmentControl: 화면 중앙, 가로 폭은 safeArea의 40%, 높이 20 segmentControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), segmentControl.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor), segmentControl.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.4), segmentControl.heightAnchor.constraint(equalToConstant: 20), /// underLineView: 세그먼트 하단에 배치, 가로폭은 세그먼트의 50% (즉, 한 탭과 크기 동일), 높이 2 underLineView.topAnchor.constraint(equalTo: segmentControl.bottomAnchor, constant: 10), underLineView.leadingAnchor.constraint(equalTo: segmentControl.leadingAnchor), underLineView.widthAnchor.constraint(equalTo: segmentControl.widthAnchor, multiplier: 0.5), underLineView.heightAnchor.constraint(equalToConstant: 2), // aView aView.topAnchor.constraint(equalTo: underLineView.bottomAnchor, constant: 0), aView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor), aView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor), aView.bottomAnchor.constraint(equalTo: view.bottomAnchor), // bView bView.topAnchor.constraint(equalTo: underLineView.bottomAnchor, constant: 0), bView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor), bView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor), bView.bottomAnchor.constraint(equalTo: view.bottomAnchor), ]) } } extension SegmentControlVC { /// 세그먼트 값 변경 시 언더라인(Indicator) 이동 애니메이션 @objc private func changeUnderLinePosition(_ segment: UISegmentedControl) { let halfWidth = segmentControl.frame.width / 2 let xPosition = segmentControl.frame.origin.x + (halfWidth * CGFloat(segmentControl.selectedSegmentIndex)) UIView.animate(withDuration: 0.2) { self.underLineView.frame.origin.x = xPosition } } // 흰색 배경 이미지를 만들어주는 함수 /// 원하는 색의 1x32 사이즈 이미지를 만드는 함수 (세그먼트 배경 이미지용) private func imageWithColor(_ color: UIColor, size: CGSize = CGSize(width: 1, height: 32)) -&gt; UIImage { UIGraphicsBeginImageContextWithOptions(size, false, 0) color.setFill() UIRectFill(CGRect(origin: .zero, size: size)) let image = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage() UIGraphicsEndImageContext() return image } // 세그먼트 탭 전환시 뷰 보이기 /숨기기 @objc private func segmentChanged(_ segment: UISegmentedControl) { updateViewForSelectedSegment() } /// 현재 선택된 인덱스에 따라 aView/bView만 보이도록 처리 private func updateViewForSelectedSegment() { aView.isHidden = segmentControl.selectedSegmentIndex != 0 bView.isHidden = segmentControl.selectedSegmentIndex != 1 } } #Preview { SegmentControlVC() } 커스텀View /// 상단 탭바+Indicator 커스텀 UIView (재사용 가능) final class SegmentedTabBarView: UIView { // MARK: - Properties private let segmentControl: UISegmentedControl private let underlineView: UIView = { let view = UIView() view.backgroundColor = .mainWhite return view }() private var underlineLeadingConstraint: NSLayoutConstraint! // 선택된 인덱스 콜백 var onIndexChanged: ((Int) -&gt; Void)? // MARK: - Init init(items: [String]) { self.segmentControl = UISegmentedControl(items: items) super.init(frame: .zero) makeUI() constraints() setSelected(index: 0, animated: false) } required init?(coder: NSCoder) { fatalError() } // MARK: - UI private func makeUI() { // 커스텀 스타일 segmentControl.selectedSegmentIndex = 0 // 미선택시 segmentControl.setTitleTextAttributes([ .foregroundColor: UIColor.systemGray2, .font: UIFont.hcFont(.light, size: 20.scaled) ], for: .normal) // 선택시 segmentControl.setTitleTextAttributes([ .foregroundColor: UIColor.mainWhite, .font: UIFont.hcFont(.bold, size: 20.scaled) ], for: .selected) segmentControl.selectedSegmentTintColor = .clear segmentControl.setDividerImage(UIImage(), forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: .default) segmentControl.setBackgroundImage(imageWithColor(.mainBlack), for: .normal, barMetrics: .default) segmentControl.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged) addSubview(segmentControl) addSubview(underlineView) } private func constraints() { segmentControl.translatesAutoresizingMaskIntoConstraints = false underlineView.translatesAutoresizingMaskIntoConstraints = false NSLayoutConstraint.activate([ segmentControl.topAnchor.constraint(equalTo: topAnchor), segmentControl.leadingAnchor.constraint(equalTo: leadingAnchor), segmentControl.trailingAnchor.constraint(equalTo: trailingAnchor), segmentControl.bottomAnchor.constraint(equalTo: bottomAnchor), underlineView.topAnchor.constraint(equalTo: segmentControl.bottomAnchor, constant: 5), underlineView.heightAnchor.constraint(equalToConstant: 2), underlineView.widthAnchor.constraint(equalTo: segmentControl.widthAnchor, multiplier: 1 / CGFloat(segmentControl.numberOfSegments)) ]) // 밑줄의 leading 제약조건은 따로 저장해 이동시킨다 underlineLeadingConstraint = underlineView.leadingAnchor.constraint(equalTo: segmentControl.leadingAnchor) underlineLeadingConstraint.isActive = true } // MARK: - Action @objc private func segmentChanged(_ sender: UISegmentedControl) { setSelected(index: sender.selectedSegmentIndex, animated: true) onIndexChanged?(sender.selectedSegmentIndex) } // 인덱스 바꾸기 + 밑줄 이동 func setSelected(index: Int, animated: Bool) { let segmentWidth = segmentControl.frame.width / CGFloat(segmentControl.numberOfSegments) underlineLeadingConstraint.constant = segmentWidth * CGFloat(index) if animated { UIView.animate(withDuration: 0.2) { self.layoutIfNeeded() } } else { self.layoutIfNeeded() } segmentControl.selectedSegmentIndex = index } // 유틸: 흰색 배경 이미지 만들기 private func imageWithColor(_ color: UIColor, size: CGSize = CGSize(width: 1, height: 32)) -&gt; UIImage { UIGraphicsBeginImageContextWithOptions(size, false, 0) color.setFill() UIRectFill(CGRect(origin: .zero, size: size)) let image = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage() UIGraphicsEndImageContext() return image } } // SegmentedTabBarView.swift extension SegmentedTabBarView { /// 원하는 segment의 title을 동적으로 변경 func setSegmentTitle(_ title: String, at index: Int) { segmentControl.setTitle(title, forSegmentAt: index) } } Reference https://chokotingchock.tistory.com/entry/스위프트-UIKit-custom-segmented-control https://velog.io/@panther222128/UISegmentedControl-and-UITableView https://ios-development.tistory.com/962]]></summary></entry><entry><title type="html">[CustomView] 커스텀 캘린더뷰 만들기</title><link href="http://localhost:4000/CustomView-CalendarView/" rel="alternate" type="text/html" title="[CustomView] 커스텀 캘린더뷰 만들기" /><published>2025-05-30T00:00:00+00:00</published><updated>2025-05-30T00:00:00+00:00</updated><id>http://localhost:4000/%5BCustomView%5D-CalendarView</id><content type="html" xml:base="http://localhost:4000/CustomView-CalendarView/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h1 id="ios-16부터-기본-제공되는-캘린더">iOS 16부터 기본 제공되는 캘린더</h1>
+
+<h3 id="기본-캘린더">기본 캘린더</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">BasicCalendarViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="c1">// MARK: - UI Conponent</span>
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">calendarView</span><span class="p">:</span> <span class="kt">UICalendarView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="kt">UICalendarView</span><span class="p">()</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="c1">/// 점이나 뱃지 표시 등 달력 Custom 하기 위해 설정해야 하는 속성</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">wantsDateDecorations</span> <span class="o">=</span> <span class="kc">true</span>
+        <span class="k">return</span> <span class="n">view</span>
+    <span class="p">}()</span>
+   
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        
+        <span class="nf">makeUI</span><span class="p">()</span>
+        <span class="nf">constraints</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
+        <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="n">calendarView</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">constraints</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">calendarViewConstraints</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">calendarView</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">),</span>
+            <span class="n">calendarView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="n">calendarView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">20</span><span class="p">)</span>
+        <span class="p">]</span>
+        
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">(</span><span class="n">calendarViewConstraints</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="uicalendarselectionsingledatedelegate를-설정하여-날짜-선택시-이모지-표시">UICalendarSelectionSingleDateDelegate를 설정하여 날짜 선택시 이모지 표시</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">BasicCalendarViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="c1">/// 현재 선택된 날짜</span>
+    <span class="k">var</span> <span class="nv">selectedDate</span><span class="p">:</span> <span class="kt">DateComponents</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+    
+    <span class="c1">// MARK: - UI Conponent</span>
+    <span class="c1">/// 날짜별 데코레이션(점, 이모지 등)을 지원하는 캘린더 뷰</span>
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">calendarView</span><span class="p">:</span> <span class="kt">UICalendarView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="kt">UICalendarView</span><span class="p">()</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">locale</span> <span class="o">=</span> <span class="kt">Locale</span><span class="p">(</span><span class="nv">identifier</span><span class="p">:</span> <span class="s">"ko_KR"</span><span class="p">)</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="c1">/// 점이나 뱃지 표시 등 달력 Custom 하기 위해 설정해야 하는 속성</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">wantsDateDecorations</span> <span class="o">=</span> <span class="kc">true</span>
+        <span class="k">return</span> <span class="n">view</span>
+    <span class="p">}()</span>
+   
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        
+        <span class="k">self</span><span class="o">.</span><span class="nf">makeUI</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">constraints</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">setCalendar</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 캘린더 delegate 및 날짜 선택 동작 설정</span>
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">setCalendar</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">calendarView</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
+        
+        <span class="c1">/// 한 번에 한 날짜만 선택 가능</span>
+        <span class="k">let</span> <span class="nv">dateSection</span> <span class="o">=</span> <span class="kt">UICalendarSelectionSingleDate</span><span class="p">(</span><span class="nv">delegate</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span>
+        <span class="c1">/// 선택 이벤트(날짜 선택 시 콜백)를 BasicCalendarViewController에서 직접 처리하겠다</span>
+        <span class="n">calendarView</span><span class="o">.</span><span class="n">selectionBehavior</span> <span class="o">=</span> <span class="n">dateSection</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
+        <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="n">calendarView</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">constraints</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">calendarViewConstraints</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">calendarView</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">),</span>
+            <span class="n">calendarView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="n">calendarView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">20</span><span class="p">)</span>
+        <span class="p">]</span>
+        
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">(</span><span class="n">calendarViewConstraints</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 특정 날짜 셀만 데코레이션 새로고침(이모지 추가)</span>
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">reloadDateView</span><span class="p">(</span><span class="nv">date</span><span class="p">:</span> <span class="kt">Date</span><span class="p">?)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="n">date</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+        <span class="k">let</span> <span class="nv">calendar</span> <span class="o">=</span> <span class="kt">Calendar</span><span class="o">.</span><span class="n">current</span>
+        <span class="n">calendarView</span><span class="o">.</span><span class="nf">reloadDecorations</span><span class="p">(</span><span class="nv">forDateComponents</span><span class="p">:</span> <span class="p">[</span><span class="n">calendar</span><span class="o">.</span><span class="nf">dateComponents</span><span class="p">([</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="o">.</span><span class="n">year</span><span class="p">],</span> <span class="nv">from</span><span class="p">:</span> <span class="n">date</span><span class="o">!</span><span class="p">)],</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - 캘린더 Delegate</span>
+<span class="kd">extension</span> <span class="kt">BasicCalendarViewController</span><span class="p">:</span> <span class="kt">UICalendarViewDelegate</span><span class="p">,</span> <span class="kt">UICalendarSelectionSingleDateDelegate</span> <span class="p">{</span>
+    
+    <span class="c1">/// 날짜별 데코레이션 표시 커스텀(필요시 구현)</span>
+    <span class="c1">/// 선택된 날자의 셀에 이모지로 커스텀 데코레이션을 보여준다</span>
+    <span class="kd">func</span> <span class="nf">calendarView</span><span class="p">(</span><span class="n">_</span> <span class="nv">calendarView</span><span class="p">:</span> <span class="kt">UICalendarView</span><span class="p">,</span> <span class="n">decorationFor</span> <span class="nv">dateComponents</span><span class="p">:</span> <span class="kt">DateComponents</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UICalendarView</span><span class="o">.</span><span class="kt">Decoration</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="k">let</span> <span class="nv">selectedDate</span> <span class="o">=</span> <span class="n">selectedDate</span><span class="p">,</span> <span class="n">selectedDate</span> <span class="o">==</span> <span class="n">dateComponents</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="o">.</span><span class="n">customView</span> <span class="p">{</span>
+                <span class="k">let</span> <span class="nv">label</span> <span class="o">=</span> <span class="kt">UILabel</span><span class="p">()</span>
+                <span class="n">label</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">"🐶"</span>
+                <span class="n">label</span><span class="o">.</span><span class="n">textAlignment</span> <span class="o">=</span> <span class="o">.</span><span class="n">center</span>
+                <span class="k">return</span> <span class="n">label</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="kc">nil</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 날짜 선택 시 동작</span>
+    <span class="kd">func</span> <span class="nf">dateSelection</span><span class="p">(</span><span class="n">_</span> <span class="nv">selection</span><span class="p">:</span> <span class="kt">UICalendarSelectionSingleDate</span><span class="p">,</span> <span class="n">didSelectDate</span> <span class="nv">dateComponents</span><span class="p">:</span> <span class="kt">DateComponents</span><span class="p">?)</span> <span class="p">{</span>
+        <span class="c1">/// selection 객체에 저장</span>
+        <span class="n">selection</span><span class="o">.</span><span class="nf">setSelected</span><span class="p">(</span><span class="n">dateComponents</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+        <span class="c1">/// selectedDate 프로퍼티를 업데이트</span>
+        <span class="n">selectedDate</span> <span class="o">=</span> <span class="n">dateComponents</span>
+        <span class="c1">/// 선택한 날짜 셀의 데코레이션만 새로고침(🐶 이모지가 바로 반영되게)</span>
+        <span class="nf">reloadDateView</span><span class="p">(</span><span class="nv">date</span><span class="p">:</span> <span class="kt">Calendar</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="nf">date</span><span class="p">(</span><span class="nv">from</span><span class="p">:</span> <span class="n">dateComponents</span><span class="o">!</span><span class="p">))</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/2025-05-30-%5BCustomView%5D-CalendarView/image-20250530145103523.png" alt="이미지" width="50%" /></p>
+
+<div align="center">참고: 한국어로 설정해도 시뮬레이터에서는 요일이 영어로 보이는 버그가 있다.
+</div>
+
+<p><img src="/assets/img/2025-05-30-%5BCustomView%5D-CalendarView/image-20250604141453258.png" alt="이미지" width="50%" /></p>
+
+<h3 id="커스텀-캘린더">커스텀 캘린더</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//</span>
+<span class="c1">//  1. CustomCalendar.swift</span>
+<span class="c1">//  UIComponentTutorial</span>
+<span class="c1">//</span>
+<span class="c1">//  Created by 김동현 on 6/4/25.</span>
+<span class="c1">//</span>
+
+<span class="kd">import</span> <span class="kt">UIKit</span>
+<span class="kd">import</span> <span class="kt">FSCalendar</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">CustomCalendarVC</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="c1">// MARK: - UI Component</span>
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">calendarView</span><span class="p">:</span> <span class="kt">FSCalendar</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">calendar</span> <span class="o">=</span> <span class="kt">FSCalendar</span><span class="p">()</span>
+        
+        <span class="c1">// 첫 열을 월요일로 설정</span>
+        <span class="n">calendar</span><span class="o">.</span><span class="n">firstWeekday</span> <span class="o">=</span> <span class="mi">2</span>
+        
+        <span class="c1">// week 또는 month 가능</span>
+        <span class="n">calendar</span><span class="o">.</span><span class="n">scope</span> <span class="o">=</span> <span class="o">.</span><span class="n">month</span>
+        
+        <span class="n">calendar</span><span class="o">.</span><span class="n">scrollEnabled</span> <span class="o">=</span> <span class="kc">true</span>
+        <span class="n">calendar</span><span class="o">.</span><span class="n">locale</span> <span class="o">=</span> <span class="kt">Locale</span><span class="p">(</span><span class="nv">identifier</span><span class="p">:</span> <span class="s">"ko_KR"</span><span class="p">)</span>
+        
+        <span class="c1">// 현재 달의 날짜들만 표기하도록 설정</span>
+        <span class="n">calendar</span><span class="o">.</span><span class="n">placeholderType</span> <span class="o">=</span> <span class="o">.</span><span class="k">none</span>
+        
+        <span class="c1">// 헤더뷰 설정</span>
+        <span class="n">calendar</span><span class="o">.</span><span class="n">headerHeight</span> <span class="o">=</span> <span class="mi">55</span>
+        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">headerDateFormat</span> <span class="o">=</span> <span class="s">"MM월"</span>
+        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">headerTitleColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span>
+        
+        <span class="c1">// 요일 UI 설정</span>
+        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">weekdayFont</span> <span class="o">=</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">light</span><span class="p">)</span>
+        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">weekdayTextColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span>
+        
+        <span class="c1">// 날짜별 UI 설정</span>
+        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">titleTodayColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
+        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">titleFont</span> <span class="o">=</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">light</span><span class="p">)</span>
+        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">subtitleFont</span> <span class="o">=</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">light</span><span class="p">)</span>
+        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">subtitleTodayColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">systemYellow</span>
+        <span class="n">calendar</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">todayColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">gray</span>
+        
+        <span class="c1">// 일요일 라벨의 textColor는 red로 설정</span>
+        <span class="n">calendar</span><span class="o">.</span><span class="n">calendarWeekdayView</span><span class="o">.</span><span class="n">weekdayLabels</span><span class="o">.</span><span class="n">last</span><span class="o">!.</span><span class="n">textColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">red</span>
+        <span class="k">return</span> <span class="n">calendar</span>
+    <span class="p">}()</span>
+    
+    <span class="c1">// MARK: - Life Cycle</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="nf">makeUI</span><span class="p">()</span>
+        <span class="nf">constraints</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - UI Setting</span>
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
+        
+        <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="n">calendarView</span><span class="p">)</span>
+        <span class="n">calendarView</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">constraints</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">calendarView</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="n">calendarView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="n">calendarView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">20</span><span class="p">),</span>
+            <span class="n">calendarView</span><span class="o">.</span><span class="n">heightAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalToConstant</span><span class="p">:</span> <span class="mi">500</span><span class="p">)</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cp">#Preview {</span>
+    <span class="kt">CustomCalendarVC</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="reference">Reference</h2>
+
+<ul>
+  <li>https://ohwhatisthis.tistory.com/23</li>
+  <li>https://maramincho.tistory.com/106</li>
+  <li>https://dongdida.tistory.com/128</li>
+  <li>https://velog.io/@xanxnu/iOSSwift-UICalendarView-사용해-보기</li>
+  <li>https://lsj8706.tistory.com/4</li>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="CustomView" /><summary type="html"><![CDATA[iOS 16부터 기본 제공되는 캘린더 기본 캘린더 import UIKit final class BasicCalendarViewController: UIViewController { // MARK: - UI Conponent private lazy var calendarView: UICalendarView = { let view = UICalendarView() view.translatesAutoresizingMaskIntoConstraints = false /// 점이나 뱃지 표시 등 달력 Custom 하기 위해 설정해야 하는 속성 view.wantsDateDecorations = true return view }() override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() } private func makeUI() { view.backgroundColor = .white view.addSubview(calendarView) } private func constraints() { let calendarViewConstraints = [ calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), calendarView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20), calendarView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20) ] NSLayoutConstraint.activate(calendarViewConstraints) } } UICalendarSelectionSingleDateDelegate를 설정하여 날짜 선택시 이모지 표시 import UIKit final class BasicCalendarViewController: UIViewController { /// 현재 선택된 날짜 var selectedDate: DateComponents? = nil // MARK: - UI Conponent /// 날짜별 데코레이션(점, 이모지 등)을 지원하는 캘린더 뷰 private lazy var calendarView: UICalendarView = { let view = UICalendarView() view.locale = Locale(identifier: "ko_KR") view.translatesAutoresizingMaskIntoConstraints = false /// 점이나 뱃지 표시 등 달력 Custom 하기 위해 설정해야 하는 속성 view.wantsDateDecorations = true return view }() override func viewDidLoad() { super.viewDidLoad() self.makeUI() self.constraints() self.setCalendar() } /// 캘린더 delegate 및 날짜 선택 동작 설정 private func setCalendar() { self.calendarView.delegate = self /// 한 번에 한 날짜만 선택 가능 let dateSection = UICalendarSelectionSingleDate(delegate: self) /// 선택 이벤트(날짜 선택 시 콜백)를 BasicCalendarViewController에서 직접 처리하겠다 calendarView.selectionBehavior = dateSection } private func makeUI() { view.backgroundColor = .white view.addSubview(calendarView) } private func constraints() { let calendarViewConstraints = [ calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), calendarView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20), calendarView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20) ] NSLayoutConstraint.activate(calendarViewConstraints) } /// 특정 날짜 셀만 데코레이션 새로고침(이모지 추가) private func reloadDateView(date: Date?) { if date == nil { return } let calendar = Calendar.current calendarView.reloadDecorations(forDateComponents: [calendar.dateComponents([.day, .month, .year], from: date!)], animated: true) } } // MARK: - 캘린더 Delegate extension BasicCalendarViewController: UICalendarViewDelegate, UICalendarSelectionSingleDateDelegate { /// 날짜별 데코레이션 표시 커스텀(필요시 구현) /// 선택된 날자의 셀에 이모지로 커스텀 데코레이션을 보여준다 func calendarView(_ calendarView: UICalendarView, decorationFor dateComponents: DateComponents) -&gt; UICalendarView.Decoration? { if let selectedDate = selectedDate, selectedDate == dateComponents { return .customView { let label = UILabel() label.text = "🐶" label.textAlignment = .center return label } } return nil } /// 날짜 선택 시 동작 func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) { /// selection 객체에 저장 selection.setSelected(dateComponents, animated: true) /// selectedDate 프로퍼티를 업데이트 selectedDate = dateComponents /// 선택한 날짜 셀의 데코레이션만 새로고침(🐶 이모지가 바로 반영되게) reloadDateView(date: Calendar.current.date(from: dateComponents!)) } } 참고: 한국어로 설정해도 시뮬레이터에서는 요일이 영어로 보이는 버그가 있다. 커스텀 캘린더 // // 1. CustomCalendar.swift // UIComponentTutorial // // Created by 김동현 on 6/4/25. // import UIKit import FSCalendar final class CustomCalendarVC: UIViewController { // MARK: - UI Component private lazy var calendarView: FSCalendar = { let calendar = FSCalendar() // 첫 열을 월요일로 설정 calendar.firstWeekday = 2 // week 또는 month 가능 calendar.scope = .month calendar.scrollEnabled = true calendar.locale = Locale(identifier: "ko_KR") // 현재 달의 날짜들만 표기하도록 설정 calendar.placeholderType = .none // 헤더뷰 설정 calendar.headerHeight = 55 calendar.appearance.headerDateFormat = "MM월" calendar.appearance.headerTitleColor = .black // 요일 UI 설정 calendar.appearance.weekdayFont = UIFont.systemFont(ofSize: 17, weight: .light) calendar.appearance.weekdayTextColor = .black // 날짜별 UI 설정 calendar.appearance.titleTodayColor = .white calendar.appearance.titleFont = UIFont.systemFont(ofSize: 16, weight: .light) calendar.appearance.subtitleFont = UIFont.systemFont(ofSize: 10, weight: .light) calendar.appearance.subtitleTodayColor = .systemYellow calendar.appearance.todayColor = .gray // 일요일 라벨의 textColor는 red로 설정 calendar.calendarWeekdayView.weekdayLabels.last!.textColor = .red return calendar }() // MARK: - Life Cycle override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() } // MARK: - UI Setting private func makeUI() { view.backgroundColor = .white view.addSubview(calendarView) calendarView.translatesAutoresizingMaskIntoConstraints = false } private func constraints() { NSLayoutConstraint.activate([ calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0), calendarView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20), calendarView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20), calendarView.heightAnchor.constraint(equalToConstant: 500) ]) } } #Preview { CustomCalendarVC() } Reference https://ohwhatisthis.tistory.com/23 https://maramincho.tistory.com/106 https://dongdida.tistory.com/128 https://velog.io/@xanxnu/iOSSwift-UICalendarView-사용해-보기 https://lsj8706.tistory.com/4]]></summary></entry><entry><title type="html">[Haruhancut] Widget</title><link href="http://localhost:4000/Haruhancut-Widget/" rel="alternate" type="text/html" title="[Haruhancut] Widget" /><published>2025-05-30T00:00:00+00:00</published><updated>2025-05-30T00:00:00+00:00</updated><id>http://localhost:4000/%5BHaruhancut%5D-Widget</id><content type="html" xml:base="http://localhost:4000/Haruhancut-Widget/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h2 id="widget-도입">Widget 도입</h2>
+<p>하루한컷 앱에 위젯을 추가하여 앱의 사진을 위젯으로 보여주려고 한다.</p>
+
+<h2 id="기존-번들-식별자에-app-groups-체크-및-저장">기존 번들 식별자에 App Groups 체크 및 저장</h2>
+<p>Identifiers에서 com.indextrown.Haruhancut를 찾아서 App Groups 체크박스를 추가 및 저장한다.</p>
+
+<h3 id="1-위젯용-번들-식별자-준비">1. 위젯용 번들 식별자 준비</h3>
+<p><img src="/assets/img/2025-05-30-%5BHaruhancut%5D-Widget/image-20250610145644562.png" alt="이미지" width="30%" /><br />
+com.indextrown.Haruhancut.WidgetExtension로 번들 식별자를 만들고 App Groups만 체크해준다.<br />
+이제 프로비저닝 프로파일을 만들건데 편의를 위해 fastlane을 사용하겠다.</p>
+
+<h3 id="2-프로비저닝-프로파일-만들기">2. 프로비저닝 프로파일 만들기</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 기존 프로젝트가 이거면  </span>
+<span class="c"># match Development com.indextrown.Haruhancut</span>
+
+<span class="c"># 위젯은 아래와 같이 프로비저닝 프로파일을 만들어준다.   </span>
+<span class="c"># match Development com.indextrown.Haruhancut.WidgetExtension</span>
+
+<span class="c"># 개발용</span>
+fastlane match development <span class="nt">--app_identifier</span> <span class="s2">"com.indextrown.Haruhancut.WidgetExtension"</span>
+
+<span class="c"># 배포용</span>
+fastlane match appstore <span class="nt">--app_identifier</span> <span class="s2">"com.indextrown.Haruhancut.WidgetExtension"</span>
+
+<span class="c"># ⚠️Provisioning profile "" doesn't include signing ...발생시</span>
+fastlane match development <span class="nt">--force</span>
+fastlane match appstore <span class="nt">--force</span>  
+</code></pre></div></div>
+
+<h3 id="3-widget-extension-생성">3. Widget Extension 생성</h3>
+
+<ul>
+  <li>Targets목록 아래 + 버튼 눌러서 WIdget Extension 생성한다.</li>
+</ul>
+
+<h3 id="4-app-groups-설정">4. App Groups 설정</h3>
+<p>기존 프로젝트와 WIdgetExtension 프로젝트에 각각 App Groups 추가한다.</p>
+
+<h2 id="widgetkit">WidgetKit</h2>
+<ul>
+  <li>iOS 14부터 도입되었으며 SwiftUI로만 구현 가능하다.</li>
+  <li>UIViewRepresentable 불가능하다.</li>
+</ul>
+
+<h3 id="widget-configuration속성-편집에-대한-기능">Widget COnfiguration(속성 편집에 대한 기능)</h3>
+<ul>
+  <li>Static configuration
+    <ul>
+      <li>위젯 편집 항목이 나타나지 않으며, 사용자가 설정을 변경할 수 있는 옵션이 없다.</li>
+    </ul>
+  </li>
+  <li>Intent Configuration
+    <ul>
+      <li>위젯 편집 기능을 통해 여러 Intent 값을 수정할 수 있도록 위젯을 구성할 수 있다.</li>
+      <li>iOS 17부터 AppIntentCOnfiguration으로 변경</li>
+    </ul>
+  </li>
+  <li>Activity Configuration
+    <ul>
+      <li>Live Activity</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="widget은-크게-4가지의-struct로-구성">Widget은 크게 4가지의 struct로 구성</h3>
+
+<p><img src="/assets/img/2025-05-30-%5BHaruhancut%5D-Widget/image-20250610173933798.png" alt="이미지" width="30%" /></p>
+
+<ul>
+  <li>Provider에서 사용자가 설정한 시간에 맞춰 위젯을 업데이트할 수 있게 한다</li>
+  <li>Entry에서 위젯에 필요한 데이터를 제공한다</li>
+  <li>EntryView는 Entry를 통해 구성하며, UI를 담당하는 역할과 유사하다</li>
+  <li>Widget에서는 static, intent, activity인지에 따라 최종적인 위젯을 구성한다</li>
+</ul>
+
+<h2 id="reference">Reference</h2>
+<ul>
+  <li>https://velog.io/@s_sub/새싹-iOS-20주차</li>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Haruhancut" /><summary type="html"><![CDATA[Widget 도입 하루한컷 앱에 위젯을 추가하여 앱의 사진을 위젯으로 보여주려고 한다. 기존 번들 식별자에 App Groups 체크 및 저장 Identifiers에서 com.indextrown.Haruhancut를 찾아서 App Groups 체크박스를 추가 및 저장한다. 1. 위젯용 번들 식별자 준비 com.indextrown.Haruhancut.WidgetExtension로 번들 식별자를 만들고 App Groups만 체크해준다. 이제 프로비저닝 프로파일을 만들건데 편의를 위해 fastlane을 사용하겠다. 2. 프로비저닝 프로파일 만들기 # 기존 프로젝트가 이거면 # match Development com.indextrown.Haruhancut # 위젯은 아래와 같이 프로비저닝 프로파일을 만들어준다. # match Development com.indextrown.Haruhancut.WidgetExtension # 개발용 fastlane match development --app_identifier "com.indextrown.Haruhancut.WidgetExtension" # 배포용 fastlane match appstore --app_identifier "com.indextrown.Haruhancut.WidgetExtension" # ⚠️Provisioning profile "" doesn't include signing ...발생시 fastlane match development --force fastlane match appstore --force 3. Widget Extension 생성 Targets목록 아래 + 버튼 눌러서 WIdget Extension 생성한다. 4. App Groups 설정 기존 프로젝트와 WIdgetExtension 프로젝트에 각각 App Groups 추가한다. WidgetKit iOS 14부터 도입되었으며 SwiftUI로만 구현 가능하다. UIViewRepresentable 불가능하다. Widget COnfiguration(속성 편집에 대한 기능) Static configuration 위젯 편집 항목이 나타나지 않으며, 사용자가 설정을 변경할 수 있는 옵션이 없다. Intent Configuration 위젯 편집 기능을 통해 여러 Intent 값을 수정할 수 있도록 위젯을 구성할 수 있다. iOS 17부터 AppIntentCOnfiguration으로 변경 Activity Configuration Live Activity Widget은 크게 4가지의 struct로 구성 Provider에서 사용자가 설정한 시간에 맞춰 위젯을 업데이트할 수 있게 한다 Entry에서 위젯에 필요한 데이터를 제공한다 EntryView는 Entry를 통해 구성하며, UI를 담당하는 역할과 유사하다 Widget에서는 static, intent, activity인지에 따라 최종적인 위젯을 구성한다 Reference https://velog.io/@s_sub/새싹-iOS-20주차]]></summary></entry><entry><title type="html">[Ubuntu] 우분투 원격 서버 설정</title><link href="http://localhost:4000/Ubuntu-Ubuntu1/" rel="alternate" type="text/html" title="[Ubuntu] 우분투 원격 서버 설정" /><published>2025-05-29T00:00:00+00:00</published><updated>2025-05-29T00:00:00+00:00</updated><id>http://localhost:4000/%5BUbuntu%5D-Ubuntu1</id><content type="html" xml:base="http://localhost:4000/Ubuntu-Ubuntu1/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
@@ -1484,170 +1670,4 @@ ip <span class="nb">link</span>
         <span class="k">return</span> <span class="kt">Output</span><span class="p">(</span><span class="nv">logoutResult</span><span class="p">:</span> <span class="n">result</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="ReactiveX" /><category term="RxSwift" /><summary type="html"><![CDATA[RX - MVVM 예시 기존 코드 - view와 viewModel 구분 없이 하나의 코드로 작성 import UIKit import FirebaseAuth import RxSwift final class SettingViewController: UIViewController { private let disposeBaag = DisposeBag() weak var coordinator: HomeCoordinator? private let viewModel = SettingViewModel() private let homeViewModel: HomeViewModelType init(homeViewModel: HomeViewModelType) { self.homeViewModel = homeViewModel super.init(nibName: nil, bundle: nil) } required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") } // MARK: - UI Component private lazy var logoutBtn: UIButton = { let button = UIButton(type: .system) button.setTitle("로그아웃", for: .normal) button.addTarget(self, action: #selector(logout), for: .touchUpInside) return button }() // MARK: - LifeCycle override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() } // MARK: - UI Setting private func makeUI() { view.backgroundColor = .background [logoutBtn].forEach { view.addSubview($0) $0.translatesAutoresizingMaskIntoConstraints = false } } private func constraints() { NSLayoutConstraint.activate([ logoutBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor), logoutBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor), ]) } @objc func logout() { do { UserDefaultsManager.shared.removeUser() UserDefaultsManager.shared.removeGroup() try Auth.auth().signOut() print("로그아웃 성공") coordinator?.showLogin() homeViewModel.stopObservingGroup() } catch let signOutError as NSError { print("로그아웃 실패: %@", signOutError) } } } #Preview { SettingViewController(homeViewModel: StubHomeViewModel(previewPost: .samplePosts[0])) } 개선 코드 - view와 viewModel 구분 // View import UIKit import FirebaseAuth import RxSwift final class SettingViewController: UIViewController { private let disposeBaag = DisposeBag() weak var coordinator: HomeCoordinator? private let viewModel = SettingViewModel() private let homeViewModel: HomeViewModelType init(homeViewModel: HomeViewModelType) { self.homeViewModel = homeViewModel super.init(nibName: nil, bundle: nil) } required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") } // MARK: - UI Component private lazy var logoutBtn: UIButton = { let button = UIButton(type: .system) button.setTitle("로그아웃", for: .normal) return button }() // MARK: - LifeCycle override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() bindViewModdel() } // MARK: - UI Setting private func makeUI() { view.backgroundColor = .background [logoutBtn].forEach { view.addSubview($0) $0.translatesAutoresizingMaskIntoConstraints = false } } private func constraints() { NSLayoutConstraint.activate([ logoutBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor), logoutBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor), ]) } // MARK: - Binding private func bindViewModdel() { // [Input] 로그아웃 버튼 탭 이벤트를 ViewModel에 전달 logoutBtn.rx.tap .bind(onNext: { [weak self] in guard let self = self else { return } self.viewModel.logout() }) .disposed(by: disposeBaag) // [Output] 로그아웃 처리 결과에 따라 UI 반응 viewModel.logoutResult .observe(on: MainScheduler.instance) .subscribe(onNext: { [weak self] result in guard let self = self else { return } switch result { case .success: print("로그아웃 성공") self.coordinator?.showLogin() case .failure(let error): print("로그아웃 실패: \(error.localizedDescription)") } }) .disposed(by: disposeBaag) } } // ViewModel import FirebaseAuth import RxSwift import RxCocoa protocol SettingViewModelType { func logout() } final class SettingViewModel: SettingViewModelType { // 로그아웃 결과 이벤트 // 로그아웃 결과는 상태가 아닌 한번 일어나는 일회성 이벤트 let logoutResult = PublishRelay&lt;Result&lt;Void, Error&gt;&gt;() func logout() { do { try Auth.auth().signOut() logoutResult.accept(.success(())) UserDefaultsManager.shared.removeUser() UserDefaultsManager.shared.removeGroup() } catch { logoutResult.accept(.failure(error)) } } } 개선 코드 - view와 viewModel 구분 및 Input/Output 패턴 추가 // View import UIKit import FirebaseAuth import RxSwift final class SettingViewController: UIViewController { private let disposeBaag = DisposeBag() weak var coordinator: HomeCoordinator? private let viewModel = SettingViewModel() private let homeViewModel: HomeViewModelType init(homeViewModel: HomeViewModelType) { self.homeViewModel = homeViewModel super.init(nibName: nil, bundle: nil) } required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") } // MARK: - UI Component private lazy var logoutBtn: UIButton = { let button = UIButton(type: .system) button.setTitle("로그아웃", for: .normal) return button }() // MARK: - LifeCycle override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() bindViewModel() } // MARK: - UI Setting private func makeUI() { view.backgroundColor = .background [logoutBtn].forEach { view.addSubview($0) $0.translatesAutoresizingMaskIntoConstraints = false } } private func constraints() { NSLayoutConstraint.activate([ logoutBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor), logoutBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor), ]) } // MARK: - Binding private func bindViewModel() { // Input: 버튼 탭 이벤트를 viewModel로 전달 let input = SettingViewModel.Input(logoutTapped: logoutBtn.rx.tap.asObservable()) // Output: transform으로부터 결과 스트림 반환 let output = viewModel.transform(input: input) // Output에 따라 UI 처리 output.logoutResult .drive(onNext: { [weak self] result in guard let self = self else { return } switch result { case .success: print("로그아웃 성공") self.coordinator?.showLogin() case .failure(let error): print("로그아웃 실패: \(error.localizedDescription)") } }).disposed(by: disposeBaag) } } // ViewModel import FirebaseAuth import RxSwift import RxCocoa final class SettingViewModel { // Rx 리소스 해제를 위한 DisposeBag private let disposeBag = DisposeBag() // View로부터 전달받을 사용자 이벤트 정의 struct Input { // 로그아웃 버튼 탭이벤트 let logoutTapped: Observable&lt;Void&gt; } // View에 전달할 출력 데이터 정의 struct Output { // 로그아웃 성공 또는 실패에 대한 결과 스트림 // Driver를 사용하여 메인스레드에서 UI 바인딩에 안전하게 처리 let logoutResult: Driver&lt;Result&lt;Void, LoginError&gt;&gt; } /// Input을 받아 내부 로직을 수행 후 Output을 반환하는 함수 /// - Parameter input: View에서 발생한 이벤트 /// - Returns: 로그아웃 결과를 포함하는 Output func transform(input: Input) -&gt; Output { // 로그아웃 버튼 탭시 로직을 수행하고 결과를 result로 반환 let result = input.logoutTapped .map { _ -&gt; Result&lt;Void, LoginError&gt; in do { try Auth.auth().signOut() UserDefaultsManager.shared.removeUser() UserDefaultsManager.shared.removeGroup() return .success(()) } catch { return .failure(.logoutError) } // 에러가 발생하더라도 UI가 멈추지 않고 기본 오류값으로 처리 }.asDriver(onErrorJustReturn: .failure(.logoutError)) // View에서 사용할 Output rntjd return Output(logoutResult: result) } }]]></summary></entry><entry><title type="html">[Programmers] 5. 행렬의 곱셈</title><link href="http://localhost:4000/Programmers-5/" rel="alternate" type="text/html" title="[Programmers] 5. 행렬의 곱셈" /><published>2025-05-28T00:00:00+00:00</published><updated>2025-05-28T00:00:00+00:00</updated><id>http://localhost:4000/%5BProgrammers%5D-5</id><content type="html" xml:base="http://localhost:4000/Programmers-5/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h1 id="문제">문제</h1>
-<p>https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/05.cpp  <br />
-https://school.programmers.co.kr/learn/courses/30/lessons/12949<br />
-2차원 배열 arr1과 arr2를 입력받아 arr1에 arr2를 행렬 곱한 결과를 반환하는 solution() 함수를 완성하라</p>
-
-<h3 id="제약조건">제약조건</h3>
-<ul>
-  <li>배열 arr1, arr2의 행과 열의 길이는 2이상 100 이하이다.</li>
-  <li>배열 arr1, arr2의 데이터는 -10 이상 20 이하인 자연수다.</li>
-  <li>행렬 곱 할 수 있는 배열만 주어진다.</li>
-</ul>
-
-<h3 id="입출력-예">입출력 예</h3>
-<p>[[1, 4], [3, 2], [4, 1]] <br />
-[[3, 3], [3, 3]]<br />
--&gt; [[15, 15], [15, 15], [15, 15]]</p>
-
-<p>[[2, 3, 2], [4, 2, 4], [3, 1, 4]]<br />
-[[5, 4, 3], [2, 4, 1], [3, 1, 1]]<br />
--&gt; [[22, 22, 11], [36, 28, 18], [29, 20, 14]]</p>
-
-<h1 id="풀이">풀이</h1>
-<p>행렬 ( A ) (크기 ( m \times n ))와 행렬 ( B ) (크기 ( n \times p ))의 곱은 행렬 ( C = AB ) (크기 ( m \times p ))로 정의된다.</p>
-
-\[C_{ij} = \sum_{k=1}^{n} A_{ik} \cdot B_{kj}\]
-
-<p>즉, ( C )의 ( i )행 ( j )열 원소는 ( A )의 ( i )행과 ( B )의 ( j )열의 내적이다.</p>
-
-<hr />
-
-<h2 id="-예시-1-2x2-행렬-곱셈">🔢 예시 1: 2x2 행렬 곱셈</h2>
-
-\[A =
-\begin{bmatrix}
-1 &amp; 2 \\\\
-3 &amp; 4
-\end{bmatrix},
-\quad
-B =
-\begin{bmatrix}
-5 &amp; 6 \\\\
-7 &amp; 8
-\end{bmatrix}\]
-
-\[AB =
-\begin{bmatrix}
-1 \cdot 5 + 2 \cdot 7 &amp; 1 \cdot 6 + 2 \cdot 8 \\\\
-3 \cdot 5 + 4 \cdot 7 &amp; 3 \cdot 6 + 4 \cdot 8
-\end{bmatrix}
-=
-\begin{bmatrix}
-19 &amp; 22 \\\\
-43 &amp; 50
-\end{bmatrix}\]
-
-<hr />
-
-<h2 id="-예시-2-3x3-행렬-곱셈">🔢 예시 2: 3x3 행렬 곱셈</h2>
-
-\[A =
-\begin{bmatrix}
-1 &amp; 2 &amp; 3 \\\\
-4 &amp; 5 &amp; 6 \\\\
-7 &amp; 8 &amp; 9
-\end{bmatrix},
-\quad
-B =
-\begin{bmatrix}
-9 &amp; 8 &amp; 7 \\\\
-6 &amp; 5 &amp; 4 \\\\
-3 &amp; 2 &amp; 1
-\end{bmatrix}\]
-
-\[AB =
-\begin{bmatrix}
-30 &amp; 24 &amp; 18 \\\\
-84 &amp; 69 &amp; 54 \\\\
-138 &amp; 114 &amp; 90
-\end{bmatrix}\]
-
-<p>A 행렬의 크기가 (M<em>K)이고, B 행렬의 크기가 (K</em>N)일 때 두 행렬의 곱 연산은 행렬 A의 행의 개수(K)와 행렬 B의 열의 개수(k)가 같아야 하며 K를 기준으로 곱하기 때문에 행렬 곱 결과는 M * N이 된다.</p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Foundation</span>
-
-<span class="kd">func</span> <span class="nf">solution</span><span class="p">(</span><span class="n">_</span> <span class="nv">arr1</span><span class="p">:</span> <span class="p">[[</span><span class="kt">Int</span><span class="p">]],</span> <span class="n">_</span> <span class="nv">arr2</span><span class="p">:</span> <span class="p">[[</span><span class="kt">Int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span> <span class="p">{</span>
-    
-    <span class="k">let</span> <span class="nv">rows</span> <span class="o">=</span> <span class="n">arr1</span><span class="o">.</span><span class="n">count</span>
-    <span class="k">let</span> <span class="nv">cols</span> <span class="o">=</span> <span class="n">arr2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">count</span>
-
-    <span class="c1">// 최종 행렬 곱 결과를 저장할 배열 선언</span>
-    <span class="k">var</span> <span class="nv">answer</span> <span class="o">=</span> <span class="kt">Array</span><span class="p">(</span><span class="nv">repeating</span><span class="p">:</span> <span class="kt">Array</span><span class="p">(</span><span class="nv">repeating</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">count</span><span class="p">:</span> <span class="n">cols</span><span class="p">),</span> <span class="nv">count</span><span class="p">:</span> <span class="n">rows</span><span class="p">)</span>
-    
-    <span class="c1">// arr1의 각 행과 arr2의 각 열에 대해 반복문 수행</span>
-    <span class="k">for</span> <span class="n">row</span> <span class="k">in</span> <span class="mi">0</span><span class="o">..&lt;</span><span class="n">rows</span> <span class="p">{</span>
-        <span class="k">for</span> <span class="n">col</span> <span class="k">in</span> <span class="mi">0</span><span class="o">..&lt;</span><span class="n">cols</span> <span class="p">{</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="k">in</span> <span class="mi">0</span><span class="o">..&lt;</span><span class="n">arr2</span><span class="o">.</span><span class="n">count</span> <span class="p">{</span>
-                <span class="n">answer</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">+=</span> <span class="n">arr1</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">arr2</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">col</span><span class="p">]</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>        
-    <span class="k">return</span> <span class="n">answer</span>
-<span class="p">}</span>
-
-<span class="kd">func</span> <span class="nf">print2D</span><span class="p">(</span><span class="n">_</span> <span class="nv">vec</span><span class="p">:</span> <span class="p">[[</span><span class="kt">Int</span><span class="p">]])</span> <span class="p">{</span>
-    <span class="k">for</span> <span class="n">row</span> <span class="k">in</span> <span class="n">vec</span> <span class="p">{</span>
-        <span class="nf">print</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="nf">joined</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">" "</span><span class="p">))</span>
-    <span class="p">}</span>
-    <span class="nf">print</span><span class="p">()</span>
-<span class="p">}</span>
-
-<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nf">print2D</span><span class="p">(</span><span class="nf">solution</span><span class="p">(</span>
-        <span class="p">[</span>
-            <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
-            <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
-            <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="p">],</span>
-        <span class="p">[</span>
-            <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
-            <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
-        <span class="p">]))</span>
-    
-    <span class="nf">print2D</span><span class="p">(</span><span class="nf">solution</span><span class="p">(</span>
-        <span class="p">[</span>
-           <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
-           <span class="p">[</span><span class="mi">4</span> <span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
-           <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
-        <span class="p">],</span>
-        <span class="p">[</span>
-            <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
-            <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
-            <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="p">]))</span>
-<span class="p">}</span>
-
-<span class="nf">main</span><span class="p">()</span>
-</code></pre></div></div>
-
-<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
-</span>
-<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
-
-<span class="n">vector</span><span class="o">&lt;</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span> <span class="n">solution</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span> <span class="n">arr1</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span> <span class="n">arr2</span><span class="p">)</span> <span class="p">{</span>
-    
-    <span class="c1">// 최종 행렬 곱 결과를 저장할 벡터 선언</span>
-    <span class="n">vector</span><span class="o">&lt;</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span> <span class="n">answer</span><span class="p">;</span>
-    
-    <span class="c1">// arr1, arr2 행렬 곱을 수행했을 때 최종 행렬의 크기만큼 공간을 할당</span>
-    <span class="n">answer</span><span class="p">.</span><span class="n">assign</span><span class="p">(</span><span class="n">arr1</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">arr2</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">size</span><span class="p">(),</span> <span class="mi">0</span><span class="p">));</span>
-    
-    <span class="c1">// arr1의 각 행과 arr2의 각 열에 대해 반복문 수행</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">arr1</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">arr2</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">size</span><span class="p">();</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">arr2</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">answer</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">arr1</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">arr2</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">j</span><span class="p">];</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    
-    <span class="k">return</span> <span class="n">answer</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Programmers" /><summary type="html"><![CDATA[문제 https://github.com/dremdeveloper/codingtest_cpp/blob/main/solution/05.cpp https://school.programmers.co.kr/learn/courses/30/lessons/12949 2차원 배열 arr1과 arr2를 입력받아 arr1에 arr2를 행렬 곱한 결과를 반환하는 solution() 함수를 완성하라 제약조건 배열 arr1, arr2의 행과 열의 길이는 2이상 100 이하이다. 배열 arr1, arr2의 데이터는 -10 이상 20 이하인 자연수다. 행렬 곱 할 수 있는 배열만 주어진다. 입출력 예 [[1, 4], [3, 2], [4, 1]] [[3, 3], [3, 3]] -&gt; [[15, 15], [15, 15], [15, 15]] [[2, 3, 2], [4, 2, 4], [3, 1, 4]] [[5, 4, 3], [2, 4, 1], [3, 1, 1]] -&gt; [[22, 22, 11], [36, 28, 18], [29, 20, 14]] 풀이 행렬 ( A ) (크기 ( m \times n ))와 행렬 ( B ) (크기 ( n \times p ))의 곱은 행렬 ( C = AB ) (크기 ( m \times p ))로 정의된다. \[C_{ij} = \sum_{k=1}^{n} A_{ik} \cdot B_{kj}\] 즉, ( C )의 ( i )행 ( j )열 원소는 ( A )의 ( i )행과 ( B )의 ( j )열의 내적이다. 🔢 예시 1: 2x2 행렬 곱셈 \[A = \begin{bmatrix} 1 &amp; 2 \\\\ 3 &amp; 4 \end{bmatrix}, \quad B = \begin{bmatrix} 5 &amp; 6 \\\\ 7 &amp; 8 \end{bmatrix}\] \[AB = \begin{bmatrix} 1 \cdot 5 + 2 \cdot 7 &amp; 1 \cdot 6 + 2 \cdot 8 \\\\ 3 \cdot 5 + 4 \cdot 7 &amp; 3 \cdot 6 + 4 \cdot 8 \end{bmatrix} = \begin{bmatrix} 19 &amp; 22 \\\\ 43 &amp; 50 \end{bmatrix}\] 🔢 예시 2: 3x3 행렬 곱셈 \[A = \begin{bmatrix} 1 &amp; 2 &amp; 3 \\\\ 4 &amp; 5 &amp; 6 \\\\ 7 &amp; 8 &amp; 9 \end{bmatrix}, \quad B = \begin{bmatrix} 9 &amp; 8 &amp; 7 \\\\ 6 &amp; 5 &amp; 4 \\\\ 3 &amp; 2 &amp; 1 \end{bmatrix}\] \[AB = \begin{bmatrix} 30 &amp; 24 &amp; 18 \\\\ 84 &amp; 69 &amp; 54 \\\\ 138 &amp; 114 &amp; 90 \end{bmatrix}\] A 행렬의 크기가 (MK)이고, B 행렬의 크기가 (KN)일 때 두 행렬의 곱 연산은 행렬 A의 행의 개수(K)와 행렬 B의 열의 개수(k)가 같아야 하며 K를 기준으로 곱하기 때문에 행렬 곱 결과는 M * N이 된다. import Foundation func solution(_ arr1: [[Int]], _ arr2: [[Int]]) -&gt; [[Int]] { let rows = arr1.count let cols = arr2[0].count // 최종 행렬 곱 결과를 저장할 배열 선언 var answer = Array(repeating: Array(repeating: 0, count: cols), count: rows) // arr1의 각 행과 arr2의 각 열에 대해 반복문 수행 for row in 0..&lt;rows { for col in 0..&lt;cols { for k in 0..&lt;arr2.count { answer[row][col] += arr1[row][k] * arr2[k][col] } } } return answer } func print2D(_ vec: [[Int]]) { for row in vec { print(row.map { String($0) }.joined(separator: " ")) } print() } func main() { print2D(solution( [ [1, 4], [2, 3], [4, 1] ], [ [3, 3], [3, 3] ])) print2D(solution( [ [2, 3, 2], [4 ,2, 4], [3, 1, 4] ], [ [5, 4, 3], [2, 4, 1], [3, 1, 1] ])) } main() #include &lt;string&gt; #include &lt;vector&gt; using namespace std; vector&lt;vector&lt;int&gt;&gt; solution(vector&lt;vector&lt;int&gt;&gt; arr1, vector&lt;vector&lt;int&gt;&gt; arr2) { // 최종 행렬 곱 결과를 저장할 벡터 선언 vector&lt;vector&lt;int&gt;&gt; answer; // arr1, arr2 행렬 곱을 수행했을 때 최종 행렬의 크기만큼 공간을 할당 answer.assign(arr1.size(), vector&lt;int&gt;(arr2[1].size(), 0)); // arr1의 각 행과 arr2의 각 열에 대해 반복문 수행 for (int i=0; i&lt;arr1.size(); i++) { for (int j=0; j&lt;arr2[0].size(); j++) { for (int k=0; k&lt;arr2.size(); k++) { answer[i][j] += arr1[i][k] * arr2[k][j]; } } } return answer; }]]></summary></entry></feed>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="ReactiveX" /><category term="RxSwift" /><summary type="html"><![CDATA[RX - MVVM 예시 기존 코드 - view와 viewModel 구분 없이 하나의 코드로 작성 import UIKit import FirebaseAuth import RxSwift final class SettingViewController: UIViewController { private let disposeBaag = DisposeBag() weak var coordinator: HomeCoordinator? private let viewModel = SettingViewModel() private let homeViewModel: HomeViewModelType init(homeViewModel: HomeViewModelType) { self.homeViewModel = homeViewModel super.init(nibName: nil, bundle: nil) } required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") } // MARK: - UI Component private lazy var logoutBtn: UIButton = { let button = UIButton(type: .system) button.setTitle("로그아웃", for: .normal) button.addTarget(self, action: #selector(logout), for: .touchUpInside) return button }() // MARK: - LifeCycle override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() } // MARK: - UI Setting private func makeUI() { view.backgroundColor = .background [logoutBtn].forEach { view.addSubview($0) $0.translatesAutoresizingMaskIntoConstraints = false } } private func constraints() { NSLayoutConstraint.activate([ logoutBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor), logoutBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor), ]) } @objc func logout() { do { UserDefaultsManager.shared.removeUser() UserDefaultsManager.shared.removeGroup() try Auth.auth().signOut() print("로그아웃 성공") coordinator?.showLogin() homeViewModel.stopObservingGroup() } catch let signOutError as NSError { print("로그아웃 실패: %@", signOutError) } } } #Preview { SettingViewController(homeViewModel: StubHomeViewModel(previewPost: .samplePosts[0])) } 개선 코드 - view와 viewModel 구분 // View import UIKit import FirebaseAuth import RxSwift final class SettingViewController: UIViewController { private let disposeBaag = DisposeBag() weak var coordinator: HomeCoordinator? private let viewModel = SettingViewModel() private let homeViewModel: HomeViewModelType init(homeViewModel: HomeViewModelType) { self.homeViewModel = homeViewModel super.init(nibName: nil, bundle: nil) } required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") } // MARK: - UI Component private lazy var logoutBtn: UIButton = { let button = UIButton(type: .system) button.setTitle("로그아웃", for: .normal) return button }() // MARK: - LifeCycle override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() bindViewModdel() } // MARK: - UI Setting private func makeUI() { view.backgroundColor = .background [logoutBtn].forEach { view.addSubview($0) $0.translatesAutoresizingMaskIntoConstraints = false } } private func constraints() { NSLayoutConstraint.activate([ logoutBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor), logoutBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor), ]) } // MARK: - Binding private func bindViewModdel() { // [Input] 로그아웃 버튼 탭 이벤트를 ViewModel에 전달 logoutBtn.rx.tap .bind(onNext: { [weak self] in guard let self = self else { return } self.viewModel.logout() }) .disposed(by: disposeBaag) // [Output] 로그아웃 처리 결과에 따라 UI 반응 viewModel.logoutResult .observe(on: MainScheduler.instance) .subscribe(onNext: { [weak self] result in guard let self = self else { return } switch result { case .success: print("로그아웃 성공") self.coordinator?.showLogin() case .failure(let error): print("로그아웃 실패: \(error.localizedDescription)") } }) .disposed(by: disposeBaag) } } // ViewModel import FirebaseAuth import RxSwift import RxCocoa protocol SettingViewModelType { func logout() } final class SettingViewModel: SettingViewModelType { // 로그아웃 결과 이벤트 // 로그아웃 결과는 상태가 아닌 한번 일어나는 일회성 이벤트 let logoutResult = PublishRelay&lt;Result&lt;Void, Error&gt;&gt;() func logout() { do { try Auth.auth().signOut() logoutResult.accept(.success(())) UserDefaultsManager.shared.removeUser() UserDefaultsManager.shared.removeGroup() } catch { logoutResult.accept(.failure(error)) } } } 개선 코드 - view와 viewModel 구분 및 Input/Output 패턴 추가 // View import UIKit import FirebaseAuth import RxSwift final class SettingViewController: UIViewController { private let disposeBaag = DisposeBag() weak var coordinator: HomeCoordinator? private let viewModel = SettingViewModel() private let homeViewModel: HomeViewModelType init(homeViewModel: HomeViewModelType) { self.homeViewModel = homeViewModel super.init(nibName: nil, bundle: nil) } required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") } // MARK: - UI Component private lazy var logoutBtn: UIButton = { let button = UIButton(type: .system) button.setTitle("로그아웃", for: .normal) return button }() // MARK: - LifeCycle override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() bindViewModel() } // MARK: - UI Setting private func makeUI() { view.backgroundColor = .background [logoutBtn].forEach { view.addSubview($0) $0.translatesAutoresizingMaskIntoConstraints = false } } private func constraints() { NSLayoutConstraint.activate([ logoutBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor), logoutBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor), ]) } // MARK: - Binding private func bindViewModel() { // Input: 버튼 탭 이벤트를 viewModel로 전달 let input = SettingViewModel.Input(logoutTapped: logoutBtn.rx.tap.asObservable()) // Output: transform으로부터 결과 스트림 반환 let output = viewModel.transform(input: input) // Output에 따라 UI 처리 output.logoutResult .drive(onNext: { [weak self] result in guard let self = self else { return } switch result { case .success: print("로그아웃 성공") self.coordinator?.showLogin() case .failure(let error): print("로그아웃 실패: \(error.localizedDescription)") } }).disposed(by: disposeBaag) } } // ViewModel import FirebaseAuth import RxSwift import RxCocoa final class SettingViewModel { // Rx 리소스 해제를 위한 DisposeBag private let disposeBag = DisposeBag() // View로부터 전달받을 사용자 이벤트 정의 struct Input { // 로그아웃 버튼 탭이벤트 let logoutTapped: Observable&lt;Void&gt; } // View에 전달할 출력 데이터 정의 struct Output { // 로그아웃 성공 또는 실패에 대한 결과 스트림 // Driver를 사용하여 메인스레드에서 UI 바인딩에 안전하게 처리 let logoutResult: Driver&lt;Result&lt;Void, LoginError&gt;&gt; } /// Input을 받아 내부 로직을 수행 후 Output을 반환하는 함수 /// - Parameter input: View에서 발생한 이벤트 /// - Returns: 로그아웃 결과를 포함하는 Output func transform(input: Input) -&gt; Output { // 로그아웃 버튼 탭시 로직을 수행하고 결과를 result로 반환 let result = input.logoutTapped .map { _ -&gt; Result&lt;Void, LoginError&gt; in do { try Auth.auth().signOut() UserDefaultsManager.shared.removeUser() UserDefaultsManager.shared.removeGroup() return .success(()) } catch { return .failure(.logoutError) } // 에러가 발생하더라도 UI가 멈추지 않고 기본 오류값으로 처리 }.asDriver(onErrorJustReturn: .failure(.logoutError)) // View에서 사용할 Output rntjd return Output(logoutResult: result) } }]]></summary></entry></feed>

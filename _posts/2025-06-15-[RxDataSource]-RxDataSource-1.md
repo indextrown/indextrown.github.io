@@ -70,7 +70,6 @@ numberOfRowsInSection – 셀의 개수
 cellForRowAt – 각 셀에 들어갈 내용과 셀 객체 반환
 
 ## 예시
-
 UITableView나 UICollectionView는 셀을 스크롤할 때마다 필요한 셀만 메모리에 올리고, 보이지 않으면 메모리에서 제거한 뒤 재활용한다.
 이로 인해 성능을 크게 향상시킬 수 있으며, 이 재활용 과정에서 각 셀의 개수와 내용은 dataSource가, 셀 선택 등의 사용자 이벤트는 delegate가 처리한다.
 
