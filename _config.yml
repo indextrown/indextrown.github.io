@@ -304,7 +304,7 @@ collections:
 
 utterances:
   repo: "indextrown/indextrown.github.io"
-  isssue_term: "pathname"
+  issue_term: "pathname"
   label: "comments"
   theme: "github-light"
   follow_site_theme: true

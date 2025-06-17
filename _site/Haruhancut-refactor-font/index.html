@@ -1,0 +1,863 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>[Haruhancut] 1. 하루한컷 리팩토링 - 폰트, 색상 세팅 - DongHyeon Kim’s Blog</title>
+<meta name="description" content="Font 세팅      Fonts 폴더에 다운받은 폰트를 저장한다.    &lt;key&gt;UIAppFonts&lt;/key&gt; &lt;array&gt;     &lt;string&gt;NanumMyeongjo-Regular.ttf&lt;/string&gt;     &lt;string&gt;RacingSansOne-Regular.ttf&lt;/string&gt;     &lt;string&gt;Pretendard-Black.otf&lt;/string&gt;     &lt;string&gt;Pretendard-Bold.otf&lt;/string&gt;     &lt;string&gt;Pretendard-ExtraBold.otf&lt;/string&gt;     &lt;string&gt;Pretendard-ExtraLight.otf&lt;/string&gt;     &lt;string&gt;Pretendard-Light.otf&lt;/string&gt;     &lt;string&gt;Pretendard-Medium.otf&lt;/string&gt;     &lt;string&gt;Pretendard-Regular.otf&lt;/string&gt;     &lt;string&gt;Pretendard-SemiBold.otf&lt;/string&gt;     &lt;string&gt;Pretendard-Thin.otf&lt;/string&gt; &lt;/array&gt;     Info파일에 아래 내용 추가한다.    import UIKit  extension UIFont {     enum HCFont: String {         case black = &quot;Pretendard-Black&quot;         case bold = &quot;Pretendard-Bold&quot;         case extraBold = &quot;Pretendard-ExtraBold&quot;         case extraLight = &quot;Pretendard-ExtraLight&quot;         case light = &quot;Pretendard-Light&quot;         case medium = &quot;Pretendard-Medium&quot;         case regular = &quot;Pretendard-Regular&quot;         case semiBold = &quot;Pretendard-SemiBold&quot;         case thin = &quot;Pretendard-Thin&quot;     } }  // 커스텀 폰트 extension UIFont {     static func hcFont(font: HCFont, size: CGFloat) -&gt; UIFont {         return UIFont(name: font.rawValue, size: size) ?? UIFont.systemFont(ofSize: size)     } }  // 하루한컷 프리셋 폰트 extension UIFont {     static var titleFont: UIFont {         hcFont(font: .bold, size: 24)     }      static var bodyFont: UIFont {         hcFont(font: .regular, size: 16)     }      static var captionFont: UIFont {         hcFont(font: .medium, size: 12)     } }   // ----------------------------------------------------------------- // // SwiftUI 대응  import SwiftUI  extension Font {     static var hcTitle: Font {         Font.custom(&quot;Pretendard-Bold&quot;, size: 24)     }      static var hcBody: Font {         Font.custom(&quot;Pretendard-Regular&quot;, size: 16)     }      static var hcCaption: Font {         Font.custom(&quot;Pretendard-Medium&quot;, size: 12)     } }   final class FontView: UIView {          // MARK: - UI Component     private lazy var titleLabel: UILabel = {         let label = UILabel()         label.font = .hcFont(font: .bold, size: 24)         label.textColor = .label         label.textAlignment = .center         label.numberOfLines = 0         label.text = &quot;title size 24&quot;         return label     }()          private lazy var bodyLabel: UILabel = {         let label = UILabel()         label.font = .hcFont(font: .regular, size: 16)         label.textColor = .secondaryLabel         label.textAlignment = .center         label.numberOfLines = 0         label.text = &quot;body size 16&quot;         return label     }()          private lazy var captionLabel: UILabel = {         let label = UILabel()         label.font = .hcFont(font: .medium, size: 12)         label.textColor = .label         label.textAlignment = .center         label.numberOfLines = 0         label.text = &quot;caption size 12&quot;         return label     }()          private lazy var hStackView: UIStackView = {         let stackView = UIStackView(arrangedSubviews: [titleLabel, bodyLabel, captionLabel])         stackView.axis = .vertical         stackView.spacing = 16         return stackView     }()      // MARK: - Initializer     override init(frame: CGRect) {         super.init(frame: frame)         setupUI()         setupConstraints()     }      required init?(coder: NSCoder) {         fatalError(&quot;init(coder:) has not been implemented&quot;)     }      // MARK: - UI Setup     private func setupUI() {         backgroundColor = .systemBackground         addSubview(hStackView)         hStackView.translatesAutoresizingMaskIntoConstraints = false     }      // MARK: - Constraints     private func setupConstraints() {         NSLayoutConstraint.activate([             hStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),             hStackView.leadingAnchor.constraint(equalTo: leadingAnchor),             hStackView.trailingAnchor.constraint(equalTo: trailingAnchor),             hStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)         ])     } }  #Preview {     FontView() }     FontSystem 코드 작성한다    import UIKit  // MARK: - Hex -&gt; UIColor extension UIColor {     convenience init(hex: String, alpha: CGFloat = 1.0) {         var hexFormatted: String = hex.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).uppercased()         if hexFormatted.hasPrefix(&quot;#&quot;) {             hexFormatted = String(hexFormatted.dropFirst())         }         var rgbValue: UInt64 = 0         Scanner(string: hexFormatted).scanHexInt64(&amp;rgbValue)         self.init(             red: CGFloat((rgbValue &amp; 0xFF0000) &gt;&gt; 16) / 255.0,             green: CGFloat((rgbValue &amp; 0x00FF00) &gt;&gt; 8) / 255.0,             blue: CGFloat(rgbValue &amp; 0x0000FF) / 255.0,             alpha: alpha         )     } }  extension UIColor {          // MARK: - Login     static let kakao = UIColor(hex: &quot;#FEE500&quot;)     static let apple = UIColor(hex: &quot;#FFFFFF&quot;)     static let kakaoTapped = UIColor(hex: &quot;#CCC200&quot;)     static let appleTapped = UIColor(hex: &quot;#E5E5E5&quot;)          // MARK: - Main     static let background = UIColor(hex: &quot;#1A1A1A&quot;)     static let mainBlack = UIColor(hex: &quot;#161717&quot;)     static let mainWhite = UIColor(hex: &quot;#f1f1f1&quot;)     static let buttonTapped = UIColor(hex: &quot;#131315&quot;)     static let hcColor = UIColor.init(hex: &quot;AAD1E7&quot;)          // MARK: - Gray     static let Gray000 = UIColor(hex: &quot;#EFEFEF&quot;)     static let Gray100 = UIColor(hex: &quot;#B0AEB3&quot;)     static let Gray200 = UIColor(hex: &quot;#8B888F&quot;)     static let Gray300 = UIColor(hex: &quot;#67646C&quot;)     static let Gray500 = UIColor(hex: &quot;#454348&quot;)     static let Gray700 = UIColor(hex: &quot;#252427&quot;)     static let Gray900 = UIColor(hex: &quot;#111113&quot;) }">
+
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[Haruhancut] 1. 하루한컷 리팩토링 - 폰트, 색상 세팅">
+<meta property="og:url" content="http://localhost:4000/Haruhancut-refactor-font/">
+
+
+  <meta property="og:description" content="Font 세팅      Fonts 폴더에 다운받은 폰트를 저장한다.    &lt;key&gt;UIAppFonts&lt;/key&gt; &lt;array&gt;     &lt;string&gt;NanumMyeongjo-Regular.ttf&lt;/string&gt;     &lt;string&gt;RacingSansOne-Regular.ttf&lt;/string&gt;     &lt;string&gt;Pretendard-Black.otf&lt;/string&gt;     &lt;string&gt;Pretendard-Bold.otf&lt;/string&gt;     &lt;string&gt;Pretendard-ExtraBold.otf&lt;/string&gt;     &lt;string&gt;Pretendard-ExtraLight.otf&lt;/string&gt;     &lt;string&gt;Pretendard-Light.otf&lt;/string&gt;     &lt;string&gt;Pretendard-Medium.otf&lt;/string&gt;     &lt;string&gt;Pretendard-Regular.otf&lt;/string&gt;     &lt;string&gt;Pretendard-SemiBold.otf&lt;/string&gt;     &lt;string&gt;Pretendard-Thin.otf&lt;/string&gt; &lt;/array&gt;     Info파일에 아래 내용 추가한다.    import UIKit  extension UIFont {     enum HCFont: String {         case black = &quot;Pretendard-Black&quot;         case bold = &quot;Pretendard-Bold&quot;         case extraBold = &quot;Pretendard-ExtraBold&quot;         case extraLight = &quot;Pretendard-ExtraLight&quot;         case light = &quot;Pretendard-Light&quot;         case medium = &quot;Pretendard-Medium&quot;         case regular = &quot;Pretendard-Regular&quot;         case semiBold = &quot;Pretendard-SemiBold&quot;         case thin = &quot;Pretendard-Thin&quot;     } }  // 커스텀 폰트 extension UIFont {     static func hcFont(font: HCFont, size: CGFloat) -&gt; UIFont {         return UIFont(name: font.rawValue, size: size) ?? UIFont.systemFont(ofSize: size)     } }  // 하루한컷 프리셋 폰트 extension UIFont {     static var titleFont: UIFont {         hcFont(font: .bold, size: 24)     }      static var bodyFont: UIFont {         hcFont(font: .regular, size: 16)     }      static var captionFont: UIFont {         hcFont(font: .medium, size: 12)     } }   // ----------------------------------------------------------------- // // SwiftUI 대응  import SwiftUI  extension Font {     static var hcTitle: Font {         Font.custom(&quot;Pretendard-Bold&quot;, size: 24)     }      static var hcBody: Font {         Font.custom(&quot;Pretendard-Regular&quot;, size: 16)     }      static var hcCaption: Font {         Font.custom(&quot;Pretendard-Medium&quot;, size: 12)     } }   final class FontView: UIView {          // MARK: - UI Component     private lazy var titleLabel: UILabel = {         let label = UILabel()         label.font = .hcFont(font: .bold, size: 24)         label.textColor = .label         label.textAlignment = .center         label.numberOfLines = 0         label.text = &quot;title size 24&quot;         return label     }()          private lazy var bodyLabel: UILabel = {         let label = UILabel()         label.font = .hcFont(font: .regular, size: 16)         label.textColor = .secondaryLabel         label.textAlignment = .center         label.numberOfLines = 0         label.text = &quot;body size 16&quot;         return label     }()          private lazy var captionLabel: UILabel = {         let label = UILabel()         label.font = .hcFont(font: .medium, size: 12)         label.textColor = .label         label.textAlignment = .center         label.numberOfLines = 0         label.text = &quot;caption size 12&quot;         return label     }()          private lazy var hStackView: UIStackView = {         let stackView = UIStackView(arrangedSubviews: [titleLabel, bodyLabel, captionLabel])         stackView.axis = .vertical         stackView.spacing = 16         return stackView     }()      // MARK: - Initializer     override init(frame: CGRect) {         super.init(frame: frame)         setupUI()         setupConstraints()     }      required init?(coder: NSCoder) {         fatalError(&quot;init(coder:) has not been implemented&quot;)     }      // MARK: - UI Setup     private func setupUI() {         backgroundColor = .systemBackground         addSubview(hStackView)         hStackView.translatesAutoresizingMaskIntoConstraints = false     }      // MARK: - Constraints     private func setupConstraints() {         NSLayoutConstraint.activate([             hStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),             hStackView.leadingAnchor.constraint(equalTo: leadingAnchor),             hStackView.trailingAnchor.constraint(equalTo: trailingAnchor),             hStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)         ])     } }  #Preview {     FontView() }     FontSystem 코드 작성한다    import UIKit  // MARK: - Hex -&gt; UIColor extension UIColor {     convenience init(hex: String, alpha: CGFloat = 1.0) {         var hexFormatted: String = hex.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).uppercased()         if hexFormatted.hasPrefix(&quot;#&quot;) {             hexFormatted = String(hexFormatted.dropFirst())         }         var rgbValue: UInt64 = 0         Scanner(string: hexFormatted).scanHexInt64(&amp;rgbValue)         self.init(             red: CGFloat((rgbValue &amp; 0xFF0000) &gt;&gt; 16) / 255.0,             green: CGFloat((rgbValue &amp; 0x00FF00) &gt;&gt; 8) / 255.0,             blue: CGFloat(rgbValue &amp; 0x0000FF) / 255.0,             alpha: alpha         )     } }  extension UIColor {          // MARK: - Login     static let kakao = UIColor(hex: &quot;#FEE500&quot;)     static let apple = UIColor(hex: &quot;#FFFFFF&quot;)     static let kakaoTapped = UIColor(hex: &quot;#CCC200&quot;)     static let appleTapped = UIColor(hex: &quot;#E5E5E5&quot;)          // MARK: - Main     static let background = UIColor(hex: &quot;#1A1A1A&quot;)     static let mainBlack = UIColor(hex: &quot;#161717&quot;)     static let mainWhite = UIColor(hex: &quot;#f1f1f1&quot;)     static let buttonTapped = UIColor(hex: &quot;#131315&quot;)     static let hcColor = UIColor.init(hex: &quot;AAD1E7&quot;)          // MARK: - Gray     static let Gray000 = UIColor(hex: &quot;#EFEFEF&quot;)     static let Gray100 = UIColor(hex: &quot;#B0AEB3&quot;)     static let Gray200 = UIColor(hex: &quot;#8B888F&quot;)     static let Gray300 = UIColor(hex: &quot;#67646C&quot;)     static let Gray500 = UIColor(hex: &quot;#454348&quot;)     static let Gray700 = UIColor(hex: &quot;#252427&quot;)     static let Gray900 = UIColor(hex: &quot;#111113&quot;) }">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-06-17T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/Haruhancut-refactor-font/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li><li class="masthead__menu-item">
+              <a href="/projects/">Projects</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[Haruhancut] 1. 하루한컷 리팩토링 - 폰트, 색상 세팅">
+    <meta itemprop="description" content="Font 세팅  Fonts 폴더에 다운받은 폰트를 저장한다.&lt;key&gt;UIAppFonts&lt;/key&gt;&lt;array&gt;    &lt;string&gt;NanumMyeongjo-Regular.ttf&lt;/string&gt;    &lt;string&gt;RacingSansOne-Regular.ttf&lt;/string&gt;    &lt;string&gt;Pretendard-Black.otf&lt;/string&gt;    &lt;string&gt;Pretendard-Bold.otf&lt;/string&gt;    &lt;string&gt;Pretendard-ExtraBold.otf&lt;/string&gt;    &lt;string&gt;Pretendard-ExtraLight.otf&lt;/string&gt;    &lt;string&gt;Pretendard-Light.otf&lt;/string&gt;    &lt;string&gt;Pretendard-Medium.otf&lt;/string&gt;    &lt;string&gt;Pretendard-Regular.otf&lt;/string&gt;    &lt;string&gt;Pretendard-SemiBold.otf&lt;/string&gt;    &lt;string&gt;Pretendard-Thin.otf&lt;/string&gt;&lt;/array&gt;  Info파일에 아래 내용 추가한다.import UIKitextension UIFont {    enum HCFont: String {        case black = &quot;Pretendard-Black&quot;        case bold = &quot;Pretendard-Bold&quot;        case extraBold = &quot;Pretendard-ExtraBold&quot;        case extraLight = &quot;Pretendard-ExtraLight&quot;        case light = &quot;Pretendard-Light&quot;        case medium = &quot;Pretendard-Medium&quot;        case regular = &quot;Pretendard-Regular&quot;        case semiBold = &quot;Pretendard-SemiBold&quot;        case thin = &quot;Pretendard-Thin&quot;    }}// 커스텀 폰트extension UIFont {    static func hcFont(font: HCFont, size: CGFloat) -&gt; UIFont {        return UIFont(name: font.rawValue, size: size) ?? UIFont.systemFont(ofSize: size)    }}// 하루한컷 프리셋 폰트extension UIFont {    static var titleFont: UIFont {        hcFont(font: .bold, size: 24)    }    static var bodyFont: UIFont {        hcFont(font: .regular, size: 16)    }    static var captionFont: UIFont {        hcFont(font: .medium, size: 12)    }}// ----------------------------------------------------------------- //// SwiftUI 대응import SwiftUIextension Font {    static var hcTitle: Font {        Font.custom(&quot;Pretendard-Bold&quot;, size: 24)    }    static var hcBody: Font {        Font.custom(&quot;Pretendard-Regular&quot;, size: 16)    }    static var hcCaption: Font {        Font.custom(&quot;Pretendard-Medium&quot;, size: 12)    }}final class FontView: UIView {        // MARK: - UI Component    private lazy var titleLabel: UILabel = {        let label = UILabel()        label.font = .hcFont(font: .bold, size: 24)        label.textColor = .label        label.textAlignment = .center        label.numberOfLines = 0        label.text = &quot;title size 24&quot;        return label    }()        private lazy var bodyLabel: UILabel = {        let label = UILabel()        label.font = .hcFont(font: .regular, size: 16)        label.textColor = .secondaryLabel        label.textAlignment = .center        label.numberOfLines = 0        label.text = &quot;body size 16&quot;        return label    }()        private lazy var captionLabel: UILabel = {        let label = UILabel()        label.font = .hcFont(font: .medium, size: 12)        label.textColor = .label        label.textAlignment = .center        label.numberOfLines = 0        label.text = &quot;caption size 12&quot;        return label    }()        private lazy var hStackView: UIStackView = {        let stackView = UIStackView(arrangedSubviews: [titleLabel, bodyLabel, captionLabel])        stackView.axis = .vertical        stackView.spacing = 16        return stackView    }()    // MARK: - Initializer    override init(frame: CGRect) {        super.init(frame: frame)        setupUI()        setupConstraints()    }    required init?(coder: NSCoder) {        fatalError(&quot;init(coder:) has not been implemented&quot;)    }    // MARK: - UI Setup    private func setupUI() {        backgroundColor = .systemBackground        addSubview(hStackView)        hStackView.translatesAutoresizingMaskIntoConstraints = false    }    // MARK: - Constraints    private func setupConstraints() {        NSLayoutConstraint.activate([            hStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),            hStackView.leadingAnchor.constraint(equalTo: leadingAnchor),            hStackView.trailingAnchor.constraint(equalTo: trailingAnchor),            hStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)        ])    }}#Preview {    FontView()}  FontSystem 코드 작성한다import UIKit// MARK: - Hex -&gt; UIColorextension UIColor {    convenience init(hex: String, alpha: CGFloat = 1.0) {        var hexFormatted: String = hex.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).uppercased()        if hexFormatted.hasPrefix(&quot;#&quot;) {            hexFormatted = String(hexFormatted.dropFirst())        }        var rgbValue: UInt64 = 0        Scanner(string: hexFormatted).scanHexInt64(&amp;rgbValue)        self.init(            red: CGFloat((rgbValue &amp; 0xFF0000) &gt;&gt; 16) / 255.0,            green: CGFloat((rgbValue &amp; 0x00FF00) &gt;&gt; 8) / 255.0,            blue: CGFloat(rgbValue &amp; 0x0000FF) / 255.0,            alpha: alpha        )    }}extension UIColor {        // MARK: - Login    static let kakao = UIColor(hex: &quot;#FEE500&quot;)    static let apple = UIColor(hex: &quot;#FFFFFF&quot;)    static let kakaoTapped = UIColor(hex: &quot;#CCC200&quot;)    static let appleTapped = UIColor(hex: &quot;#E5E5E5&quot;)        // MARK: - Main    static let background = UIColor(hex: &quot;#1A1A1A&quot;)    static let mainBlack = UIColor(hex: &quot;#161717&quot;)    static let mainWhite = UIColor(hex: &quot;#f1f1f1&quot;)    static let buttonTapped = UIColor(hex: &quot;#131315&quot;)    static let hcColor = UIColor.init(hex: &quot;AAD1E7&quot;)        // MARK: - Gray    static let Gray000 = UIColor(hex: &quot;#EFEFEF&quot;)    static let Gray100 = UIColor(hex: &quot;#B0AEB3&quot;)    static let Gray200 = UIColor(hex: &quot;#8B888F&quot;)    static let Gray300 = UIColor(hex: &quot;#67646C&quot;)    static let Gray500 = UIColor(hex: &quot;#454348&quot;)    static let Gray700 = UIColor(hex: &quot;#252427&quot;)    static let Gray900 = UIColor(hex: &quot;#111113&quot;)}">
+    <meta itemprop="datePublished" content="2025-06-17T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/Haruhancut-refactor-font/" class="u-url" itemprop="url">[Haruhancut] 1. 하루한컷 리팩토링 - 폰트, 색상 세팅
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=ReactiveX">ReactiveX</a>
+    
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=RxDataSource">RxDataSource</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-06-17T00:00:00+00:00">June 17, 2025</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
+
+<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h2 id="font-세팅">Font 세팅</h2>
+
+<p><img src="/assets/img/2025-06-17-%5BHaruhancut%5D-refactor-font/image-20250617133256915.png" alt="이미지" width="30%" /></p>
+<ul>
+  <li>Fonts 폴더에 다운받은 폰트를 저장한다.<br />
+<br /><br /></li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span><span class="kt">UIAppFonts</span><span class="o">&lt;/</span><span class="n">key</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">array</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="kt">NanumMyeongjo</span><span class="o">-</span><span class="kt">Regular</span><span class="o">.</span><span class="n">ttf</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="kt">RacingSansOne</span><span class="o">-</span><span class="kt">Regular</span><span class="o">.</span><span class="n">ttf</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="kt">Pretendard</span><span class="o">-</span><span class="kt">Black</span><span class="o">.</span><span class="n">otf</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="kt">Pretendard</span><span class="o">-</span><span class="kt">Bold</span><span class="o">.</span><span class="n">otf</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="kt">Pretendard</span><span class="o">-</span><span class="kt">ExtraBold</span><span class="o">.</span><span class="n">otf</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="kt">Pretendard</span><span class="o">-</span><span class="kt">ExtraLight</span><span class="o">.</span><span class="n">otf</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="kt">Pretendard</span><span class="o">-</span><span class="kt">Light</span><span class="o">.</span><span class="n">otf</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="kt">Pretendard</span><span class="o">-</span><span class="kt">Medium</span><span class="o">.</span><span class="n">otf</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="kt">Pretendard</span><span class="o">-</span><span class="kt">Regular</span><span class="o">.</span><span class="n">otf</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="kt">Pretendard</span><span class="o">-</span><span class="kt">SemiBold</span><span class="o">.</span><span class="n">otf</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="kt">Pretendard</span><span class="o">-</span><span class="kt">Thin</span><span class="o">.</span><span class="n">otf</span><span class="o">&lt;/</span><span class="n">string</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">array</span><span class="o">&gt;</span>
+</code></pre></div></div>
+<ul>
+  <li>Info파일에 아래 내용 추가한다.<br />
+<br /><br /></li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">extension</span> <span class="kt">UIFont</span> <span class="p">{</span>
+    <span class="kd">enum</span> <span class="kt">HCFont</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="n">black</span> <span class="o">=</span> <span class="s">"Pretendard-Black"</span>
+        <span class="k">case</span> <span class="n">bold</span> <span class="o">=</span> <span class="s">"Pretendard-Bold"</span>
+        <span class="k">case</span> <span class="n">extraBold</span> <span class="o">=</span> <span class="s">"Pretendard-ExtraBold"</span>
+        <span class="k">case</span> <span class="n">extraLight</span> <span class="o">=</span> <span class="s">"Pretendard-ExtraLight"</span>
+        <span class="k">case</span> <span class="n">light</span> <span class="o">=</span> <span class="s">"Pretendard-Light"</span>
+        <span class="k">case</span> <span class="n">medium</span> <span class="o">=</span> <span class="s">"Pretendard-Medium"</span>
+        <span class="k">case</span> <span class="n">regular</span> <span class="o">=</span> <span class="s">"Pretendard-Regular"</span>
+        <span class="k">case</span> <span class="n">semiBold</span> <span class="o">=</span> <span class="s">"Pretendard-SemiBold"</span>
+        <span class="k">case</span> <span class="n">thin</span> <span class="o">=</span> <span class="s">"Pretendard-Thin"</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 커스텀 폰트</span>
+<span class="kd">extension</span> <span class="kt">UIFont</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="kd">func</span> <span class="nf">hcFont</span><span class="p">(</span><span class="nv">font</span><span class="p">:</span> <span class="kt">HCFont</span><span class="p">,</span> <span class="nv">size</span><span class="p">:</span> <span class="kt">CGFloat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UIFont</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kt">UIFont</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="n">font</span><span class="o">.</span><span class="n">rawValue</span><span class="p">,</span> <span class="nv">size</span><span class="p">:</span> <span class="n">size</span><span class="p">)</span> <span class="p">??</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="n">size</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 하루한컷 프리셋 폰트</span>
+<span class="kd">extension</span> <span class="kt">UIFont</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="k">var</span> <span class="nv">titleFont</span><span class="p">:</span> <span class="kt">UIFont</span> <span class="p">{</span>
+        <span class="nf">hcFont</span><span class="p">(</span><span class="nv">font</span><span class="p">:</span> <span class="o">.</span><span class="n">bold</span><span class="p">,</span> <span class="nv">size</span><span class="p">:</span> <span class="mi">24</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="kd">static</span> <span class="k">var</span> <span class="nv">bodyFont</span><span class="p">:</span> <span class="kt">UIFont</span> <span class="p">{</span>
+        <span class="nf">hcFont</span><span class="p">(</span><span class="nv">font</span><span class="p">:</span> <span class="o">.</span><span class="n">regular</span><span class="p">,</span> <span class="nv">size</span><span class="p">:</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="kd">static</span> <span class="k">var</span> <span class="nv">captionFont</span><span class="p">:</span> <span class="kt">UIFont</span> <span class="p">{</span>
+        <span class="nf">hcFont</span><span class="p">(</span><span class="nv">font</span><span class="p">:</span> <span class="o">.</span><span class="n">medium</span><span class="p">,</span> <span class="nv">size</span><span class="p">:</span> <span class="mi">12</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="c1">// ----------------------------------------------------------------- //</span>
+<span class="c1">// SwiftUI 대응</span>
+
+<span class="kd">import</span> <span class="kt">SwiftUI</span>
+
+<span class="kd">extension</span> <span class="kt">Font</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="k">var</span> <span class="nv">hcTitle</span><span class="p">:</span> <span class="kt">Font</span> <span class="p">{</span>
+        <span class="kt">Font</span><span class="o">.</span><span class="nf">custom</span><span class="p">(</span><span class="s">"Pretendard-Bold"</span><span class="p">,</span> <span class="nv">size</span><span class="p">:</span> <span class="mi">24</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="kd">static</span> <span class="k">var</span> <span class="nv">hcBody</span><span class="p">:</span> <span class="kt">Font</span> <span class="p">{</span>
+        <span class="kt">Font</span><span class="o">.</span><span class="nf">custom</span><span class="p">(</span><span class="s">"Pretendard-Regular"</span><span class="p">,</span> <span class="nv">size</span><span class="p">:</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="kd">static</span> <span class="k">var</span> <span class="nv">hcCaption</span><span class="p">:</span> <span class="kt">Font</span> <span class="p">{</span>
+        <span class="kt">Font</span><span class="o">.</span><span class="nf">custom</span><span class="p">(</span><span class="s">"Pretendard-Medium"</span><span class="p">,</span> <span class="nv">size</span><span class="p">:</span> <span class="mi">12</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">FontView</span><span class="p">:</span> <span class="kt">UIView</span> <span class="p">{</span>
+    
+    <span class="c1">// MARK: - UI Component</span>
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">titleLabel</span><span class="p">:</span> <span class="kt">UILabel</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">label</span> <span class="o">=</span> <span class="kt">UILabel</span><span class="p">()</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="o">.</span><span class="nf">hcFont</span><span class="p">(</span><span class="nv">font</span><span class="p">:</span> <span class="o">.</span><span class="n">bold</span><span class="p">,</span> <span class="nv">size</span><span class="p">:</span> <span class="mi">24</span><span class="p">)</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">textColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">label</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">textAlignment</span> <span class="o">=</span> <span class="o">.</span><span class="n">center</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">numberOfLines</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">"title size 24"</span>
+        <span class="k">return</span> <span class="n">label</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">bodyLabel</span><span class="p">:</span> <span class="kt">UILabel</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">label</span> <span class="o">=</span> <span class="kt">UILabel</span><span class="p">()</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="o">.</span><span class="nf">hcFont</span><span class="p">(</span><span class="nv">font</span><span class="p">:</span> <span class="o">.</span><span class="n">regular</span><span class="p">,</span> <span class="nv">size</span><span class="p">:</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">textColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">secondaryLabel</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">textAlignment</span> <span class="o">=</span> <span class="o">.</span><span class="n">center</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">numberOfLines</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">"body size 16"</span>
+        <span class="k">return</span> <span class="n">label</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">captionLabel</span><span class="p">:</span> <span class="kt">UILabel</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">label</span> <span class="o">=</span> <span class="kt">UILabel</span><span class="p">()</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="o">.</span><span class="nf">hcFont</span><span class="p">(</span><span class="nv">font</span><span class="p">:</span> <span class="o">.</span><span class="n">medium</span><span class="p">,</span> <span class="nv">size</span><span class="p">:</span> <span class="mi">12</span><span class="p">)</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">textColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">label</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">textAlignment</span> <span class="o">=</span> <span class="o">.</span><span class="n">center</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">numberOfLines</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">"caption size 12"</span>
+        <span class="k">return</span> <span class="n">label</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">hStackView</span><span class="p">:</span> <span class="kt">UIStackView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">stackView</span> <span class="o">=</span> <span class="kt">UIStackView</span><span class="p">(</span><span class="nv">arrangedSubviews</span><span class="p">:</span> <span class="p">[</span><span class="n">titleLabel</span><span class="p">,</span> <span class="n">bodyLabel</span><span class="p">,</span> <span class="n">captionLabel</span><span class="p">])</span>
+        <span class="n">stackView</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="o">.</span><span class="n">vertical</span>
+        <span class="n">stackView</span><span class="o">.</span><span class="n">spacing</span> <span class="o">=</span> <span class="mi">16</span>
+        <span class="k">return</span> <span class="n">stackView</span>
+    <span class="p">}()</span>
+
+    <span class="c1">// MARK: - Initializer</span>
+    <span class="k">override</span> <span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="kt">CGRect</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="n">frame</span><span class="p">)</span>
+        <span class="nf">setupUI</span><span class="p">()</span>
+        <span class="nf">setupConstraints</span><span class="p">()</span>
+    <span class="p">}</span>
+
+    <span class="kd">required</span> <span class="nf">init</span><span class="p">?(</span><span class="nv">coder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">fatalError</span><span class="p">(</span><span class="s">"init(coder:) has not been implemented"</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c1">// MARK: - UI Setup</span>
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">setupUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">systemBackground</span>
+        <span class="nf">addSubview</span><span class="p">(</span><span class="n">hStackView</span><span class="p">)</span>
+        <span class="n">hStackView</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+    <span class="p">}</span>
+
+    <span class="c1">// MARK: - Constraints</span>
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">setupConstraints</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">hStackView</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">),</span>
+            <span class="n">hStackView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">leadingAnchor</span><span class="p">),</span>
+            <span class="n">hStackView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">trailingAnchor</span><span class="p">),</span>
+            <span class="n">hStackView</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">)</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cp">#Preview {</span>
+    <span class="kt">FontView</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>FontSystem 코드 작성한다<br />
+<br /><br /></li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="c1">// MARK: - Hex -&gt; UIColor</span>
+<span class="kd">extension</span> <span class="kt">UIColor</span> <span class="p">{</span>
+    <span class="kd">convenience</span> <span class="nf">init</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">alpha</span><span class="p">:</span> <span class="kt">CGFloat</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">var</span> <span class="nv">hexFormatted</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">hex</span><span class="o">.</span><span class="nf">trimmingCharacters</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="kt">CharacterSet</span><span class="o">.</span><span class="n">whitespacesAndNewlines</span><span class="p">)</span><span class="o">.</span><span class="nf">uppercased</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">hexFormatted</span><span class="o">.</span><span class="nf">hasPrefix</span><span class="p">(</span><span class="s">"#"</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">hexFormatted</span> <span class="o">=</span> <span class="kt">String</span><span class="p">(</span><span class="n">hexFormatted</span><span class="o">.</span><span class="nf">dropFirst</span><span class="p">())</span>
+        <span class="p">}</span>
+        <span class="k">var</span> <span class="nv">rgbValue</span><span class="p">:</span> <span class="kt">UInt64</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="kt">Scanner</span><span class="p">(</span><span class="nv">string</span><span class="p">:</span> <span class="n">hexFormatted</span><span class="p">)</span><span class="o">.</span><span class="nf">scanHexInt64</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rgbValue</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span>
+            <span class="nv">red</span><span class="p">:</span> <span class="kt">CGFloat</span><span class="p">((</span><span class="n">rgbValue</span> <span class="o">&amp;</span> <span class="mh">0xFF0000</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">,</span>
+            <span class="nv">green</span><span class="p">:</span> <span class="kt">CGFloat</span><span class="p">((</span><span class="n">rgbValue</span> <span class="o">&amp;</span> <span class="mh">0x00FF00</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">,</span>
+            <span class="nv">blue</span><span class="p">:</span> <span class="kt">CGFloat</span><span class="p">(</span><span class="n">rgbValue</span> <span class="o">&amp;</span> <span class="mh">0x0000FF</span><span class="p">)</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">,</span>
+            <span class="nv">alpha</span><span class="p">:</span> <span class="n">alpha</span>
+        <span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">UIColor</span> <span class="p">{</span>
+    
+    <span class="c1">// MARK: - Login</span>
+    <span class="kd">static</span> <span class="k">let</span> <span class="nv">kakao</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#FEE500"</span><span class="p">)</span>
+    <span class="kd">static</span> <span class="k">let</span> <span class="nv">apple</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#FFFFFF"</span><span class="p">)</span>
+    <span class="kd">static</span> <span class="k">let</span> <span class="nv">kakaoTapped</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#CCC200"</span><span class="p">)</span>
+    <span class="kd">static</span> <span class="k">let</span> <span class="nv">appleTapped</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#E5E5E5"</span><span class="p">)</span>
+    
+    <span class="c1">// MARK: - Main</span>
+    <span class="kd">static</span> <span class="k">let</span> <span class="nv">background</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#1A1A1A"</span><span class="p">)</span>
+    <span class="kd">static</span> <span class="k">let</span> <span class="nv">mainBlack</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#161717"</span><span class="p">)</span>
+    <span class="kd">static</span> <span class="k">let</span> <span class="nv">mainWhite</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#f1f1f1"</span><span class="p">)</span>
+    <span class="kd">static</span> <span class="k">let</span> <span class="nv">buttonTapped</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#131315"</span><span class="p">)</span>
+    <span class="kd">static</span> <span class="k">let</span> <span class="nv">hcColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"AAD1E7"</span><span class="p">)</span>
+    
+    <span class="c1">// MARK: - Gray</span>
+    <span class="kd">static</span> <span class="k">let</span> <span class="nv">Gray000</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#EFEFEF"</span><span class="p">)</span>
+    <span class="kd">static</span> <span class="k">let</span> <span class="nv">Gray100</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#B0AEB3"</span><span class="p">)</span>
+    <span class="kd">static</span> <span class="k">let</span> <span class="nv">Gray200</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#8B888F"</span><span class="p">)</span>
+    <span class="kd">static</span> <span class="k">let</span> <span class="nv">Gray300</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#67646C"</span><span class="p">)</span>
+    <span class="kd">static</span> <span class="k">let</span> <span class="nv">Gray500</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#454348"</span><span class="p">)</span>
+    <span class="kd">static</span> <span class="k">let</span> <span class="nv">Gray700</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#252427"</span><span class="p">)</span>
+    <span class="kd">static</span> <span class="k">let</span> <span class="nv">Gray900</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#111113"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/RxDataSource-RxDataSource-2/" class="pagination--pager" title="[RxDataSource] 2. CustomDatasource 만들어보기
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>
