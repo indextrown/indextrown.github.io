@@ -1,8 +1,7 @@
 ---
 title: "[Haruhancut] 1. 하루한컷 리팩토링 - 폰트, 색상 세팅"
 tags: 
-- ReactiveX
-- RxDataSource
+- Haruhancut
 header: 
   teaser: 
 typora-root-url: ../
