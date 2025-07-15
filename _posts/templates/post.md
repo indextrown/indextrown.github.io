@@ -5,8 +5,6 @@ tags:
 header: 
   teaser: 
 typora-root-url: ../
-
-
 ---
 
 <!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
