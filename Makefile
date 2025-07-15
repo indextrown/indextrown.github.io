@@ -22,6 +22,6 @@ update:
 	echo 'typora-root-url: ../'           >> $$FILENAME; \
 	echo '---'                            >> $$FILENAME; \
 	echo ''                               >> $$FILENAME; \
-	echo '<!-- <img src="{{ '\''이미지경로'\'' | relative_url }}" alt="이미지" width="30%"> -->' >> $$FILENAME                    >> $(DATE)-$@.md
+	echo '<!-- <img src="{{ '\''이미지경로'\'' | relative_url }}" alt="이미지" width="30%"> -->' >> $$FILENAME
 # %:
 # 	touch $(DATE)-$@.md
