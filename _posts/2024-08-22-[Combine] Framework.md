@@ -13,10 +13,37 @@ header:
 
 <!-- https://medium.com/harrythegreat/swift-combine-입문하기-가이드-1-525ccb94af57 -->
 <!-- https://velog.io/@newon-seoul/Combine-을-정리해보았습니다.-기초편 -->
+
+
 # Combine이란
 2019년에 Apple에서 출시한 비동기처리 이벤트를 처리하기 위한 first-party 프레임워크이다.  
 Combine은 앱 내에서 일어나는 이벤트들의 진행 결과 등을 선언적으로 코딩할 수 있게끔 도와준다.  
 어떠한 이벤트를 추적할 때 Delegate패턴을 사용하거나, Completion 클로저를 사용하는 대신 Combine을 활용해볼 수 있다.
+
+<img src="{{ '/assets/img/2025-03-25-[RxSwift]-RxSwift-1/image.png
+
+' | relative_url }}" alt="커스텀셀" width="70%">
+
+# 구성
+- 보내는 것 (총알) - Publisher/Observable
+- 연결 - 구독 - subscribe
+- 중간 처리 - 연산자
+- 쓰레드 설정
+
+# 구조
+- 보내는 것(총알)
+    - 퍼블리셔 - 베이스 쌀밥, 바로 생성 -> 이벤트 전달
+    - 서브젝트 - 일단 연결을 해둔다 -> 우리가 원하는 시점에 이벤트를 보낸다
+        - CurrentValueSubject, @Published - 데이터 상태를 가지고 있고 싶을 때 사용
+        - PassThroughSubject - 단방향 이벤트(값을 가지고 있고 싶지 않을 때 사용)
+- 연결 - 구독
+    - sink - onReceived, onFailed, onFinished 
+    - assign - 해당 객체가 가지고 있는 프로퍼티에 바로 연결 
+    - 구독을 했을 때 메모리 참조 - AnyCancellable
+        - 하나로 묶어서 관리하는 `Set<AnyCancellable>`
+- 중간에 처리 - 연산자
+    - map, filter 등
+
 
 # Combine 주요 개념
 ### Stream
@@ -244,9 +271,11 @@ futurePublisher
 RunLoop.main.run(until: Date(timeIntervalSinceNow: 2))
 ```
 
-
-
-
+## Reference
+- https://developer.apple.com/documentation/combine
+- https://heckj.github.io/swiftui-notes/#aboutthisbook
+- https://github.com/CombineCommunity/rxswift-to-combine-cheatsheet
+- https://github.com/CombineCommunity/CombineCocoa
 
 
 

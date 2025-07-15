@@ -171,7 +171,15 @@ Observable.from([1, 2, 3, 4, 5])
 일정 시간 동안 아무 차도 지나가지 않으면, **마지막으로 지나간 자동차(Event)**만 통과시킨다.  
 즉 이벤트가 여러 번 발생하더라도 debounce를 통과한 이벤트만 최종적으로 전달한다.
 
-## 3. RxSwift란?
+### 반응형 프로그래밍 사용 예시
+- 이벤트 처리
+- 버튼 클릭
+- 액션 처리
+- delegate 패턴 -> reactive 방식
+- notification -> reactive 방식
+- API 요청을 반복처리 또는 동시처리
+
+## 4. RxSwift란?
 Reactive Extension/Programming + Swift로, 관찰 가능한 시퀀스를 사용하여 비동기 및 이벤트 기반 프로그램을 구성하기 위한 라이브러리다.  
 
 Swift는 함수형 프로그래밍(Functional Programming) 패러다임을 강조하는 언어이다.   
@@ -192,7 +200,7 @@ Observable
 이때 bind(정확히 말하자면 bind는 RxCocoa이다) 연산자를 사용하여 쉽게 바인딩이 가능하다.   
 DisoatchQueue에서 직접 조정해야 했던 작업들을 자동으로 처리해준다.
 
-## 4. RxSwift 사용 목적
+## 5. RxSwift 사용 목적
 ```swift
 func doSomethingIncredible(forWho: String) throws -> IncredibleThing
 
@@ -205,7 +213,7 @@ doSomethingIncredible("me")
 - RxSwift를 사용하면 retry연산자를 사용해 쉽게 재시도 코드를 작성할 수 있다.
 - 또한 초반부에 작성한 콜백 지옥을 해결하기 위해서도 사용한다.
 
-## 5. Combine도 같은 개념이다
+## 6. Combine도 같은 개념이다
 - RxSwift는 써드파티라서 Apple 입장에서는 시스템 통합이 어려웠다.
 - SwiftUI를 만들면서 비동기 처리와 UI 바인딩을 자연스럽게 연동할 필요가 있었다.
 - Swift에서 RxSwift와 동일한 반응형 프로그래밍을 지원하는 Apple 공식 프레임워크가 Combine이다.

@@ -1,0 +1,825 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>[Pindora] Dependency Injection란? - DongHyeon Kim’s Blog</title>
+<meta name="description" content="Dependency Injection란 무엇인가? DI는 Dependency Injection의 줄임말로, 다양한 우리말 번역이 있지만, 이 글에서는 의존성 주입이라는 말로 사용하고자 한다. 먼저 의존성, 주입, 의존성 주입 순서대로 알아보자.  Dependency(의존성) 객체 지향 프로그래밍에서 Dependency, 의존성은 서로 다른 객체 사이에 의존 관계가 있다는 것을 말한다. 즉 의존하는 객체가 수정되면 다른 객체도 영향을 받는다는 것이다.  import Foundation  class A부품 {     var name: String = &quot;A부품&quot; }  class B부품 {     var name: String = &quot;B부품&quot; }   /// ex: ViewController() class C완성품 {          /// ex: NetworkManager()     // C완성품이 A부품에 의존한다 = 의존성이 생긴다     // A부품의 코드가 바뀌면 C완성품의 코드를 바꿔줘야하는 문제가 생긴다     // 부품을 바꾸고 싶을 때는 코드를 B부품으로 버꿔야 하는 문제가 생긴다     var a: A부품 = A부품()          func printName() {         print(a.name)     } }  하나의 객체가 다른 객체에 의존하고 있는 코드를 의존하고 있다고 말한다. 이렇게 의존성이 생기는 코드를 확장성있게 바꾸기 위해 의존성 주입을 통해 코드를 개선할 수 있다.  주입(Injection)  생성자를 통해 저장속성을 외부에서 주입하는 개념이다.   의존성 코드에서는 저장속성에 기본값을 인스턴스로 생성&amp;할당하여 생성자를 만들어 주지 않아도 괜찮았다.  // 주입(Injection) class Person {     var name: String          init(name: String) {         self.name = name     } }  // 외부에서 값을 주입(할당/초기화)해서 인스턴스 생성 let people = Person(name: &quot;Index&quot;)  실제로는 기본값보다는 생성자를 통해서 외부에서 들어온 값을 통해 저장속성에 할당할 수 있게 해주는 개념인 주입의 개념을 실제로 많이 사용한다. 정리하자면 인스턴스를 생성할 때 저장속성을 외부에서 할당(=주입=초기화)해줄 수 있다고 한다.  의존성 주입 import Foundation  class A부품 {     var name: String = &quot;A부품&quot; }  class B부품 {     var name: String = &quot;B부품&quot; }  class C완성품 {          var a: A부품          init(a: A부품) {         self.a = a     }          func printName() {         print(a.name)     } }  // 1. 인스턴스를 미리 만들고 let a: A부품 = A부품() a.name = &quot;비싼 A부품&quot;  // 2. C완성품을 만들 때 주입(Injection)을 해줄 수 있다 // 하지만 이 코드를 의존성 주입(Dependency Injection)이라고 부르지는 않는다 let c: C완성품 = C완성품(a: a)  C완성품을 만들 때 미리 만들어 둔 A부품을 주입할 수 있지만 이 코드를 의존성 주입이라고 부르지는 않는다.   의존적이지 않게 만들어주는 코드를 추가해야 의존성 주입이라는 개념이 된다.  주입을 의존성 주입으로 개선 // protocol은 자격증이라고 생각하자 // 각 부품에서 이 자격증을 채택한다 // 자격증을 정의할 때 name이라는 속성을 가지면서 읽기, 쓰기가 가능한 name이라는 속성을 가진다고 정의하고 이를 각 모듈에서 채택한다 // 이 protocol 덕분에 모듈화가 가능해지고 확장적인 코드를 작성할 수 있게 된다 protocol 모듈화된부품 {     var name: String { get set } }  class A부품: 모듈화된부품 {     var name: String = &quot;A부품&quot; }  class B부품: 모듈화된부품 {     var name: String = &quot;B부품&quot; }  class C완성품 {          // 프로토콜로 타입을 선언하여 이 프로토콜(자격증)을 채택한 모든 타입들을 할당해줄 수 있다     var a: 모듈화된부품          init(a: 모듈화된부품) {         self.a = a     }          func printName() {         print(a.name)     } }  @main struct Main {     static func main() {         let moduledA = A부품()         let moduledB = B부품()                  // 모듈화된 A를 주입할 수도 있고 모듈화된 B를 주입할 수도 있다         let c1: C완성품 = C완성품(a: moduledA)         let c2: C완성품 = C완성품(a: moduledB)                  c1.printName()         c2.printName()     } }  주입 코드를 의존성 주입으로 개선하기 위해 protocol을 선언하고 클래스의 저장속성 타입들이 해당 protocol을 채택하면 된다.    이를 통해 C완성품은 저장속성으로 A부품도 주입할 수 있고 B부품도 주입할 수 있다.  정리하자면 각 부품이 서로 다른 타입이지만 모듈화가 가능해지고 확장적인 코드를 작성할 수 있게 된다.    protocol 자체를 타입으로 사용할 수 있어서 모듈화를 시킬 수 있는 장점이 존재하고, protocol을 채택한 여러 타입들이 속성에 할당될 수 있는 것이다.  정리 의존성    서로 다른 객체 사이에 의존 관계가 있다는 것   (한 객체가 다른 객체에 직접 접근하거나 사용하는 관계)   주입    외부에서 객체(또는 데이터)를 생성해서 생성자를 통해 넣는 것   (클래스 내부에서 직접 생성하지 않고, 외부에서 주입)   의존성 주입(개선된 의존성)    프로토콜을 사용해서 의존성을 분리시키고 의존관계를 역전 시킨다            객체 간의 결합도를 낮추고, 의존 관계를 외부로 분리하여 더 유연한 구조를 만드는 설계 방식       의존 관계 역전 원칙(DIP)과 단일 책임 원칙(SRP)을 따르도록 도와준다       주입 시 프로토콜(인터페이스)을 사용하면 모듈화와 확장성이 높아진다       이를 통해 구체적인 클래스가 아닌 추상화(프로토콜)에 의존하게 되고, 이것이 바로 의존 관계의 역전           Reference    https://eunjin3786.tistory.com/233   https://medium.com/@jang.wangsu/di-dependency-injection-이란-1b12fdefec4f   https://medium.com/@jang.wangsu/di-inversion-of-control-container-란-12ecd70ac7ea   https://tecoble.techcourse.co.kr/post/2021-04-27-dependency-injection/   https://dokit.tistory.com/54   https://80000coding.oopy.io/68ee8d89-5d05-449d-87e2-5fba84d604ca   https://www.inflearn.com/courses/lecture?courseId=328390&amp;type=LECTURE&amp;unitId=163822&amp;subtitleLanguage=ko&amp;tab=curriculum">
+
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[Pindora] Dependency Injection란?">
+<meta property="og:url" content="http://localhost:4000/Pindora-di/">
+
+
+  <meta property="og:description" content="Dependency Injection란 무엇인가? DI는 Dependency Injection의 줄임말로, 다양한 우리말 번역이 있지만, 이 글에서는 의존성 주입이라는 말로 사용하고자 한다. 먼저 의존성, 주입, 의존성 주입 순서대로 알아보자.  Dependency(의존성) 객체 지향 프로그래밍에서 Dependency, 의존성은 서로 다른 객체 사이에 의존 관계가 있다는 것을 말한다. 즉 의존하는 객체가 수정되면 다른 객체도 영향을 받는다는 것이다.  import Foundation  class A부품 {     var name: String = &quot;A부품&quot; }  class B부품 {     var name: String = &quot;B부품&quot; }   /// ex: ViewController() class C완성품 {          /// ex: NetworkManager()     // C완성품이 A부품에 의존한다 = 의존성이 생긴다     // A부품의 코드가 바뀌면 C완성품의 코드를 바꿔줘야하는 문제가 생긴다     // 부품을 바꾸고 싶을 때는 코드를 B부품으로 버꿔야 하는 문제가 생긴다     var a: A부품 = A부품()          func printName() {         print(a.name)     } }  하나의 객체가 다른 객체에 의존하고 있는 코드를 의존하고 있다고 말한다. 이렇게 의존성이 생기는 코드를 확장성있게 바꾸기 위해 의존성 주입을 통해 코드를 개선할 수 있다.  주입(Injection)  생성자를 통해 저장속성을 외부에서 주입하는 개념이다.   의존성 코드에서는 저장속성에 기본값을 인스턴스로 생성&amp;할당하여 생성자를 만들어 주지 않아도 괜찮았다.  // 주입(Injection) class Person {     var name: String          init(name: String) {         self.name = name     } }  // 외부에서 값을 주입(할당/초기화)해서 인스턴스 생성 let people = Person(name: &quot;Index&quot;)  실제로는 기본값보다는 생성자를 통해서 외부에서 들어온 값을 통해 저장속성에 할당할 수 있게 해주는 개념인 주입의 개념을 실제로 많이 사용한다. 정리하자면 인스턴스를 생성할 때 저장속성을 외부에서 할당(=주입=초기화)해줄 수 있다고 한다.  의존성 주입 import Foundation  class A부품 {     var name: String = &quot;A부품&quot; }  class B부품 {     var name: String = &quot;B부품&quot; }  class C완성품 {          var a: A부품          init(a: A부품) {         self.a = a     }          func printName() {         print(a.name)     } }  // 1. 인스턴스를 미리 만들고 let a: A부품 = A부품() a.name = &quot;비싼 A부품&quot;  // 2. C완성품을 만들 때 주입(Injection)을 해줄 수 있다 // 하지만 이 코드를 의존성 주입(Dependency Injection)이라고 부르지는 않는다 let c: C완성품 = C완성품(a: a)  C완성품을 만들 때 미리 만들어 둔 A부품을 주입할 수 있지만 이 코드를 의존성 주입이라고 부르지는 않는다.   의존적이지 않게 만들어주는 코드를 추가해야 의존성 주입이라는 개념이 된다.  주입을 의존성 주입으로 개선 // protocol은 자격증이라고 생각하자 // 각 부품에서 이 자격증을 채택한다 // 자격증을 정의할 때 name이라는 속성을 가지면서 읽기, 쓰기가 가능한 name이라는 속성을 가진다고 정의하고 이를 각 모듈에서 채택한다 // 이 protocol 덕분에 모듈화가 가능해지고 확장적인 코드를 작성할 수 있게 된다 protocol 모듈화된부품 {     var name: String { get set } }  class A부품: 모듈화된부품 {     var name: String = &quot;A부품&quot; }  class B부품: 모듈화된부품 {     var name: String = &quot;B부품&quot; }  class C완성품 {          // 프로토콜로 타입을 선언하여 이 프로토콜(자격증)을 채택한 모든 타입들을 할당해줄 수 있다     var a: 모듈화된부품          init(a: 모듈화된부품) {         self.a = a     }          func printName() {         print(a.name)     } }  @main struct Main {     static func main() {         let moduledA = A부품()         let moduledB = B부품()                  // 모듈화된 A를 주입할 수도 있고 모듈화된 B를 주입할 수도 있다         let c1: C완성품 = C완성품(a: moduledA)         let c2: C완성품 = C완성품(a: moduledB)                  c1.printName()         c2.printName()     } }  주입 코드를 의존성 주입으로 개선하기 위해 protocol을 선언하고 클래스의 저장속성 타입들이 해당 protocol을 채택하면 된다.    이를 통해 C완성품은 저장속성으로 A부품도 주입할 수 있고 B부품도 주입할 수 있다.  정리하자면 각 부품이 서로 다른 타입이지만 모듈화가 가능해지고 확장적인 코드를 작성할 수 있게 된다.    protocol 자체를 타입으로 사용할 수 있어서 모듈화를 시킬 수 있는 장점이 존재하고, protocol을 채택한 여러 타입들이 속성에 할당될 수 있는 것이다.  정리 의존성    서로 다른 객체 사이에 의존 관계가 있다는 것   (한 객체가 다른 객체에 직접 접근하거나 사용하는 관계)   주입    외부에서 객체(또는 데이터)를 생성해서 생성자를 통해 넣는 것   (클래스 내부에서 직접 생성하지 않고, 외부에서 주입)   의존성 주입(개선된 의존성)    프로토콜을 사용해서 의존성을 분리시키고 의존관계를 역전 시킨다            객체 간의 결합도를 낮추고, 의존 관계를 외부로 분리하여 더 유연한 구조를 만드는 설계 방식       의존 관계 역전 원칙(DIP)과 단일 책임 원칙(SRP)을 따르도록 도와준다       주입 시 프로토콜(인터페이스)을 사용하면 모듈화와 확장성이 높아진다       이를 통해 구체적인 클래스가 아닌 추상화(프로토콜)에 의존하게 되고, 이것이 바로 의존 관계의 역전           Reference    https://eunjin3786.tistory.com/233   https://medium.com/@jang.wangsu/di-dependency-injection-이란-1b12fdefec4f   https://medium.com/@jang.wangsu/di-inversion-of-control-container-란-12ecd70ac7ea   https://tecoble.techcourse.co.kr/post/2021-04-27-dependency-injection/   https://dokit.tistory.com/54   https://80000coding.oopy.io/68ee8d89-5d05-449d-87e2-5fba84d604ca   https://www.inflearn.com/courses/lecture?courseId=328390&amp;type=LECTURE&amp;unitId=163822&amp;subtitleLanguage=ko&amp;tab=curriculum">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-07-15T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/Pindora-di/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li><li class="masthead__menu-item">
+              <a href="/projects/">Projects</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[Pindora] Dependency Injection란?">
+    <meta itemprop="description" content="Dependency Injection란 무엇인가?DI는 Dependency Injection의 줄임말로, 다양한 우리말 번역이 있지만, 이 글에서는 의존성 주입이라는 말로 사용하고자 한다.먼저 의존성, 주입, 의존성 주입 순서대로 알아보자.Dependency(의존성)객체 지향 프로그래밍에서 Dependency, 의존성은 서로 다른 객체 사이에 의존 관계가 있다는 것을 말한다. 즉 의존하는 객체가 수정되면 다른 객체도 영향을 받는다는 것이다.import Foundationclass A부품 {    var name: String = &quot;A부품&quot;}class B부품 {    var name: String = &quot;B부품&quot;}/// ex: ViewController()class C완성품 {        /// ex: NetworkManager()    // C완성품이 A부품에 의존한다 = 의존성이 생긴다    // A부품의 코드가 바뀌면 C완성품의 코드를 바꿔줘야하는 문제가 생긴다    // 부품을 바꾸고 싶을 때는 코드를 B부품으로 버꿔야 하는 문제가 생긴다    var a: A부품 = A부품()        func printName() {        print(a.name)    }}하나의 객체가 다른 객체에 의존하고 있는 코드를 의존하고 있다고 말한다.이렇게 의존성이 생기는 코드를 확장성있게 바꾸기 위해 의존성 주입을 통해 코드를 개선할 수 있다.주입(Injection)생성자를 통해 저장속성을 외부에서 주입하는 개념이다.  의존성 코드에서는 저장속성에 기본값을 인스턴스로 생성&amp;할당하여 생성자를 만들어 주지 않아도 괜찮았다.// 주입(Injection)class Person {    var name: String        init(name: String) {        self.name = name    }}// 외부에서 값을 주입(할당/초기화)해서 인스턴스 생성let people = Person(name: &quot;Index&quot;)실제로는 기본값보다는 생성자를 통해서 외부에서 들어온 값을 통해 저장속성에 할당할 수 있게 해주는 개념인 주입의 개념을 실제로 많이 사용한다.정리하자면 인스턴스를 생성할 때 저장속성을 외부에서 할당(=주입=초기화)해줄 수 있다고 한다.의존성 주입import Foundationclass A부품 {    var name: String = &quot;A부품&quot;}class B부품 {    var name: String = &quot;B부품&quot;}class C완성품 {        var a: A부품        init(a: A부품) {        self.a = a    }        func printName() {        print(a.name)    }}// 1. 인스턴스를 미리 만들고let a: A부품 = A부품()a.name = &quot;비싼 A부품&quot;// 2. C완성품을 만들 때 주입(Injection)을 해줄 수 있다// 하지만 이 코드를 의존성 주입(Dependency Injection)이라고 부르지는 않는다let c: C완성품 = C완성품(a: a)C완성품을 만들 때 미리 만들어 둔 A부품을 주입할 수 있지만 이 코드를 의존성 주입이라고 부르지는 않는다.  의존적이지 않게 만들어주는 코드를 추가해야 의존성 주입이라는 개념이 된다.주입을 의존성 주입으로 개선// protocol은 자격증이라고 생각하자// 각 부품에서 이 자격증을 채택한다// 자격증을 정의할 때 name이라는 속성을 가지면서 읽기, 쓰기가 가능한 name이라는 속성을 가진다고 정의하고 이를 각 모듈에서 채택한다// 이 protocol 덕분에 모듈화가 가능해지고 확장적인 코드를 작성할 수 있게 된다protocol 모듈화된부품 {    var name: String { get set }}class A부품: 모듈화된부품 {    var name: String = &quot;A부품&quot;}class B부품: 모듈화된부품 {    var name: String = &quot;B부품&quot;}class C완성품 {        // 프로토콜로 타입을 선언하여 이 프로토콜(자격증)을 채택한 모든 타입들을 할당해줄 수 있다    var a: 모듈화된부품        init(a: 모듈화된부품) {        self.a = a    }        func printName() {        print(a.name)    }}@mainstruct Main {    static func main() {        let moduledA = A부품()        let moduledB = B부품()                // 모듈화된 A를 주입할 수도 있고 모듈화된 B를 주입할 수도 있다        let c1: C완성품 = C완성품(a: moduledA)        let c2: C완성품 = C완성품(a: moduledB)                c1.printName()        c2.printName()    }}주입 코드를 의존성 주입으로 개선하기 위해 protocol을 선언하고 클래스의 저장속성 타입들이 해당 protocol을 채택하면 된다.   이를 통해 C완성품은 저장속성으로 A부품도 주입할 수 있고 B부품도 주입할 수 있다.정리하자면 각 부품이 서로 다른 타입이지만 모듈화가 가능해지고 확장적인 코드를 작성할 수 있게 된다.   protocol 자체를 타입으로 사용할 수 있어서 모듈화를 시킬 수 있는 장점이 존재하고, protocol을 채택한 여러 타입들이 속성에 할당될 수 있는 것이다.정리의존성  서로 다른 객체 사이에 의존 관계가 있다는 것  (한 객체가 다른 객체에 직접 접근하거나 사용하는 관계)주입  외부에서 객체(또는 데이터)를 생성해서 생성자를 통해 넣는 것  (클래스 내부에서 직접 생성하지 않고, 외부에서 주입)의존성 주입(개선된 의존성)  프로토콜을 사용해서 의존성을 분리시키고 의존관계를 역전 시킨다          객체 간의 결합도를 낮추고, 의존 관계를 외부로 분리하여 더 유연한 구조를 만드는 설계 방식      의존 관계 역전 원칙(DIP)과 단일 책임 원칙(SRP)을 따르도록 도와준다      주입 시 프로토콜(인터페이스)을 사용하면 모듈화와 확장성이 높아진다      이를 통해 구체적인 클래스가 아닌 추상화(프로토콜)에 의존하게 되고, 이것이 바로 의존 관계의 역전      Reference  https://eunjin3786.tistory.com/233  https://medium.com/@jang.wangsu/di-dependency-injection-이란-1b12fdefec4f  https://medium.com/@jang.wangsu/di-inversion-of-control-container-란-12ecd70ac7ea  https://tecoble.techcourse.co.kr/post/2021-04-27-dependency-injection/  https://dokit.tistory.com/54  https://80000coding.oopy.io/68ee8d89-5d05-449d-87e2-5fba84d604ca  https://www.inflearn.com/courses/lecture?courseId=328390&amp;type=LECTURE&amp;unitId=163822&amp;subtitleLanguage=ko&amp;tab=curriculum">
+    <meta itemprop="datePublished" content="2025-07-15T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/Pindora-di/" class="u-url" itemprop="url">[Pindora] Dependency Injection란?
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=Pindora">Pindora</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-07-15T00:00:00+00:00">July 15, 2025</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
+
+<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h2 id="dependency-injection란-무엇인가">Dependency Injection란 무엇인가?</h2>
+<p>DI는 Dependency Injection의 줄임말로, 다양한 우리말 번역이 있지만, 이 글에서는 의존성 주입이라는 말로 사용하고자 한다.<br />
+먼저 의존성, 주입, 의존성 주입 순서대로 알아보자.</p>
+
+<h3 id="dependency의존성">Dependency(의존성)</h3>
+<p>객체 지향 프로그래밍에서 Dependency, 의존성은 <code class="language-plaintext highlighter-rouge">서로 다른 객체 사이에 의존 관계가 있다는 것</code>을 말한다. 즉 <code class="language-plaintext highlighter-rouge">의존하는 객체가 수정되면 다른 객체도 영향을 받는다는 것</code>이다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Foundation</span>
+
+<span class="kd">class</span> <span class="kt">A부품</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"A부품"</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">B부품</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"B부품"</span>
+<span class="p">}</span>
+
+
+<span class="c1">/// ex: ViewController()</span>
+<span class="kd">class</span> <span class="kt">C완성품</span> <span class="p">{</span>
+    
+    <span class="c1">/// ex: NetworkManager()</span>
+    <span class="c1">// C완성품이 A부품에 의존한다 = 의존성이 생긴다</span>
+    <span class="c1">// A부품의 코드가 바뀌면 C완성품의 코드를 바꿔줘야하는 문제가 생긴다</span>
+    <span class="c1">// 부품을 바꾸고 싶을 때는 코드를 B부품으로 버꿔야 하는 문제가 생긴다</span>
+    <span class="k">var</span> <span class="nv">a</span><span class="p">:</span> <span class="kt">A부품</span> <span class="o">=</span> <span class="kt">A부품</span><span class="p">()</span>
+    
+    <span class="kd">func</span> <span class="nf">printName</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>하나의 객체가 다른 객체에 의존하고 있는 코드를 의존하고 있다고 말한다.<br />
+이렇게 의존성이 생기는 코드를 확장성있게 바꾸기 위해 의존성 주입을 통해 코드를 개선할 수 있다.</p>
+
+<h2 id="주입injection">주입(Injection)</h2>
+
+<p>생성자를 통해 저장속성을 외부에서 주입하는 개념이다.  <br />
+의존성 코드에서는 저장속성에 기본값을 인스턴스로 생성&amp;할당하여 생성자를 만들어 주지 않아도 괜찮았다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 주입(Injection)</span>
+<span class="kd">class</span> <span class="kt">Person</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span>
+    
+    <span class="nf">init</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 외부에서 값을 주입(할당/초기화)해서 인스턴스 생성</span>
+<span class="k">let</span> <span class="nv">people</span> <span class="o">=</span> <span class="kt">Person</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"Index"</span><span class="p">)</span>
+</code></pre></div></div>
+<p>실제로는 기본값보다는 생성자를 통해서 외부에서 들어온 값을 통해 저장속성에 할당할 수 있게 해주는 개념인 주입의 개념을 실제로 많이 사용한다.<br />
+정리하자면 인스턴스를 생성할 때 저장속성을 외부에서 할당(=주입=초기화)해줄 수 있다고 한다.</p>
+
+<h2 id="의존성-주입">의존성 주입</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Foundation</span>
+
+<span class="kd">class</span> <span class="kt">A부품</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"A부품"</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">B부품</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"B부품"</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">C완성품</span> <span class="p">{</span>
+    
+    <span class="k">var</span> <span class="nv">a</span><span class="p">:</span> <span class="kt">A부품</span>
+    
+    <span class="nf">init</span><span class="p">(</span><span class="nv">a</span><span class="p">:</span> <span class="kt">A부품</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">a</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">printName</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 1. 인스턴스를 미리 만들고</span>
+<span class="k">let</span> <span class="nv">a</span><span class="p">:</span> <span class="kt">A부품</span> <span class="o">=</span> <span class="kt">A부품</span><span class="p">()</span>
+<span class="n">a</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">"비싼 A부품"</span>
+
+<span class="c1">// 2. C완성품을 만들 때 주입(Injection)을 해줄 수 있다</span>
+<span class="c1">// 하지만 이 코드를 의존성 주입(Dependency Injection)이라고 부르지는 않는다</span>
+<span class="k">let</span> <span class="nv">c</span><span class="p">:</span> <span class="kt">C완성품</span> <span class="o">=</span> <span class="kt">C완성품</span><span class="p">(</span><span class="nv">a</span><span class="p">:</span> <span class="n">a</span><span class="p">)</span>
+</code></pre></div></div>
+<p>C완성품을 만들 때 미리 만들어 둔 A부품을 주입할 수 있지만 이 코드를 의존성 주입이라고 부르지는 않는다.  <br />
+의존적이지 않게 만들어주는 코드를 추가해야 의존성 주입이라는 개념이 된다.</p>
+
+<h3 id="주입을-의존성-주입으로-개선">주입을 의존성 주입으로 개선</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// protocol은 자격증이라고 생각하자</span>
+<span class="c1">// 각 부품에서 이 자격증을 채택한다</span>
+<span class="c1">// 자격증을 정의할 때 name이라는 속성을 가지면서 읽기, 쓰기가 가능한 name이라는 속성을 가진다고 정의하고 이를 각 모듈에서 채택한다</span>
+<span class="c1">// 이 protocol 덕분에 모듈화가 가능해지고 확장적인 코드를 작성할 수 있게 된다</span>
+<span class="kd">protocol</span> <span class="n">모듈화된부품</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">A부품</span><span class="p">:</span> <span class="n">모듈화된부품</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"A부품"</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">B부품</span><span class="p">:</span> <span class="n">모듈화된부품</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"B부품"</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">C완성품</span> <span class="p">{</span>
+    
+    <span class="c1">// 프로토콜로 타입을 선언하여 이 프로토콜(자격증)을 채택한 모든 타입들을 할당해줄 수 있다</span>
+    <span class="k">var</span> <span class="nv">a</span><span class="p">:</span> <span class="n">모듈화된부품</span>
+    
+    <span class="nf">init</span><span class="p">(</span><span class="nv">a</span><span class="p">:</span> <span class="n">모듈화된부품</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">a</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">printName</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">@main</span>
+<span class="kd">struct</span> <span class="kt">Main</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">moduledA</span> <span class="o">=</span> <span class="kt">A부품</span><span class="p">()</span>
+        <span class="k">let</span> <span class="nv">moduledB</span> <span class="o">=</span> <span class="kt">B부품</span><span class="p">()</span>
+        
+        <span class="c1">// 모듈화된 A를 주입할 수도 있고 모듈화된 B를 주입할 수도 있다</span>
+        <span class="k">let</span> <span class="nv">c1</span><span class="p">:</span> <span class="kt">C완성품</span> <span class="o">=</span> <span class="kt">C완성품</span><span class="p">(</span><span class="nv">a</span><span class="p">:</span> <span class="n">moduledA</span><span class="p">)</span>
+        <span class="k">let</span> <span class="nv">c2</span><span class="p">:</span> <span class="kt">C완성품</span> <span class="o">=</span> <span class="kt">C완성품</span><span class="p">(</span><span class="nv">a</span><span class="p">:</span> <span class="n">moduledB</span><span class="p">)</span>
+        
+        <span class="n">c1</span><span class="o">.</span><span class="nf">printName</span><span class="p">()</span>
+        <span class="n">c2</span><span class="o">.</span><span class="nf">printName</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>주입 코드를 의존성 주입으로 개선하기 위해 protocol을 선언하고 클래스의 저장속성 타입들이 해당 protocol을 채택하면 된다.   <br />
+이를 통해 C완성품은 저장속성으로 A부품도 주입할 수 있고 B부품도 주입할 수 있다.</p>
+
+<p>정리하자면 각 부품이 서로 다른 타입이지만 모듈화가 가능해지고 확장적인 코드를 작성할 수 있게 된다.   <br />
+protocol 자체를 타입으로 사용할 수 있어서 모듈화를 시킬 수 있는 장점이 존재하고, protocol을 채택한 여러 타입들이 속성에 할당될 수 있는 것이다.</p>
+
+<h2 id="정리">정리</h2>
+<p>의존성</p>
+<ul>
+  <li>서로 다른 객체 사이에 의존 관계가 있다는 것</li>
+  <li>(한 객체가 다른 객체에 직접 접근하거나 사용하는 관계)</li>
+</ul>
+
+<p>주입</p>
+<ul>
+  <li>외부에서 객체(또는 데이터)를 생성해서 생성자를 통해 넣는 것</li>
+  <li>(클래스 내부에서 직접 생성하지 않고, 외부에서 주입)</li>
+</ul>
+
+<p>의존성 주입(개선된 의존성)</p>
+<ul>
+  <li>프로토콜을 사용해서 의존성을 분리시키고 의존관계를 역전 시킨다
+    <ul>
+      <li>객체 간의 결합도를 낮추고, 의존 관계를 외부로 분리하여 더 유연한 구조를 만드는 설계 방식</li>
+      <li><strong>의존 관계 역전 원칙(DIP)</strong>과 <strong>단일 책임 원칙(SRP)</strong>을 따르도록 도와준다</li>
+      <li>주입 시 <strong>프로토콜(인터페이스)</strong>을 사용하면 모듈화와 확장성이 높아진다</li>
+      <li>이를 통해 구체적인 클래스가 아닌 추상화(프로토콜)에 의존하게 되고, 이것이 바로 의존 관계의 역전</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="reference">Reference</h2>
+<ul>
+  <li>https://eunjin3786.tistory.com/233</li>
+  <li>https://medium.com/@jang.wangsu/di-dependency-injection-이란-1b12fdefec4f</li>
+  <li>https://medium.com/@jang.wangsu/di-inversion-of-control-container-란-12ecd70ac7ea</li>
+  <li>https://tecoble.techcourse.co.kr/post/2021-04-27-dependency-injection/</li>
+  <li>https://dokit.tistory.com/54</li>
+  <li>https://80000coding.oopy.io/68ee8d89-5d05-449d-87e2-5fba84d604ca</li>
+  <li>https://www.inflearn.com/courses/lecture?courseId=328390&amp;type=LECTURE&amp;unitId=163822&amp;subtitleLanguage=ko&amp;tab=curriculum</li>
+</ul>
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/Combine-example-1/" class="pagination--pager" title="[Combine] 예제 1
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

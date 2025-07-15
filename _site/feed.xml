@@ -1,4 +1,225 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-06-18T09:28:57+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[Haruhancut] 1. 하루한컷 리팩토링 - 폰트, 색상 세팅</title><link href="http://localhost:4000/Haruhancut-refactor-font/" rel="alternate" type="text/html" title="[Haruhancut] 1. 하루한컷 리팩토링 - 폰트, 색상 세팅" /><published>2025-06-17T00:00:00+00:00</published><updated>2025-06-17T00:00:00+00:00</updated><id>http://localhost:4000/%5BHaruhancut%5D-refactor-font</id><content type="html" xml:base="http://localhost:4000/Haruhancut-refactor-font/"><![CDATA[<!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-07-15T07:00:19+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[Pindora] Dependency Injection란?</title><link href="http://localhost:4000/Pindora-di/" rel="alternate" type="text/html" title="[Pindora] Dependency Injection란?" /><published>2025-07-15T00:00:00+00:00</published><updated>2025-07-15T00:00:00+00:00</updated><id>http://localhost:4000/%5BPindora%5D-di</id><content type="html" xml:base="http://localhost:4000/Pindora-di/"><![CDATA[<!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
+
+<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h2 id="dependency-injection란-무엇인가">Dependency Injection란 무엇인가?</h2>
+<p>DI는 Dependency Injection의 줄임말로, 다양한 우리말 번역이 있지만, 이 글에서는 의존성 주입이라는 말로 사용하고자 한다.<br />
+먼저 의존성, 주입, 의존성 주입 순서대로 알아보자.</p>
+
+<h3 id="dependency의존성">Dependency(의존성)</h3>
+<p>객체 지향 프로그래밍에서 Dependency, 의존성은 <code class="language-plaintext highlighter-rouge">서로 다른 객체 사이에 의존 관계가 있다는 것</code>을 말한다. 즉 <code class="language-plaintext highlighter-rouge">의존하는 객체가 수정되면 다른 객체도 영향을 받는다는 것</code>이다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Foundation</span>
+
+<span class="kd">class</span> <span class="kt">A부품</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"A부품"</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">B부품</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"B부품"</span>
+<span class="p">}</span>
+
+
+<span class="c1">/// ex: ViewController()</span>
+<span class="kd">class</span> <span class="kt">C완성품</span> <span class="p">{</span>
+    
+    <span class="c1">/// ex: NetworkManager()</span>
+    <span class="c1">// C완성품이 A부품에 의존한다 = 의존성이 생긴다</span>
+    <span class="c1">// A부품의 코드가 바뀌면 C완성품의 코드를 바꿔줘야하는 문제가 생긴다</span>
+    <span class="c1">// 부품을 바꾸고 싶을 때는 코드를 B부품으로 버꿔야 하는 문제가 생긴다</span>
+    <span class="k">var</span> <span class="nv">a</span><span class="p">:</span> <span class="kt">A부품</span> <span class="o">=</span> <span class="kt">A부품</span><span class="p">()</span>
+    
+    <span class="kd">func</span> <span class="nf">printName</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>하나의 객체가 다른 객체에 의존하고 있는 코드를 의존하고 있다고 말한다.<br />
+이렇게 의존성이 생기는 코드를 확장성있게 바꾸기 위해 의존성 주입을 통해 코드를 개선할 수 있다.</p>
+
+<h2 id="주입injection">주입(Injection)</h2>
+
+<p>생성자를 통해 저장속성을 외부에서 주입하는 개념이다.  <br />
+의존성 코드에서는 저장속성에 기본값을 인스턴스로 생성&amp;할당하여 생성자를 만들어 주지 않아도 괜찮았다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 주입(Injection)</span>
+<span class="kd">class</span> <span class="kt">Person</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span>
+    
+    <span class="nf">init</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 외부에서 값을 주입(할당/초기화)해서 인스턴스 생성</span>
+<span class="k">let</span> <span class="nv">people</span> <span class="o">=</span> <span class="kt">Person</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"Index"</span><span class="p">)</span>
+</code></pre></div></div>
+<p>실제로는 기본값보다는 생성자를 통해서 외부에서 들어온 값을 통해 저장속성에 할당할 수 있게 해주는 개념인 주입의 개념을 실제로 많이 사용한다.<br />
+정리하자면 인스턴스를 생성할 때 저장속성을 외부에서 할당(=주입=초기화)해줄 수 있다고 한다.</p>
+
+<h2 id="의존성-주입">의존성 주입</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Foundation</span>
+
+<span class="kd">class</span> <span class="kt">A부품</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"A부품"</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">B부품</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"B부품"</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">C완성품</span> <span class="p">{</span>
+    
+    <span class="k">var</span> <span class="nv">a</span><span class="p">:</span> <span class="kt">A부품</span>
+    
+    <span class="nf">init</span><span class="p">(</span><span class="nv">a</span><span class="p">:</span> <span class="kt">A부품</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">a</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">printName</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 1. 인스턴스를 미리 만들고</span>
+<span class="k">let</span> <span class="nv">a</span><span class="p">:</span> <span class="kt">A부품</span> <span class="o">=</span> <span class="kt">A부품</span><span class="p">()</span>
+<span class="n">a</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">"비싼 A부품"</span>
+
+<span class="c1">// 2. C완성품을 만들 때 주입(Injection)을 해줄 수 있다</span>
+<span class="c1">// 하지만 이 코드를 의존성 주입(Dependency Injection)이라고 부르지는 않는다</span>
+<span class="k">let</span> <span class="nv">c</span><span class="p">:</span> <span class="kt">C완성품</span> <span class="o">=</span> <span class="kt">C완성품</span><span class="p">(</span><span class="nv">a</span><span class="p">:</span> <span class="n">a</span><span class="p">)</span>
+</code></pre></div></div>
+<p>C완성품을 만들 때 미리 만들어 둔 A부품을 주입할 수 있지만 이 코드를 의존성 주입이라고 부르지는 않는다.  <br />
+의존적이지 않게 만들어주는 코드를 추가해야 의존성 주입이라는 개념이 된다.</p>
+
+<h3 id="주입을-의존성-주입으로-개선">주입을 의존성 주입으로 개선</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// protocol은 자격증이라고 생각하자</span>
+<span class="c1">// 각 부품에서 이 자격증을 채택한다</span>
+<span class="c1">// 자격증을 정의할 때 name이라는 속성을 가지면서 읽기, 쓰기가 가능한 name이라는 속성을 가진다고 정의하고 이를 각 모듈에서 채택한다</span>
+<span class="c1">// 이 protocol 덕분에 모듈화가 가능해지고 확장적인 코드를 작성할 수 있게 된다</span>
+<span class="kd">protocol</span> <span class="n">모듈화된부품</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">A부품</span><span class="p">:</span> <span class="n">모듈화된부품</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"A부품"</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">B부품</span><span class="p">:</span> <span class="n">모듈화된부품</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"B부품"</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">C완성품</span> <span class="p">{</span>
+    
+    <span class="c1">// 프로토콜로 타입을 선언하여 이 프로토콜(자격증)을 채택한 모든 타입들을 할당해줄 수 있다</span>
+    <span class="k">var</span> <span class="nv">a</span><span class="p">:</span> <span class="n">모듈화된부품</span>
+    
+    <span class="nf">init</span><span class="p">(</span><span class="nv">a</span><span class="p">:</span> <span class="n">모듈화된부품</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">a</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">printName</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">@main</span>
+<span class="kd">struct</span> <span class="kt">Main</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">moduledA</span> <span class="o">=</span> <span class="kt">A부품</span><span class="p">()</span>
+        <span class="k">let</span> <span class="nv">moduledB</span> <span class="o">=</span> <span class="kt">B부품</span><span class="p">()</span>
+        
+        <span class="c1">// 모듈화된 A를 주입할 수도 있고 모듈화된 B를 주입할 수도 있다</span>
+        <span class="k">let</span> <span class="nv">c1</span><span class="p">:</span> <span class="kt">C완성품</span> <span class="o">=</span> <span class="kt">C완성품</span><span class="p">(</span><span class="nv">a</span><span class="p">:</span> <span class="n">moduledA</span><span class="p">)</span>
+        <span class="k">let</span> <span class="nv">c2</span><span class="p">:</span> <span class="kt">C완성품</span> <span class="o">=</span> <span class="kt">C완성품</span><span class="p">(</span><span class="nv">a</span><span class="p">:</span> <span class="n">moduledB</span><span class="p">)</span>
+        
+        <span class="n">c1</span><span class="o">.</span><span class="nf">printName</span><span class="p">()</span>
+        <span class="n">c2</span><span class="o">.</span><span class="nf">printName</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>주입 코드를 의존성 주입으로 개선하기 위해 protocol을 선언하고 클래스의 저장속성 타입들이 해당 protocol을 채택하면 된다.   <br />
+이를 통해 C완성품은 저장속성으로 A부품도 주입할 수 있고 B부품도 주입할 수 있다.</p>
+
+<p>정리하자면 각 부품이 서로 다른 타입이지만 모듈화가 가능해지고 확장적인 코드를 작성할 수 있게 된다.   <br />
+protocol 자체를 타입으로 사용할 수 있어서 모듈화를 시킬 수 있는 장점이 존재하고, protocol을 채택한 여러 타입들이 속성에 할당될 수 있는 것이다.</p>
+
+<h2 id="정리">정리</h2>
+<p>의존성</p>
+<ul>
+  <li>서로 다른 객체 사이에 의존 관계가 있다는 것</li>
+  <li>(한 객체가 다른 객체에 직접 접근하거나 사용하는 관계)</li>
+</ul>
+
+<p>주입</p>
+<ul>
+  <li>외부에서 객체(또는 데이터)를 생성해서 생성자를 통해 넣는 것</li>
+  <li>(클래스 내부에서 직접 생성하지 않고, 외부에서 주입)</li>
+</ul>
+
+<p>의존성 주입(개선된 의존성)</p>
+<ul>
+  <li>프로토콜을 사용해서 의존성을 분리시키고 의존관계를 역전 시킨다
+    <ul>
+      <li>객체 간의 결합도를 낮추고, 의존 관계를 외부로 분리하여 더 유연한 구조를 만드는 설계 방식</li>
+      <li><strong>의존 관계 역전 원칙(DIP)</strong>과 <strong>단일 책임 원칙(SRP)</strong>을 따르도록 도와준다</li>
+      <li>주입 시 <strong>프로토콜(인터페이스)</strong>을 사용하면 모듈화와 확장성이 높아진다</li>
+      <li>이를 통해 구체적인 클래스가 아닌 추상화(프로토콜)에 의존하게 되고, 이것이 바로 의존 관계의 역전</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="reference">Reference</h2>
+<ul>
+  <li>https://eunjin3786.tistory.com/233</li>
+  <li>https://medium.com/@jang.wangsu/di-dependency-injection-이란-1b12fdefec4f</li>
+  <li>https://medium.com/@jang.wangsu/di-inversion-of-control-container-란-12ecd70ac7ea</li>
+  <li>https://tecoble.techcourse.co.kr/post/2021-04-27-dependency-injection/</li>
+  <li>https://dokit.tistory.com/54</li>
+  <li>https://80000coding.oopy.io/68ee8d89-5d05-449d-87e2-5fba84d604ca</li>
+  <li>https://www.inflearn.com/courses/lecture?courseId=328390&amp;type=LECTURE&amp;unitId=163822&amp;subtitleLanguage=ko&amp;tab=curriculum</li>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Pindora" /><summary type="html"><![CDATA[Dependency Injection란 무엇인가? DI는 Dependency Injection의 줄임말로, 다양한 우리말 번역이 있지만, 이 글에서는 의존성 주입이라는 말로 사용하고자 한다. 먼저 의존성, 주입, 의존성 주입 순서대로 알아보자. Dependency(의존성) 객체 지향 프로그래밍에서 Dependency, 의존성은 서로 다른 객체 사이에 의존 관계가 있다는 것을 말한다. 즉 의존하는 객체가 수정되면 다른 객체도 영향을 받는다는 것이다. import Foundation class A부품 { var name: String = "A부품" } class B부품 { var name: String = "B부품" } /// ex: ViewController() class C완성품 { /// ex: NetworkManager() // C완성품이 A부품에 의존한다 = 의존성이 생긴다 // A부품의 코드가 바뀌면 C완성품의 코드를 바꿔줘야하는 문제가 생긴다 // 부품을 바꾸고 싶을 때는 코드를 B부품으로 버꿔야 하는 문제가 생긴다 var a: A부품 = A부품() func printName() { print(a.name) } } 하나의 객체가 다른 객체에 의존하고 있는 코드를 의존하고 있다고 말한다. 이렇게 의존성이 생기는 코드를 확장성있게 바꾸기 위해 의존성 주입을 통해 코드를 개선할 수 있다. 주입(Injection) 생성자를 통해 저장속성을 외부에서 주입하는 개념이다. 의존성 코드에서는 저장속성에 기본값을 인스턴스로 생성&amp;할당하여 생성자를 만들어 주지 않아도 괜찮았다. // 주입(Injection) class Person { var name: String init(name: String) { self.name = name } } // 외부에서 값을 주입(할당/초기화)해서 인스턴스 생성 let people = Person(name: "Index") 실제로는 기본값보다는 생성자를 통해서 외부에서 들어온 값을 통해 저장속성에 할당할 수 있게 해주는 개념인 주입의 개념을 실제로 많이 사용한다. 정리하자면 인스턴스를 생성할 때 저장속성을 외부에서 할당(=주입=초기화)해줄 수 있다고 한다. 의존성 주입 import Foundation class A부품 { var name: String = "A부품" } class B부품 { var name: String = "B부품" } class C완성품 { var a: A부품 init(a: A부품) { self.a = a } func printName() { print(a.name) } } // 1. 인스턴스를 미리 만들고 let a: A부품 = A부품() a.name = "비싼 A부품" // 2. C완성품을 만들 때 주입(Injection)을 해줄 수 있다 // 하지만 이 코드를 의존성 주입(Dependency Injection)이라고 부르지는 않는다 let c: C완성품 = C완성품(a: a) C완성품을 만들 때 미리 만들어 둔 A부품을 주입할 수 있지만 이 코드를 의존성 주입이라고 부르지는 않는다. 의존적이지 않게 만들어주는 코드를 추가해야 의존성 주입이라는 개념이 된다. 주입을 의존성 주입으로 개선 // protocol은 자격증이라고 생각하자 // 각 부품에서 이 자격증을 채택한다 // 자격증을 정의할 때 name이라는 속성을 가지면서 읽기, 쓰기가 가능한 name이라는 속성을 가진다고 정의하고 이를 각 모듈에서 채택한다 // 이 protocol 덕분에 모듈화가 가능해지고 확장적인 코드를 작성할 수 있게 된다 protocol 모듈화된부품 { var name: String { get set } } class A부품: 모듈화된부품 { var name: String = "A부품" } class B부품: 모듈화된부품 { var name: String = "B부품" } class C완성품 { // 프로토콜로 타입을 선언하여 이 프로토콜(자격증)을 채택한 모든 타입들을 할당해줄 수 있다 var a: 모듈화된부품 init(a: 모듈화된부품) { self.a = a } func printName() { print(a.name) } } @main struct Main { static func main() { let moduledA = A부품() let moduledB = B부품() // 모듈화된 A를 주입할 수도 있고 모듈화된 B를 주입할 수도 있다 let c1: C완성품 = C완성품(a: moduledA) let c2: C완성품 = C완성품(a: moduledB) c1.printName() c2.printName() } } 주입 코드를 의존성 주입으로 개선하기 위해 protocol을 선언하고 클래스의 저장속성 타입들이 해당 protocol을 채택하면 된다. 이를 통해 C완성품은 저장속성으로 A부품도 주입할 수 있고 B부품도 주입할 수 있다. 정리하자면 각 부품이 서로 다른 타입이지만 모듈화가 가능해지고 확장적인 코드를 작성할 수 있게 된다. protocol 자체를 타입으로 사용할 수 있어서 모듈화를 시킬 수 있는 장점이 존재하고, protocol을 채택한 여러 타입들이 속성에 할당될 수 있는 것이다. 정리 의존성 서로 다른 객체 사이에 의존 관계가 있다는 것 (한 객체가 다른 객체에 직접 접근하거나 사용하는 관계) 주입 외부에서 객체(또는 데이터)를 생성해서 생성자를 통해 넣는 것 (클래스 내부에서 직접 생성하지 않고, 외부에서 주입) 의존성 주입(개선된 의존성) 프로토콜을 사용해서 의존성을 분리시키고 의존관계를 역전 시킨다 객체 간의 결합도를 낮추고, 의존 관계를 외부로 분리하여 더 유연한 구조를 만드는 설계 방식 의존 관계 역전 원칙(DIP)과 단일 책임 원칙(SRP)을 따르도록 도와준다 주입 시 프로토콜(인터페이스)을 사용하면 모듈화와 확장성이 높아진다 이를 통해 구체적인 클래스가 아닌 추상화(프로토콜)에 의존하게 되고, 이것이 바로 의존 관계의 역전 Reference https://eunjin3786.tistory.com/233 https://medium.com/@jang.wangsu/di-dependency-injection-이란-1b12fdefec4f https://medium.com/@jang.wangsu/di-inversion-of-control-container-란-12ecd70ac7ea https://tecoble.techcourse.co.kr/post/2021-04-27-dependency-injection/ https://dokit.tistory.com/54 https://80000coding.oopy.io/68ee8d89-5d05-449d-87e2-5fba84d604ca https://www.inflearn.com/courses/lecture?courseId=328390&amp;type=LECTURE&amp;unitId=163822&amp;subtitleLanguage=ko&amp;tab=curriculum]]></summary></entry><entry><title type="html">[Combine] 예제 1</title><link href="http://localhost:4000/Combine-example-1/" rel="alternate" type="text/html" title="[Combine] 예제 1" /><published>2025-07-13T00:00:00+00:00</published><updated>2025-07-13T00:00:00+00:00</updated><id>http://localhost:4000/%5BCombine%5D-example%201</id><content type="html" xml:base="http://localhost:4000/Combine-example-1/"><![CDATA[<!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
+
+<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h2 id="combine-예제">Combine 예제</h2>
+
+<p><img src="/assets/img/2025-06-18-%5BCombine%5D-/image-20250714015117890.png" alt="이미지" width="70%" /></p>
+<h4 id="1-scrollview-추가-및-상하좌우-제약-0-설정">1. scrollView 추가 및 상하좌우 제약 0 설정</h4>
+<p><br /><br /></p>
+
+<p><img src="/assets/img/2025-07-13-%5BCombine%5D-example%201/image-20250714020253349.png" alt="이미지" width="70%" /></p>
+<h4 id="2-uiview-추가-및-추가한-uiview를-content-layout-guide에-드래그하여-상하좌우-제약-0-설정">2. UIView 추가 및 추가한 UIView를 Content Layout Guide에 드래그하여 상하좌우 제약 0 설정</h4>
+<ul>
+  <li>UIView를 Frame Layout Guide로 드래그해서 Equal Width 해주자</li>
+  <li>size inspactor에서 width(가로막대) 더블 클릭 -&gt; Proportional Widt~ 클릭 -&gt; Multiplier를 1로 설정</li>
+  <li>이상태에서 빨간 오류 뜨는 이유는 View에 대한 내용물이 없어서 즉 크기가 없어서 그렇다<br />
+<br /><br /></li>
+</ul>
+
+<p><img src="/assets/img/2025-07-13-%5BCombine%5D-example%201/image-20250714020847129.png" alt="이미지" width="70%" /></p>
+
+<h4 id="3-view에-vertical-stack-view-생성">3. View에 Vertical Stack View 생성</h4>
+<ul>
+  <li>Stack View를 View로 드래그하여 상하좌우 제약 0으로 설정</li>
+  <li>vertical stack에서 가로 크기를 꽉 채우기 위해 alighment는 fill 설정</li>
+  <li>vertical stack에서 내용물을 동일하게 분배시키기 위해 fill equally 설정</li>
+  <li>spacing 20 설정</li>
+  <li>이제 크기가 있는 애를 스택뷰에 넣으면 오토레이아웃이 잡힌다</li>
+  <li>추가적으로 size inspactor에서 simulated size를 Fixed -&gt; Freeform으로 변경한다, 높이를 1000으로 설정한다.<br />
+<br /><br /></li>
+</ul>
+
+<h4 id="4-결과">4. 결과</h4>
+<p><img src="/assets/img/2025-07-13-%5BCombine%5D-example%201/image-20250714021514646.png" alt="이미지" width="70%" /></p>]]></content><author><name>Dong Hyeon</name></author><category term="Combine" /><summary type="html"><![CDATA[Combine 예제 1. scrollView 추가 및 상하좌우 제약 0 설정 2. UIView 추가 및 추가한 UIView를 Content Layout Guide에 드래그하여 상하좌우 제약 0 설정 UIView를 Frame Layout Guide로 드래그해서 Equal Width 해주자 size inspactor에서 width(가로막대) 더블 클릭 -&gt; Proportional Widt~ 클릭 -&gt; Multiplier를 1로 설정 이상태에서 빨간 오류 뜨는 이유는 View에 대한 내용물이 없어서 즉 크기가 없어서 그렇다 3. View에 Vertical Stack View 생성 Stack View를 View로 드래그하여 상하좌우 제약 0으로 설정 vertical stack에서 가로 크기를 꽉 채우기 위해 alighment는 fill 설정 vertical stack에서 내용물을 동일하게 분배시키기 위해 fill equally 설정 spacing 20 설정 이제 크기가 있는 애를 스택뷰에 넣으면 오토레이아웃이 잡힌다 추가적으로 size inspactor에서 simulated size를 Fixed -&gt; Freeform으로 변경한다, 높이를 1000으로 설정한다. 4. 결과]]></summary></entry><entry><title type="html">[Haruhancut] 1. 하루한컷 리팩토링 - 폰트, 색상 세팅</title><link href="http://localhost:4000/Haruhancut-refactor-font/" rel="alternate" type="text/html" title="[Haruhancut] 1. 하루한컷 리팩토링 - 폰트, 색상 세팅" /><published>2025-06-17T00:00:00+00:00</published><updated>2025-06-17T00:00:00+00:00</updated><id>http://localhost:4000/%5BHaruhancut%5D-refactor-font</id><content type="html" xml:base="http://localhost:4000/Haruhancut-refactor-font/"><![CDATA[<!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
 
 <!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
@@ -215,7 +436,7 @@
     <span class="kd">static</span> <span class="k">let</span> <span class="nv">Gray700</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#252427"</span><span class="p">)</span>
     <span class="kd">static</span> <span class="k">let</span> <span class="nv">Gray900</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="p">(</span><span class="nv">hex</span><span class="p">:</span> <span class="s">"#111113"</span><span class="p">)</span>
 <span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="ReactiveX" /><category term="RxDataSource" /><summary type="html"><![CDATA[Font 세팅 Fonts 폴더에 다운받은 폰트를 저장한다. &lt;key&gt;UIAppFonts&lt;/key&gt; &lt;array&gt; &lt;string&gt;NanumMyeongjo-Regular.ttf&lt;/string&gt; &lt;string&gt;RacingSansOne-Regular.ttf&lt;/string&gt; &lt;string&gt;Pretendard-Black.otf&lt;/string&gt; &lt;string&gt;Pretendard-Bold.otf&lt;/string&gt; &lt;string&gt;Pretendard-ExtraBold.otf&lt;/string&gt; &lt;string&gt;Pretendard-ExtraLight.otf&lt;/string&gt; &lt;string&gt;Pretendard-Light.otf&lt;/string&gt; &lt;string&gt;Pretendard-Medium.otf&lt;/string&gt; &lt;string&gt;Pretendard-Regular.otf&lt;/string&gt; &lt;string&gt;Pretendard-SemiBold.otf&lt;/string&gt; &lt;string&gt;Pretendard-Thin.otf&lt;/string&gt; &lt;/array&gt; Info파일에 아래 내용 추가한다. import UIKit extension UIFont { enum HCFont: String { case black = "Pretendard-Black" case bold = "Pretendard-Bold" case extraBold = "Pretendard-ExtraBold" case extraLight = "Pretendard-ExtraLight" case light = "Pretendard-Light" case medium = "Pretendard-Medium" case regular = "Pretendard-Regular" case semiBold = "Pretendard-SemiBold" case thin = "Pretendard-Thin" } } // 커스텀 폰트 extension UIFont { static func hcFont(font: HCFont, size: CGFloat) -&gt; UIFont { return UIFont(name: font.rawValue, size: size) ?? UIFont.systemFont(ofSize: size) } } // 하루한컷 프리셋 폰트 extension UIFont { static var titleFont: UIFont { hcFont(font: .bold, size: 24) } static var bodyFont: UIFont { hcFont(font: .regular, size: 16) } static var captionFont: UIFont { hcFont(font: .medium, size: 12) } } // ----------------------------------------------------------------- // // SwiftUI 대응 import SwiftUI extension Font { static var hcTitle: Font { Font.custom("Pretendard-Bold", size: 24) } static var hcBody: Font { Font.custom("Pretendard-Regular", size: 16) } static var hcCaption: Font { Font.custom("Pretendard-Medium", size: 12) } } final class FontView: UIView { // MARK: - UI Component private lazy var titleLabel: UILabel = { let label = UILabel() label.font = .hcFont(font: .bold, size: 24) label.textColor = .label label.textAlignment = .center label.numberOfLines = 0 label.text = "title size 24" return label }() private lazy var bodyLabel: UILabel = { let label = UILabel() label.font = .hcFont(font: .regular, size: 16) label.textColor = .secondaryLabel label.textAlignment = .center label.numberOfLines = 0 label.text = "body size 16" return label }() private lazy var captionLabel: UILabel = { let label = UILabel() label.font = .hcFont(font: .medium, size: 12) label.textColor = .label label.textAlignment = .center label.numberOfLines = 0 label.text = "caption size 12" return label }() private lazy var hStackView: UIStackView = { let stackView = UIStackView(arrangedSubviews: [titleLabel, bodyLabel, captionLabel]) stackView.axis = .vertical stackView.spacing = 16 return stackView }() // MARK: - Initializer override init(frame: CGRect) { super.init(frame: frame) setupUI() setupConstraints() } required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") } // MARK: - UI Setup private func setupUI() { backgroundColor = .systemBackground addSubview(hStackView) hStackView.translatesAutoresizingMaskIntoConstraints = false } // MARK: - Constraints private func setupConstraints() { NSLayoutConstraint.activate([ hStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor), hStackView.leadingAnchor.constraint(equalTo: leadingAnchor), hStackView.trailingAnchor.constraint(equalTo: trailingAnchor), hStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor) ]) } } #Preview { FontView() } FontSystem 코드 작성한다 import UIKit // MARK: - Hex -&gt; UIColor extension UIColor { convenience init(hex: String, alpha: CGFloat = 1.0) { var hexFormatted: String = hex.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).uppercased() if hexFormatted.hasPrefix("#") { hexFormatted = String(hexFormatted.dropFirst()) } var rgbValue: UInt64 = 0 Scanner(string: hexFormatted).scanHexInt64(&amp;rgbValue) self.init( red: CGFloat((rgbValue &amp; 0xFF0000) &gt;&gt; 16) / 255.0, green: CGFloat((rgbValue &amp; 0x00FF00) &gt;&gt; 8) / 255.0, blue: CGFloat(rgbValue &amp; 0x0000FF) / 255.0, alpha: alpha ) } } extension UIColor { // MARK: - Login static let kakao = UIColor(hex: "#FEE500") static let apple = UIColor(hex: "#FFFFFF") static let kakaoTapped = UIColor(hex: "#CCC200") static let appleTapped = UIColor(hex: "#E5E5E5") // MARK: - Main static let background = UIColor(hex: "#1A1A1A") static let mainBlack = UIColor(hex: "#161717") static let mainWhite = UIColor(hex: "#f1f1f1") static let buttonTapped = UIColor(hex: "#131315") static let hcColor = UIColor.init(hex: "AAD1E7") // MARK: - Gray static let Gray000 = UIColor(hex: "#EFEFEF") static let Gray100 = UIColor(hex: "#B0AEB3") static let Gray200 = UIColor(hex: "#8B888F") static let Gray300 = UIColor(hex: "#67646C") static let Gray500 = UIColor(hex: "#454348") static let Gray700 = UIColor(hex: "#252427") static let Gray900 = UIColor(hex: "#111113") }]]></summary></entry><entry><title type="html">[RxDataSource] 2. CustomDatasource 만들어보기</title><link href="http://localhost:4000/RxDataSource-RxDataSource-2/" rel="alternate" type="text/html" title="[RxDataSource] 2. CustomDatasource 만들어보기" /><published>2025-06-16T00:00:00+00:00</published><updated>2025-06-16T00:00:00+00:00</updated><id>http://localhost:4000/%5BRxDataSource%5D-RxDataSource-2</id><content type="html" xml:base="http://localhost:4000/RxDataSource-RxDataSource-2/"><![CDATA[<!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Haruhancut" /><summary type="html"><![CDATA[Font 세팅 Fonts 폴더에 다운받은 폰트를 저장한다. &lt;key&gt;UIAppFonts&lt;/key&gt; &lt;array&gt; &lt;string&gt;NanumMyeongjo-Regular.ttf&lt;/string&gt; &lt;string&gt;RacingSansOne-Regular.ttf&lt;/string&gt; &lt;string&gt;Pretendard-Black.otf&lt;/string&gt; &lt;string&gt;Pretendard-Bold.otf&lt;/string&gt; &lt;string&gt;Pretendard-ExtraBold.otf&lt;/string&gt; &lt;string&gt;Pretendard-ExtraLight.otf&lt;/string&gt; &lt;string&gt;Pretendard-Light.otf&lt;/string&gt; &lt;string&gt;Pretendard-Medium.otf&lt;/string&gt; &lt;string&gt;Pretendard-Regular.otf&lt;/string&gt; &lt;string&gt;Pretendard-SemiBold.otf&lt;/string&gt; &lt;string&gt;Pretendard-Thin.otf&lt;/string&gt; &lt;/array&gt; Info파일에 아래 내용 추가한다. import UIKit extension UIFont { enum HCFont: String { case black = "Pretendard-Black" case bold = "Pretendard-Bold" case extraBold = "Pretendard-ExtraBold" case extraLight = "Pretendard-ExtraLight" case light = "Pretendard-Light" case medium = "Pretendard-Medium" case regular = "Pretendard-Regular" case semiBold = "Pretendard-SemiBold" case thin = "Pretendard-Thin" } } // 커스텀 폰트 extension UIFont { static func hcFont(font: HCFont, size: CGFloat) -&gt; UIFont { return UIFont(name: font.rawValue, size: size) ?? UIFont.systemFont(ofSize: size) } } // 하루한컷 프리셋 폰트 extension UIFont { static var titleFont: UIFont { hcFont(font: .bold, size: 24) } static var bodyFont: UIFont { hcFont(font: .regular, size: 16) } static var captionFont: UIFont { hcFont(font: .medium, size: 12) } } // ----------------------------------------------------------------- // // SwiftUI 대응 import SwiftUI extension Font { static var hcTitle: Font { Font.custom("Pretendard-Bold", size: 24) } static var hcBody: Font { Font.custom("Pretendard-Regular", size: 16) } static var hcCaption: Font { Font.custom("Pretendard-Medium", size: 12) } } final class FontView: UIView { // MARK: - UI Component private lazy var titleLabel: UILabel = { let label = UILabel() label.font = .hcFont(font: .bold, size: 24) label.textColor = .label label.textAlignment = .center label.numberOfLines = 0 label.text = "title size 24" return label }() private lazy var bodyLabel: UILabel = { let label = UILabel() label.font = .hcFont(font: .regular, size: 16) label.textColor = .secondaryLabel label.textAlignment = .center label.numberOfLines = 0 label.text = "body size 16" return label }() private lazy var captionLabel: UILabel = { let label = UILabel() label.font = .hcFont(font: .medium, size: 12) label.textColor = .label label.textAlignment = .center label.numberOfLines = 0 label.text = "caption size 12" return label }() private lazy var hStackView: UIStackView = { let stackView = UIStackView(arrangedSubviews: [titleLabel, bodyLabel, captionLabel]) stackView.axis = .vertical stackView.spacing = 16 return stackView }() // MARK: - Initializer override init(frame: CGRect) { super.init(frame: frame) setupUI() setupConstraints() } required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") } // MARK: - UI Setup private func setupUI() { backgroundColor = .systemBackground addSubview(hStackView) hStackView.translatesAutoresizingMaskIntoConstraints = false } // MARK: - Constraints private func setupConstraints() { NSLayoutConstraint.activate([ hStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor), hStackView.leadingAnchor.constraint(equalTo: leadingAnchor), hStackView.trailingAnchor.constraint(equalTo: trailingAnchor), hStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor) ]) } } #Preview { FontView() } FontSystem 코드 작성한다 import UIKit // MARK: - Hex -&gt; UIColor extension UIColor { convenience init(hex: String, alpha: CGFloat = 1.0) { var hexFormatted: String = hex.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).uppercased() if hexFormatted.hasPrefix("#") { hexFormatted = String(hexFormatted.dropFirst()) } var rgbValue: UInt64 = 0 Scanner(string: hexFormatted).scanHexInt64(&amp;rgbValue) self.init( red: CGFloat((rgbValue &amp; 0xFF0000) &gt;&gt; 16) / 255.0, green: CGFloat((rgbValue &amp; 0x00FF00) &gt;&gt; 8) / 255.0, blue: CGFloat(rgbValue &amp; 0x0000FF) / 255.0, alpha: alpha ) } } extension UIColor { // MARK: - Login static let kakao = UIColor(hex: "#FEE500") static let apple = UIColor(hex: "#FFFFFF") static let kakaoTapped = UIColor(hex: "#CCC200") static let appleTapped = UIColor(hex: "#E5E5E5") // MARK: - Main static let background = UIColor(hex: "#1A1A1A") static let mainBlack = UIColor(hex: "#161717") static let mainWhite = UIColor(hex: "#f1f1f1") static let buttonTapped = UIColor(hex: "#131315") static let hcColor = UIColor.init(hex: "AAD1E7") // MARK: - Gray static let Gray000 = UIColor(hex: "#EFEFEF") static let Gray100 = UIColor(hex: "#B0AEB3") static let Gray200 = UIColor(hex: "#8B888F") static let Gray300 = UIColor(hex: "#67646C") static let Gray500 = UIColor(hex: "#454348") static let Gray700 = UIColor(hex: "#252427") static let Gray900 = UIColor(hex: "#111113") }]]></summary></entry><entry><title type="html">[RxDataSource] 2. CustomDatasource 만들어보기</title><link href="http://localhost:4000/RxDataSource-RxDataSource-2/" rel="alternate" type="text/html" title="[RxDataSource] 2. CustomDatasource 만들어보기" /><published>2025-06-16T00:00:00+00:00</published><updated>2025-06-16T00:00:00+00:00</updated><id>http://localhost:4000/%5BRxDataSource%5D-RxDataSource-2</id><content type="html" xml:base="http://localhost:4000/RxDataSource-RxDataSource-2/"><![CDATA[<!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
 
 <!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
@@ -515,7 +736,366 @@ cellForRowAt – 각 셀에 들어갈 내용과 셀 객체 반환</p>
 <ul>
   <li>테이블뷰 로드방식이 기존 테이블뷰와 다르다.</li>
   <li>dataSource.apply(스냅샷) -&gt; 이런 데이터를 보여줄거라고 스냅샷이라는 사진을 찍어두고 찍어둔 사진을 반영한다.</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[DiffableDataSource Diffable 다른 이라는 뜻이다. 아이템들간의 서로 다름을 알게 되는 것이다. 애니메이션 처리가 자연스럽게 되는 데이터소스이다. datasource cellProvider - 셀 만들기 가능하다. snapshot(사진 찍어둠) 테이블뷰 로드방식이 기존 테이블뷰와 다르다. dataSource.apply(스냅샷) -&gt; 이런 데이터를 보여줄거라고 스냅샷이라는 사진을 찍어두고 찍어둔 사진을 반영한다.]]></summary></entry><entry><title type="html">[CustomView] Segmented Control 기본</title><link href="http://localhost:4000/CustomView-Segmented-Control/" rel="alternate" type="text/html" title="[CustomView] Segmented Control 기본" /><published>2025-05-30T00:00:00+00:00</published><updated>2025-05-30T00:00:00+00:00</updated><id>http://localhost:4000/%5BCustomView%5D-Segmented%20Control</id><content type="html" xml:base="http://localhost:4000/CustomView-Segmented-Control/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[DiffableDataSource Diffable 다른 이라는 뜻이다. 아이템들간의 서로 다름을 알게 되는 것이다. 애니메이션 처리가 자연스럽게 되는 데이터소스이다. datasource cellProvider - 셀 만들기 가능하다. snapshot(사진 찍어둠) 테이블뷰 로드방식이 기존 테이블뷰와 다르다. dataSource.apply(스냅샷) -&gt; 이런 데이터를 보여줄거라고 스냅샷이라는 사진을 찍어두고 찍어둔 사진을 반영한다.]]></summary></entry><entry><title type="html">[Haruhancut] Widget</title><link href="http://localhost:4000/Haruhancut-Widget/" rel="alternate" type="text/html" title="[Haruhancut] Widget" /><published>2025-05-30T00:00:00+00:00</published><updated>2025-05-30T00:00:00+00:00</updated><id>http://localhost:4000/%5BHaruhancut%5D-Widget</id><content type="html" xml:base="http://localhost:4000/Haruhancut-Widget/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h2 id="widget-도입">Widget 도입</h2>
+<p>하루한컷 앱에 위젯을 추가하여 앱의 사진을 위젯으로 보여주려고 한다.</p>
+
+<h2 id="기존-번들-식별자에-app-groups-체크-및-저장">기존 번들 식별자에 App Groups 체크 및 저장</h2>
+<p>Identifiers에서 com.indextrown.Haruhancut를 찾아서 App Groups 체크박스를 추가 및 저장한다.</p>
+
+<h3 id="1-위젯용-번들-식별자-준비">1. 위젯용 번들 식별자 준비</h3>
+<p><img src="/assets/img/2025-05-30-%5BHaruhancut%5D-Widget/image-20250610145644562.png" alt="이미지" width="30%" /><br />
+com.indextrown.Haruhancut.WidgetExtension로 번들 식별자를 만들고 App Groups만 체크해준다.<br />
+이제 프로비저닝 프로파일을 만들건데 편의를 위해 fastlane을 사용하겠다.</p>
+
+<h3 id="2-프로비저닝-프로파일-만들기">2. 프로비저닝 프로파일 만들기</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 기존 프로젝트가 이거면  </span>
+<span class="c"># match Development com.indextrown.Haruhancut</span>
+
+<span class="c"># 위젯은 아래와 같이 프로비저닝 프로파일을 만들어준다.   </span>
+<span class="c"># match Development com.indextrown.Haruhancut.WidgetExtension</span>
+
+<span class="c"># 개발용</span>
+fastlane match development <span class="nt">--app_identifier</span> <span class="s2">"com.indextrown.Haruhancut.WidgetExtension"</span>
+
+<span class="c"># 배포용</span>
+fastlane match appstore <span class="nt">--app_identifier</span> <span class="s2">"com.indextrown.Haruhancut.WidgetExtension"</span>
+
+<span class="c"># ⚠️Provisioning profile "" doesn't include signing ...발생시</span>
+fastlane match development <span class="nt">--force</span>
+fastlane match appstore <span class="nt">--force</span>  
+</code></pre></div></div>
+
+<h3 id="3-widget-extension-생성">3. Widget Extension 생성</h3>
+
+<ul>
+  <li>Targets목록 아래 + 버튼 눌러서 WIdget Extension 생성한다.</li>
+</ul>
+
+<h3 id="4-app-groups-설정">4. App Groups 설정</h3>
+<p>기존 프로젝트와 WIdgetExtension 프로젝트에 각각 App Groups 추가한다.</p>
+
+<h2 id="widgetkit">WidgetKit</h2>
+<ul>
+  <li>iOS 14부터 도입되었으며 SwiftUI로만 구현 가능하다.</li>
+  <li>UIViewRepresentable 불가능하다.</li>
+</ul>
+
+<h3 id="widget-configuration속성-편집에-대한-기능">Widget COnfiguration(속성 편집에 대한 기능)</h3>
+<ul>
+  <li>Static configuration
+    <ul>
+      <li>위젯 편집 항목이 나타나지 않으며, 사용자가 설정을 변경할 수 있는 옵션이 없다.</li>
+    </ul>
+  </li>
+  <li>Intent Configuration
+    <ul>
+      <li>위젯 편집 기능을 통해 여러 Intent 값을 수정할 수 있도록 위젯을 구성할 수 있다.</li>
+      <li>iOS 17부터 AppIntentCOnfiguration으로 변경</li>
+    </ul>
+  </li>
+  <li>Activity Configuration
+    <ul>
+      <li>Live Activity</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="widget은-크게-4가지의-struct로-구성">Widget은 크게 4가지의 struct로 구성</h3>
+
+<p><img src="/assets/img/2025-05-30-%5BHaruhancut%5D-Widget/image-20250610173933798.png" alt="이미지" width="30%" /></p>
+
+<ul>
+  <li>Provider에서 사용자가 설정한 시간에 맞춰 위젯을 업데이트할 수 있게 한다</li>
+  <li>Entry에서 위젯에 필요한 데이터를 제공한다</li>
+  <li>EntryView는 Entry를 통해 구성하며, UI를 담당하는 역할과 유사하다</li>
+  <li>Widget에서는 static, intent, activity인지에 따라 최종적인 위젯을 구성한다</li>
+</ul>
+
+<h2 id="reference">Reference</h2>
+<ul>
+  <li>https://velog.io/@s_sub/새싹-iOS-20주차</li>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Haruhancut" /><summary type="html"><![CDATA[Widget 도입 하루한컷 앱에 위젯을 추가하여 앱의 사진을 위젯으로 보여주려고 한다. 기존 번들 식별자에 App Groups 체크 및 저장 Identifiers에서 com.indextrown.Haruhancut를 찾아서 App Groups 체크박스를 추가 및 저장한다. 1. 위젯용 번들 식별자 준비 com.indextrown.Haruhancut.WidgetExtension로 번들 식별자를 만들고 App Groups만 체크해준다. 이제 프로비저닝 프로파일을 만들건데 편의를 위해 fastlane을 사용하겠다. 2. 프로비저닝 프로파일 만들기 # 기존 프로젝트가 이거면 # match Development com.indextrown.Haruhancut # 위젯은 아래와 같이 프로비저닝 프로파일을 만들어준다. # match Development com.indextrown.Haruhancut.WidgetExtension # 개발용 fastlane match development --app_identifier "com.indextrown.Haruhancut.WidgetExtension" # 배포용 fastlane match appstore --app_identifier "com.indextrown.Haruhancut.WidgetExtension" # ⚠️Provisioning profile "" doesn't include signing ...발생시 fastlane match development --force fastlane match appstore --force 3. Widget Extension 생성 Targets목록 아래 + 버튼 눌러서 WIdget Extension 생성한다. 4. App Groups 설정 기존 프로젝트와 WIdgetExtension 프로젝트에 각각 App Groups 추가한다. WidgetKit iOS 14부터 도입되었으며 SwiftUI로만 구현 가능하다. UIViewRepresentable 불가능하다. Widget COnfiguration(속성 편집에 대한 기능) Static configuration 위젯 편집 항목이 나타나지 않으며, 사용자가 설정을 변경할 수 있는 옵션이 없다. Intent Configuration 위젯 편집 기능을 통해 여러 Intent 값을 수정할 수 있도록 위젯을 구성할 수 있다. iOS 17부터 AppIntentCOnfiguration으로 변경 Activity Configuration Live Activity Widget은 크게 4가지의 struct로 구성 Provider에서 사용자가 설정한 시간에 맞춰 위젯을 업데이트할 수 있게 한다 Entry에서 위젯에 필요한 데이터를 제공한다 EntryView는 Entry를 통해 구성하며, UI를 담당하는 역할과 유사하다 Widget에서는 static, intent, activity인지에 따라 최종적인 위젯을 구성한다 Reference https://velog.io/@s_sub/새싹-iOS-20주차]]></summary></entry><entry><title type="html">[CustomView] Segmented Control 커스텀 with PageViewController</title><link href="http://localhost:4000/CustomView-Segmented-Control2/" rel="alternate" type="text/html" title="[CustomView] Segmented Control 커스텀 with PageViewController" /><published>2025-05-30T00:00:00+00:00</published><updated>2025-05-30T00:00:00+00:00</updated><id>http://localhost:4000/%5BCustomView%5D-Segmented%20Control2</id><content type="html" xml:base="http://localhost:4000/CustomView-Segmented-Control2/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<div style="display: flex; justify-content: center; gap: 20px;">
+  <img src="/assets/img/2025-05-30-%5BCustomView%5D-Segmented%20Control2/image-20250603015019716.png" alt="셀1" width="50%" />
+  <img src="/assets/img/2025-05-30-%5BCustomView%5D-Segmented%20Control2/image-20250603015140369.png" alt="셀2" width="50%" />
+</div>
+
+<h1 id="uikit-세그먼-컨트롤-커스텀-사용법">UIKit 세그먼 컨트롤 커스텀 사용법</h1>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//</span>
+<span class="c1">//  CustomSegmentControlVC.swift</span>
+<span class="c1">//  UIComponentTutorial</span>
+<span class="c1">//</span>
+<span class="c1">//  Created by 김동현 on 6/2/25.</span>
+<span class="c1">//</span>
+
+<span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">CustomSegmentControl</span><span class="p">:</span> <span class="kt">UISegmentedControl</span> <span class="p">{</span>
+
+    <span class="c1">// MARK: - UI</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">underlineView</span><span class="p">:</span> <span class="kt">UIView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="kt">UIView</span><span class="p">()</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span>
+        <span class="k">return</span> <span class="n">view</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">private</span> <span class="k">var</span> <span class="nv">underlineLeadingConstraint</span><span class="p">:</span> <span class="kt">NSLayoutConstraint</span><span class="o">!</span>
+    <span class="kd">private</span> <span class="k">var</span> <span class="nv">underlineWidthConstraint</span><span class="p">:</span> <span class="kt">NSLayoutConstraint</span><span class="o">!</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">underlineHeight</span><span class="p">:</span> <span class="kt">CGFloat</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="c1">// 원하는 두께로 변경</span>
+
+    <span class="k">override</span> <span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="kt">CGRect</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="n">frame</span><span class="p">)</span>
+        <span class="nf">setup</span><span class="p">()</span>
+    <span class="p">}</span>
+
+    <span class="k">override</span> <span class="nf">init</span><span class="p">(</span><span class="nv">items</span><span class="p">:</span> <span class="p">[</span><span class="kt">Any</span><span class="p">]?)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">items</span><span class="p">:</span> <span class="n">items</span><span class="p">)</span>
+        <span class="nf">setup</span><span class="p">()</span>
+    <span class="p">}</span>
+
+    <span class="kd">required</span> <span class="nf">init</span><span class="p">?(</span><span class="nv">coder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">fatalError</span><span class="p">(</span><span class="s">"init(coder:) has not been implemented"</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">setup</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">removeBackgroundAndDivider</span><span class="p">()</span>
+
+        <span class="n">underlineView</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span>
+        <span class="n">underlineView</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="n">underlineView</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="nf">addSubview</span><span class="p">(</span><span class="n">underlineView</span><span class="p">)</span>
+        
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            
+        <span class="p">])</span>
+        
+
+        <span class="c1">// 초기 제약조건</span>
+        <span class="k">let</span> <span class="nv">width</span> <span class="o">=</span> <span class="n">bounds</span><span class="o">.</span><span class="n">width</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">?</span> <span class="n">bounds</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="kt">CGFloat</span><span class="p">(</span><span class="n">numberOfSegments</span><span class="p">)</span> <span class="p">:</span> <span class="mi">0</span>
+        <span class="n">underlineLeadingConstraint</span> <span class="o">=</span> <span class="n">underlineView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">leadingAnchor</span><span class="p">)</span>
+        <span class="n">underlineWidthConstraint</span> <span class="o">=</span> <span class="n">underlineView</span><span class="o">.</span><span class="n">widthAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalToConstant</span><span class="p">:</span> <span class="n">width</span><span class="p">)</span>
+
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">underlineLeadingConstraint</span><span class="p">,</span>
+            <span class="n">underlineWidthConstraint</span><span class="p">,</span>
+            <span class="n">underlineView</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">bottomAnchor</span><span class="p">),</span>
+            <span class="n">underlineView</span><span class="o">.</span><span class="n">heightAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalToConstant</span><span class="p">:</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">layoutSubviews</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">layoutSubviews</span><span class="p">()</span>
+        <span class="c1">// 항상 최신 크기/위치 반영</span>
+        <span class="nf">updateUnderlinePosition</span><span class="p">(</span><span class="nv">animated</span><span class="p">:</span> <span class="kc">false</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="kd">func</span> <span class="nf">updateUnderlinePosition</span><span class="p">(</span><span class="nv">animated</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">width</span> <span class="o">=</span> <span class="n">bounds</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="kt">CGFloat</span><span class="p">(</span><span class="n">numberOfSegments</span><span class="p">)</span>
+        <span class="k">let</span> <span class="nv">leading</span> <span class="o">=</span> <span class="kt">CGFloat</span><span class="p">(</span><span class="n">selectedSegmentIndex</span><span class="p">)</span> <span class="o">*</span> <span class="n">width</span>
+
+        <span class="n">underlineWidthConstraint</span><span class="o">.</span><span class="n">constant</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="n">underlineLeadingConstraint</span><span class="o">.</span><span class="n">constant</span> <span class="o">=</span> <span class="n">leading</span>
+
+        <span class="k">if</span> <span class="n">animated</span> <span class="p">{</span>
+            <span class="kt">UIView</span><span class="o">.</span><span class="nf">animate</span><span class="p">(</span><span class="nv">withDuration</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">self</span><span class="o">.</span><span class="nf">layoutIfNeeded</span><span class="p">()</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">self</span><span class="o">.</span><span class="nf">layoutIfNeeded</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">removeBackgroundAndDivider</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">image</span> <span class="o">=</span> <span class="kt">UIImage</span><span class="p">()</span>
+        <span class="nf">setBackgroundImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">normal</span><span class="p">,</span> <span class="nv">barMetrics</span><span class="p">:</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span>
+        <span class="nf">setBackgroundImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">selected</span><span class="p">,</span> <span class="nv">barMetrics</span><span class="p">:</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span>
+        <span class="nf">setBackgroundImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">highlighted</span><span class="p">,</span> <span class="nv">barMetrics</span><span class="p">:</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span>
+        <span class="nf">setDividerImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nv">forLeftSegmentState</span><span class="p">:</span> <span class="o">.</span><span class="n">selected</span><span class="p">,</span> <span class="nv">rightSegmentState</span><span class="p">:</span> <span class="o">.</span><span class="n">normal</span><span class="p">,</span> <span class="nv">barMetrics</span><span class="p">:</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">CustomSegmentControlVC</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">segmentedControl</span><span class="p">:</span> <span class="kt">UISegmentedControl</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">segment</span> <span class="o">=</span> <span class="kt">UISegmentedControl</span><span class="p">(</span><span class="nv">items</span><span class="p">:</span> <span class="p">[</span><span class="s">"첫번째"</span><span class="p">,</span> <span class="s">"두번째"</span><span class="p">,</span> <span class="s">"세번째"</span><span class="p">])</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">selectedSegmentIndex</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1">// 스타일 커스텀</span>
+        <span class="n">segment</span><span class="o">.</span><span class="nf">setTitleTextAttributes</span><span class="p">([</span>
+            <span class="kt">NSAttributedString</span><span class="o">.</span><span class="kt">Key</span><span class="o">.</span><span class="nv">foregroundColor</span><span class="p">:</span> <span class="kt">UIColor</span><span class="o">.</span><span class="n">gray</span>
+        <span class="p">],</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">normal</span><span class="p">)</span>
+        <span class="n">segment</span><span class="o">.</span><span class="nf">setTitleTextAttributes</span><span class="p">([</span>
+            <span class="kt">NSAttributedString</span><span class="o">.</span><span class="kt">Key</span><span class="o">.</span><span class="nv">foregroundColor</span><span class="p">:</span> <span class="kt">UIColor</span><span class="o">.</span><span class="n">invertedSystemBackground</span><span class="p">,</span>
+            <span class="o">.</span><span class="nv">font</span><span class="p">:</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">bold</span><span class="p">)</span>
+        <span class="p">],</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">selected</span><span class="p">)</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">selectedSegmentTintColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">clear</span>
+        <span class="k">let</span> <span class="nv">image</span> <span class="o">=</span> <span class="kt">UIImage</span><span class="p">()</span>
+        <span class="n">segment</span><span class="o">.</span><span class="nf">setBackgroundImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">normal</span><span class="p">,</span> <span class="nv">barMetrics</span><span class="p">:</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span>
+        <span class="n">segment</span><span class="o">.</span><span class="nf">setBackgroundImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">selected</span><span class="p">,</span> <span class="nv">barMetrics</span><span class="p">:</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span>
+        <span class="n">segment</span><span class="o">.</span><span class="nf">setBackgroundImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">highlighted</span><span class="p">,</span> <span class="nv">barMetrics</span><span class="p">:</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span>
+        <span class="n">segment</span><span class="o">.</span><span class="nf">setDividerImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nv">forLeftSegmentState</span><span class="p">:</span> <span class="o">.</span><span class="n">selected</span><span class="p">,</span> <span class="nv">rightSegmentState</span><span class="p">:</span> <span class="o">.</span><span class="n">normal</span><span class="p">,</span> <span class="nv">barMetrics</span><span class="p">:</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">segment</span>
+    <span class="p">}()</span>
+
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">underlineView</span><span class="p">:</span> <span class="kt">UIView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="kt">UIView</span><span class="p">()</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">invertedSystemBackground</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">view</span>
+    <span class="p">}()</span>
+
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">vc1</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">vc</span> <span class="o">=</span> <span class="kt">UIViewController</span><span class="p">()</span>
+        <span class="n">vc</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">red</span>
+        <span class="k">return</span> <span class="n">vc</span>
+    <span class="p">}()</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">vc2</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">vc</span> <span class="o">=</span> <span class="kt">UIViewController</span><span class="p">()</span>
+        <span class="n">vc</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">blue</span>
+        <span class="k">return</span> <span class="n">vc</span>
+    <span class="p">}()</span>
+    <span class="kd">private</span> <span class="k">let</span> <span class="nv">vc3</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">vc</span> <span class="o">=</span> <span class="kt">UIViewController</span><span class="p">()</span>
+        <span class="n">vc</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">green</span>
+        <span class="k">return</span> <span class="n">vc</span>
+    <span class="p">}()</span>
+    <span class="k">var</span> <span class="nv">dataViewControllers</span><span class="p">:</span> <span class="p">[</span><span class="kt">UIViewController</span><span class="p">]</span> <span class="p">{</span> <span class="p">[</span><span class="n">vc1</span><span class="p">,</span> <span class="n">vc2</span><span class="p">,</span> <span class="n">vc3</span><span class="p">]</span> <span class="p">}</span>
+
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">pageViewController</span><span class="p">:</span> <span class="kt">UIPageViewController</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">vc</span> <span class="o">=</span> <span class="kt">UIPageViewController</span><span class="p">(</span><span class="nv">transitionStyle</span><span class="p">:</span> <span class="o">.</span><span class="n">scroll</span><span class="p">,</span> <span class="nv">navigationOrientation</span><span class="p">:</span> <span class="o">.</span><span class="n">horizontal</span><span class="p">)</span>
+        <span class="n">vc</span><span class="o">.</span><span class="nf">setViewControllers</span><span class="p">([</span><span class="k">self</span><span class="o">.</span><span class="n">dataViewControllers</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="nv">direction</span><span class="p">:</span> <span class="o">.</span><span class="n">forward</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+        <span class="n">vc</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
+        <span class="n">vc</span><span class="o">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="k">self</span>
+        <span class="n">vc</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="k">return</span> <span class="n">vc</span>
+    <span class="p">}()</span>
+
+    <span class="k">var</span> <span class="nv">currentPage</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="k">let</span> <span class="nv">direction</span><span class="p">:</span> <span class="kt">UIPageViewController</span><span class="o">.</span><span class="kt">NavigationDirection</span> <span class="o">=</span> <span class="n">oldValue</span> <span class="o">&lt;=</span> <span class="k">self</span><span class="o">.</span><span class="n">currentPage</span> <span class="p">?</span> <span class="o">.</span><span class="nv">forward</span> <span class="p">:</span> <span class="o">.</span><span class="n">reverse</span>
+            <span class="k">self</span><span class="o">.</span><span class="n">pageViewController</span><span class="o">.</span><span class="nf">setViewControllers</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">dataViewControllers</span><span class="p">[</span><span class="k">self</span><span class="o">.</span><span class="n">currentPage</span><span class="p">]],</span>
+                <span class="nv">direction</span><span class="p">:</span> <span class="n">direction</span><span class="p">,</span>
+                <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+                <span class="nv">completion</span><span class="p">:</span> <span class="kc">nil</span>
+            <span class="p">)</span>
+            <span class="nf">moveUnderline</span><span class="p">(</span><span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="k">self</span><span class="o">.</span><span class="n">segmentedControl</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="k">self</span><span class="o">.</span><span class="n">underlineView</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="k">self</span><span class="o">.</span><span class="n">pageViewController</span><span class="o">.</span><span class="n">view</span><span class="p">)</span>
+
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">segmentedControl</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">),</span>
+            <span class="n">segmentedControl</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">),</span>
+            <span class="n">segmentedControl</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">80</span><span class="p">),</span>
+            <span class="n">segmentedControl</span><span class="o">.</span><span class="n">heightAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalToConstant</span><span class="p">:</span> <span class="mi">50</span><span class="p">),</span>
+
+            <span class="n">pageViewController</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">),</span>
+            <span class="n">pageViewController</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">),</span>
+            <span class="n">pageViewController</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">),</span>
+            <span class="n">pageViewController</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">segmentedControl</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">),</span>
+        <span class="p">])</span>
+
+        <span class="c1">// 언더라인의 높이와 최초 위치 설정 (width, x는 viewDidLayoutSubviews에서)</span>
+        <span class="n">underlineView</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="kt">CGRect</span><span class="p">(</span><span class="nv">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">width</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">height</span><span class="p">:</span> <span class="mi">4</span><span class="p">)</span>
+
+        <span class="n">segmentedControl</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="nf">changeValue</span><span class="p">(</span><span class="nv">control</span><span class="p">:)),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">valueChanged</span><span class="p">)</span>
+        <span class="n">segmentedControl</span><span class="o">.</span><span class="n">selectedSegmentIndex</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="nf">changeValue</span><span class="p">(</span><span class="nv">control</span><span class="p">:</span> <span class="n">segmentedControl</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLayoutSubviews</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLayoutSubviews</span><span class="p">()</span>
+        <span class="c1">// 최초 렌더링 시 언더라인 위치 정확히 세팅</span>
+        <span class="nf">moveUnderline</span><span class="p">(</span><span class="nv">animated</span><span class="p">:</span> <span class="kc">false</span><span class="p">)</span>
+        <span class="c1">// 언더라인의 y위치를 세그먼트 하단에 맞추기</span>
+        <span class="k">let</span> <span class="nv">segFrame</span> <span class="o">=</span> <span class="n">segmentedControl</span><span class="o">.</span><span class="n">frame</span>
+        <span class="n">underlineView</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">origin</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">segFrame</span><span class="o">.</span><span class="n">maxY</span> <span class="o">-</span> <span class="mi">4</span>
+        <span class="n">underlineView</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">size</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="p">}</span>
+
+    <span class="kd">@objc</span> <span class="kd">private</span> <span class="kd">func</span> <span class="nf">changeValue</span><span class="p">(</span><span class="nv">control</span><span class="p">:</span> <span class="kt">UISegmentedControl</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">currentPage</span> <span class="o">=</span> <span class="n">control</span><span class="o">.</span><span class="n">selectedSegmentIndex</span>
+    <span class="p">}</span>
+
+    <span class="c1">/// 언더라인 이동 (frame 연산)</span>
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">moveUnderline</span><span class="p">(</span><span class="nv">animated</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">segFrame</span> <span class="o">=</span> <span class="n">segmentedControl</span><span class="o">.</span><span class="n">frame</span>
+        <span class="k">let</span> <span class="nv">segmentCount</span> <span class="o">=</span> <span class="kt">CGFloat</span><span class="p">(</span><span class="n">segmentedControl</span><span class="o">.</span><span class="n">numberOfSegments</span><span class="p">)</span>
+        <span class="k">let</span> <span class="nv">segmentWidth</span> <span class="o">=</span> <span class="n">segFrame</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="n">segmentCount</span>
+        <span class="k">let</span> <span class="nv">targetX</span> <span class="o">=</span> <span class="n">segFrame</span><span class="o">.</span><span class="n">minX</span> <span class="o">+</span> <span class="n">segmentWidth</span> <span class="o">*</span> <span class="kt">CGFloat</span><span class="p">(</span><span class="n">segmentedControl</span><span class="o">.</span><span class="n">selectedSegmentIndex</span><span class="p">)</span>
+
+        <span class="k">let</span> <span class="nv">newFrame</span> <span class="o">=</span> <span class="kt">CGRect</span><span class="p">(</span><span class="nv">x</span><span class="p">:</span> <span class="n">targetX</span><span class="p">,</span>
+                              <span class="nv">y</span><span class="p">:</span> <span class="n">segFrame</span><span class="o">.</span><span class="n">maxY</span> <span class="o">-</span> <span class="mi">4</span><span class="p">,</span>
+                              <span class="nv">width</span><span class="p">:</span> <span class="n">segmentWidth</span><span class="p">,</span>
+                              <span class="nv">height</span><span class="p">:</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">animated</span> <span class="p">{</span>
+            <span class="kt">UIView</span><span class="o">.</span><span class="nf">animate</span><span class="p">(</span><span class="nv">withDuration</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">underlineView</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">newFrame</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">self</span><span class="o">.</span><span class="n">underlineView</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">newFrame</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">CustomSegmentControlVC</span><span class="p">:</span> <span class="kt">UIPageViewControllerDataSource</span><span class="p">,</span> <span class="kt">UIPageViewControllerDelegate</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">pageViewController</span><span class="p">(</span><span class="n">_</span> <span class="nv">pageViewController</span><span class="p">:</span> <span class="kt">UIPageViewController</span><span class="p">,</span> <span class="n">viewControllerBefore</span> <span class="nv">viewController</span><span class="p">:</span> <span class="kt">UIViewController</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UIViewController</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">index</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">dataViewControllers</span><span class="o">.</span><span class="nf">firstIndex</span><span class="p">(</span><span class="nv">of</span><span class="p">:</span> <span class="n">viewController</span><span class="p">),</span> <span class="n">index</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="kc">nil</span> <span class="p">}</span>
+        <span class="k">return</span> <span class="k">self</span><span class="o">.</span><span class="n">dataViewControllers</span><span class="p">[</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="p">}</span>
+    <span class="kd">func</span> <span class="nf">pageViewController</span><span class="p">(</span><span class="n">_</span> <span class="nv">pageViewController</span><span class="p">:</span> <span class="kt">UIPageViewController</span><span class="p">,</span> <span class="n">viewControllerAfter</span> <span class="nv">viewController</span><span class="p">:</span> <span class="kt">UIViewController</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UIViewController</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">index</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">dataViewControllers</span><span class="o">.</span><span class="nf">firstIndex</span><span class="p">(</span><span class="nv">of</span><span class="p">:</span> <span class="n">viewController</span><span class="p">),</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="k">self</span><span class="o">.</span><span class="n">dataViewControllers</span><span class="o">.</span><span class="n">count</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="kc">nil</span> <span class="p">}</span>
+        <span class="k">return</span> <span class="k">self</span><span class="o">.</span><span class="n">dataViewControllers</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="p">}</span>
+    <span class="kd">func</span> <span class="nf">pageViewController</span><span class="p">(</span><span class="n">_</span> <span class="nv">pageViewController</span><span class="p">:</span> <span class="kt">UIPageViewController</span><span class="p">,</span> <span class="n">didFinishAnimating</span> <span class="nv">finished</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">,</span> <span class="nv">previousViewControllers</span><span class="p">:</span> <span class="p">[</span><span class="kt">UIViewController</span><span class="p">],</span> <span class="n">transitionCompleted</span> <span class="nv">completed</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">viewController</span> <span class="o">=</span> <span class="n">pageViewController</span><span class="o">.</span><span class="n">viewControllers</span><span class="p">?[</span><span class="mi">0</span><span class="p">],</span> <span class="k">let</span> <span class="nv">index</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">dataViewControllers</span><span class="o">.</span><span class="nf">firstIndex</span><span class="p">(</span><span class="nv">of</span><span class="p">:</span> <span class="n">viewController</span><span class="p">)</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">currentPage</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">segmentedControl</span><span class="o">.</span><span class="n">selectedSegmentIndex</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">moveUnderline</span><span class="p">(</span><span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cp">#Preview {</span>
+    <span class="kt">CustomSegmentControlVC</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">UIColor</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="k">var</span> <span class="nv">invertedSystemBackground</span><span class="p">:</span> <span class="kt">UIColor</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kt">UIColor</span> <span class="p">{</span> <span class="n">traitCollection</span> <span class="k">in</span>
+            <span class="k">switch</span> <span class="n">traitCollection</span><span class="o">.</span><span class="n">userInterfaceStyle</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="o">.</span><span class="nv">dark</span><span class="p">:</span>
+                <span class="c1">// 다크 모드에서는 밝은 배경색</span>
+                <span class="k">return</span> <span class="o">.</span><span class="n">white</span>
+            <span class="k">default</span><span class="p">:</span>
+                <span class="c1">// 라이트 모드에서는 어두운 배경색</span>
+                <span class="k">return</span> <span class="o">.</span><span class="n">black</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<h2 id="reference">Reference</h2>
+<ul>
+  <li>https://ios-development.tistory.com/963</li>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="CustomView" /><summary type="html"><![CDATA[UIKit 세그먼 컨트롤 커스텀 사용법 // // CustomSegmentControlVC.swift // UIComponentTutorial // // Created by 김동현 on 6/2/25. // import UIKit final class CustomSegmentControl: UISegmentedControl { // MARK: - UI private let underlineView: UIView = { let view = UIView() view.backgroundColor = .black return view }() private var underlineLeadingConstraint: NSLayoutConstraint! private var underlineWidthConstraint: NSLayoutConstraint! private let underlineHeight: CGFloat = 4.0 // 원하는 두께로 변경 override init(frame: CGRect) { super.init(frame: frame) setup() } override init(items: [Any]?) { super.init(items: items) setup() } required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") } private func setup() { self.removeBackgroundAndDivider() underlineView.backgroundColor = .black underlineView.translatesAutoresizingMaskIntoConstraints = false underlineView.layer.cornerRadius = 0 addSubview(underlineView) NSLayoutConstraint.activate([ ]) // 초기 제약조건 let width = bounds.width &gt; 0 ? bounds.width / CGFloat(numberOfSegments) : 0 underlineLeadingConstraint = underlineView.leadingAnchor.constraint(equalTo: leadingAnchor) underlineWidthConstraint = underlineView.widthAnchor.constraint(equalToConstant: width) NSLayoutConstraint.activate([ underlineLeadingConstraint, underlineWidthConstraint, underlineView.bottomAnchor.constraint(equalTo: bottomAnchor), underlineView.heightAnchor.constraint(equalToConstant: 20) ]) } override func layoutSubviews() { super.layoutSubviews() // 항상 최신 크기/위치 반영 updateUnderlinePosition(animated: false) } func updateUnderlinePosition(animated: Bool = true) { let width = bounds.width / CGFloat(numberOfSegments) let leading = CGFloat(selectedSegmentIndex) * width underlineWidthConstraint.constant = width underlineLeadingConstraint.constant = leading if animated { UIView.animate(withDuration: 0.15) { self.layoutIfNeeded() } } else { self.layoutIfNeeded() } } private func removeBackgroundAndDivider() { let image = UIImage() setBackgroundImage(image, for: .normal, barMetrics: .default) setBackgroundImage(image, for: .selected, barMetrics: .default) setBackgroundImage(image, for: .highlighted, barMetrics: .default) setDividerImage(image, forLeftSegmentState: .selected, rightSegmentState: .normal, barMetrics: .default) } } final class CustomSegmentControlVC: UIViewController { private let segmentedControl: UISegmentedControl = { let segment = UISegmentedControl(items: ["첫번째", "두번째", "세번째"]) segment.translatesAutoresizingMaskIntoConstraints = false segment.selectedSegmentIndex = 0 // 스타일 커스텀 segment.setTitleTextAttributes([ NSAttributedString.Key.foregroundColor: UIColor.gray ], for: .normal) segment.setTitleTextAttributes([ NSAttributedString.Key.foregroundColor: UIColor.invertedSystemBackground, .font: UIFont.systemFont(ofSize: 15, weight: .bold) ], for: .selected) segment.selectedSegmentTintColor = .clear let image = UIImage() segment.setBackgroundImage(image, for: .normal, barMetrics: .default) segment.setBackgroundImage(image, for: .selected, barMetrics: .default) segment.setBackgroundImage(image, for: .highlighted, barMetrics: .default) segment.setDividerImage(image, forLeftSegmentState: .selected, rightSegmentState: .normal, barMetrics: .default) return segment }() private let underlineView: UIView = { let view = UIView() view.backgroundColor = .invertedSystemBackground view.layer.cornerRadius = 0 return view }() private let vc1: UIViewController = { let vc = UIViewController() vc.view.backgroundColor = .red return vc }() private let vc2: UIViewController = { let vc = UIViewController() vc.view.backgroundColor = .blue return vc }() private let vc3: UIViewController = { let vc = UIViewController() vc.view.backgroundColor = .green return vc }() var dataViewControllers: [UIViewController] { [vc1, vc2, vc3] } private lazy var pageViewController: UIPageViewController = { let vc = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal) vc.setViewControllers([self.dataViewControllers[0]], direction: .forward, animated: true) vc.delegate = self vc.dataSource = self vc.view.translatesAutoresizingMaskIntoConstraints = false return vc }() var currentPage: Int = 0 { didSet { let direction: UIPageViewController.NavigationDirection = oldValue &lt;= self.currentPage ? .forward : .reverse self.pageViewController.setViewControllers( [dataViewControllers[self.currentPage]], direction: direction, animated: true, completion: nil ) moveUnderline(animated: true) } } override func viewDidLoad() { super.viewDidLoad() self.view.addSubview(self.segmentedControl) self.view.addSubview(self.underlineView) self.view.addSubview(self.pageViewController.view) NSLayoutConstraint.activate([ segmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor), segmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor), segmentedControl.topAnchor.constraint(equalTo: view.topAnchor, constant: 80), segmentedControl.heightAnchor.constraint(equalToConstant: 50), pageViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor), pageViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor), pageViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor), pageViewController.view.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor), ]) // 언더라인의 높이와 최초 위치 설정 (width, x는 viewDidLayoutSubviews에서) underlineView.frame = CGRect(x: 0, y: 0, width: 0, height: 4) segmentedControl.addTarget(self, action: #selector(changeValue(control:)), for: .valueChanged) segmentedControl.selectedSegmentIndex = 0 changeValue(control: segmentedControl) } override func viewDidLayoutSubviews() { super.viewDidLayoutSubviews() // 최초 렌더링 시 언더라인 위치 정확히 세팅 moveUnderline(animated: false) // 언더라인의 y위치를 세그먼트 하단에 맞추기 let segFrame = segmentedControl.frame underlineView.frame.origin.y = segFrame.maxY - 4 underlineView.frame.size.height = 4 } @objc private func changeValue(control: UISegmentedControl) { self.currentPage = control.selectedSegmentIndex } /// 언더라인 이동 (frame 연산) private func moveUnderline(animated: Bool) { let segFrame = segmentedControl.frame let segmentCount = CGFloat(segmentedControl.numberOfSegments) let segmentWidth = segFrame.width / segmentCount let targetX = segFrame.minX + segmentWidth * CGFloat(segmentedControl.selectedSegmentIndex) let newFrame = CGRect(x: targetX, y: segFrame.maxY - 4, width: segmentWidth, height: 4) if animated { UIView.animate(withDuration: 0.2) { self.underlineView.frame = newFrame } } else { self.underlineView.frame = newFrame } } } extension CustomSegmentControlVC: UIPageViewControllerDataSource, UIPageViewControllerDelegate { func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -&gt; UIViewController? { guard let index = self.dataViewControllers.firstIndex(of: viewController), index - 1 &gt;= 0 else { return nil } return self.dataViewControllers[index - 1] } func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -&gt; UIViewController? { guard let index = self.dataViewControllers.firstIndex(of: viewController), index + 1 &lt; self.dataViewControllers.count else { return nil } return self.dataViewControllers[index + 1] } func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) { guard let viewController = pageViewController.viewControllers?[0], let index = self.dataViewControllers.firstIndex(of: viewController) else { return } self.currentPage = index self.segmentedControl.selectedSegmentIndex = index self.moveUnderline(animated: true) } } #Preview { CustomSegmentControlVC() } extension UIColor { static var invertedSystemBackground: UIColor { return UIColor { traitCollection in switch traitCollection.userInterfaceStyle { case .dark: // 다크 모드에서는 밝은 배경색 return .white default: // 라이트 모드에서는 어두운 배경색 return .black } } } } Reference https://ios-development.tistory.com/963]]></summary></entry><entry><title type="html">[CustomView] Segmented Control 기본</title><link href="http://localhost:4000/CustomView-Segmented-Control/" rel="alternate" type="text/html" title="[CustomView] Segmented Control 기본" /><published>2025-05-30T00:00:00+00:00</published><updated>2025-05-30T00:00:00+00:00</updated><id>http://localhost:4000/%5BCustomView%5D-Segmented%20Control</id><content type="html" xml:base="http://localhost:4000/CustomView-Segmented-Control/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
 <!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
 
@@ -1118,455 +1698,4 @@ cellForRowAt – 각 셀에 들어갈 내용과 셀 객체 반환</p>
   <li>https://dongdida.tistory.com/128</li>
   <li>https://velog.io/@xanxnu/iOSSwift-UICalendarView-사용해-보기</li>
   <li>https://lsj8706.tistory.com/4</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="CustomView" /><summary type="html"><![CDATA[iOS 16부터 기본 제공되는 캘린더 기본 캘린더 import UIKit final class BasicCalendarViewController: UIViewController { // MARK: - UI Conponent private lazy var calendarView: UICalendarView = { let view = UICalendarView() view.translatesAutoresizingMaskIntoConstraints = false /// 점이나 뱃지 표시 등 달력 Custom 하기 위해 설정해야 하는 속성 view.wantsDateDecorations = true return view }() override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() } private func makeUI() { view.backgroundColor = .white view.addSubview(calendarView) } private func constraints() { let calendarViewConstraints = [ calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), calendarView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20), calendarView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20) ] NSLayoutConstraint.activate(calendarViewConstraints) } } UICalendarSelectionSingleDateDelegate를 설정하여 날짜 선택시 이모지 표시 import UIKit final class BasicCalendarViewController: UIViewController { /// 현재 선택된 날짜 var selectedDate: DateComponents? = nil // MARK: - UI Conponent /// 날짜별 데코레이션(점, 이모지 등)을 지원하는 캘린더 뷰 private lazy var calendarView: UICalendarView = { let view = UICalendarView() view.locale = Locale(identifier: "ko_KR") view.translatesAutoresizingMaskIntoConstraints = false /// 점이나 뱃지 표시 등 달력 Custom 하기 위해 설정해야 하는 속성 view.wantsDateDecorations = true return view }() override func viewDidLoad() { super.viewDidLoad() self.makeUI() self.constraints() self.setCalendar() } /// 캘린더 delegate 및 날짜 선택 동작 설정 private func setCalendar() { self.calendarView.delegate = self /// 한 번에 한 날짜만 선택 가능 let dateSection = UICalendarSelectionSingleDate(delegate: self) /// 선택 이벤트(날짜 선택 시 콜백)를 BasicCalendarViewController에서 직접 처리하겠다 calendarView.selectionBehavior = dateSection } private func makeUI() { view.backgroundColor = .white view.addSubview(calendarView) } private func constraints() { let calendarViewConstraints = [ calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), calendarView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20), calendarView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20) ] NSLayoutConstraint.activate(calendarViewConstraints) } /// 특정 날짜 셀만 데코레이션 새로고침(이모지 추가) private func reloadDateView(date: Date?) { if date == nil { return } let calendar = Calendar.current calendarView.reloadDecorations(forDateComponents: [calendar.dateComponents([.day, .month, .year], from: date!)], animated: true) } } // MARK: - 캘린더 Delegate extension BasicCalendarViewController: UICalendarViewDelegate, UICalendarSelectionSingleDateDelegate { /// 날짜별 데코레이션 표시 커스텀(필요시 구현) /// 선택된 날자의 셀에 이모지로 커스텀 데코레이션을 보여준다 func calendarView(_ calendarView: UICalendarView, decorationFor dateComponents: DateComponents) -&gt; UICalendarView.Decoration? { if let selectedDate = selectedDate, selectedDate == dateComponents { return .customView { let label = UILabel() label.text = "🐶" label.textAlignment = .center return label } } return nil } /// 날짜 선택 시 동작 func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) { /// selection 객체에 저장 selection.setSelected(dateComponents, animated: true) /// selectedDate 프로퍼티를 업데이트 selectedDate = dateComponents /// 선택한 날짜 셀의 데코레이션만 새로고침(🐶 이모지가 바로 반영되게) reloadDateView(date: Calendar.current.date(from: dateComponents!)) } } 참고: 한국어로 설정해도 시뮬레이터에서는 요일이 영어로 보이는 버그가 있다. 커스텀 캘린더 // // 1. CustomCalendar.swift // UIComponentTutorial // // Created by 김동현 on 6/4/25. // import UIKit import FSCalendar final class CustomCalendarVC: UIViewController { // MARK: - UI Component private lazy var calendarView: FSCalendar = { let calendar = FSCalendar() // 첫 열을 월요일로 설정 calendar.firstWeekday = 2 // week 또는 month 가능 calendar.scope = .month calendar.scrollEnabled = true calendar.locale = Locale(identifier: "ko_KR") // 현재 달의 날짜들만 표기하도록 설정 calendar.placeholderType = .none // 헤더뷰 설정 calendar.headerHeight = 55 calendar.appearance.headerDateFormat = "MM월" calendar.appearance.headerTitleColor = .black // 요일 UI 설정 calendar.appearance.weekdayFont = UIFont.systemFont(ofSize: 17, weight: .light) calendar.appearance.weekdayTextColor = .black // 날짜별 UI 설정 calendar.appearance.titleTodayColor = .white calendar.appearance.titleFont = UIFont.systemFont(ofSize: 16, weight: .light) calendar.appearance.subtitleFont = UIFont.systemFont(ofSize: 10, weight: .light) calendar.appearance.subtitleTodayColor = .systemYellow calendar.appearance.todayColor = .gray // 일요일 라벨의 textColor는 red로 설정 calendar.calendarWeekdayView.weekdayLabels.last!.textColor = .red return calendar }() // MARK: - Life Cycle override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() } // MARK: - UI Setting private func makeUI() { view.backgroundColor = .white view.addSubview(calendarView) calendarView.translatesAutoresizingMaskIntoConstraints = false } private func constraints() { NSLayoutConstraint.activate([ calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0), calendarView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20), calendarView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20), calendarView.heightAnchor.constraint(equalToConstant: 500) ]) } } #Preview { CustomCalendarVC() } Reference https://ohwhatisthis.tistory.com/23 https://maramincho.tistory.com/106 https://dongdida.tistory.com/128 https://velog.io/@xanxnu/iOSSwift-UICalendarView-사용해-보기 https://lsj8706.tistory.com/4]]></summary></entry><entry><title type="html">[Haruhancut] Widget</title><link href="http://localhost:4000/Haruhancut-Widget/" rel="alternate" type="text/html" title="[Haruhancut] Widget" /><published>2025-05-30T00:00:00+00:00</published><updated>2025-05-30T00:00:00+00:00</updated><id>http://localhost:4000/%5BHaruhancut%5D-Widget</id><content type="html" xml:base="http://localhost:4000/Haruhancut-Widget/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h2 id="widget-도입">Widget 도입</h2>
-<p>하루한컷 앱에 위젯을 추가하여 앱의 사진을 위젯으로 보여주려고 한다.</p>
-
-<h2 id="기존-번들-식별자에-app-groups-체크-및-저장">기존 번들 식별자에 App Groups 체크 및 저장</h2>
-<p>Identifiers에서 com.indextrown.Haruhancut를 찾아서 App Groups 체크박스를 추가 및 저장한다.</p>
-
-<h3 id="1-위젯용-번들-식별자-준비">1. 위젯용 번들 식별자 준비</h3>
-<p><img src="/assets/img/2025-05-30-%5BHaruhancut%5D-Widget/image-20250610145644562.png" alt="이미지" width="30%" /><br />
-com.indextrown.Haruhancut.WidgetExtension로 번들 식별자를 만들고 App Groups만 체크해준다.<br />
-이제 프로비저닝 프로파일을 만들건데 편의를 위해 fastlane을 사용하겠다.</p>
-
-<h3 id="2-프로비저닝-프로파일-만들기">2. 프로비저닝 프로파일 만들기</h3>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 기존 프로젝트가 이거면  </span>
-<span class="c"># match Development com.indextrown.Haruhancut</span>
-
-<span class="c"># 위젯은 아래와 같이 프로비저닝 프로파일을 만들어준다.   </span>
-<span class="c"># match Development com.indextrown.Haruhancut.WidgetExtension</span>
-
-<span class="c"># 개발용</span>
-fastlane match development <span class="nt">--app_identifier</span> <span class="s2">"com.indextrown.Haruhancut.WidgetExtension"</span>
-
-<span class="c"># 배포용</span>
-fastlane match appstore <span class="nt">--app_identifier</span> <span class="s2">"com.indextrown.Haruhancut.WidgetExtension"</span>
-
-<span class="c"># ⚠️Provisioning profile "" doesn't include signing ...발생시</span>
-fastlane match development <span class="nt">--force</span>
-fastlane match appstore <span class="nt">--force</span>  
-</code></pre></div></div>
-
-<h3 id="3-widget-extension-생성">3. Widget Extension 생성</h3>
-
-<ul>
-  <li>Targets목록 아래 + 버튼 눌러서 WIdget Extension 생성한다.</li>
-</ul>
-
-<h3 id="4-app-groups-설정">4. App Groups 설정</h3>
-<p>기존 프로젝트와 WIdgetExtension 프로젝트에 각각 App Groups 추가한다.</p>
-
-<h2 id="widgetkit">WidgetKit</h2>
-<ul>
-  <li>iOS 14부터 도입되었으며 SwiftUI로만 구현 가능하다.</li>
-  <li>UIViewRepresentable 불가능하다.</li>
-</ul>
-
-<h3 id="widget-configuration속성-편집에-대한-기능">Widget COnfiguration(속성 편집에 대한 기능)</h3>
-<ul>
-  <li>Static configuration
-    <ul>
-      <li>위젯 편집 항목이 나타나지 않으며, 사용자가 설정을 변경할 수 있는 옵션이 없다.</li>
-    </ul>
-  </li>
-  <li>Intent Configuration
-    <ul>
-      <li>위젯 편집 기능을 통해 여러 Intent 값을 수정할 수 있도록 위젯을 구성할 수 있다.</li>
-      <li>iOS 17부터 AppIntentCOnfiguration으로 변경</li>
-    </ul>
-  </li>
-  <li>Activity Configuration
-    <ul>
-      <li>Live Activity</li>
-    </ul>
-  </li>
-</ul>
-
-<h3 id="widget은-크게-4가지의-struct로-구성">Widget은 크게 4가지의 struct로 구성</h3>
-
-<p><img src="/assets/img/2025-05-30-%5BHaruhancut%5D-Widget/image-20250610173933798.png" alt="이미지" width="30%" /></p>
-
-<ul>
-  <li>Provider에서 사용자가 설정한 시간에 맞춰 위젯을 업데이트할 수 있게 한다</li>
-  <li>Entry에서 위젯에 필요한 데이터를 제공한다</li>
-  <li>EntryView는 Entry를 통해 구성하며, UI를 담당하는 역할과 유사하다</li>
-  <li>Widget에서는 static, intent, activity인지에 따라 최종적인 위젯을 구성한다</li>
-</ul>
-
-<h2 id="reference">Reference</h2>
-<ul>
-  <li>https://velog.io/@s_sub/새싹-iOS-20주차</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Haruhancut" /><summary type="html"><![CDATA[Widget 도입 하루한컷 앱에 위젯을 추가하여 앱의 사진을 위젯으로 보여주려고 한다. 기존 번들 식별자에 App Groups 체크 및 저장 Identifiers에서 com.indextrown.Haruhancut를 찾아서 App Groups 체크박스를 추가 및 저장한다. 1. 위젯용 번들 식별자 준비 com.indextrown.Haruhancut.WidgetExtension로 번들 식별자를 만들고 App Groups만 체크해준다. 이제 프로비저닝 프로파일을 만들건데 편의를 위해 fastlane을 사용하겠다. 2. 프로비저닝 프로파일 만들기 # 기존 프로젝트가 이거면 # match Development com.indextrown.Haruhancut # 위젯은 아래와 같이 프로비저닝 프로파일을 만들어준다. # match Development com.indextrown.Haruhancut.WidgetExtension # 개발용 fastlane match development --app_identifier "com.indextrown.Haruhancut.WidgetExtension" # 배포용 fastlane match appstore --app_identifier "com.indextrown.Haruhancut.WidgetExtension" # ⚠️Provisioning profile "" doesn't include signing ...발생시 fastlane match development --force fastlane match appstore --force 3. Widget Extension 생성 Targets목록 아래 + 버튼 눌러서 WIdget Extension 생성한다. 4. App Groups 설정 기존 프로젝트와 WIdgetExtension 프로젝트에 각각 App Groups 추가한다. WidgetKit iOS 14부터 도입되었으며 SwiftUI로만 구현 가능하다. UIViewRepresentable 불가능하다. Widget COnfiguration(속성 편집에 대한 기능) Static configuration 위젯 편집 항목이 나타나지 않으며, 사용자가 설정을 변경할 수 있는 옵션이 없다. Intent Configuration 위젯 편집 기능을 통해 여러 Intent 값을 수정할 수 있도록 위젯을 구성할 수 있다. iOS 17부터 AppIntentCOnfiguration으로 변경 Activity Configuration Live Activity Widget은 크게 4가지의 struct로 구성 Provider에서 사용자가 설정한 시간에 맞춰 위젯을 업데이트할 수 있게 한다 Entry에서 위젯에 필요한 데이터를 제공한다 EntryView는 Entry를 통해 구성하며, UI를 담당하는 역할과 유사하다 Widget에서는 static, intent, activity인지에 따라 최종적인 위젯을 구성한다 Reference https://velog.io/@s_sub/새싹-iOS-20주차]]></summary></entry><entry><title type="html">[CustomView] Segmented Control 커스텀 with PageViewController</title><link href="http://localhost:4000/CustomView-Segmented-Control2/" rel="alternate" type="text/html" title="[CustomView] Segmented Control 커스텀 with PageViewController" /><published>2025-05-30T00:00:00+00:00</published><updated>2025-05-30T00:00:00+00:00</updated><id>http://localhost:4000/%5BCustomView%5D-Segmented%20Control2</id><content type="html" xml:base="http://localhost:4000/CustomView-Segmented-Control2/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<div style="display: flex; justify-content: center; gap: 20px;">
-  <img src="/assets/img/2025-05-30-%5BCustomView%5D-Segmented%20Control2/image-20250603015019716.png" alt="셀1" width="50%" />
-  <img src="/assets/img/2025-05-30-%5BCustomView%5D-Segmented%20Control2/image-20250603015140369.png" alt="셀2" width="50%" />
-</div>
-
-<h1 id="uikit-세그먼-컨트롤-커스텀-사용법">UIKit 세그먼 컨트롤 커스텀 사용법</h1>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//</span>
-<span class="c1">//  CustomSegmentControlVC.swift</span>
-<span class="c1">//  UIComponentTutorial</span>
-<span class="c1">//</span>
-<span class="c1">//  Created by 김동현 on 6/2/25.</span>
-<span class="c1">//</span>
-
-<span class="kd">import</span> <span class="kt">UIKit</span>
-
-<span class="kd">final</span> <span class="kd">class</span> <span class="kt">CustomSegmentControl</span><span class="p">:</span> <span class="kt">UISegmentedControl</span> <span class="p">{</span>
-
-    <span class="c1">// MARK: - UI</span>
-    <span class="kd">private</span> <span class="k">let</span> <span class="nv">underlineView</span><span class="p">:</span> <span class="kt">UIView</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="kt">UIView</span><span class="p">()</span>
-        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span>
-        <span class="k">return</span> <span class="n">view</span>
-    <span class="p">}()</span>
-    
-    <span class="kd">private</span> <span class="k">var</span> <span class="nv">underlineLeadingConstraint</span><span class="p">:</span> <span class="kt">NSLayoutConstraint</span><span class="o">!</span>
-    <span class="kd">private</span> <span class="k">var</span> <span class="nv">underlineWidthConstraint</span><span class="p">:</span> <span class="kt">NSLayoutConstraint</span><span class="o">!</span>
-    <span class="kd">private</span> <span class="k">let</span> <span class="nv">underlineHeight</span><span class="p">:</span> <span class="kt">CGFloat</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="c1">// 원하는 두께로 변경</span>
-
-    <span class="k">override</span> <span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="kt">CGRect</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="n">frame</span><span class="p">)</span>
-        <span class="nf">setup</span><span class="p">()</span>
-    <span class="p">}</span>
-
-    <span class="k">override</span> <span class="nf">init</span><span class="p">(</span><span class="nv">items</span><span class="p">:</span> <span class="p">[</span><span class="kt">Any</span><span class="p">]?)</span> <span class="p">{</span>
-        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">items</span><span class="p">:</span> <span class="n">items</span><span class="p">)</span>
-        <span class="nf">setup</span><span class="p">()</span>
-    <span class="p">}</span>
-
-    <span class="kd">required</span> <span class="nf">init</span><span class="p">?(</span><span class="nv">coder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nf">fatalError</span><span class="p">(</span><span class="s">"init(coder:) has not been implemented"</span><span class="p">)</span>
-    <span class="p">}</span>
-
-    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">setup</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">self</span><span class="o">.</span><span class="nf">removeBackgroundAndDivider</span><span class="p">()</span>
-
-        <span class="n">underlineView</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span>
-        <span class="n">underlineView</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
-        <span class="n">underlineView</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="nf">addSubview</span><span class="p">(</span><span class="n">underlineView</span><span class="p">)</span>
-        
-        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
-            
-        <span class="p">])</span>
-        
-
-        <span class="c1">// 초기 제약조건</span>
-        <span class="k">let</span> <span class="nv">width</span> <span class="o">=</span> <span class="n">bounds</span><span class="o">.</span><span class="n">width</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">?</span> <span class="n">bounds</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="kt">CGFloat</span><span class="p">(</span><span class="n">numberOfSegments</span><span class="p">)</span> <span class="p">:</span> <span class="mi">0</span>
-        <span class="n">underlineLeadingConstraint</span> <span class="o">=</span> <span class="n">underlineView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">leadingAnchor</span><span class="p">)</span>
-        <span class="n">underlineWidthConstraint</span> <span class="o">=</span> <span class="n">underlineView</span><span class="o">.</span><span class="n">widthAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalToConstant</span><span class="p">:</span> <span class="n">width</span><span class="p">)</span>
-
-        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
-            <span class="n">underlineLeadingConstraint</span><span class="p">,</span>
-            <span class="n">underlineWidthConstraint</span><span class="p">,</span>
-            <span class="n">underlineView</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">bottomAnchor</span><span class="p">),</span>
-            <span class="n">underlineView</span><span class="o">.</span><span class="n">heightAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalToConstant</span><span class="p">:</span> <span class="mi">20</span><span class="p">)</span>
-        <span class="p">])</span>
-    <span class="p">}</span>
-
-    <span class="k">override</span> <span class="kd">func</span> <span class="nf">layoutSubviews</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">super</span><span class="o">.</span><span class="nf">layoutSubviews</span><span class="p">()</span>
-        <span class="c1">// 항상 최신 크기/위치 반영</span>
-        <span class="nf">updateUnderlinePosition</span><span class="p">(</span><span class="nv">animated</span><span class="p">:</span> <span class="kc">false</span><span class="p">)</span>
-    <span class="p">}</span>
-
-    <span class="kd">func</span> <span class="nf">updateUnderlinePosition</span><span class="p">(</span><span class="nv">animated</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">width</span> <span class="o">=</span> <span class="n">bounds</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="kt">CGFloat</span><span class="p">(</span><span class="n">numberOfSegments</span><span class="p">)</span>
-        <span class="k">let</span> <span class="nv">leading</span> <span class="o">=</span> <span class="kt">CGFloat</span><span class="p">(</span><span class="n">selectedSegmentIndex</span><span class="p">)</span> <span class="o">*</span> <span class="n">width</span>
-
-        <span class="n">underlineWidthConstraint</span><span class="o">.</span><span class="n">constant</span> <span class="o">=</span> <span class="n">width</span>
-        <span class="n">underlineLeadingConstraint</span><span class="o">.</span><span class="n">constant</span> <span class="o">=</span> <span class="n">leading</span>
-
-        <span class="k">if</span> <span class="n">animated</span> <span class="p">{</span>
-            <span class="kt">UIView</span><span class="o">.</span><span class="nf">animate</span><span class="p">(</span><span class="nv">withDuration</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">self</span><span class="o">.</span><span class="nf">layoutIfNeeded</span><span class="p">()</span>
-            <span class="p">}</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="k">self</span><span class="o">.</span><span class="nf">layoutIfNeeded</span><span class="p">()</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">removeBackgroundAndDivider</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">image</span> <span class="o">=</span> <span class="kt">UIImage</span><span class="p">()</span>
-        <span class="nf">setBackgroundImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">normal</span><span class="p">,</span> <span class="nv">barMetrics</span><span class="p">:</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span>
-        <span class="nf">setBackgroundImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">selected</span><span class="p">,</span> <span class="nv">barMetrics</span><span class="p">:</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span>
-        <span class="nf">setBackgroundImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">highlighted</span><span class="p">,</span> <span class="nv">barMetrics</span><span class="p">:</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span>
-        <span class="nf">setDividerImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nv">forLeftSegmentState</span><span class="p">:</span> <span class="o">.</span><span class="n">selected</span><span class="p">,</span> <span class="nv">rightSegmentState</span><span class="p">:</span> <span class="o">.</span><span class="n">normal</span><span class="p">,</span> <span class="nv">barMetrics</span><span class="p">:</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-
-
-<span class="kd">final</span> <span class="kd">class</span> <span class="kt">CustomSegmentControlVC</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
-
-    <span class="kd">private</span> <span class="k">let</span> <span class="nv">segmentedControl</span><span class="p">:</span> <span class="kt">UISegmentedControl</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">segment</span> <span class="o">=</span> <span class="kt">UISegmentedControl</span><span class="p">(</span><span class="nv">items</span><span class="p">:</span> <span class="p">[</span><span class="s">"첫번째"</span><span class="p">,</span> <span class="s">"두번째"</span><span class="p">,</span> <span class="s">"세번째"</span><span class="p">])</span>
-        <span class="n">segment</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
-        <span class="n">segment</span><span class="o">.</span><span class="n">selectedSegmentIndex</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="c1">// 스타일 커스텀</span>
-        <span class="n">segment</span><span class="o">.</span><span class="nf">setTitleTextAttributes</span><span class="p">([</span>
-            <span class="kt">NSAttributedString</span><span class="o">.</span><span class="kt">Key</span><span class="o">.</span><span class="nv">foregroundColor</span><span class="p">:</span> <span class="kt">UIColor</span><span class="o">.</span><span class="n">gray</span>
-        <span class="p">],</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">normal</span><span class="p">)</span>
-        <span class="n">segment</span><span class="o">.</span><span class="nf">setTitleTextAttributes</span><span class="p">([</span>
-            <span class="kt">NSAttributedString</span><span class="o">.</span><span class="kt">Key</span><span class="o">.</span><span class="nv">foregroundColor</span><span class="p">:</span> <span class="kt">UIColor</span><span class="o">.</span><span class="n">invertedSystemBackground</span><span class="p">,</span>
-            <span class="o">.</span><span class="nv">font</span><span class="p">:</span> <span class="kt">UIFont</span><span class="o">.</span><span class="nf">systemFont</span><span class="p">(</span><span class="nv">ofSize</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="o">.</span><span class="n">bold</span><span class="p">)</span>
-        <span class="p">],</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">selected</span><span class="p">)</span>
-        <span class="n">segment</span><span class="o">.</span><span class="n">selectedSegmentTintColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">clear</span>
-        <span class="k">let</span> <span class="nv">image</span> <span class="o">=</span> <span class="kt">UIImage</span><span class="p">()</span>
-        <span class="n">segment</span><span class="o">.</span><span class="nf">setBackgroundImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">normal</span><span class="p">,</span> <span class="nv">barMetrics</span><span class="p">:</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span>
-        <span class="n">segment</span><span class="o">.</span><span class="nf">setBackgroundImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">selected</span><span class="p">,</span> <span class="nv">barMetrics</span><span class="p">:</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span>
-        <span class="n">segment</span><span class="o">.</span><span class="nf">setBackgroundImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">highlighted</span><span class="p">,</span> <span class="nv">barMetrics</span><span class="p">:</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span>
-        <span class="n">segment</span><span class="o">.</span><span class="nf">setDividerImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nv">forLeftSegmentState</span><span class="p">:</span> <span class="o">.</span><span class="n">selected</span><span class="p">,</span> <span class="nv">rightSegmentState</span><span class="p">:</span> <span class="o">.</span><span class="n">normal</span><span class="p">,</span> <span class="nv">barMetrics</span><span class="p">:</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">segment</span>
-    <span class="p">}()</span>
-
-    <span class="kd">private</span> <span class="k">let</span> <span class="nv">underlineView</span><span class="p">:</span> <span class="kt">UIView</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="kt">UIView</span><span class="p">()</span>
-        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">invertedSystemBackground</span>
-        <span class="n">view</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">return</span> <span class="n">view</span>
-    <span class="p">}()</span>
-
-    <span class="kd">private</span> <span class="k">let</span> <span class="nv">vc1</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">vc</span> <span class="o">=</span> <span class="kt">UIViewController</span><span class="p">()</span>
-        <span class="n">vc</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">red</span>
-        <span class="k">return</span> <span class="n">vc</span>
-    <span class="p">}()</span>
-    <span class="kd">private</span> <span class="k">let</span> <span class="nv">vc2</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">vc</span> <span class="o">=</span> <span class="kt">UIViewController</span><span class="p">()</span>
-        <span class="n">vc</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">blue</span>
-        <span class="k">return</span> <span class="n">vc</span>
-    <span class="p">}()</span>
-    <span class="kd">private</span> <span class="k">let</span> <span class="nv">vc3</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">vc</span> <span class="o">=</span> <span class="kt">UIViewController</span><span class="p">()</span>
-        <span class="n">vc</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">green</span>
-        <span class="k">return</span> <span class="n">vc</span>
-    <span class="p">}()</span>
-    <span class="k">var</span> <span class="nv">dataViewControllers</span><span class="p">:</span> <span class="p">[</span><span class="kt">UIViewController</span><span class="p">]</span> <span class="p">{</span> <span class="p">[</span><span class="n">vc1</span><span class="p">,</span> <span class="n">vc2</span><span class="p">,</span> <span class="n">vc3</span><span class="p">]</span> <span class="p">}</span>
-
-    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">pageViewController</span><span class="p">:</span> <span class="kt">UIPageViewController</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">vc</span> <span class="o">=</span> <span class="kt">UIPageViewController</span><span class="p">(</span><span class="nv">transitionStyle</span><span class="p">:</span> <span class="o">.</span><span class="n">scroll</span><span class="p">,</span> <span class="nv">navigationOrientation</span><span class="p">:</span> <span class="o">.</span><span class="n">horizontal</span><span class="p">)</span>
-        <span class="n">vc</span><span class="o">.</span><span class="nf">setViewControllers</span><span class="p">([</span><span class="k">self</span><span class="o">.</span><span class="n">dataViewControllers</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="nv">direction</span><span class="p">:</span> <span class="o">.</span><span class="n">forward</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
-        <span class="n">vc</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
-        <span class="n">vc</span><span class="o">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="k">self</span>
-        <span class="n">vc</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
-        <span class="k">return</span> <span class="n">vc</span>
-    <span class="p">}()</span>
-
-    <span class="k">var</span> <span class="nv">currentPage</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">{</span>
-        <span class="k">didSet</span> <span class="p">{</span>
-            <span class="k">let</span> <span class="nv">direction</span><span class="p">:</span> <span class="kt">UIPageViewController</span><span class="o">.</span><span class="kt">NavigationDirection</span> <span class="o">=</span> <span class="n">oldValue</span> <span class="o">&lt;=</span> <span class="k">self</span><span class="o">.</span><span class="n">currentPage</span> <span class="p">?</span> <span class="o">.</span><span class="nv">forward</span> <span class="p">:</span> <span class="o">.</span><span class="n">reverse</span>
-            <span class="k">self</span><span class="o">.</span><span class="n">pageViewController</span><span class="o">.</span><span class="nf">setViewControllers</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">dataViewControllers</span><span class="p">[</span><span class="k">self</span><span class="o">.</span><span class="n">currentPage</span><span class="p">]],</span>
-                <span class="nv">direction</span><span class="p">:</span> <span class="n">direction</span><span class="p">,</span>
-                <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-                <span class="nv">completion</span><span class="p">:</span> <span class="kc">nil</span>
-            <span class="p">)</span>
-            <span class="nf">moveUnderline</span><span class="p">(</span><span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="k">self</span><span class="o">.</span><span class="n">segmentedControl</span><span class="p">)</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="k">self</span><span class="o">.</span><span class="n">underlineView</span><span class="p">)</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="k">self</span><span class="o">.</span><span class="n">pageViewController</span><span class="o">.</span><span class="n">view</span><span class="p">)</span>
-
-        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
-            <span class="n">segmentedControl</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">),</span>
-            <span class="n">segmentedControl</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">),</span>
-            <span class="n">segmentedControl</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">80</span><span class="p">),</span>
-            <span class="n">segmentedControl</span><span class="o">.</span><span class="n">heightAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalToConstant</span><span class="p">:</span> <span class="mi">50</span><span class="p">),</span>
-
-            <span class="n">pageViewController</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">),</span>
-            <span class="n">pageViewController</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">),</span>
-            <span class="n">pageViewController</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">),</span>
-            <span class="n">pageViewController</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">segmentedControl</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">),</span>
-        <span class="p">])</span>
-
-        <span class="c1">// 언더라인의 높이와 최초 위치 설정 (width, x는 viewDidLayoutSubviews에서)</span>
-        <span class="n">underlineView</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="kt">CGRect</span><span class="p">(</span><span class="nv">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">width</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">height</span><span class="p">:</span> <span class="mi">4</span><span class="p">)</span>
-
-        <span class="n">segmentedControl</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="nf">changeValue</span><span class="p">(</span><span class="nv">control</span><span class="p">:)),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">valueChanged</span><span class="p">)</span>
-        <span class="n">segmentedControl</span><span class="o">.</span><span class="n">selectedSegmentIndex</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="nf">changeValue</span><span class="p">(</span><span class="nv">control</span><span class="p">:</span> <span class="n">segmentedControl</span><span class="p">)</span>
-    <span class="p">}</span>
-
-    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLayoutSubviews</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLayoutSubviews</span><span class="p">()</span>
-        <span class="c1">// 최초 렌더링 시 언더라인 위치 정확히 세팅</span>
-        <span class="nf">moveUnderline</span><span class="p">(</span><span class="nv">animated</span><span class="p">:</span> <span class="kc">false</span><span class="p">)</span>
-        <span class="c1">// 언더라인의 y위치를 세그먼트 하단에 맞추기</span>
-        <span class="k">let</span> <span class="nv">segFrame</span> <span class="o">=</span> <span class="n">segmentedControl</span><span class="o">.</span><span class="n">frame</span>
-        <span class="n">underlineView</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">origin</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">segFrame</span><span class="o">.</span><span class="n">maxY</span> <span class="o">-</span> <span class="mi">4</span>
-        <span class="n">underlineView</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">size</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">4</span>
-    <span class="p">}</span>
-
-    <span class="kd">@objc</span> <span class="kd">private</span> <span class="kd">func</span> <span class="nf">changeValue</span><span class="p">(</span><span class="nv">control</span><span class="p">:</span> <span class="kt">UISegmentedControl</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">currentPage</span> <span class="o">=</span> <span class="n">control</span><span class="o">.</span><span class="n">selectedSegmentIndex</span>
-    <span class="p">}</span>
-
-    <span class="c1">/// 언더라인 이동 (frame 연산)</span>
-    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">moveUnderline</span><span class="p">(</span><span class="nv">animated</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">segFrame</span> <span class="o">=</span> <span class="n">segmentedControl</span><span class="o">.</span><span class="n">frame</span>
-        <span class="k">let</span> <span class="nv">segmentCount</span> <span class="o">=</span> <span class="kt">CGFloat</span><span class="p">(</span><span class="n">segmentedControl</span><span class="o">.</span><span class="n">numberOfSegments</span><span class="p">)</span>
-        <span class="k">let</span> <span class="nv">segmentWidth</span> <span class="o">=</span> <span class="n">segFrame</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="n">segmentCount</span>
-        <span class="k">let</span> <span class="nv">targetX</span> <span class="o">=</span> <span class="n">segFrame</span><span class="o">.</span><span class="n">minX</span> <span class="o">+</span> <span class="n">segmentWidth</span> <span class="o">*</span> <span class="kt">CGFloat</span><span class="p">(</span><span class="n">segmentedControl</span><span class="o">.</span><span class="n">selectedSegmentIndex</span><span class="p">)</span>
-
-        <span class="k">let</span> <span class="nv">newFrame</span> <span class="o">=</span> <span class="kt">CGRect</span><span class="p">(</span><span class="nv">x</span><span class="p">:</span> <span class="n">targetX</span><span class="p">,</span>
-                              <span class="nv">y</span><span class="p">:</span> <span class="n">segFrame</span><span class="o">.</span><span class="n">maxY</span> <span class="o">-</span> <span class="mi">4</span><span class="p">,</span>
-                              <span class="nv">width</span><span class="p">:</span> <span class="n">segmentWidth</span><span class="p">,</span>
-                              <span class="nv">height</span><span class="p">:</span> <span class="mi">4</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">animated</span> <span class="p">{</span>
-            <span class="kt">UIView</span><span class="o">.</span><span class="nf">animate</span><span class="p">(</span><span class="nv">withDuration</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">self</span><span class="o">.</span><span class="n">underlineView</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">newFrame</span>
-            <span class="p">}</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="k">self</span><span class="o">.</span><span class="n">underlineView</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">newFrame</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="kd">extension</span> <span class="kt">CustomSegmentControlVC</span><span class="p">:</span> <span class="kt">UIPageViewControllerDataSource</span><span class="p">,</span> <span class="kt">UIPageViewControllerDelegate</span> <span class="p">{</span>
-    <span class="kd">func</span> <span class="nf">pageViewController</span><span class="p">(</span><span class="n">_</span> <span class="nv">pageViewController</span><span class="p">:</span> <span class="kt">UIPageViewController</span><span class="p">,</span> <span class="n">viewControllerBefore</span> <span class="nv">viewController</span><span class="p">:</span> <span class="kt">UIViewController</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UIViewController</span><span class="p">?</span> <span class="p">{</span>
-        <span class="k">guard</span> <span class="k">let</span> <span class="nv">index</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">dataViewControllers</span><span class="o">.</span><span class="nf">firstIndex</span><span class="p">(</span><span class="nv">of</span><span class="p">:</span> <span class="n">viewController</span><span class="p">),</span> <span class="n">index</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="kc">nil</span> <span class="p">}</span>
-        <span class="k">return</span> <span class="k">self</span><span class="o">.</span><span class="n">dataViewControllers</span><span class="p">[</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-    <span class="p">}</span>
-    <span class="kd">func</span> <span class="nf">pageViewController</span><span class="p">(</span><span class="n">_</span> <span class="nv">pageViewController</span><span class="p">:</span> <span class="kt">UIPageViewController</span><span class="p">,</span> <span class="n">viewControllerAfter</span> <span class="nv">viewController</span><span class="p">:</span> <span class="kt">UIViewController</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UIViewController</span><span class="p">?</span> <span class="p">{</span>
-        <span class="k">guard</span> <span class="k">let</span> <span class="nv">index</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">dataViewControllers</span><span class="o">.</span><span class="nf">firstIndex</span><span class="p">(</span><span class="nv">of</span><span class="p">:</span> <span class="n">viewController</span><span class="p">),</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="k">self</span><span class="o">.</span><span class="n">dataViewControllers</span><span class="o">.</span><span class="n">count</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="kc">nil</span> <span class="p">}</span>
-        <span class="k">return</span> <span class="k">self</span><span class="o">.</span><span class="n">dataViewControllers</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
-    <span class="p">}</span>
-    <span class="kd">func</span> <span class="nf">pageViewController</span><span class="p">(</span><span class="n">_</span> <span class="nv">pageViewController</span><span class="p">:</span> <span class="kt">UIPageViewController</span><span class="p">,</span> <span class="n">didFinishAnimating</span> <span class="nv">finished</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">,</span> <span class="nv">previousViewControllers</span><span class="p">:</span> <span class="p">[</span><span class="kt">UIViewController</span><span class="p">],</span> <span class="n">transitionCompleted</span> <span class="nv">completed</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">guard</span> <span class="k">let</span> <span class="nv">viewController</span> <span class="o">=</span> <span class="n">pageViewController</span><span class="o">.</span><span class="n">viewControllers</span><span class="p">?[</span><span class="mi">0</span><span class="p">],</span> <span class="k">let</span> <span class="nv">index</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">dataViewControllers</span><span class="o">.</span><span class="nf">firstIndex</span><span class="p">(</span><span class="nv">of</span><span class="p">:</span> <span class="n">viewController</span><span class="p">)</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">currentPage</span> <span class="o">=</span> <span class="n">index</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">segmentedControl</span><span class="o">.</span><span class="n">selectedSegmentIndex</span> <span class="o">=</span> <span class="n">index</span>
-        <span class="k">self</span><span class="o">.</span><span class="nf">moveUnderline</span><span class="p">(</span><span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="cp">#Preview {</span>
-    <span class="kt">CustomSegmentControlVC</span><span class="p">()</span>
-<span class="p">}</span>
-
-<span class="kd">extension</span> <span class="kt">UIColor</span> <span class="p">{</span>
-    <span class="kd">static</span> <span class="k">var</span> <span class="nv">invertedSystemBackground</span><span class="p">:</span> <span class="kt">UIColor</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="kt">UIColor</span> <span class="p">{</span> <span class="n">traitCollection</span> <span class="k">in</span>
-            <span class="k">switch</span> <span class="n">traitCollection</span><span class="o">.</span><span class="n">userInterfaceStyle</span> <span class="p">{</span>
-            <span class="k">case</span> <span class="o">.</span><span class="nv">dark</span><span class="p">:</span>
-                <span class="c1">// 다크 모드에서는 밝은 배경색</span>
-                <span class="k">return</span> <span class="o">.</span><span class="n">white</span>
-            <span class="k">default</span><span class="p">:</span>
-                <span class="c1">// 라이트 모드에서는 어두운 배경색</span>
-                <span class="k">return</span> <span class="o">.</span><span class="n">black</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-</code></pre></div></div>
-
-<h2 id="reference">Reference</h2>
-<ul>
-  <li>https://ios-development.tistory.com/963</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="CustomView" /><summary type="html"><![CDATA[UIKit 세그먼 컨트롤 커스텀 사용법 // // CustomSegmentControlVC.swift // UIComponentTutorial // // Created by 김동현 on 6/2/25. // import UIKit final class CustomSegmentControl: UISegmentedControl { // MARK: - UI private let underlineView: UIView = { let view = UIView() view.backgroundColor = .black return view }() private var underlineLeadingConstraint: NSLayoutConstraint! private var underlineWidthConstraint: NSLayoutConstraint! private let underlineHeight: CGFloat = 4.0 // 원하는 두께로 변경 override init(frame: CGRect) { super.init(frame: frame) setup() } override init(items: [Any]?) { super.init(items: items) setup() } required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") } private func setup() { self.removeBackgroundAndDivider() underlineView.backgroundColor = .black underlineView.translatesAutoresizingMaskIntoConstraints = false underlineView.layer.cornerRadius = 0 addSubview(underlineView) NSLayoutConstraint.activate([ ]) // 초기 제약조건 let width = bounds.width &gt; 0 ? bounds.width / CGFloat(numberOfSegments) : 0 underlineLeadingConstraint = underlineView.leadingAnchor.constraint(equalTo: leadingAnchor) underlineWidthConstraint = underlineView.widthAnchor.constraint(equalToConstant: width) NSLayoutConstraint.activate([ underlineLeadingConstraint, underlineWidthConstraint, underlineView.bottomAnchor.constraint(equalTo: bottomAnchor), underlineView.heightAnchor.constraint(equalToConstant: 20) ]) } override func layoutSubviews() { super.layoutSubviews() // 항상 최신 크기/위치 반영 updateUnderlinePosition(animated: false) } func updateUnderlinePosition(animated: Bool = true) { let width = bounds.width / CGFloat(numberOfSegments) let leading = CGFloat(selectedSegmentIndex) * width underlineWidthConstraint.constant = width underlineLeadingConstraint.constant = leading if animated { UIView.animate(withDuration: 0.15) { self.layoutIfNeeded() } } else { self.layoutIfNeeded() } } private func removeBackgroundAndDivider() { let image = UIImage() setBackgroundImage(image, for: .normal, barMetrics: .default) setBackgroundImage(image, for: .selected, barMetrics: .default) setBackgroundImage(image, for: .highlighted, barMetrics: .default) setDividerImage(image, forLeftSegmentState: .selected, rightSegmentState: .normal, barMetrics: .default) } } final class CustomSegmentControlVC: UIViewController { private let segmentedControl: UISegmentedControl = { let segment = UISegmentedControl(items: ["첫번째", "두번째", "세번째"]) segment.translatesAutoresizingMaskIntoConstraints = false segment.selectedSegmentIndex = 0 // 스타일 커스텀 segment.setTitleTextAttributes([ NSAttributedString.Key.foregroundColor: UIColor.gray ], for: .normal) segment.setTitleTextAttributes([ NSAttributedString.Key.foregroundColor: UIColor.invertedSystemBackground, .font: UIFont.systemFont(ofSize: 15, weight: .bold) ], for: .selected) segment.selectedSegmentTintColor = .clear let image = UIImage() segment.setBackgroundImage(image, for: .normal, barMetrics: .default) segment.setBackgroundImage(image, for: .selected, barMetrics: .default) segment.setBackgroundImage(image, for: .highlighted, barMetrics: .default) segment.setDividerImage(image, forLeftSegmentState: .selected, rightSegmentState: .normal, barMetrics: .default) return segment }() private let underlineView: UIView = { let view = UIView() view.backgroundColor = .invertedSystemBackground view.layer.cornerRadius = 0 return view }() private let vc1: UIViewController = { let vc = UIViewController() vc.view.backgroundColor = .red return vc }() private let vc2: UIViewController = { let vc = UIViewController() vc.view.backgroundColor = .blue return vc }() private let vc3: UIViewController = { let vc = UIViewController() vc.view.backgroundColor = .green return vc }() var dataViewControllers: [UIViewController] { [vc1, vc2, vc3] } private lazy var pageViewController: UIPageViewController = { let vc = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal) vc.setViewControllers([self.dataViewControllers[0]], direction: .forward, animated: true) vc.delegate = self vc.dataSource = self vc.view.translatesAutoresizingMaskIntoConstraints = false return vc }() var currentPage: Int = 0 { didSet { let direction: UIPageViewController.NavigationDirection = oldValue &lt;= self.currentPage ? .forward : .reverse self.pageViewController.setViewControllers( [dataViewControllers[self.currentPage]], direction: direction, animated: true, completion: nil ) moveUnderline(animated: true) } } override func viewDidLoad() { super.viewDidLoad() self.view.addSubview(self.segmentedControl) self.view.addSubview(self.underlineView) self.view.addSubview(self.pageViewController.view) NSLayoutConstraint.activate([ segmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor), segmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor), segmentedControl.topAnchor.constraint(equalTo: view.topAnchor, constant: 80), segmentedControl.heightAnchor.constraint(equalToConstant: 50), pageViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor), pageViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor), pageViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor), pageViewController.view.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor), ]) // 언더라인의 높이와 최초 위치 설정 (width, x는 viewDidLayoutSubviews에서) underlineView.frame = CGRect(x: 0, y: 0, width: 0, height: 4) segmentedControl.addTarget(self, action: #selector(changeValue(control:)), for: .valueChanged) segmentedControl.selectedSegmentIndex = 0 changeValue(control: segmentedControl) } override func viewDidLayoutSubviews() { super.viewDidLayoutSubviews() // 최초 렌더링 시 언더라인 위치 정확히 세팅 moveUnderline(animated: false) // 언더라인의 y위치를 세그먼트 하단에 맞추기 let segFrame = segmentedControl.frame underlineView.frame.origin.y = segFrame.maxY - 4 underlineView.frame.size.height = 4 } @objc private func changeValue(control: UISegmentedControl) { self.currentPage = control.selectedSegmentIndex } /// 언더라인 이동 (frame 연산) private func moveUnderline(animated: Bool) { let segFrame = segmentedControl.frame let segmentCount = CGFloat(segmentedControl.numberOfSegments) let segmentWidth = segFrame.width / segmentCount let targetX = segFrame.minX + segmentWidth * CGFloat(segmentedControl.selectedSegmentIndex) let newFrame = CGRect(x: targetX, y: segFrame.maxY - 4, width: segmentWidth, height: 4) if animated { UIView.animate(withDuration: 0.2) { self.underlineView.frame = newFrame } } else { self.underlineView.frame = newFrame } } } extension CustomSegmentControlVC: UIPageViewControllerDataSource, UIPageViewControllerDelegate { func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -&gt; UIViewController? { guard let index = self.dataViewControllers.firstIndex(of: viewController), index - 1 &gt;= 0 else { return nil } return self.dataViewControllers[index - 1] } func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -&gt; UIViewController? { guard let index = self.dataViewControllers.firstIndex(of: viewController), index + 1 &lt; self.dataViewControllers.count else { return nil } return self.dataViewControllers[index + 1] } func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) { guard let viewController = pageViewController.viewControllers?[0], let index = self.dataViewControllers.firstIndex(of: viewController) else { return } self.currentPage = index self.segmentedControl.selectedSegmentIndex = index self.moveUnderline(animated: true) } } #Preview { CustomSegmentControlVC() } extension UIColor { static var invertedSystemBackground: UIColor { return UIColor { traitCollection in switch traitCollection.userInterfaceStyle { case .dark: // 다크 모드에서는 밝은 배경색 return .white default: // 라이트 모드에서는 어두운 배경색 return .black } } } } Reference https://ios-development.tistory.com/963]]></summary></entry><entry><title type="html">[Ubuntu] 우분투 원격 서버 설정</title><link href="http://localhost:4000/Ubuntu-Ubuntu1/" rel="alternate" type="text/html" title="[Ubuntu] 우분투 원격 서버 설정" /><published>2025-05-29T00:00:00+00:00</published><updated>2025-05-29T00:00:00+00:00</updated><id>http://localhost:4000/%5BUbuntu%5D-Ubuntu1</id><content type="html" xml:base="http://localhost:4000/Ubuntu-Ubuntu1/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h1 id="우분투-원격-서버-설정">우분투 원격 서버 설정</h1>
-
-<p><a href="http://172.30.1.254:8899">kt 공유기 링크</a><br />
-장치설정 -&gt; 트래픽 관리 -&gt; 포트포워딩 추가</p>
-
-<p><img src="/assets/img/2025-05-28-%5BUbuntu%5D-Ubuntu1/image-20250529234134757.png" alt="이미지" width="30%" /></p>
-
-<h2 id="cui-세팅-및-접속">CUI 세팅 및 접속</h2>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt update
-<span class="nb">sudo </span>apt <span class="nb">install </span>openssh-server
-
-<span class="c"># 직접 실행</span>
-<span class="nb">sudo </span>systemctl start ssh
-
-<span class="c"># 부팅 시 자동 실행</span>
-<span class="nb">sudo </span>systemctl <span class="nb">enable </span>ssh
-
-<span class="c"># 서버 접속</span>
-ssh 로그인유저@링크 <span class="nt">-p</span> 포트번호  
-</code></pre></div></div>
-
-<h2 id="gui-세틸-및-접속">GUI 세틸 및 접속</h2>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># xrdp, xfce4, lightdm</span>
-<span class="nb">sudo </span>apt update
-<span class="nb">sudo </span>apt <span class="nb">install </span>xrdp xfce4 lightdm <span class="nt">-y</span>
-
-<span class="c"># .xsession 파일 재설정</span>
-<span class="nb">echo</span> <span class="s2">"startxfce4"</span> <span class="o">&gt;</span> ~/.xsession
-<span class="nb">chmod</span> +x ~/.xsession
-
-<span class="c"># 권한/세션 파일 정리</span>
-<span class="nb">rm</span> <span class="nt">-f</span> ~/.Xauthority ~/.ICEauthority
-
-<span class="c"># xrdp 서비스 재시작</span>
-<span class="nb">sudo </span>systemctl restart xrdp
-
-<span class="c"># lightdm 디스플레이 매니저로 고정</span>
-<span class="nb">sudo </span>dpkg-reconfigure lightdm
-
-<span class="c"># Windows APP 프로그램으로 GUI 접속 진행</span>
-</code></pre></div></div>
-
-<h2 id="우분투-wake-on-lan-설정">우분투 wake on lan 설정</h2>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ethtool 설치</span>
-<span class="nb">sudo </span>apt update
-<span class="nb">sudo </span>apt <span class="nb">install </span>ethtool <span class="nt">-y</span>
-
-<span class="c"># 현재 설정 확인 (유선 NIC명 확인, 예: enp1s0) -&gt; enp1s0, eth0 등 유선랜 이름 확인</span>
-ip <span class="nb">link</span>
-
-<span class="c"># "Wake-on: g" 라고 나오면 WOL 지원</span>
-<span class="nb">sudo </span>ethtool enp1s0
-
-<span class="c"># d로 되있으면 wake on lan 활성화</span>
-<span class="nb">sudo </span>ethtool <span class="nt">-s</span> enp1s0 wol g
-<span class="nb">sudo </span>ethtool enp1s0
-
-<span class="c"># 재부팅 시 자동으로 WOL이 켜지도록,</span>
-<span class="nb">sudo </span>nmcli connection show
-
-<span class="c"># NAME            UUID                                  TYPE      DEVICE </span>
-<span class="c"># netplan-enp1s0  cac41fbe-bc18-3d87-bba7-af2af7f8ffab  ethernet  enp1s0 </span>
-<span class="c"># lo              5ee3992e-8232-483a-88d7-6cf21f44d700  loopback  lo     </span>
-
-<span class="c"># 아래 명령어를 입력</span>
-<span class="nb">sudo </span>nmcli connection modify <span class="s2">"netplan-enp1s0"</span> 802-3-ethernet.wake-on-lan magic
-<span class="nb">sudo </span>systemctl restart NetworkManager
-
-
-
-
-</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Xcode" /><summary type="html"><![CDATA[우분투 원격 서버 설정 kt 공유기 링크 장치설정 -&gt; 트래픽 관리 -&gt; 포트포워딩 추가 CUI 세팅 및 접속 sudo apt update sudo apt install openssh-server # 직접 실행 sudo systemctl start ssh # 부팅 시 자동 실행 sudo systemctl enable ssh # 서버 접속 ssh 로그인유저@링크 -p 포트번호 GUI 세틸 및 접속 # xrdp, xfce4, lightdm sudo apt update sudo apt install xrdp xfce4 lightdm -y # .xsession 파일 재설정 echo "startxfce4" &gt; ~/.xsession chmod +x ~/.xsession # 권한/세션 파일 정리 rm -f ~/.Xauthority ~/.ICEauthority # xrdp 서비스 재시작 sudo systemctl restart xrdp # lightdm 디스플레이 매니저로 고정 sudo dpkg-reconfigure lightdm # Windows APP 프로그램으로 GUI 접속 진행 우분투 wake on lan 설정 # ethtool 설치 sudo apt update sudo apt install ethtool -y # 현재 설정 확인 (유선 NIC명 확인, 예: enp1s0) -&gt; enp1s0, eth0 등 유선랜 이름 확인 ip link # "Wake-on: g" 라고 나오면 WOL 지원 sudo ethtool enp1s0 # d로 되있으면 wake on lan 활성화 sudo ethtool -s enp1s0 wol g sudo ethtool enp1s0 # 재부팅 시 자동으로 WOL이 켜지도록, sudo nmcli connection show # NAME UUID TYPE DEVICE # netplan-enp1s0 cac41fbe-bc18-3d87-bba7-af2af7f8ffab ethernet enp1s0 # lo 5ee3992e-8232-483a-88d7-6cf21f44d700 loopback lo # 아래 명령어를 입력 sudo nmcli connection modify "netplan-enp1s0" 802-3-ethernet.wake-on-lan magic sudo systemctl restart NetworkManager]]></summary></entry><entry><title type="html">[Xcode] 라이브러리 설치 에러 해결</title><link href="http://localhost:4000/Xcode-XcodeError/" rel="alternate" type="text/html" title="[Xcode] 라이브러리 설치 에러 해결" /><published>2025-05-28T00:00:00+00:00</published><updated>2025-05-28T00:00:00+00:00</updated><id>http://localhost:4000/%5BXcode%5D-XcodeError</id><content type="html" xml:base="http://localhost:4000/Xcode-XcodeError/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h1 id="해결법">해결법</h1>
-
-<p>✅ Package.resolved 삭제 명령어<br />
-rm -f ./Package.resolved<br />
-rm -f ./EUMMEYO.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved<br />
-두 파일이 둘 다 존재할 수 있으니, 둘 다 삭제하는 게 좋습니다.<br />
-✅ 이후 조치<br />
-Xcode 완전히 종료 (⌘ + Q)<br />
-다시 Xcode 실행<br />
-메뉴에서 → File → Packages → Resolve Package Versions 선택<br />
-🔁 그래도 안 되면?<br />
-Xcode &gt; Preferences &gt; Locations &gt; DerivedData 열기 → 전체 삭제<br />
-또는 터미널에서:<br />
-rm -rf ~/Library/Developer/Xcode/DerivedData</p>]]></content><author><name>Dong Hyeon</name></author><category term="Xcode" /><summary type="html"><![CDATA[해결법 ✅ Package.resolved 삭제 명령어 rm -f ./Package.resolved rm -f ./EUMMEYO.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved 두 파일이 둘 다 존재할 수 있으니, 둘 다 삭제하는 게 좋습니다. ✅ 이후 조치 Xcode 완전히 종료 (⌘ + Q) 다시 Xcode 실행 메뉴에서 → File → Packages → Resolve Package Versions 선택 🔁 그래도 안 되면? Xcode &gt; Preferences &gt; Locations &gt; DerivedData 열기 → 전체 삭제 또는 터미널에서: rm -rf ~/Library/Developer/Xcode/DerivedData]]></summary></entry></feed>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="CustomView" /><summary type="html"><![CDATA[iOS 16부터 기본 제공되는 캘린더 기본 캘린더 import UIKit final class BasicCalendarViewController: UIViewController { // MARK: - UI Conponent private lazy var calendarView: UICalendarView = { let view = UICalendarView() view.translatesAutoresizingMaskIntoConstraints = false /// 점이나 뱃지 표시 등 달력 Custom 하기 위해 설정해야 하는 속성 view.wantsDateDecorations = true return view }() override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() } private func makeUI() { view.backgroundColor = .white view.addSubview(calendarView) } private func constraints() { let calendarViewConstraints = [ calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), calendarView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20), calendarView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20) ] NSLayoutConstraint.activate(calendarViewConstraints) } } UICalendarSelectionSingleDateDelegate를 설정하여 날짜 선택시 이모지 표시 import UIKit final class BasicCalendarViewController: UIViewController { /// 현재 선택된 날짜 var selectedDate: DateComponents? = nil // MARK: - UI Conponent /// 날짜별 데코레이션(점, 이모지 등)을 지원하는 캘린더 뷰 private lazy var calendarView: UICalendarView = { let view = UICalendarView() view.locale = Locale(identifier: "ko_KR") view.translatesAutoresizingMaskIntoConstraints = false /// 점이나 뱃지 표시 등 달력 Custom 하기 위해 설정해야 하는 속성 view.wantsDateDecorations = true return view }() override func viewDidLoad() { super.viewDidLoad() self.makeUI() self.constraints() self.setCalendar() } /// 캘린더 delegate 및 날짜 선택 동작 설정 private func setCalendar() { self.calendarView.delegate = self /// 한 번에 한 날짜만 선택 가능 let dateSection = UICalendarSelectionSingleDate(delegate: self) /// 선택 이벤트(날짜 선택 시 콜백)를 BasicCalendarViewController에서 직접 처리하겠다 calendarView.selectionBehavior = dateSection } private func makeUI() { view.backgroundColor = .white view.addSubview(calendarView) } private func constraints() { let calendarViewConstraints = [ calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), calendarView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20), calendarView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20) ] NSLayoutConstraint.activate(calendarViewConstraints) } /// 특정 날짜 셀만 데코레이션 새로고침(이모지 추가) private func reloadDateView(date: Date?) { if date == nil { return } let calendar = Calendar.current calendarView.reloadDecorations(forDateComponents: [calendar.dateComponents([.day, .month, .year], from: date!)], animated: true) } } // MARK: - 캘린더 Delegate extension BasicCalendarViewController: UICalendarViewDelegate, UICalendarSelectionSingleDateDelegate { /// 날짜별 데코레이션 표시 커스텀(필요시 구현) /// 선택된 날자의 셀에 이모지로 커스텀 데코레이션을 보여준다 func calendarView(_ calendarView: UICalendarView, decorationFor dateComponents: DateComponents) -&gt; UICalendarView.Decoration? { if let selectedDate = selectedDate, selectedDate == dateComponents { return .customView { let label = UILabel() label.text = "🐶" label.textAlignment = .center return label } } return nil } /// 날짜 선택 시 동작 func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) { /// selection 객체에 저장 selection.setSelected(dateComponents, animated: true) /// selectedDate 프로퍼티를 업데이트 selectedDate = dateComponents /// 선택한 날짜 셀의 데코레이션만 새로고침(🐶 이모지가 바로 반영되게) reloadDateView(date: Calendar.current.date(from: dateComponents!)) } } 참고: 한국어로 설정해도 시뮬레이터에서는 요일이 영어로 보이는 버그가 있다. 커스텀 캘린더 // // 1. CustomCalendar.swift // UIComponentTutorial // // Created by 김동현 on 6/4/25. // import UIKit import FSCalendar final class CustomCalendarVC: UIViewController { // MARK: - UI Component private lazy var calendarView: FSCalendar = { let calendar = FSCalendar() // 첫 열을 월요일로 설정 calendar.firstWeekday = 2 // week 또는 month 가능 calendar.scope = .month calendar.scrollEnabled = true calendar.locale = Locale(identifier: "ko_KR") // 현재 달의 날짜들만 표기하도록 설정 calendar.placeholderType = .none // 헤더뷰 설정 calendar.headerHeight = 55 calendar.appearance.headerDateFormat = "MM월" calendar.appearance.headerTitleColor = .black // 요일 UI 설정 calendar.appearance.weekdayFont = UIFont.systemFont(ofSize: 17, weight: .light) calendar.appearance.weekdayTextColor = .black // 날짜별 UI 설정 calendar.appearance.titleTodayColor = .white calendar.appearance.titleFont = UIFont.systemFont(ofSize: 16, weight: .light) calendar.appearance.subtitleFont = UIFont.systemFont(ofSize: 10, weight: .light) calendar.appearance.subtitleTodayColor = .systemYellow calendar.appearance.todayColor = .gray // 일요일 라벨의 textColor는 red로 설정 calendar.calendarWeekdayView.weekdayLabels.last!.textColor = .red return calendar }() // MARK: - Life Cycle override func viewDidLoad() { super.viewDidLoad() makeUI() constraints() } // MARK: - UI Setting private func makeUI() { view.backgroundColor = .white view.addSubview(calendarView) calendarView.translatesAutoresizingMaskIntoConstraints = false } private func constraints() { NSLayoutConstraint.activate([ calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0), calendarView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20), calendarView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20), calendarView.heightAnchor.constraint(equalToConstant: 500) ]) } } #Preview { CustomCalendarVC() } Reference https://ohwhatisthis.tistory.com/23 https://maramincho.tistory.com/106 https://dongdida.tistory.com/128 https://velog.io/@xanxnu/iOSSwift-UICalendarView-사용해-보기 https://lsj8706.tistory.com/4]]></summary></entry></feed>
