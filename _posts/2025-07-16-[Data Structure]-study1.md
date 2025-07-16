@@ -10,7 +10,8 @@ typora-root-url: ../
 <!-- <img src="{{ '이미지경로' | relative_url }}" alt="이미지" width="30%"> -->
 
 ## 자료구조(Data Structure)
-데이터를 효율적으로 저장하고 관리하는 방식을 말한다.
+데이터를 효율적으로 저장하고 관리하는 방식을 말한다.  
+대량의 데이터를 효율적으로 관리할 수 있는 데이터 구조를 의미한다.  
 삽입, 수정, 삭제, 검색, 정렬, 병합, 순회 등 기본 연산을 지원하고   
 데이터를 표현하고 조작하는 데 핵심적인 역할을 한다.
 
@@ -31,3 +32,4 @@ typora-root-url: ../
 - https://bnzn2426.tistory.com/115
 - https://developer-haru.tistory.com/70
 - https://wikidocs.net/224929
+- https://velog.io/@ghldjfldj/자료구조-자료구조란
