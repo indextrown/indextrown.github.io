@@ -1,7 +1,7 @@
 ---
-title: ""
+title: "[Data Structure] 1. 자료구조와 알고리즘"
 tags:
-- 
+- Data Structure
 header:
   teaser:
 typora-root-url: ../
