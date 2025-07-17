@@ -11,6 +11,10 @@ update:
 
 # make 파일명 → _posts/2025-07-16-파일명.md 생성
 %:
+	@if echo "$@" | grep -q "_site"; then \
+		echo "❌ 금지된 경로입니다: $@"; \
+		exit 1; \
+	fi
 	@mkdir -p _posts
 	@FILENAME="_posts/$(DATE)-$@.md"; \
 	echo '---'                             >  $$FILENAME; \
