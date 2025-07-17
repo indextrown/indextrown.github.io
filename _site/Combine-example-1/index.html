@@ -10,7 +10,7 @@
     <meta charset="utf-8">
 
 <!-- begin _includes/seo.html --><title>[Combine] 예제 1 - DongHyeon Kim’s Blog</title>
-<meta name="description" content="Combine 예제   1. scrollView 추가 및 상하좌우 제약 0 설정    2. UIView 추가 및 추가한 UIView를 Content Layout Guide에 드래그하여 상하좌우 제약 0 설정    UIView를 Frame Layout Guide로 드래그해서 Equal Width 해주자   size inspactor에서 width(가로막대) 더블 클릭 -&gt; Proportional Widt~ 클릭 -&gt; Multiplier를 1로 설정   이상태에서 빨간 오류 뜨는 이유는 View에 대한 내용물이 없어서 즉 크기가 없어서 그렇다      3. View에 Vertical Stack View 생성    Stack View를 View로 드래그하여 상하좌우 제약 0으로 설정   vertical stack에서 가로 크기를 꽉 채우기 위해 alighment는 fill 설정   vertical stack에서 내용물을 동일하게 분배시키기 위해 fill equally 설정   spacing 20 설정   이제 크기가 있는 애를 스택뷰에 넣으면 오토레이아웃이 잡힌다   추가적으로 size inspactor에서 simulated size를 Fixed -&gt; Freeform으로 변경한다, 높이를 1000으로 설정한다.    4. 결과">
+<meta name="description" content="Combine 예제   1. scrollView 추가 및 상하좌우 제약 0 설정    2. UIView 추가 및 추가한 UIView를 Content Layout Guide에 드래그하여 상하좌우 제약 0 설정    UIView를 Frame Layout Guide로 드래그해서 Equal Width 해주자   size inspactor에서 width(가로막대) 더블 클릭 -&gt; Proportional Widt~ 클릭 -&gt; Multiplier를 1로 설정   이상태에서 빨간 오류 뜨는 이유는 View에 대한 내용물이 없어서 즉 크기가 없어서 그렇다      3. View에 Vertical Stack View 생성    Stack View를 View로 드래그하여 상하좌우 제약 0으로 설정   vertical stack에서 가로 크기를 꽉 채우기 위해 alighment는 fill 설정   vertical stack에서 내용물을 동일하게 분배시키기 위해 fill equally 설정   spacing 20 설정   이제 크기가 있는 애를 스택뷰에 넣으면 오토레이아웃이 잡힌다   추가적으로 size inspactor에서 simulated size를 Fixed -&gt; Freeform으로 변경한다, 높이를 1000으로 설정한다.    4. 결과   5. 화면이동을 위해 네비게이션 컨투롤러로 감싸기    6. 화면이동 코드 // //  ViewController.swift //  CombineTutorial-example // //  Created by 김동현 on 7/14/25. //  import UIKit import Combine import CombineCocoa  class ViewController: UIViewController {      // Combine의 구독을 저장하는 Set     // VC가 해제되면 subscriptions 프로퍼티도 함께 메모리에서 해제되고, 그 안에 저장된 구독들도 함께 해제되어 메모리 누수를 방지한다     // 구독 찌꺼기 담는 통: VC가 메모리에서 해제되면 VC에서 사용된 구독 찌꺼기가 담긴다     var subscriptions = Set&lt;AnyCancellable&gt;()          @IBOutlet weak var navToNumbersBtn: UIButton!          override func viewDidLoad() {         super.viewDidLoad()                 navToNumbersBtn             .tapPublisher             .sink(receiveValue: {                 print(#fileID, #function, #line, &quot;- &quot;)                 #warning(&quot;TODO: - numbers로 화면이동&quot;)                 let numbersStoryboard = UIStoryboard(name: &quot;Numbers&quot;, bundle: Bundle.main)                                  // vc의 storyboardId                 let numbersVC = numbersStoryboard.instantiateViewController(withIdentifier: &quot;NumbersViewController&quot;)                 self.navigationController?.pushViewController(numbersVC, animated: true)                              })             // 구독에 대한 찌꺼기가 담긴다             .store(in: &amp;subscriptions)     } }   7. 화면이동 코드 리팩토링 꿀팁    name과 withIdentifier를 하드코딩하지 않는 간단한 방법으로 수정 가능하다.   프로토콜을 활용하면 된다.   UIViewController+.swift import UIKit  /*  static 변수  - 인스턴스를 생성하지 않아도 접근할 수 있다  - 타입에 속한 변수이며, 모든 인스턴스가 이 값을 공유한다    static 함수는  - 인스턴스를 만들지 않고도 호출할 수 있다  - 보통 공통 정보 제공이나 객체 생성 팩토리 용도로 사용한다    */  protocol Storyboarded {     // static함수는 해당하는 객체를 메모리에 만들지 않아도 만들 수 있다     static func instantiate(_ storyboardName: String) -&gt; Self }  // 프로토콜 정의 // Storyboarded를 준수하면서 본인이 UIViewController이라면 extension Storyboarded where Self: UIViewController {          /// 객체를 메모리에 생성하지 않고도 호출 가능한 타입 메서드입니다.     ///     /// 주어진 스토리보드 이름에서 이 타입의 뷰 컨트롤러를 인스턴스화합니다.     /// - Parameter storyboardName: 뷰 컨트롤러가 위치한 스토리보드 파일의 이름     /// - Returns: 스토리보드에서 생성된 현재 타입(Self)의 인스턴스     static func instantiate(_ storyboardName: String) -&gt; Self {         let storyboard = UIStoryboard(name: storyboardName, bundle: Bundle.main) // 내자신의 이름         let vc = storyboard.instantiateViewController(withIdentifier: String(describing: self)) as! Self         return vc     } }  extension UIViewController: Storyboarded {}   ViewController.swift import UIKit import Combine import CombineCocoa  class ViewController: UIViewController {      // Combine의 구독을 저장하는 Set     // VC가 해제되면 subscriptions 프로퍼티도 함께 메모리에서 해제되고, 그 안에 저장된 구독들도 함께 해제되어 메모리 누수를 방지한다     // 구독 찌꺼기 담는 통: VC가 메모리에서 해제되면 VC에서 사용된 구독 찌꺼기가 담긴다     var subscriptions = Set&lt;AnyCancellable&gt;()          @IBOutlet weak var navToNumbersBtn: UIButton!          override func viewDidLoad() {         super.viewDidLoad()                 navToNumbersBtn             .tapPublisher             .sink(receiveValue: {                 print(#fileID, #function, #line, &quot;- &quot;)                  let numbersVC = NumbersViewController.instantiate(&quot;Numbers&quot;)                 self.navigationController?.pushViewController(numbersVC, animated: true)                              })             // 구독에 대한 찌꺼기가 담긴다             .store(in: &amp;subscriptions)     } }">
 
 
   <meta name="author" content="Dong Hyeon">
@@ -26,7 +26,7 @@
 <meta property="og:url" content="http://localhost:4000/Combine-example-1/">
 
 
-  <meta property="og:description" content="Combine 예제   1. scrollView 추가 및 상하좌우 제약 0 설정    2. UIView 추가 및 추가한 UIView를 Content Layout Guide에 드래그하여 상하좌우 제약 0 설정    UIView를 Frame Layout Guide로 드래그해서 Equal Width 해주자   size inspactor에서 width(가로막대) 더블 클릭 -&gt; Proportional Widt~ 클릭 -&gt; Multiplier를 1로 설정   이상태에서 빨간 오류 뜨는 이유는 View에 대한 내용물이 없어서 즉 크기가 없어서 그렇다      3. View에 Vertical Stack View 생성    Stack View를 View로 드래그하여 상하좌우 제약 0으로 설정   vertical stack에서 가로 크기를 꽉 채우기 위해 alighment는 fill 설정   vertical stack에서 내용물을 동일하게 분배시키기 위해 fill equally 설정   spacing 20 설정   이제 크기가 있는 애를 스택뷰에 넣으면 오토레이아웃이 잡힌다   추가적으로 size inspactor에서 simulated size를 Fixed -&gt; Freeform으로 변경한다, 높이를 1000으로 설정한다.    4. 결과">
+  <meta property="og:description" content="Combine 예제   1. scrollView 추가 및 상하좌우 제약 0 설정    2. UIView 추가 및 추가한 UIView를 Content Layout Guide에 드래그하여 상하좌우 제약 0 설정    UIView를 Frame Layout Guide로 드래그해서 Equal Width 해주자   size inspactor에서 width(가로막대) 더블 클릭 -&gt; Proportional Widt~ 클릭 -&gt; Multiplier를 1로 설정   이상태에서 빨간 오류 뜨는 이유는 View에 대한 내용물이 없어서 즉 크기가 없어서 그렇다      3. View에 Vertical Stack View 생성    Stack View를 View로 드래그하여 상하좌우 제약 0으로 설정   vertical stack에서 가로 크기를 꽉 채우기 위해 alighment는 fill 설정   vertical stack에서 내용물을 동일하게 분배시키기 위해 fill equally 설정   spacing 20 설정   이제 크기가 있는 애를 스택뷰에 넣으면 오토레이아웃이 잡힌다   추가적으로 size inspactor에서 simulated size를 Fixed -&gt; Freeform으로 변경한다, 높이를 1000으로 설정한다.    4. 결과   5. 화면이동을 위해 네비게이션 컨투롤러로 감싸기    6. 화면이동 코드 // //  ViewController.swift //  CombineTutorial-example // //  Created by 김동현 on 7/14/25. //  import UIKit import Combine import CombineCocoa  class ViewController: UIViewController {      // Combine의 구독을 저장하는 Set     // VC가 해제되면 subscriptions 프로퍼티도 함께 메모리에서 해제되고, 그 안에 저장된 구독들도 함께 해제되어 메모리 누수를 방지한다     // 구독 찌꺼기 담는 통: VC가 메모리에서 해제되면 VC에서 사용된 구독 찌꺼기가 담긴다     var subscriptions = Set&lt;AnyCancellable&gt;()          @IBOutlet weak var navToNumbersBtn: UIButton!          override func viewDidLoad() {         super.viewDidLoad()                 navToNumbersBtn             .tapPublisher             .sink(receiveValue: {                 print(#fileID, #function, #line, &quot;- &quot;)                 #warning(&quot;TODO: - numbers로 화면이동&quot;)                 let numbersStoryboard = UIStoryboard(name: &quot;Numbers&quot;, bundle: Bundle.main)                                  // vc의 storyboardId                 let numbersVC = numbersStoryboard.instantiateViewController(withIdentifier: &quot;NumbersViewController&quot;)                 self.navigationController?.pushViewController(numbersVC, animated: true)                              })             // 구독에 대한 찌꺼기가 담긴다             .store(in: &amp;subscriptions)     } }   7. 화면이동 코드 리팩토링 꿀팁    name과 withIdentifier를 하드코딩하지 않는 간단한 방법으로 수정 가능하다.   프로토콜을 활용하면 된다.   UIViewController+.swift import UIKit  /*  static 변수  - 인스턴스를 생성하지 않아도 접근할 수 있다  - 타입에 속한 변수이며, 모든 인스턴스가 이 값을 공유한다    static 함수는  - 인스턴스를 만들지 않고도 호출할 수 있다  - 보통 공통 정보 제공이나 객체 생성 팩토리 용도로 사용한다    */  protocol Storyboarded {     // static함수는 해당하는 객체를 메모리에 만들지 않아도 만들 수 있다     static func instantiate(_ storyboardName: String) -&gt; Self }  // 프로토콜 정의 // Storyboarded를 준수하면서 본인이 UIViewController이라면 extension Storyboarded where Self: UIViewController {          /// 객체를 메모리에 생성하지 않고도 호출 가능한 타입 메서드입니다.     ///     /// 주어진 스토리보드 이름에서 이 타입의 뷰 컨트롤러를 인스턴스화합니다.     /// - Parameter storyboardName: 뷰 컨트롤러가 위치한 스토리보드 파일의 이름     /// - Returns: 스토리보드에서 생성된 현재 타입(Self)의 인스턴스     static func instantiate(_ storyboardName: String) -&gt; Self {         let storyboard = UIStoryboard(name: storyboardName, bundle: Bundle.main) // 내자신의 이름         let vc = storyboard.instantiateViewController(withIdentifier: String(describing: self)) as! Self         return vc     } }  extension UIViewController: Storyboarded {}   ViewController.swift import UIKit import Combine import CombineCocoa  class ViewController: UIViewController {      // Combine의 구독을 저장하는 Set     // VC가 해제되면 subscriptions 프로퍼티도 함께 메모리에서 해제되고, 그 안에 저장된 구독들도 함께 해제되어 메모리 누수를 방지한다     // 구독 찌꺼기 담는 통: VC가 메모리에서 해제되면 VC에서 사용된 구독 찌꺼기가 담긴다     var subscriptions = Set&lt;AnyCancellable&gt;()          @IBOutlet weak var navToNumbersBtn: UIButton!          override func viewDidLoad() {         super.viewDidLoad()                 navToNumbersBtn             .tapPublisher             .sink(receiveValue: {                 print(#fileID, #function, #line, &quot;- &quot;)                  let numbersVC = NumbersViewController.instantiate(&quot;Numbers&quot;)                 self.navigationController?.pushViewController(numbersVC, animated: true)                              })             // 구독에 대한 찌꺼기가 담긴다             .store(in: &amp;subscriptions)     } }">
 
 
 
@@ -457,7 +457,7 @@ checkbox.addEventListener('change', function() {
 
   <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
     <meta itemprop="headline" content="[Combine] 예제 1">
-    <meta itemprop="description" content="Combine 예제1. scrollView 추가 및 상하좌우 제약 0 설정2. UIView 추가 및 추가한 UIView를 Content Layout Guide에 드래그하여 상하좌우 제약 0 설정  UIView를 Frame Layout Guide로 드래그해서 Equal Width 해주자  size inspactor에서 width(가로막대) 더블 클릭 -&gt; Proportional Widt~ 클릭 -&gt; Multiplier를 1로 설정  이상태에서 빨간 오류 뜨는 이유는 View에 대한 내용물이 없어서 즉 크기가 없어서 그렇다3. View에 Vertical Stack View 생성  Stack View를 View로 드래그하여 상하좌우 제약 0으로 설정  vertical stack에서 가로 크기를 꽉 채우기 위해 alighment는 fill 설정  vertical stack에서 내용물을 동일하게 분배시키기 위해 fill equally 설정  spacing 20 설정  이제 크기가 있는 애를 스택뷰에 넣으면 오토레이아웃이 잡힌다  추가적으로 size inspactor에서 simulated size를 Fixed -&gt; Freeform으로 변경한다, 높이를 1000으로 설정한다.4. 결과">
+    <meta itemprop="description" content="Combine 예제1. scrollView 추가 및 상하좌우 제약 0 설정2. UIView 추가 및 추가한 UIView를 Content Layout Guide에 드래그하여 상하좌우 제약 0 설정  UIView를 Frame Layout Guide로 드래그해서 Equal Width 해주자  size inspactor에서 width(가로막대) 더블 클릭 -&gt; Proportional Widt~ 클릭 -&gt; Multiplier를 1로 설정  이상태에서 빨간 오류 뜨는 이유는 View에 대한 내용물이 없어서 즉 크기가 없어서 그렇다3. View에 Vertical Stack View 생성  Stack View를 View로 드래그하여 상하좌우 제약 0으로 설정  vertical stack에서 가로 크기를 꽉 채우기 위해 alighment는 fill 설정  vertical stack에서 내용물을 동일하게 분배시키기 위해 fill equally 설정  spacing 20 설정  이제 크기가 있는 애를 스택뷰에 넣으면 오토레이아웃이 잡힌다  추가적으로 size inspactor에서 simulated size를 Fixed -&gt; Freeform으로 변경한다, 높이를 1000으로 설정한다.4. 결과5. 화면이동을 위해 네비게이션 컨투롤러로 감싸기6. 화면이동 코드////  ViewController.swift//  CombineTutorial-example////  Created by 김동현 on 7/14/25.//import UIKitimport Combineimport CombineCocoaclass ViewController: UIViewController {    // Combine의 구독을 저장하는 Set    // VC가 해제되면 subscriptions 프로퍼티도 함께 메모리에서 해제되고, 그 안에 저장된 구독들도 함께 해제되어 메모리 누수를 방지한다    // 구독 찌꺼기 담는 통: VC가 메모리에서 해제되면 VC에서 사용된 구독 찌꺼기가 담긴다    var subscriptions = Set&lt;AnyCancellable&gt;()        @IBOutlet weak var navToNumbersBtn: UIButton!        override func viewDidLoad() {        super.viewDidLoad()               navToNumbersBtn            .tapPublisher            .sink(receiveValue: {                print(#fileID, #function, #line, &quot;- &quot;)                #warning(&quot;TODO: - numbers로 화면이동&quot;)                let numbersStoryboard = UIStoryboard(name: &quot;Numbers&quot;, bundle: Bundle.main)                                // vc의 storyboardId                let numbersVC = numbersStoryboard.instantiateViewController(withIdentifier: &quot;NumbersViewController&quot;)                self.navigationController?.pushViewController(numbersVC, animated: true)                            })            // 구독에 대한 찌꺼기가 담긴다            .store(in: &amp;subscriptions)    }}7. 화면이동 코드 리팩토링 꿀팁  name과 withIdentifier를 하드코딩하지 않는 간단한 방법으로 수정 가능하다.  프로토콜을 활용하면 된다.UIViewController+.swiftimport UIKit/* static 변수 - 인스턴스를 생성하지 않아도 접근할 수 있다 - 타입에 속한 변수이며, 모든 인스턴스가 이 값을 공유한다  static 함수는 - 인스턴스를 만들지 않고도 호출할 수 있다 - 보통 공통 정보 제공이나 객체 생성 팩토리 용도로 사용한다  */protocol Storyboarded {    // static함수는 해당하는 객체를 메모리에 만들지 않아도 만들 수 있다    static func instantiate(_ storyboardName: String) -&gt; Self}// 프로토콜 정의// Storyboarded를 준수하면서 본인이 UIViewController이라면extension Storyboarded where Self: UIViewController {        /// 객체를 메모리에 생성하지 않고도 호출 가능한 타입 메서드입니다.    ///    /// 주어진 스토리보드 이름에서 이 타입의 뷰 컨트롤러를 인스턴스화합니다.    /// - Parameter storyboardName: 뷰 컨트롤러가 위치한 스토리보드 파일의 이름    /// - Returns: 스토리보드에서 생성된 현재 타입(Self)의 인스턴스    static func instantiate(_ storyboardName: String) -&gt; Self {        let storyboard = UIStoryboard(name: storyboardName, bundle: Bundle.main) // 내자신의 이름        let vc = storyboard.instantiateViewController(withIdentifier: String(describing: self)) as! Self        return vc    }}extension UIViewController: Storyboarded {}ViewController.swiftimport UIKitimport Combineimport CombineCocoaclass ViewController: UIViewController {    // Combine의 구독을 저장하는 Set    // VC가 해제되면 subscriptions 프로퍼티도 함께 메모리에서 해제되고, 그 안에 저장된 구독들도 함께 해제되어 메모리 누수를 방지한다    // 구독 찌꺼기 담는 통: VC가 메모리에서 해제되면 VC에서 사용된 구독 찌꺼기가 담긴다    var subscriptions = Set&lt;AnyCancellable&gt;()        @IBOutlet weak var navToNumbersBtn: UIButton!        override func viewDidLoad() {        super.viewDidLoad()               navToNumbersBtn            .tapPublisher            .sink(receiveValue: {                print(#fileID, #function, #line, &quot;- &quot;)                let numbersVC = NumbersViewController.instantiate(&quot;Numbers&quot;)                self.navigationController?.pushViewController(numbersVC, animated: true)                            })            // 구독에 대한 찌꺼기가 담긴다            .store(in: &amp;subscriptions)    }}">
     <meta itemprop="datePublished" content="2025-07-13T00:00:00+00:00">
     
 
@@ -538,6 +538,127 @@ checkbox.addEventListener('change', function() {
 <h4 id="4-결과">4. 결과</h4>
 <p><img src="/assets/img/2025-07-13-%5BCombine%5D-example%201/image-20250714021514646.png" alt="이미지" width="70%" /></p>
 
+<h4 id="5-화면이동을-위해-네비게이션-컨투롤러로-감싸기">5. 화면이동을 위해 네비게이션 컨투롤러로 감싸기</h4>
+
+<p><img src="/assets/img/2025-07-13-%5BCombine%5D-example%201/image-20250717165409170.png" alt="이미지" width="70%" /></p>
+
+<h3 id="6-화면이동-코드">6. 화면이동 코드</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//</span>
+<span class="c1">//  ViewController.swift</span>
+<span class="c1">//  CombineTutorial-example</span>
+<span class="c1">//</span>
+<span class="c1">//  Created by 김동현 on 7/14/25.</span>
+<span class="c1">//</span>
+
+<span class="kd">import</span> <span class="kt">UIKit</span>
+<span class="kd">import</span> <span class="kt">Combine</span>
+<span class="kd">import</span> <span class="kt">CombineCocoa</span>
+
+<span class="kd">class</span> <span class="kt">ViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+
+    <span class="c1">// Combine의 구독을 저장하는 Set</span>
+    <span class="c1">// VC가 해제되면 subscriptions 프로퍼티도 함께 메모리에서 해제되고, 그 안에 저장된 구독들도 함께 해제되어 메모리 누수를 방지한다</span>
+    <span class="c1">// 구독 찌꺼기 담는 통: VC가 메모리에서 해제되면 VC에서 사용된 구독 찌꺼기가 담긴다</span>
+    <span class="k">var</span> <span class="nv">subscriptions</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">AnyCancellable</span><span class="o">&gt;</span><span class="p">()</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">navToNumbersBtn</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+       
+        <span class="n">navToNumbersBtn</span>
+            <span class="o">.</span><span class="n">tapPublisher</span>
+            <span class="o">.</span><span class="nf">sink</span><span class="p">(</span><span class="nv">receiveValue</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+                <span class="cp">#warning("TODO: - numbers로 화면이동")</span>
+                <span class="k">let</span> <span class="nv">numbersStoryboard</span> <span class="o">=</span> <span class="kt">UIStoryboard</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"Numbers"</span><span class="p">,</span> <span class="nv">bundle</span><span class="p">:</span> <span class="kt">Bundle</span><span class="o">.</span><span class="n">main</span><span class="p">)</span>
+                
+                <span class="c1">// vc의 storyboardId</span>
+                <span class="k">let</span> <span class="nv">numbersVC</span> <span class="o">=</span> <span class="n">numbersStoryboard</span><span class="o">.</span><span class="nf">instantiateViewController</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="s">"NumbersViewController"</span><span class="p">)</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">navigationController</span><span class="p">?</span><span class="o">.</span><span class="nf">pushViewController</span><span class="p">(</span><span class="n">numbersVC</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+                
+            <span class="p">})</span>
+            <span class="c1">// 구독에 대한 찌꺼기가 담긴다</span>
+            <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="7-화면이동-코드-리팩토링-꿀팁">7. 화면이동 코드 리팩토링 꿀팁</h4>
+<ul>
+  <li>name과 withIdentifier를 하드코딩하지 않는 간단한 방법으로 수정 가능하다.</li>
+  <li>프로토콜을 활용하면 된다.</li>
+</ul>
+
+<h4 id="uiviewcontrollerswift">UIViewController+.swift</h4>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="cm">/*
+ static 변수
+ - 인스턴스를 생성하지 않아도 접근할 수 있다
+ - 타입에 속한 변수이며, 모든 인스턴스가 이 값을 공유한다
+ 
+ static 함수는
+ - 인스턴스를 만들지 않고도 호출할 수 있다
+ - 보통 공통 정보 제공이나 객체 생성 팩토리 용도로 사용한다
+ 
+ */</span>
+
+<span class="kd">protocol</span> <span class="kt">Storyboarded</span> <span class="p">{</span>
+    <span class="c1">// static함수는 해당하는 객체를 메모리에 만들지 않아도 만들 수 있다</span>
+    <span class="kd">static</span> <span class="kd">func</span> <span class="nf">instantiate</span><span class="p">(</span><span class="n">_</span> <span class="nv">storyboardName</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">Self</span>
+<span class="p">}</span>
+
+<span class="c1">// 프로토콜 정의</span>
+<span class="c1">// Storyboarded를 준수하면서 본인이 UIViewController이라면</span>
+<span class="kd">extension</span> <span class="kt">Storyboarded</span> <span class="k">where</span> <span class="k">Self</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="c1">/// 객체를 메모리에 생성하지 않고도 호출 가능한 타입 메서드입니다.</span>
+    <span class="c1">///</span>
+    <span class="c1">/// 주어진 스토리보드 이름에서 이 타입의 뷰 컨트롤러를 인스턴스화합니다.</span>
+    <span class="c1">/// - Parameter storyboardName: 뷰 컨트롤러가 위치한 스토리보드 파일의 이름</span>
+    <span class="c1">/// - Returns: 스토리보드에서 생성된 현재 타입(Self)의 인스턴스</span>
+    <span class="kd">static</span> <span class="kd">func</span> <span class="nf">instantiate</span><span class="p">(</span><span class="n">_</span> <span class="nv">storyboardName</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">Self</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">storyboard</span> <span class="o">=</span> <span class="kt">UIStoryboard</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="n">storyboardName</span><span class="p">,</span> <span class="nv">bundle</span><span class="p">:</span> <span class="kt">Bundle</span><span class="o">.</span><span class="n">main</span><span class="p">)</span> <span class="c1">// 내자신의 이름</span>
+        <span class="k">let</span> <span class="nv">vc</span> <span class="o">=</span> <span class="n">storyboard</span><span class="o">.</span><span class="nf">instantiateViewController</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">(</span><span class="nv">describing</span><span class="p">:</span> <span class="k">self</span><span class="p">))</span> <span class="k">as!</span> <span class="k">Self</span>
+        <span class="k">return</span> <span class="n">vc</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">UIViewController</span><span class="p">:</span> <span class="kt">Storyboarded</span> <span class="p">{}</span>
+</code></pre></div></div>
+
+<h4 id="viewcontrollerswift">ViewController.swift</h4>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+<span class="kd">import</span> <span class="kt">Combine</span>
+<span class="kd">import</span> <span class="kt">CombineCocoa</span>
+
+<span class="kd">class</span> <span class="kt">ViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+
+    <span class="c1">// Combine의 구독을 저장하는 Set</span>
+    <span class="c1">// VC가 해제되면 subscriptions 프로퍼티도 함께 메모리에서 해제되고, 그 안에 저장된 구독들도 함께 해제되어 메모리 누수를 방지한다</span>
+    <span class="c1">// 구독 찌꺼기 담는 통: VC가 메모리에서 해제되면 VC에서 사용된 구독 찌꺼기가 담긴다</span>
+    <span class="k">var</span> <span class="nv">subscriptions</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">AnyCancellable</span><span class="o">&gt;</span><span class="p">()</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">navToNumbersBtn</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+       
+        <span class="n">navToNumbersBtn</span>
+            <span class="o">.</span><span class="n">tapPublisher</span>
+            <span class="o">.</span><span class="nf">sink</span><span class="p">(</span><span class="nv">receiveValue</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+
+                <span class="k">let</span> <span class="nv">numbersVC</span> <span class="o">=</span> <span class="kt">NumbersViewController</span><span class="o">.</span><span class="nf">instantiate</span><span class="p">(</span><span class="s">"Numbers"</span><span class="p">)</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">navigationController</span><span class="p">?</span><span class="o">.</span><span class="nf">pushViewController</span><span class="p">(</span><span class="n">numbersVC</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+                
+            <span class="p">})</span>
+            <span class="c1">// 구독에 대한 찌꺼기가 담긴다</span>
+            <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
         
       </section>
