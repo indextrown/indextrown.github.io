@@ -158,6 +158,7 @@ exclude:
   - tmp
   - /docs # ignore Minimal Mistakes /docs
   - /test # ignore Minimal Mistakes /test
+  - Makefile
 keep_files:
   - .git
   - .svn
