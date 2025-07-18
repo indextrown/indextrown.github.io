@@ -1,0 +1,1109 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>[Combine] 예제 1 &amp; MVVM[SwiftUI/UIKit] - DongHyeon Kim’s Blog</title>
+<meta name="description" content="1. SwiftUI MVVM + Combine NumbersView.swift import SwiftUI  /*  @StateObject  - 객체를 직접 생성 및 소유한다  - 뷰가 다시 그려져도 객체는 재생성되지않는다  - 해당 뷰에서 객체롤 초기화 및 관리를 위해 사용  - 상태 유지에 효율적  - 루트뷰에서 주로 사용  - 객체를 초기화하고 SwiftUI 뷰 상태에 저장하는데 사용하는 속성 래퍼  - 뷰가 존재하는 한 객체가 저장되고 뷰와 함께 삭제됨을 의미한다  - 일반적으로 @StateObject를 사용하는 것은 하나의 뷰가 아닌 여러 뷰에 필요한 클래스 객체에 실용적이다    @ObservedObject  - 상태 변경시 뷰를 다시 생성  - 객체를 외부에서 주입받음  - 뷰가 다시 그려지면 객체도 다시 주입됨  - 상위 뷰에서 객체를 전달받아 사용시  - 객체가 자주 재생성됨  - 서브뷰 또는 전달받는뷰    공통점  - observable 객체를 구독하는 property wrapper  - 구독중인 observable 객체가 변경되면 뷰에 업데이트 시켜주는 기능    차이점  - 둘다 observableObject를 구독하여 값이 변경되면 뷰에 반영하는 property wrapper  - 상태 변경시 @ObservedObject는 뷰를 다시 생성하지만 @StateObject는 다시 생성하지않고 동일 뷰가 사용(효율)  - 기본적으로 @StateObject를 사용하되, 해당 프로퍼티를 subView에 주입해야 한다면 @ObservedObject로 선언하여 사용할 것  - subView에 @StateObject를 주입하면 해당 @StateObject의 수명 주기가 두 곳에서 관리가 되므로 의존성을 줄이기 위해 @ObservedObject를 사용    - https://hackernoon.com/lang/ko/Swiftuis-5-주요-속성-래퍼-및-이를-효과적으로-사용하는-방법  - https://ios-development.tistory.com/1160  */  struct NumbersView: View {          @StateObject private var viewModel = NumbersVM()     var body: some View {         VStack(alignment: .trailing) {             TextField(&quot;&quot;, text: $viewModel.number1)                 .textFieldStyle(RoundedBorderTextFieldStyle())             TextField(&quot;&quot;, text: $viewModel.number2)                 .textFieldStyle(RoundedBorderTextFieldStyle())             TextField(&quot;&quot;, text: $viewModel.number3)                 .textFieldStyle(RoundedBorderTextFieldStyle())             TextField(&quot;&quot;, text: $viewModel.number4)                 .textFieldStyle(RoundedBorderTextFieldStyle())             Divider()             Text(viewModel.resultValue)                 .fontWeight(.bold)                 .foregroundStyle(.white)         }         .padding(.horizontal, 100)         .frame(maxWidth: .infinity, maxHeight: .infinity)         .background(.yellow)     } }  #Preview {     NumbersView() }   NumbersViewModel.swift import Combine import UIKit  /*    비즈니스 로직  - 데이터 상태를 VM이 가지고 있다  - 즉 완성된 데이터를 VM이 가지고 있다    2가지 상태의 데이터  - 뷰모델로 들어오는 Input  - 뷰모델로 나가는 Output == 비즈니스 로직을 타서 완성된 데이터가 뷰모델에서 나가는 것    https://hackernoon.com/lang/ko/Swiftuis-5-주요-속성-래퍼-및-이를-효과적으로-사용하는-방법    */ final class NumbersVM: ObservableObject {          private var subscriptions = Set&lt;AnyCancellable&gt;()          // MARK: - Input: 뷰모델로 들어오는 데이터     @Published var number1: String = &quot;&quot;     @Published var number2: String = &quot;&quot;     @Published var number3: String = &quot;&quot;     @Published var number4: String = &quot;&quot;          // MARK: - Output: 뷰모델로 나가는 데이터     @Published var resultValue: String = &quot;&quot;          init() {         print(#fileID, #function, #line, &quot;- &quot;)                  Publishers             .CombineLatest4($number1,                             $number2,                             $number3,                             $number4)             .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                 return  testValue1.getNumber() +                         testValue2.getNumber() +                         testValue3.getNumber() +                         testValue4.getNumber()             }              .map { String($0) }             // resultValue에 직접 꽂을건데 객체이므로 자기자신의 속성으로             .assign(to: \.resultValue, on: self)             /*              assign대신 이렇게 해도됨             .sink { value in                 self.resultValue = value             }              */             .store(in: &amp;subscriptions)     } }     2. NumbersViewModel 리팩토링    로직을 따로 뺴자   1번과 2번방식을 추천   // //  NumbersVM.swift //  CombineTutorial-example // //  Created by 김동현 on 7/18/25. //  import Combine import UIKit  /*    비즈니스 로직  - 데이터 상태를 VM이 가지고 있다  - 즉 완성된 데이터를 VM이 가지고 있다    2가지 상태의 데이터  - 뷰모델로 들어오는 Input  - 뷰모델로 나가는 Output == 비즈니스 로직을 타서 완성된 데이터가 뷰모델에서 나가는 것    https://hackernoon.com/lang/ko/Swiftuis-5-주요-속성-래퍼-및-이를-효과적으로-사용하는-방법    */ final class NumbersVM: ObservableObject {          private var subscriptions = Set&lt;AnyCancellable&gt;()          private lazy var resultPublisher: AnyPublisher&lt;String, Never&gt; =         Publishers             .CombineLatest4($number1,                             $number2,                             $number3,                             $number4)             .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                 return  testValue1.getNumber() +                         testValue2.getNumber() +                         testValue3.getNumber() +                         testValue4.getNumber()             }             .map { String($0) }             .eraseToAnyPublisher()          private var resultPublisher2: AnyPublisher&lt;String, Never&gt; {         Publishers             .CombineLatest4($number1,                            $number2,                            $number3,                            $number4)            .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                return  testValue1.getNumber() +                        testValue2.getNumber() +                        testValue3.getNumber() +                        testValue4.getNumber()            }            .map { String($0) }            .eraseToAnyPublisher()     }                   // MARK: - Input: 뷰모델로 들어오는 데이터     @Published var number1: String = &quot;&quot;     @Published var number2: String = &quot;&quot;     @Published var number3: String = &quot;&quot;     @Published var number4: String = &quot;&quot;          // MARK: - Output: 뷰모델로 나가는 데이터     @Published var resultValue: String = &quot;&quot;          init() {         print(#fileID, #function, #line, &quot;- &quot;)                  // 1번 방식         setupBinding()                  // 2번 방식         resultPublisher             .assign(to: \.resultValue, on: self)             .store(in: &amp;subscriptions)                  // 3번 방식         resultPublisher2             .assign(to: \.resultValue, on: self)             .store(in: &amp;subscriptions)     }      private func setupBinding() {         Publishers             .CombineLatest4($number1,                             $number2,                             $number3,                             $number4)             .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                 return  testValue1.getNumber() +                         testValue2.getNumber() +                         testValue3.getNumber() +                         testValue4.getNumber()             }              .map { String($0) }             // resultValue에 직접 꽂을건데 객체이므로 자기자신의 속성으로             .assign(to: \.resultValue, on: self)             /*              assign대신 이렇게 해도됨             .sink { value in                 self.resultValue = value             }              */             .store(in: &amp;subscriptions)     } }     2. UIKit MVVM + Combine 기존 NumbersViewController.swift    기존 코드는 ViewController에 로직이 들어있으니 mvvm으로 만들어보자. ```swift import UIKit import Combine import CombineCocoa   final class NumbersViewController: UIViewController {     @IBOutlet weak var number1: UITextField!     @IBOutlet weak var number2: UITextField!     @IBOutlet weak var number3: UITextField!     @IBOutlet weak var result: UILabel!     var subscriptions = Set()     private var viewModel: NumbersVM = NumbersVM()  override func viewDidLoad() {     super.viewDidLoad()          // MARK: - ViewModel에 Input 넣어주기               Publishers         .CombineLatest3(number1.textPublisher,                        number2.textPublisher,                        number3.textPublisher)         .map { testValue1, testValue2, testValue3 -&gt; Int in             return  testValue1.getNumber() +                     testValue2.getNumber() +                     testValue3.getNumber()         }         /*         .sink { value in             print(#fileID, #function, #line, &quot;- value: \(value)&quot;)         }          */         .map { String($0) }         .assign(to: \.text, on: result)         .store(in: &amp;subscriptions) } } ```   NumbersViewController.swift import UIKit import Combine import CombineCocoa  final class NumbersViewController: UIViewController {     @IBOutlet weak var number1: UITextField!     @IBOutlet weak var number2: UITextField!     @IBOutlet weak var number3: UITextField!     @IBOutlet weak var result: UILabel!     var subscriptions = Set&lt;AnyCancellable&gt;()     private var viewModel: NumbersVM = NumbersVM()      override func viewDidLoad() {         super.viewDidLoad()                  // MARK: - ViewModel에 Input 넣어주기         number1.textPublisher             .compactMap { $0 }             .assign(to: \.number1, on: viewModel) // viewModel이 가지고 있는 number1 속성에 꽂는다             .store(in: &amp;subscriptions)                  number2.textPublisher             .compactMap { $0 }             .assign(to: \.number2, on: viewModel)             .store(in: &amp;subscriptions)                  number3.textPublisher             .compactMap { $0 }             .assign(to: \.number3, on: viewModel)             .store(in: &amp;subscriptions)                  // MARK: - ViewModel에서 나오는 데이터 바인딩하기         viewModel.$resultValue             .compactMap { $0 }             .map { String($0) }             .assign(to: \.text, on: result) // result.text에 resultValue를 해줘라             .store(in: &amp;subscriptions)                   //        Publishers //            .CombineLatest3(number1.textPublisher, //                           number2.textPublisher, //                           number3.textPublisher) //            .map { testValue1, testValue2, testValue3 -&gt; Int in //                return  testValue1.getNumber() + //                        testValue2.getNumber() + //                        testValue3.getNumber() //            } //            /* //            .sink { value in //                print(#fileID, #function, #line, &quot;- value: \(value)&quot;) //            } //             */ //            .map { String($0) } //            .assign(to: \.text, on: result) //            .store(in: &amp;subscriptions)     } }   NumbersVM.swift import Combine import UIKit  /*    비즈니스 로직  - 데이터 상태를 VM이 가지고 있다  - 즉 완성된 데이터를 VM이 가지고 있다    2가지 상태의 데이터  - 뷰모델로 들어오는 Input  - 뷰모델로 나가는 Output == 비즈니스 로직을 타서 완성된 데이터가 뷰모델에서 나가는 것    https://hackernoon.com/lang/ko/Swiftuis-5-주요-속성-래퍼-및-이를-효과적으로-사용하는-방법    */ final class NumbersVM: ObservableObject {          private var subscriptions = Set&lt;AnyCancellable&gt;()          private lazy var resultPublisher: AnyPublisher&lt;String, Never&gt; =         Publishers             .CombineLatest4($number1,                             $number2,                             $number3,                             $number4)             .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                 return  testValue1.getNumber() +                         testValue2.getNumber() +                         testValue3.getNumber() +                         testValue4.getNumber()             }             .map { String($0) }             .eraseToAnyPublisher()          private var resultPublisher2: AnyPublisher&lt;String, Never&gt; {         Publishers             .CombineLatest4($number1,                            $number2,                            $number3,                            $number4)            .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                return  testValue1.getNumber() +                        testValue2.getNumber() +                        testValue3.getNumber() +                        testValue4.getNumber()            }            .map { String($0) }            .eraseToAnyPublisher()     }                   // MARK: - Input: 뷰모델로 들어오는 데이터     @Published var number1: String = &quot;&quot;     @Published var number2: String = &quot;&quot;     @Published var number3: String = &quot;&quot;     @Published var number4: String = &quot;&quot;          // MARK: - Output: 뷰모델로 나가는 데이터     @Published var resultValue: String = &quot;&quot;          init() {         print(#fileID, #function, #line, &quot;- &quot;)                  // 1번 방식         setupBinding()                  // 2번 방식         /*         resultPublisher             .assign(to: \.resultValue, on: self)             .store(in: &amp;subscriptions)          */                  // 3번 방식         /*         resultPublisher2             .assign(to: \.resultValue, on: self)             .store(in: &amp;subscriptions)          */     }      private func setupBinding() {         Publishers             .CombineLatest4($number1,                             $number2,                             $number3,                             $number4)             .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                 return  testValue1.getNumber() +                         testValue2.getNumber() +                         testValue3.getNumber() +                         testValue4.getNumber()             }              .map { String($0) }             // resultValue에 직접 꽂을건데 객체이므로 자기자신의 속성으로             .assign(to: \.resultValue, on: self)             /*              assign대신 이렇게 해도됨             .sink { value in                 self.resultValue = value             }              */             .store(in: &amp;subscriptions)     } }">
+
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[Combine] 예제 1 &amp; MVVM[SwiftUI/UIKit]">
+<meta property="og:url" content="http://localhost:4000/Combine-example-2/">
+
+
+  <meta property="og:description" content="1. SwiftUI MVVM + Combine NumbersView.swift import SwiftUI  /*  @StateObject  - 객체를 직접 생성 및 소유한다  - 뷰가 다시 그려져도 객체는 재생성되지않는다  - 해당 뷰에서 객체롤 초기화 및 관리를 위해 사용  - 상태 유지에 효율적  - 루트뷰에서 주로 사용  - 객체를 초기화하고 SwiftUI 뷰 상태에 저장하는데 사용하는 속성 래퍼  - 뷰가 존재하는 한 객체가 저장되고 뷰와 함께 삭제됨을 의미한다  - 일반적으로 @StateObject를 사용하는 것은 하나의 뷰가 아닌 여러 뷰에 필요한 클래스 객체에 실용적이다    @ObservedObject  - 상태 변경시 뷰를 다시 생성  - 객체를 외부에서 주입받음  - 뷰가 다시 그려지면 객체도 다시 주입됨  - 상위 뷰에서 객체를 전달받아 사용시  - 객체가 자주 재생성됨  - 서브뷰 또는 전달받는뷰    공통점  - observable 객체를 구독하는 property wrapper  - 구독중인 observable 객체가 변경되면 뷰에 업데이트 시켜주는 기능    차이점  - 둘다 observableObject를 구독하여 값이 변경되면 뷰에 반영하는 property wrapper  - 상태 변경시 @ObservedObject는 뷰를 다시 생성하지만 @StateObject는 다시 생성하지않고 동일 뷰가 사용(효율)  - 기본적으로 @StateObject를 사용하되, 해당 프로퍼티를 subView에 주입해야 한다면 @ObservedObject로 선언하여 사용할 것  - subView에 @StateObject를 주입하면 해당 @StateObject의 수명 주기가 두 곳에서 관리가 되므로 의존성을 줄이기 위해 @ObservedObject를 사용    - https://hackernoon.com/lang/ko/Swiftuis-5-주요-속성-래퍼-및-이를-효과적으로-사용하는-방법  - https://ios-development.tistory.com/1160  */  struct NumbersView: View {          @StateObject private var viewModel = NumbersVM()     var body: some View {         VStack(alignment: .trailing) {             TextField(&quot;&quot;, text: $viewModel.number1)                 .textFieldStyle(RoundedBorderTextFieldStyle())             TextField(&quot;&quot;, text: $viewModel.number2)                 .textFieldStyle(RoundedBorderTextFieldStyle())             TextField(&quot;&quot;, text: $viewModel.number3)                 .textFieldStyle(RoundedBorderTextFieldStyle())             TextField(&quot;&quot;, text: $viewModel.number4)                 .textFieldStyle(RoundedBorderTextFieldStyle())             Divider()             Text(viewModel.resultValue)                 .fontWeight(.bold)                 .foregroundStyle(.white)         }         .padding(.horizontal, 100)         .frame(maxWidth: .infinity, maxHeight: .infinity)         .background(.yellow)     } }  #Preview {     NumbersView() }   NumbersViewModel.swift import Combine import UIKit  /*    비즈니스 로직  - 데이터 상태를 VM이 가지고 있다  - 즉 완성된 데이터를 VM이 가지고 있다    2가지 상태의 데이터  - 뷰모델로 들어오는 Input  - 뷰모델로 나가는 Output == 비즈니스 로직을 타서 완성된 데이터가 뷰모델에서 나가는 것    https://hackernoon.com/lang/ko/Swiftuis-5-주요-속성-래퍼-및-이를-효과적으로-사용하는-방법    */ final class NumbersVM: ObservableObject {          private var subscriptions = Set&lt;AnyCancellable&gt;()          // MARK: - Input: 뷰모델로 들어오는 데이터     @Published var number1: String = &quot;&quot;     @Published var number2: String = &quot;&quot;     @Published var number3: String = &quot;&quot;     @Published var number4: String = &quot;&quot;          // MARK: - Output: 뷰모델로 나가는 데이터     @Published var resultValue: String = &quot;&quot;          init() {         print(#fileID, #function, #line, &quot;- &quot;)                  Publishers             .CombineLatest4($number1,                             $number2,                             $number3,                             $number4)             .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                 return  testValue1.getNumber() +                         testValue2.getNumber() +                         testValue3.getNumber() +                         testValue4.getNumber()             }              .map { String($0) }             // resultValue에 직접 꽂을건데 객체이므로 자기자신의 속성으로             .assign(to: \.resultValue, on: self)             /*              assign대신 이렇게 해도됨             .sink { value in                 self.resultValue = value             }              */             .store(in: &amp;subscriptions)     } }     2. NumbersViewModel 리팩토링    로직을 따로 뺴자   1번과 2번방식을 추천   // //  NumbersVM.swift //  CombineTutorial-example // //  Created by 김동현 on 7/18/25. //  import Combine import UIKit  /*    비즈니스 로직  - 데이터 상태를 VM이 가지고 있다  - 즉 완성된 데이터를 VM이 가지고 있다    2가지 상태의 데이터  - 뷰모델로 들어오는 Input  - 뷰모델로 나가는 Output == 비즈니스 로직을 타서 완성된 데이터가 뷰모델에서 나가는 것    https://hackernoon.com/lang/ko/Swiftuis-5-주요-속성-래퍼-및-이를-효과적으로-사용하는-방법    */ final class NumbersVM: ObservableObject {          private var subscriptions = Set&lt;AnyCancellable&gt;()          private lazy var resultPublisher: AnyPublisher&lt;String, Never&gt; =         Publishers             .CombineLatest4($number1,                             $number2,                             $number3,                             $number4)             .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                 return  testValue1.getNumber() +                         testValue2.getNumber() +                         testValue3.getNumber() +                         testValue4.getNumber()             }             .map { String($0) }             .eraseToAnyPublisher()          private var resultPublisher2: AnyPublisher&lt;String, Never&gt; {         Publishers             .CombineLatest4($number1,                            $number2,                            $number3,                            $number4)            .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                return  testValue1.getNumber() +                        testValue2.getNumber() +                        testValue3.getNumber() +                        testValue4.getNumber()            }            .map { String($0) }            .eraseToAnyPublisher()     }                   // MARK: - Input: 뷰모델로 들어오는 데이터     @Published var number1: String = &quot;&quot;     @Published var number2: String = &quot;&quot;     @Published var number3: String = &quot;&quot;     @Published var number4: String = &quot;&quot;          // MARK: - Output: 뷰모델로 나가는 데이터     @Published var resultValue: String = &quot;&quot;          init() {         print(#fileID, #function, #line, &quot;- &quot;)                  // 1번 방식         setupBinding()                  // 2번 방식         resultPublisher             .assign(to: \.resultValue, on: self)             .store(in: &amp;subscriptions)                  // 3번 방식         resultPublisher2             .assign(to: \.resultValue, on: self)             .store(in: &amp;subscriptions)     }      private func setupBinding() {         Publishers             .CombineLatest4($number1,                             $number2,                             $number3,                             $number4)             .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                 return  testValue1.getNumber() +                         testValue2.getNumber() +                         testValue3.getNumber() +                         testValue4.getNumber()             }              .map { String($0) }             // resultValue에 직접 꽂을건데 객체이므로 자기자신의 속성으로             .assign(to: \.resultValue, on: self)             /*              assign대신 이렇게 해도됨             .sink { value in                 self.resultValue = value             }              */             .store(in: &amp;subscriptions)     } }     2. UIKit MVVM + Combine 기존 NumbersViewController.swift    기존 코드는 ViewController에 로직이 들어있으니 mvvm으로 만들어보자. ```swift import UIKit import Combine import CombineCocoa   final class NumbersViewController: UIViewController {     @IBOutlet weak var number1: UITextField!     @IBOutlet weak var number2: UITextField!     @IBOutlet weak var number3: UITextField!     @IBOutlet weak var result: UILabel!     var subscriptions = Set()     private var viewModel: NumbersVM = NumbersVM()  override func viewDidLoad() {     super.viewDidLoad()          // MARK: - ViewModel에 Input 넣어주기               Publishers         .CombineLatest3(number1.textPublisher,                        number2.textPublisher,                        number3.textPublisher)         .map { testValue1, testValue2, testValue3 -&gt; Int in             return  testValue1.getNumber() +                     testValue2.getNumber() +                     testValue3.getNumber()         }         /*         .sink { value in             print(#fileID, #function, #line, &quot;- value: \(value)&quot;)         }          */         .map { String($0) }         .assign(to: \.text, on: result)         .store(in: &amp;subscriptions) } } ```   NumbersViewController.swift import UIKit import Combine import CombineCocoa  final class NumbersViewController: UIViewController {     @IBOutlet weak var number1: UITextField!     @IBOutlet weak var number2: UITextField!     @IBOutlet weak var number3: UITextField!     @IBOutlet weak var result: UILabel!     var subscriptions = Set&lt;AnyCancellable&gt;()     private var viewModel: NumbersVM = NumbersVM()      override func viewDidLoad() {         super.viewDidLoad()                  // MARK: - ViewModel에 Input 넣어주기         number1.textPublisher             .compactMap { $0 }             .assign(to: \.number1, on: viewModel) // viewModel이 가지고 있는 number1 속성에 꽂는다             .store(in: &amp;subscriptions)                  number2.textPublisher             .compactMap { $0 }             .assign(to: \.number2, on: viewModel)             .store(in: &amp;subscriptions)                  number3.textPublisher             .compactMap { $0 }             .assign(to: \.number3, on: viewModel)             .store(in: &amp;subscriptions)                  // MARK: - ViewModel에서 나오는 데이터 바인딩하기         viewModel.$resultValue             .compactMap { $0 }             .map { String($0) }             .assign(to: \.text, on: result) // result.text에 resultValue를 해줘라             .store(in: &amp;subscriptions)                   //        Publishers //            .CombineLatest3(number1.textPublisher, //                           number2.textPublisher, //                           number3.textPublisher) //            .map { testValue1, testValue2, testValue3 -&gt; Int in //                return  testValue1.getNumber() + //                        testValue2.getNumber() + //                        testValue3.getNumber() //            } //            /* //            .sink { value in //                print(#fileID, #function, #line, &quot;- value: \(value)&quot;) //            } //             */ //            .map { String($0) } //            .assign(to: \.text, on: result) //            .store(in: &amp;subscriptions)     } }   NumbersVM.swift import Combine import UIKit  /*    비즈니스 로직  - 데이터 상태를 VM이 가지고 있다  - 즉 완성된 데이터를 VM이 가지고 있다    2가지 상태의 데이터  - 뷰모델로 들어오는 Input  - 뷰모델로 나가는 Output == 비즈니스 로직을 타서 완성된 데이터가 뷰모델에서 나가는 것    https://hackernoon.com/lang/ko/Swiftuis-5-주요-속성-래퍼-및-이를-효과적으로-사용하는-방법    */ final class NumbersVM: ObservableObject {          private var subscriptions = Set&lt;AnyCancellable&gt;()          private lazy var resultPublisher: AnyPublisher&lt;String, Never&gt; =         Publishers             .CombineLatest4($number1,                             $number2,                             $number3,                             $number4)             .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                 return  testValue1.getNumber() +                         testValue2.getNumber() +                         testValue3.getNumber() +                         testValue4.getNumber()             }             .map { String($0) }             .eraseToAnyPublisher()          private var resultPublisher2: AnyPublisher&lt;String, Never&gt; {         Publishers             .CombineLatest4($number1,                            $number2,                            $number3,                            $number4)            .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                return  testValue1.getNumber() +                        testValue2.getNumber() +                        testValue3.getNumber() +                        testValue4.getNumber()            }            .map { String($0) }            .eraseToAnyPublisher()     }                   // MARK: - Input: 뷰모델로 들어오는 데이터     @Published var number1: String = &quot;&quot;     @Published var number2: String = &quot;&quot;     @Published var number3: String = &quot;&quot;     @Published var number4: String = &quot;&quot;          // MARK: - Output: 뷰모델로 나가는 데이터     @Published var resultValue: String = &quot;&quot;          init() {         print(#fileID, #function, #line, &quot;- &quot;)                  // 1번 방식         setupBinding()                  // 2번 방식         /*         resultPublisher             .assign(to: \.resultValue, on: self)             .store(in: &amp;subscriptions)          */                  // 3번 방식         /*         resultPublisher2             .assign(to: \.resultValue, on: self)             .store(in: &amp;subscriptions)          */     }      private func setupBinding() {         Publishers             .CombineLatest4($number1,                             $number2,                             $number3,                             $number4)             .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                 return  testValue1.getNumber() +                         testValue2.getNumber() +                         testValue3.getNumber() +                         testValue4.getNumber()             }              .map { String($0) }             // resultValue에 직접 꽂을건데 객체이므로 자기자신의 속성으로             .assign(to: \.resultValue, on: self)             /*              assign대신 이렇게 해도됨             .sink { value in                 self.resultValue = value             }              */             .store(in: &amp;subscriptions)     } }">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-07-18T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/Combine-example-2/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li><li class="masthead__menu-item">
+              <a href="/projects/">Projects</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[Combine] 예제 1 &amp; MVVM[SwiftUI/UIKit]">
+    <meta itemprop="description" content="1. SwiftUI MVVM + CombineNumbersView.swiftimport SwiftUI/* @StateObject - 객체를 직접 생성 및 소유한다 - 뷰가 다시 그려져도 객체는 재생성되지않는다 - 해당 뷰에서 객체롤 초기화 및 관리를 위해 사용 - 상태 유지에 효율적 - 루트뷰에서 주로 사용 - 객체를 초기화하고 SwiftUI 뷰 상태에 저장하는데 사용하는 속성 래퍼 - 뷰가 존재하는 한 객체가 저장되고 뷰와 함께 삭제됨을 의미한다 - 일반적으로 @StateObject를 사용하는 것은 하나의 뷰가 아닌 여러 뷰에 필요한 클래스 객체에 실용적이다  @ObservedObject - 상태 변경시 뷰를 다시 생성 - 객체를 외부에서 주입받음 - 뷰가 다시 그려지면 객체도 다시 주입됨 - 상위 뷰에서 객체를 전달받아 사용시 - 객체가 자주 재생성됨 - 서브뷰 또는 전달받는뷰  공통점 - observable 객체를 구독하는 property wrapper - 구독중인 observable 객체가 변경되면 뷰에 업데이트 시켜주는 기능  차이점 - 둘다 observableObject를 구독하여 값이 변경되면 뷰에 반영하는 property wrapper - 상태 변경시 @ObservedObject는 뷰를 다시 생성하지만 @StateObject는 다시 생성하지않고 동일 뷰가 사용(효율) - 기본적으로 @StateObject를 사용하되, 해당 프로퍼티를 subView에 주입해야 한다면 @ObservedObject로 선언하여 사용할 것 - subView에 @StateObject를 주입하면 해당 @StateObject의 수명 주기가 두 곳에서 관리가 되므로 의존성을 줄이기 위해 @ObservedObject를 사용  - https://hackernoon.com/lang/ko/Swiftuis-5-주요-속성-래퍼-및-이를-효과적으로-사용하는-방법 - https://ios-development.tistory.com/1160 */struct NumbersView: View {        @StateObject private var viewModel = NumbersVM()    var body: some View {        VStack(alignment: .trailing) {            TextField(&quot;&quot;, text: $viewModel.number1)                .textFieldStyle(RoundedBorderTextFieldStyle())            TextField(&quot;&quot;, text: $viewModel.number2)                .textFieldStyle(RoundedBorderTextFieldStyle())            TextField(&quot;&quot;, text: $viewModel.number3)                .textFieldStyle(RoundedBorderTextFieldStyle())            TextField(&quot;&quot;, text: $viewModel.number4)                .textFieldStyle(RoundedBorderTextFieldStyle())            Divider()            Text(viewModel.resultValue)                .fontWeight(.bold)                .foregroundStyle(.white)        }        .padding(.horizontal, 100)        .frame(maxWidth: .infinity, maxHeight: .infinity)        .background(.yellow)    }}#Preview {    NumbersView()}NumbersViewModel.swiftimport Combineimport UIKit/*  비즈니스 로직 - 데이터 상태를 VM이 가지고 있다 - 즉 완성된 데이터를 VM이 가지고 있다  2가지 상태의 데이터 - 뷰모델로 들어오는 Input - 뷰모델로 나가는 Output == 비즈니스 로직을 타서 완성된 데이터가 뷰모델에서 나가는 것  https://hackernoon.com/lang/ko/Swiftuis-5-주요-속성-래퍼-및-이를-효과적으로-사용하는-방법  */final class NumbersVM: ObservableObject {        private var subscriptions = Set&lt;AnyCancellable&gt;()        // MARK: - Input: 뷰모델로 들어오는 데이터    @Published var number1: String = &quot;&quot;    @Published var number2: String = &quot;&quot;    @Published var number3: String = &quot;&quot;    @Published var number4: String = &quot;&quot;        // MARK: - Output: 뷰모델로 나가는 데이터    @Published var resultValue: String = &quot;&quot;        init() {        print(#fileID, #function, #line, &quot;- &quot;)                Publishers            .CombineLatest4($number1,                            $number2,                            $number3,                            $number4)            .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                return  testValue1.getNumber() +                        testValue2.getNumber() +                        testValue3.getNumber() +                        testValue4.getNumber()            }            .map { String($0) }            // resultValue에 직접 꽂을건데 객체이므로 자기자신의 속성으로            .assign(to: \.resultValue, on: self)            /*             assign대신 이렇게 해도됨            .sink { value in                self.resultValue = value            }             */            .store(in: &amp;subscriptions)    }}2. NumbersViewModel 리팩토링  로직을 따로 뺴자  1번과 2번방식을 추천////  NumbersVM.swift//  CombineTutorial-example////  Created by 김동현 on 7/18/25.//import Combineimport UIKit/*  비즈니스 로직 - 데이터 상태를 VM이 가지고 있다 - 즉 완성된 데이터를 VM이 가지고 있다  2가지 상태의 데이터 - 뷰모델로 들어오는 Input - 뷰모델로 나가는 Output == 비즈니스 로직을 타서 완성된 데이터가 뷰모델에서 나가는 것  https://hackernoon.com/lang/ko/Swiftuis-5-주요-속성-래퍼-및-이를-효과적으로-사용하는-방법  */final class NumbersVM: ObservableObject {        private var subscriptions = Set&lt;AnyCancellable&gt;()        private lazy var resultPublisher: AnyPublisher&lt;String, Never&gt; =        Publishers            .CombineLatest4($number1,                            $number2,                            $number3,                            $number4)            .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                return  testValue1.getNumber() +                        testValue2.getNumber() +                        testValue3.getNumber() +                        testValue4.getNumber()            }            .map { String($0) }            .eraseToAnyPublisher()        private var resultPublisher2: AnyPublisher&lt;String, Never&gt; {        Publishers            .CombineLatest4($number1,                           $number2,                           $number3,                           $number4)           .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in               return  testValue1.getNumber() +                       testValue2.getNumber() +                       testValue3.getNumber() +                       testValue4.getNumber()           }           .map { String($0) }           .eraseToAnyPublisher()    }                // MARK: - Input: 뷰모델로 들어오는 데이터    @Published var number1: String = &quot;&quot;    @Published var number2: String = &quot;&quot;    @Published var number3: String = &quot;&quot;    @Published var number4: String = &quot;&quot;        // MARK: - Output: 뷰모델로 나가는 데이터    @Published var resultValue: String = &quot;&quot;        init() {        print(#fileID, #function, #line, &quot;- &quot;)                // 1번 방식        setupBinding()                // 2번 방식        resultPublisher            .assign(to: \.resultValue, on: self)            .store(in: &amp;subscriptions)                // 3번 방식        resultPublisher2            .assign(to: \.resultValue, on: self)            .store(in: &amp;subscriptions)    }    private func setupBinding() {        Publishers            .CombineLatest4($number1,                            $number2,                            $number3,                            $number4)            .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                return  testValue1.getNumber() +                        testValue2.getNumber() +                        testValue3.getNumber() +                        testValue4.getNumber()            }            .map { String($0) }            // resultValue에 직접 꽂을건데 객체이므로 자기자신의 속성으로            .assign(to: \.resultValue, on: self)            /*             assign대신 이렇게 해도됨            .sink { value in                self.resultValue = value            }             */            .store(in: &amp;subscriptions)    }}2. UIKit MVVM + Combine기존 NumbersViewController.swift  기존 코드는 ViewController에 로직이 들어있으니 mvvm으로 만들어보자.```swiftimport UIKitimport Combineimport CombineCocoafinal class NumbersViewController: UIViewController {    @IBOutlet weak var number1: UITextField!    @IBOutlet weak var number2: UITextField!    @IBOutlet weak var number3: UITextField!    @IBOutlet weak var result: UILabel!    var subscriptions = Set()    private var viewModel: NumbersVM = NumbersVM()override func viewDidLoad() {    super.viewDidLoad()        // MARK: - ViewModel에 Input 넣어주기            Publishers        .CombineLatest3(number1.textPublisher,                       number2.textPublisher,                       number3.textPublisher)        .map { testValue1, testValue2, testValue3 -&gt; Int in            return  testValue1.getNumber() +                    testValue2.getNumber() +                    testValue3.getNumber()        }        /*        .sink { value in            print(#fileID, #function, #line, &quot;- value: \(value)&quot;)        }         */        .map { String($0) }        .assign(to: \.text, on: result)        .store(in: &amp;subscriptions)} } ```NumbersViewController.swiftimport UIKitimport Combineimport CombineCocoafinal class NumbersViewController: UIViewController {    @IBOutlet weak var number1: UITextField!    @IBOutlet weak var number2: UITextField!    @IBOutlet weak var number3: UITextField!    @IBOutlet weak var result: UILabel!    var subscriptions = Set&lt;AnyCancellable&gt;()    private var viewModel: NumbersVM = NumbersVM()    override func viewDidLoad() {        super.viewDidLoad()                // MARK: - ViewModel에 Input 넣어주기        number1.textPublisher            .compactMap { $0 }            .assign(to: \.number1, on: viewModel) // viewModel이 가지고 있는 number1 속성에 꽂는다            .store(in: &amp;subscriptions)                number2.textPublisher            .compactMap { $0 }            .assign(to: \.number2, on: viewModel)            .store(in: &amp;subscriptions)                number3.textPublisher            .compactMap { $0 }            .assign(to: \.number3, on: viewModel)            .store(in: &amp;subscriptions)                // MARK: - ViewModel에서 나오는 데이터 바인딩하기        viewModel.$resultValue            .compactMap { $0 }            .map { String($0) }            .assign(to: \.text, on: result) // result.text에 resultValue를 해줘라            .store(in: &amp;subscriptions)                //        Publishers//            .CombineLatest3(number1.textPublisher,//                           number2.textPublisher,//                           number3.textPublisher)//            .map { testValue1, testValue2, testValue3 -&gt; Int in//                return  testValue1.getNumber() +//                        testValue2.getNumber() +//                        testValue3.getNumber()//            }//            /*//            .sink { value in//                print(#fileID, #function, #line, &quot;- value: \(value)&quot;)//            }//             *///            .map { String($0) }//            .assign(to: \.text, on: result)//            .store(in: &amp;subscriptions)    }}NumbersVM.swiftimport Combineimport UIKit/*  비즈니스 로직 - 데이터 상태를 VM이 가지고 있다 - 즉 완성된 데이터를 VM이 가지고 있다  2가지 상태의 데이터 - 뷰모델로 들어오는 Input - 뷰모델로 나가는 Output == 비즈니스 로직을 타서 완성된 데이터가 뷰모델에서 나가는 것  https://hackernoon.com/lang/ko/Swiftuis-5-주요-속성-래퍼-및-이를-효과적으로-사용하는-방법  */final class NumbersVM: ObservableObject {        private var subscriptions = Set&lt;AnyCancellable&gt;()        private lazy var resultPublisher: AnyPublisher&lt;String, Never&gt; =        Publishers            .CombineLatest4($number1,                            $number2,                            $number3,                            $number4)            .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                return  testValue1.getNumber() +                        testValue2.getNumber() +                        testValue3.getNumber() +                        testValue4.getNumber()            }            .map { String($0) }            .eraseToAnyPublisher()        private var resultPublisher2: AnyPublisher&lt;String, Never&gt; {        Publishers            .CombineLatest4($number1,                           $number2,                           $number3,                           $number4)           .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in               return  testValue1.getNumber() +                       testValue2.getNumber() +                       testValue3.getNumber() +                       testValue4.getNumber()           }           .map { String($0) }           .eraseToAnyPublisher()    }                // MARK: - Input: 뷰모델로 들어오는 데이터    @Published var number1: String = &quot;&quot;    @Published var number2: String = &quot;&quot;    @Published var number3: String = &quot;&quot;    @Published var number4: String = &quot;&quot;        // MARK: - Output: 뷰모델로 나가는 데이터    @Published var resultValue: String = &quot;&quot;        init() {        print(#fileID, #function, #line, &quot;- &quot;)                // 1번 방식        setupBinding()                // 2번 방식        /*        resultPublisher            .assign(to: \.resultValue, on: self)            .store(in: &amp;subscriptions)         */                // 3번 방식        /*        resultPublisher2            .assign(to: \.resultValue, on: self)            .store(in: &amp;subscriptions)         */    }    private func setupBinding() {        Publishers            .CombineLatest4($number1,                            $number2,                            $number3,                            $number4)            .map { testValue1, testValue2, testValue3, testValue4 -&gt; Int in                return  testValue1.getNumber() +                        testValue2.getNumber() +                        testValue3.getNumber() +                        testValue4.getNumber()            }            .map { String($0) }            // resultValue에 직접 꽂을건데 객체이므로 자기자신의 속성으로            .assign(to: \.resultValue, on: self)            /*             assign대신 이렇게 해도됨            .sink { value in                self.resultValue = value            }             */            .store(in: &amp;subscriptions)    }}">
+    <meta itemprop="datePublished" content="2025-07-18T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/Combine-example-2/" class="u-url" itemprop="url">[Combine] 예제 1 &amp; MVVM[SwiftUI/UIKit]
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=Combine">Combine</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-07-18T00:00:00+00:00">July 18, 2025</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
+
+<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<h4 id="1-swiftui-mvvm--combine">1. SwiftUI MVVM + Combine</h4>
+<h4 id="numbersviewswift">NumbersView.swift</h4>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">SwiftUI</span>
+
+<span class="cm">/*
+ @StateObject
+ - 객체를 직접 생성 및 소유한다
+ - 뷰가 다시 그려져도 객체는 재생성되지않는다
+ - 해당 뷰에서 객체롤 초기화 및 관리를 위해 사용
+ - 상태 유지에 효율적
+ - 루트뷰에서 주로 사용
+ - 객체를 초기화하고 SwiftUI 뷰 상태에 저장하는데 사용하는 속성 래퍼
+ - 뷰가 존재하는 한 객체가 저장되고 뷰와 함께 삭제됨을 의미한다
+ - 일반적으로 @StateObject를 사용하는 것은 하나의 뷰가 아닌 여러 뷰에 필요한 클래스 객체에 실용적이다
+ 
+ @ObservedObject
+ - 상태 변경시 뷰를 다시 생성
+ - 객체를 외부에서 주입받음
+ - 뷰가 다시 그려지면 객체도 다시 주입됨
+ - 상위 뷰에서 객체를 전달받아 사용시
+ - 객체가 자주 재생성됨
+ - 서브뷰 또는 전달받는뷰
+ 
+ 공통점
+ - observable 객체를 구독하는 property wrapper
+ - 구독중인 observable 객체가 변경되면 뷰에 업데이트 시켜주는 기능
+ 
+ 차이점
+ - 둘다 observableObject를 구독하여 값이 변경되면 뷰에 반영하는 property wrapper
+ - 상태 변경시 @ObservedObject는 뷰를 다시 생성하지만 @StateObject는 다시 생성하지않고 동일 뷰가 사용(효율)
+ - 기본적으로 @StateObject를 사용하되, 해당 프로퍼티를 subView에 주입해야 한다면 @ObservedObject로 선언하여 사용할 것
+ - subView에 @StateObject를 주입하면 해당 @StateObject의 수명 주기가 두 곳에서 관리가 되므로 의존성을 줄이기 위해 @ObservedObject를 사용
+ 
+ - https://hackernoon.com/lang/ko/Swiftuis-5-주요-속성-래퍼-및-이를-효과적으로-사용하는-방법
+ - https://ios-development.tistory.com/1160
+ */</span>
+
+<span class="kd">struct</span> <span class="kt">NumbersView</span><span class="p">:</span> <span class="kt">View</span> <span class="p">{</span>
+    
+    <span class="kd">@StateObject</span> <span class="kd">private</span> <span class="k">var</span> <span class="nv">viewModel</span> <span class="o">=</span> <span class="kt">NumbersVM</span><span class="p">()</span>
+    <span class="k">var</span> <span class="nv">body</span><span class="p">:</span> <span class="kd">some</span> <span class="kt">View</span> <span class="p">{</span>
+        <span class="kt">VStack</span><span class="p">(</span><span class="nv">alignment</span><span class="p">:</span> <span class="o">.</span><span class="n">trailing</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kt">TextField</span><span class="p">(</span><span class="s">""</span><span class="p">,</span> <span class="nv">text</span><span class="p">:</span> <span class="n">$viewModel</span><span class="o">.</span><span class="n">number1</span><span class="p">)</span>
+                <span class="o">.</span><span class="nf">textFieldStyle</span><span class="p">(</span><span class="kt">RoundedBorderTextFieldStyle</span><span class="p">())</span>
+            <span class="kt">TextField</span><span class="p">(</span><span class="s">""</span><span class="p">,</span> <span class="nv">text</span><span class="p">:</span> <span class="n">$viewModel</span><span class="o">.</span><span class="n">number2</span><span class="p">)</span>
+                <span class="o">.</span><span class="nf">textFieldStyle</span><span class="p">(</span><span class="kt">RoundedBorderTextFieldStyle</span><span class="p">())</span>
+            <span class="kt">TextField</span><span class="p">(</span><span class="s">""</span><span class="p">,</span> <span class="nv">text</span><span class="p">:</span> <span class="n">$viewModel</span><span class="o">.</span><span class="n">number3</span><span class="p">)</span>
+                <span class="o">.</span><span class="nf">textFieldStyle</span><span class="p">(</span><span class="kt">RoundedBorderTextFieldStyle</span><span class="p">())</span>
+            <span class="kt">TextField</span><span class="p">(</span><span class="s">""</span><span class="p">,</span> <span class="nv">text</span><span class="p">:</span> <span class="n">$viewModel</span><span class="o">.</span><span class="n">number4</span><span class="p">)</span>
+                <span class="o">.</span><span class="nf">textFieldStyle</span><span class="p">(</span><span class="kt">RoundedBorderTextFieldStyle</span><span class="p">())</span>
+            <span class="kt">Divider</span><span class="p">()</span>
+            <span class="kt">Text</span><span class="p">(</span><span class="n">viewModel</span><span class="o">.</span><span class="n">resultValue</span><span class="p">)</span>
+                <span class="o">.</span><span class="nf">fontWeight</span><span class="p">(</span><span class="o">.</span><span class="n">bold</span><span class="p">)</span>
+                <span class="o">.</span><span class="nf">foregroundStyle</span><span class="p">(</span><span class="o">.</span><span class="n">white</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="o">.</span><span class="nf">padding</span><span class="p">(</span><span class="o">.</span><span class="n">horizontal</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="o">.</span><span class="nf">frame</span><span class="p">(</span><span class="nv">maxWidth</span><span class="p">:</span> <span class="o">.</span><span class="n">infinity</span><span class="p">,</span> <span class="nv">maxHeight</span><span class="p">:</span> <span class="o">.</span><span class="n">infinity</span><span class="p">)</span>
+        <span class="o">.</span><span class="nf">background</span><span class="p">(</span><span class="o">.</span><span class="n">yellow</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cp">#Preview {</span>
+    <span class="kt">NumbersView</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="numbersviewmodelswift">NumbersViewModel.swift</h4>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Combine</span>
+<span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="cm">/*
+ 
+ 비즈니스 로직
+ - 데이터 상태를 VM이 가지고 있다
+ - 즉 완성된 데이터를 VM이 가지고 있다
+ 
+ 2가지 상태의 데이터
+ - 뷰모델로 들어오는 Input
+ - 뷰모델로 나가는 Output == 비즈니스 로직을 타서 완성된 데이터가 뷰모델에서 나가는 것
+ 
+ https://hackernoon.com/lang/ko/Swiftuis-5-주요-속성-래퍼-및-이를-효과적으로-사용하는-방법
+ 
+ */</span>
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">NumbersVM</span><span class="p">:</span> <span class="kt">ObservableObject</span> <span class="p">{</span>
+    
+    <span class="kd">private</span> <span class="k">var</span> <span class="nv">subscriptions</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">AnyCancellable</span><span class="o">&gt;</span><span class="p">()</span>
+    
+    <span class="c1">// MARK: - Input: 뷰모델로 들어오는 데이터</span>
+    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">number1</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">number2</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">number3</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">number4</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+    
+    <span class="c1">// MARK: - Output: 뷰모델로 나가는 데이터</span>
+    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">resultValue</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+    
+    <span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        
+        <span class="kt">Publishers</span>
+            <span class="o">.</span><span class="kt">CombineLatest4</span><span class="p">(</span><span class="n">$number1</span><span class="p">,</span>
+                            <span class="n">$number2</span><span class="p">,</span>
+                            <span class="n">$number3</span><span class="p">,</span>
+                            <span class="n">$number4</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">testValue1</span><span class="p">,</span> <span class="n">testValue2</span><span class="p">,</span> <span class="n">testValue3</span><span class="p">,</span> <span class="n">testValue4</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="k">in</span>
+                <span class="k">return</span>  <span class="n">testValue1</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                        <span class="n">testValue2</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                        <span class="n">testValue3</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                        <span class="n">testValue4</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span>
+            <span class="p">}</span>
+
+            <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span>
+            <span class="c1">// resultValue에 직접 꽂을건데 객체이므로 자기자신의 속성으로</span>
+            <span class="o">.</span><span class="nf">assign</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">resultValue</span><span class="p">,</span> <span class="nv">on</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span>
+            <span class="cm">/*
+             assign대신 이렇게 해도됨
+            .sink { value in
+                self.resultValue = value
+            }
+             */</span>
+            <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<h4 id="2-numbersviewmodel-리팩토링">2. NumbersViewModel 리팩토링</h4>
+<ul>
+  <li>로직을 따로 뺴자</li>
+  <li>1번과 2번방식을 추천</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//</span>
+<span class="c1">//  NumbersVM.swift</span>
+<span class="c1">//  CombineTutorial-example</span>
+<span class="c1">//</span>
+<span class="c1">//  Created by 김동현 on 7/18/25.</span>
+<span class="c1">//</span>
+
+<span class="kd">import</span> <span class="kt">Combine</span>
+<span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="cm">/*
+ 
+ 비즈니스 로직
+ - 데이터 상태를 VM이 가지고 있다
+ - 즉 완성된 데이터를 VM이 가지고 있다
+ 
+ 2가지 상태의 데이터
+ - 뷰모델로 들어오는 Input
+ - 뷰모델로 나가는 Output == 비즈니스 로직을 타서 완성된 데이터가 뷰모델에서 나가는 것
+ 
+ https://hackernoon.com/lang/ko/Swiftuis-5-주요-속성-래퍼-및-이를-효과적으로-사용하는-방법
+ 
+ */</span>
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">NumbersVM</span><span class="p">:</span> <span class="kt">ObservableObject</span> <span class="p">{</span>
+    
+    <span class="kd">private</span> <span class="k">var</span> <span class="nv">subscriptions</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">AnyCancellable</span><span class="o">&gt;</span><span class="p">()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">resultPublisher</span><span class="p">:</span> <span class="kt">AnyPublisher</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kt">Never</span><span class="o">&gt;</span> <span class="o">=</span>
+        <span class="kt">Publishers</span>
+            <span class="o">.</span><span class="kt">CombineLatest4</span><span class="p">(</span><span class="n">$number1</span><span class="p">,</span>
+                            <span class="n">$number2</span><span class="p">,</span>
+                            <span class="n">$number3</span><span class="p">,</span>
+                            <span class="n">$number4</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">testValue1</span><span class="p">,</span> <span class="n">testValue2</span><span class="p">,</span> <span class="n">testValue3</span><span class="p">,</span> <span class="n">testValue4</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="k">in</span>
+                <span class="k">return</span>  <span class="n">testValue1</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                        <span class="n">testValue2</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                        <span class="n">testValue3</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                        <span class="n">testValue4</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span>
+            <span class="o">.</span><span class="nf">eraseToAnyPublisher</span><span class="p">()</span>
+    
+    <span class="kd">private</span> <span class="k">var</span> <span class="nv">resultPublisher2</span><span class="p">:</span> <span class="kt">AnyPublisher</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kt">Never</span><span class="o">&gt;</span> <span class="p">{</span>
+        <span class="kt">Publishers</span>
+            <span class="o">.</span><span class="kt">CombineLatest4</span><span class="p">(</span><span class="n">$number1</span><span class="p">,</span>
+                           <span class="n">$number2</span><span class="p">,</span>
+                           <span class="n">$number3</span><span class="p">,</span>
+                           <span class="n">$number4</span><span class="p">)</span>
+           <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">testValue1</span><span class="p">,</span> <span class="n">testValue2</span><span class="p">,</span> <span class="n">testValue3</span><span class="p">,</span> <span class="n">testValue4</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="k">in</span>
+               <span class="k">return</span>  <span class="n">testValue1</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                       <span class="n">testValue2</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                       <span class="n">testValue3</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                       <span class="n">testValue4</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span>
+           <span class="p">}</span>
+           <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span>
+           <span class="o">.</span><span class="nf">eraseToAnyPublisher</span><span class="p">()</span>
+    <span class="p">}</span>
+        
+    
+    <span class="c1">// MARK: - Input: 뷰모델로 들어오는 데이터</span>
+    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">number1</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">number2</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">number3</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">number4</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+    
+    <span class="c1">// MARK: - Output: 뷰모델로 나가는 데이터</span>
+    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">resultValue</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+    
+    <span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        
+        <span class="c1">// 1번 방식</span>
+        <span class="nf">setupBinding</span><span class="p">()</span>
+        
+        <span class="c1">// 2번 방식</span>
+        <span class="n">resultPublisher</span>
+            <span class="o">.</span><span class="nf">assign</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">resultValue</span><span class="p">,</span> <span class="nv">on</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span>
+            <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
+        
+        <span class="c1">// 3번 방식</span>
+        <span class="n">resultPublisher2</span>
+            <span class="o">.</span><span class="nf">assign</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">resultValue</span><span class="p">,</span> <span class="nv">on</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span>
+            <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">setupBinding</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kt">Publishers</span>
+            <span class="o">.</span><span class="kt">CombineLatest4</span><span class="p">(</span><span class="n">$number1</span><span class="p">,</span>
+                            <span class="n">$number2</span><span class="p">,</span>
+                            <span class="n">$number3</span><span class="p">,</span>
+                            <span class="n">$number4</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">testValue1</span><span class="p">,</span> <span class="n">testValue2</span><span class="p">,</span> <span class="n">testValue3</span><span class="p">,</span> <span class="n">testValue4</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="k">in</span>
+                <span class="k">return</span>  <span class="n">testValue1</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                        <span class="n">testValue2</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                        <span class="n">testValue3</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                        <span class="n">testValue4</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span>
+            <span class="p">}</span>
+
+            <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span>
+            <span class="c1">// resultValue에 직접 꽂을건데 객체이므로 자기자신의 속성으로</span>
+            <span class="o">.</span><span class="nf">assign</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">resultValue</span><span class="p">,</span> <span class="nv">on</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span>
+            <span class="cm">/*
+             assign대신 이렇게 해도됨
+            .sink { value in
+                self.resultValue = value
+            }
+             */</span>
+            <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<h4 id="2-uikit-mvvm--combine">2. UIKit MVVM + Combine</h4>
+<h4 id="기존-numbersviewcontrollerswift">기존 NumbersViewController.swift</h4>
+<ul>
+  <li>기존 코드는 ViewController에 로직이 들어있으니 mvvm으로 만들어보자.<br />
+```swift<br />
+import UIKit<br />
+import Combine<br />
+import CombineCocoa</li>
+</ul>
+
+<p>final class NumbersViewController: UIViewController {<br />
+    @IBOutlet weak var number1: UITextField!<br />
+    @IBOutlet weak var number2: UITextField!<br />
+    @IBOutlet weak var number3: UITextField!<br />
+    @IBOutlet weak var result: UILabel!<br />
+    var subscriptions = Set<AnyCancellable>()
+    private var viewModel: NumbersVM = NumbersVM()</AnyCancellable></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>override func viewDidLoad() {
+    super.viewDidLoad()
+    
+    // MARK: - ViewModel에 Input 넣어주기
+    
+    
+    Publishers
+        .CombineLatest3(number1.textPublisher,
+                       number2.textPublisher,
+                       number3.textPublisher)
+        .map { testValue1, testValue2, testValue3 -&gt; Int in
+            return  testValue1.getNumber() +
+                    testValue2.getNumber() +
+                    testValue3.getNumber()
+        }
+        /*
+        .sink { value in
+            print(#fileID, #function, #line, "- value: \(value)")
+        }
+         */
+        .map { String($0) }
+        .assign(to: \.text, on: result)
+        .store(in: &amp;subscriptions)
+} } ```
+</code></pre></div></div>
+
+<h4 id="numbersviewcontrollerswift">NumbersViewController.swift</h4>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+<span class="kd">import</span> <span class="kt">Combine</span>
+<span class="kd">import</span> <span class="kt">CombineCocoa</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">NumbersViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">number1</span><span class="p">:</span> <span class="kt">UITextField</span><span class="o">!</span>
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">number2</span><span class="p">:</span> <span class="kt">UITextField</span><span class="o">!</span>
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">number3</span><span class="p">:</span> <span class="kt">UITextField</span><span class="o">!</span>
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">result</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span>
+    <span class="k">var</span> <span class="nv">subscriptions</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">AnyCancellable</span><span class="o">&gt;</span><span class="p">()</span>
+    <span class="kd">private</span> <span class="k">var</span> <span class="nv">viewModel</span><span class="p">:</span> <span class="kt">NumbersVM</span> <span class="o">=</span> <span class="kt">NumbersVM</span><span class="p">()</span>
+
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        
+        <span class="c1">// MARK: - ViewModel에 Input 넣어주기</span>
+        <span class="n">number1</span><span class="o">.</span><span class="n">textPublisher</span>
+            <span class="o">.</span><span class="n">compactMap</span> <span class="p">{</span> <span class="nv">$0</span> <span class="p">}</span>
+            <span class="o">.</span><span class="nf">assign</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">number1</span><span class="p">,</span> <span class="nv">on</span><span class="p">:</span> <span class="n">viewModel</span><span class="p">)</span> <span class="c1">// viewModel이 가지고 있는 number1 속성에 꽂는다</span>
+            <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
+        
+        <span class="n">number2</span><span class="o">.</span><span class="n">textPublisher</span>
+            <span class="o">.</span><span class="n">compactMap</span> <span class="p">{</span> <span class="nv">$0</span> <span class="p">}</span>
+            <span class="o">.</span><span class="nf">assign</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">number2</span><span class="p">,</span> <span class="nv">on</span><span class="p">:</span> <span class="n">viewModel</span><span class="p">)</span>
+            <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
+        
+        <span class="n">number3</span><span class="o">.</span><span class="n">textPublisher</span>
+            <span class="o">.</span><span class="n">compactMap</span> <span class="p">{</span> <span class="nv">$0</span> <span class="p">}</span>
+            <span class="o">.</span><span class="nf">assign</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">number3</span><span class="p">,</span> <span class="nv">on</span><span class="p">:</span> <span class="n">viewModel</span><span class="p">)</span>
+            <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
+        
+        <span class="c1">// MARK: - ViewModel에서 나오는 데이터 바인딩하기</span>
+        <span class="n">viewModel</span><span class="o">.</span><span class="n">$resultValue</span>
+            <span class="o">.</span><span class="n">compactMap</span> <span class="p">{</span> <span class="nv">$0</span> <span class="p">}</span>
+            <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span>
+            <span class="o">.</span><span class="nf">assign</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="nv">on</span><span class="p">:</span> <span class="n">result</span><span class="p">)</span> <span class="c1">// result.text에 resultValue를 해줘라</span>
+            <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
+        
+        
+<span class="c1">//        Publishers</span>
+<span class="c1">//            .CombineLatest3(number1.textPublisher,</span>
+<span class="c1">//                           number2.textPublisher,</span>
+<span class="c1">//                           number3.textPublisher)</span>
+<span class="c1">//            .map { testValue1, testValue2, testValue3 -&gt; Int in</span>
+<span class="c1">//                return  testValue1.getNumber() +</span>
+<span class="c1">//                        testValue2.getNumber() +</span>
+<span class="c1">//                        testValue3.getNumber()</span>
+<span class="c1">//            }</span>
+<span class="c1">//            /*</span>
+<span class="c1">//            .sink { value in</span>
+<span class="c1">//                print(#fileID, #function, #line, "- value: \(value)")</span>
+<span class="c1">//            }</span>
+<span class="c1">//             */</span>
+<span class="c1">//            .map { String($0) }</span>
+<span class="c1">//            .assign(to: \.text, on: result)</span>
+<span class="c1">//            .store(in: &amp;subscriptions)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="numbersvmswift">NumbersVM.swift</h4>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Combine</span>
+<span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="cm">/*
+ 
+ 비즈니스 로직
+ - 데이터 상태를 VM이 가지고 있다
+ - 즉 완성된 데이터를 VM이 가지고 있다
+ 
+ 2가지 상태의 데이터
+ - 뷰모델로 들어오는 Input
+ - 뷰모델로 나가는 Output == 비즈니스 로직을 타서 완성된 데이터가 뷰모델에서 나가는 것
+ 
+ https://hackernoon.com/lang/ko/Swiftuis-5-주요-속성-래퍼-및-이를-효과적으로-사용하는-방법
+ 
+ */</span>
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">NumbersVM</span><span class="p">:</span> <span class="kt">ObservableObject</span> <span class="p">{</span>
+    
+    <span class="kd">private</span> <span class="k">var</span> <span class="nv">subscriptions</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">AnyCancellable</span><span class="o">&gt;</span><span class="p">()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">resultPublisher</span><span class="p">:</span> <span class="kt">AnyPublisher</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kt">Never</span><span class="o">&gt;</span> <span class="o">=</span>
+        <span class="kt">Publishers</span>
+            <span class="o">.</span><span class="kt">CombineLatest4</span><span class="p">(</span><span class="n">$number1</span><span class="p">,</span>
+                            <span class="n">$number2</span><span class="p">,</span>
+                            <span class="n">$number3</span><span class="p">,</span>
+                            <span class="n">$number4</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">testValue1</span><span class="p">,</span> <span class="n">testValue2</span><span class="p">,</span> <span class="n">testValue3</span><span class="p">,</span> <span class="n">testValue4</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="k">in</span>
+                <span class="k">return</span>  <span class="n">testValue1</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                        <span class="n">testValue2</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                        <span class="n">testValue3</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                        <span class="n">testValue4</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span>
+            <span class="o">.</span><span class="nf">eraseToAnyPublisher</span><span class="p">()</span>
+    
+    <span class="kd">private</span> <span class="k">var</span> <span class="nv">resultPublisher2</span><span class="p">:</span> <span class="kt">AnyPublisher</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kt">Never</span><span class="o">&gt;</span> <span class="p">{</span>
+        <span class="kt">Publishers</span>
+            <span class="o">.</span><span class="kt">CombineLatest4</span><span class="p">(</span><span class="n">$number1</span><span class="p">,</span>
+                           <span class="n">$number2</span><span class="p">,</span>
+                           <span class="n">$number3</span><span class="p">,</span>
+                           <span class="n">$number4</span><span class="p">)</span>
+           <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">testValue1</span><span class="p">,</span> <span class="n">testValue2</span><span class="p">,</span> <span class="n">testValue3</span><span class="p">,</span> <span class="n">testValue4</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="k">in</span>
+               <span class="k">return</span>  <span class="n">testValue1</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                       <span class="n">testValue2</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                       <span class="n">testValue3</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                       <span class="n">testValue4</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span>
+           <span class="p">}</span>
+           <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span>
+           <span class="o">.</span><span class="nf">eraseToAnyPublisher</span><span class="p">()</span>
+    <span class="p">}</span>
+        
+    
+    <span class="c1">// MARK: - Input: 뷰모델로 들어오는 데이터</span>
+    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">number1</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">number2</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">number3</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">number4</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+    
+    <span class="c1">// MARK: - Output: 뷰모델로 나가는 데이터</span>
+    <span class="kd">@Published</span> <span class="k">var</span> <span class="nv">resultValue</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+    
+    <span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        
+        <span class="c1">// 1번 방식</span>
+        <span class="nf">setupBinding</span><span class="p">()</span>
+        
+        <span class="c1">// 2번 방식</span>
+        <span class="cm">/*
+        resultPublisher
+            .assign(to: \.resultValue, on: self)
+            .store(in: &amp;subscriptions)
+         */</span>
+        
+        <span class="c1">// 3번 방식</span>
+        <span class="cm">/*
+        resultPublisher2
+            .assign(to: \.resultValue, on: self)
+            .store(in: &amp;subscriptions)
+         */</span>
+    <span class="p">}</span>
+
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">setupBinding</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kt">Publishers</span>
+            <span class="o">.</span><span class="kt">CombineLatest4</span><span class="p">(</span><span class="n">$number1</span><span class="p">,</span>
+                            <span class="n">$number2</span><span class="p">,</span>
+                            <span class="n">$number3</span><span class="p">,</span>
+                            <span class="n">$number4</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">testValue1</span><span class="p">,</span> <span class="n">testValue2</span><span class="p">,</span> <span class="n">testValue3</span><span class="p">,</span> <span class="n">testValue4</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="k">in</span>
+                <span class="k">return</span>  <span class="n">testValue1</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                        <span class="n">testValue2</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                        <span class="n">testValue3</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span> <span class="o">+</span>
+                        <span class="n">testValue4</span><span class="o">.</span><span class="nf">getNumber</span><span class="p">()</span>
+            <span class="p">}</span>
+
+            <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">String</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span>
+            <span class="c1">// resultValue에 직접 꽂을건데 객체이므로 자기자신의 속성으로</span>
+            <span class="o">.</span><span class="nf">assign</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">resultValue</span><span class="p">,</span> <span class="nv">on</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span>
+            <span class="cm">/*
+             assign대신 이렇게 해도됨
+            .sink { value in
+                self.resultValue = value
+            }
+             */</span>
+            <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/Makefile/" class="pagination--pager" title="
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

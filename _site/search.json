@@ -1,6 +1,22 @@
 [
     
         {
+        "title"    : "[Combine] 예제 1 &amp; MVVM[SwiftUI/UIKit]",
+        "category" : "",
+        "tags"     : "Combine",
+        "url"      : "/Combine-example-2/",
+        "date"     : "2025-07-18 00:00:00 +0000"
+        } ,
+    
+        {
+        "title"    : "",
+        "category" : "",
+        "tags"     : "",
+        "url"      : "/Makefile/",
+        "date"     : "2025-07-18 00:00:00 +0000"
+        } ,
+    
+        {
         "title"    : "[Data Structure] 1. 자료구조와 알고리즘",
         "category" : "",
         "tags"     : "Data Structure",
@@ -17,7 +33,7 @@
         } ,
     
         {
-        "title"    : "[Combine] 예제 1",
+        "title"    : "[Combine] 예제 1 &amp; 제네릭으로 UIKit에서 SwiftUI 불러오기",
         "category" : "",
         "tags"     : "Combine",
         "url"      : "/Combine-example-1/",
