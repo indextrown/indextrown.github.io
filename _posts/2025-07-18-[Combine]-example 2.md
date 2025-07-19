@@ -1,5 +1,5 @@
 ---
-title: "[Combine] 예제 1 & MVVM[SwiftUI/UIKit]"
+title: "[Combine] 예제 2 & MVVM[SwiftUI/UIKit]"
 tags: 
 - Combine
 header: 

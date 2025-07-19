@@ -1,0 +1,879 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>[Combine] 예제 3 &amp; UIKit Validation - DongHyeon Kim’s Blog</title>
+<meta name="description" content="Main.storyboard     ValidationViewController.swift/storyboard           1. Main.storyboard에 연결된 ViewController.swift import UIKit import Combine import CombineCocoa  class ViewController: UIViewController {      // Combine의 구독을 저장하는 Set     // VC가 해제되면 subscriptions 프로퍼티도 함께 메모리에서 해제되고, 그 안에 저장된 구독들도 함께 해제되어 메모리 누수를 방지한다     // 구독 찌꺼기 담는 통: VC가 메모리에서 해제되면 VC에서 사용된 구독 찌꺼기가 담긴다     var subscriptions = Set&lt;AnyCancellable&gt;()          @IBOutlet weak var navToNumbersBtn: UIButton!     @IBOutlet weak var navToNumberSwiftUIBtn: UIButton!     @IBOutlet weak var navToValidationUIKitBtn: UIButton!               override func viewDidLoad() {         super.viewDidLoad()                 navToNumbersBtn             .tapPublisher             .sink(receiveValue: {                 print(#fileID, #function, #line, &quot;- &quot;)                  let numbersVC = NumbersViewController.instantiate(&quot;Numbers&quot;)                 self.navigationController?.pushViewController(numbersVC, animated: true)                              })             // 구독에 대한 찌꺼기가 담긴다             .store(in: &amp;subscriptions)                  navToNumberSwiftUIBtn             .tapPublisher             .sink(receiveValue: {                 print(#fileID, #function, #line, &quot;- &quot;)                  let numbersVC = NumbersView().getContainerVC()                 self.navigationController?.pushViewController(numbersVC, animated: true)                                  /*                 let testVC = TestView().getContainerVC()                 self.navigationController?.pushViewController(testVC, animated: true)                  */                              })             // 구독에 대한 찌꺼기가 담긴다             .store(in: &amp;subscriptions)                  navToValidationUIKitBtn             .tapPublisher             .sink(receiveValue: {                 let vc = ValidationExampleViewController(nibName: &quot;ValidationExampleViewController&quot;, bundle: nil)                 self.navigationController?.pushViewController(vc, animated: true)             })             // 구독에 대한 찌꺼기가 담긴다             .store(in: &amp;subscriptions)     } }   2. ValidationViewController.storyboard에 연결된 ValidationViewController.swift import UIKit  class ValidationExampleViewController: UIViewController {           @IBOutlet weak var userNameTF: UITextField!     @IBOutlet weak var userNameValidationLabel: UILabel!          @IBOutlet weak var passwordTF: UITextField!     @IBOutlet weak var passwordValidationLabel: UILabel!           @IBOutlet weak var loginButton: UIButton!               override func viewDidLoad() {         super.viewDidLoad()     } }   3. ValidationVC를 편하게 만드는 헬퍼메스드 구현  ValidationExampleViewController.swift import UIKit  class ValidationExampleViewController: UIViewController {           @IBOutlet weak var userNameTF: UITextField!     @IBOutlet weak var userNameValidationLabel: UILabel!          @IBOutlet weak var passwordTF: UITextField!     @IBOutlet weak var passwordValidationLabel: UILabel!           @IBOutlet weak var loginButton: UIButton!               override func viewDidLoad() {         super.viewDidLoad()     }          // MARK: - Helper Method     // validationExampleVC를 생성하지 않고 만들어주는 역할 - 타입메서드     class func getInstance() -&gt; ValidationExampleViewController { // MARK: - 상속을 고료하지 않는 경우면 static func         ValidationExampleViewController(nibName: &quot;ValidationExampleViewController&quot;, bundle: nil)     } }  // MARK: - 조금 더 제네릭하게 한다면 extension UIViewController {/// nib 파일 이름이 클래스명과 동일할 때 해당 ViewController 인스턴스를 생성합니다.     ///     /// - Returns: nibName과 동일한 이름의 UIViewController 인스턴스     /// - Example:     /// ```swift     /// let vc = MyViewController.instantiateFromNib()     /// ```     ///Self: 호출하는 타입 자신 (예: MyViewController)     /// String(describing: Self.self): &quot;MyViewController&quot; → nib 파일 이름과 일치     static func instantiateFromNib() -&gt; Self {         return Self(nibName: String(describing: Self.self), bundle: nil)     } }   ViewController navToValidationUIKitBtn     .tapPublisher     .sink(receiveValue: {                  // 원래 방식         // let vc = ValidationExampleViewController(nibName: &quot;ValidationExampleViewController&quot;, bundle: nil)                  // Helper Method 방식         // let vc = ValidationExampleViewController.getInstance()                  // Helper Method2 방식         let vc = ValidationExampleViewController.instantiateFromNib()         self.navigationController?.pushViewController(vc, animated: true)     })     // 구독에 대한 찌꺼기가 담긴다     .store(in: &amp;subscriptions)   3. ViewController.swift에서 버튼 추가시마다 Outlet 연결을 해야하는데 불편하다    매번 Outlet 연결 및 tapPublisher연결을 편리하게 만드는법으로 수정해보자      기존 Main.storyboard에서 Stack내부의 버튼을 지운다   크기아 없어도 상관없다. 아이템을 넣어서 크기를 만들거다   stackView를 View로 감쌌는데 스택뷰를 밖으로 빼고 view를 지운다   StackView를 Frame Layout에 드래그하고 exuql width 설정해준다   Inspector에서 multiplier를 1로 해준다   stackView를 ViewController로 가져온다     import UIKit import Combine import CombineCocoa  enum ExampleType: Int, CaseIterable {     case numbersUIKit    // rawValue: 0     case numbersSwiftUI  // 1     case validationUIKit // 2          func makeButton() -&gt; UIButton {         let button = UIButton(type: .system)         button.configuration = .filled()         button.setTitle(String(describing: self), for: .normal)         button.tag = self.rawValue         return button     }          func makeVC() -&gt; UIViewController {         switch self {         case .numbersUIKit:             NumbersViewController.instantiate(&quot;Numbers&quot;)         case .numbersSwiftUI:             NumbersView().getContainerVC()         case .validationUIKit:             ValidationExampleViewController.instantiateFromNib()         }     } }  class ViewController: UIViewController {      // Combine의 구독을 저장하는 Set     // VC가 해제되면 subscriptions 프로퍼티도 함께 메모리에서 해제되고, 그 안에 저장된 구독들도 함께 해제되어 메모리 누수를 방지한다     // 구독 찌꺼기 담는 통: VC가 메모리에서 해제되면 VC에서 사용된 구독 찌꺼기가 담긴다     var subscriptions = Set&lt;AnyCancellable&gt;()          @IBOutlet weak var buttonContainerStackView: UIStackView!          override func viewDidLoad() {         super.viewDidLoad()                  let exampleTypes: [ExampleType] = ExampleType.allCases                  exampleTypes.forEach { aType in             let button = aType.makeButton()             button                 .tapPublisher                 .sink(receiveValue: { [weak self] in // 클로저 내에서 self를 사용하니까 강한참조를 뺴기 위해 캡처리스트로 약하게 해준다                     // 각 타입마다 뷰컨트롤러 종류가 다르다(storyboard, swiftUI, xib)                     guard let self = self else { return }                     let vc = aType.makeVC()                     self.navigationController?.pushViewController(vc, animated: true)                 })                 .store(in: &amp;subscriptions)                          buttonContainerStackView.addArrangedSubview(button)         }     } }">
+
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[Combine] 예제 3 &amp; UIKit Validation">
+<meta property="og:url" content="http://localhost:4000/Combine-example-3/">
+
+
+  <meta property="og:description" content="Main.storyboard     ValidationViewController.swift/storyboard           1. Main.storyboard에 연결된 ViewController.swift import UIKit import Combine import CombineCocoa  class ViewController: UIViewController {      // Combine의 구독을 저장하는 Set     // VC가 해제되면 subscriptions 프로퍼티도 함께 메모리에서 해제되고, 그 안에 저장된 구독들도 함께 해제되어 메모리 누수를 방지한다     // 구독 찌꺼기 담는 통: VC가 메모리에서 해제되면 VC에서 사용된 구독 찌꺼기가 담긴다     var subscriptions = Set&lt;AnyCancellable&gt;()          @IBOutlet weak var navToNumbersBtn: UIButton!     @IBOutlet weak var navToNumberSwiftUIBtn: UIButton!     @IBOutlet weak var navToValidationUIKitBtn: UIButton!               override func viewDidLoad() {         super.viewDidLoad()                 navToNumbersBtn             .tapPublisher             .sink(receiveValue: {                 print(#fileID, #function, #line, &quot;- &quot;)                  let numbersVC = NumbersViewController.instantiate(&quot;Numbers&quot;)                 self.navigationController?.pushViewController(numbersVC, animated: true)                              })             // 구독에 대한 찌꺼기가 담긴다             .store(in: &amp;subscriptions)                  navToNumberSwiftUIBtn             .tapPublisher             .sink(receiveValue: {                 print(#fileID, #function, #line, &quot;- &quot;)                  let numbersVC = NumbersView().getContainerVC()                 self.navigationController?.pushViewController(numbersVC, animated: true)                                  /*                 let testVC = TestView().getContainerVC()                 self.navigationController?.pushViewController(testVC, animated: true)                  */                              })             // 구독에 대한 찌꺼기가 담긴다             .store(in: &amp;subscriptions)                  navToValidationUIKitBtn             .tapPublisher             .sink(receiveValue: {                 let vc = ValidationExampleViewController(nibName: &quot;ValidationExampleViewController&quot;, bundle: nil)                 self.navigationController?.pushViewController(vc, animated: true)             })             // 구독에 대한 찌꺼기가 담긴다             .store(in: &amp;subscriptions)     } }   2. ValidationViewController.storyboard에 연결된 ValidationViewController.swift import UIKit  class ValidationExampleViewController: UIViewController {           @IBOutlet weak var userNameTF: UITextField!     @IBOutlet weak var userNameValidationLabel: UILabel!          @IBOutlet weak var passwordTF: UITextField!     @IBOutlet weak var passwordValidationLabel: UILabel!           @IBOutlet weak var loginButton: UIButton!               override func viewDidLoad() {         super.viewDidLoad()     } }   3. ValidationVC를 편하게 만드는 헬퍼메스드 구현  ValidationExampleViewController.swift import UIKit  class ValidationExampleViewController: UIViewController {           @IBOutlet weak var userNameTF: UITextField!     @IBOutlet weak var userNameValidationLabel: UILabel!          @IBOutlet weak var passwordTF: UITextField!     @IBOutlet weak var passwordValidationLabel: UILabel!           @IBOutlet weak var loginButton: UIButton!               override func viewDidLoad() {         super.viewDidLoad()     }          // MARK: - Helper Method     // validationExampleVC를 생성하지 않고 만들어주는 역할 - 타입메서드     class func getInstance() -&gt; ValidationExampleViewController { // MARK: - 상속을 고료하지 않는 경우면 static func         ValidationExampleViewController(nibName: &quot;ValidationExampleViewController&quot;, bundle: nil)     } }  // MARK: - 조금 더 제네릭하게 한다면 extension UIViewController {/// nib 파일 이름이 클래스명과 동일할 때 해당 ViewController 인스턴스를 생성합니다.     ///     /// - Returns: nibName과 동일한 이름의 UIViewController 인스턴스     /// - Example:     /// ```swift     /// let vc = MyViewController.instantiateFromNib()     /// ```     ///Self: 호출하는 타입 자신 (예: MyViewController)     /// String(describing: Self.self): &quot;MyViewController&quot; → nib 파일 이름과 일치     static func instantiateFromNib() -&gt; Self {         return Self(nibName: String(describing: Self.self), bundle: nil)     } }   ViewController navToValidationUIKitBtn     .tapPublisher     .sink(receiveValue: {                  // 원래 방식         // let vc = ValidationExampleViewController(nibName: &quot;ValidationExampleViewController&quot;, bundle: nil)                  // Helper Method 방식         // let vc = ValidationExampleViewController.getInstance()                  // Helper Method2 방식         let vc = ValidationExampleViewController.instantiateFromNib()         self.navigationController?.pushViewController(vc, animated: true)     })     // 구독에 대한 찌꺼기가 담긴다     .store(in: &amp;subscriptions)   3. ViewController.swift에서 버튼 추가시마다 Outlet 연결을 해야하는데 불편하다    매번 Outlet 연결 및 tapPublisher연결을 편리하게 만드는법으로 수정해보자      기존 Main.storyboard에서 Stack내부의 버튼을 지운다   크기아 없어도 상관없다. 아이템을 넣어서 크기를 만들거다   stackView를 View로 감쌌는데 스택뷰를 밖으로 빼고 view를 지운다   StackView를 Frame Layout에 드래그하고 exuql width 설정해준다   Inspector에서 multiplier를 1로 해준다   stackView를 ViewController로 가져온다     import UIKit import Combine import CombineCocoa  enum ExampleType: Int, CaseIterable {     case numbersUIKit    // rawValue: 0     case numbersSwiftUI  // 1     case validationUIKit // 2          func makeButton() -&gt; UIButton {         let button = UIButton(type: .system)         button.configuration = .filled()         button.setTitle(String(describing: self), for: .normal)         button.tag = self.rawValue         return button     }          func makeVC() -&gt; UIViewController {         switch self {         case .numbersUIKit:             NumbersViewController.instantiate(&quot;Numbers&quot;)         case .numbersSwiftUI:             NumbersView().getContainerVC()         case .validationUIKit:             ValidationExampleViewController.instantiateFromNib()         }     } }  class ViewController: UIViewController {      // Combine의 구독을 저장하는 Set     // VC가 해제되면 subscriptions 프로퍼티도 함께 메모리에서 해제되고, 그 안에 저장된 구독들도 함께 해제되어 메모리 누수를 방지한다     // 구독 찌꺼기 담는 통: VC가 메모리에서 해제되면 VC에서 사용된 구독 찌꺼기가 담긴다     var subscriptions = Set&lt;AnyCancellable&gt;()          @IBOutlet weak var buttonContainerStackView: UIStackView!          override func viewDidLoad() {         super.viewDidLoad()                  let exampleTypes: [ExampleType] = ExampleType.allCases                  exampleTypes.forEach { aType in             let button = aType.makeButton()             button                 .tapPublisher                 .sink(receiveValue: { [weak self] in // 클로저 내에서 self를 사용하니까 강한참조를 뺴기 위해 캡처리스트로 약하게 해준다                     // 각 타입마다 뷰컨트롤러 종류가 다르다(storyboard, swiftUI, xib)                     guard let self = self else { return }                     let vc = aType.makeVC()                     self.navigationController?.pushViewController(vc, animated: true)                 })                 .store(in: &amp;subscriptions)                          buttonContainerStackView.addArrangedSubview(button)         }     } }">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-07-19T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/Combine-example-3/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li><li class="masthead__menu-item">
+              <a href="/projects/">Projects</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[Combine] 예제 3 &amp; UIKit Validation">
+    <meta itemprop="description" content="                        Main.storyboard    ValidationViewController.swift/storyboard      1. Main.storyboard에 연결된 ViewController.swiftimport UIKitimport Combineimport CombineCocoaclass ViewController: UIViewController {    // Combine의 구독을 저장하는 Set    // VC가 해제되면 subscriptions 프로퍼티도 함께 메모리에서 해제되고, 그 안에 저장된 구독들도 함께 해제되어 메모리 누수를 방지한다    // 구독 찌꺼기 담는 통: VC가 메모리에서 해제되면 VC에서 사용된 구독 찌꺼기가 담긴다    var subscriptions = Set&lt;AnyCancellable&gt;()        @IBOutlet weak var navToNumbersBtn: UIButton!    @IBOutlet weak var navToNumberSwiftUIBtn: UIButton!    @IBOutlet weak var navToValidationUIKitBtn: UIButton!            override func viewDidLoad() {        super.viewDidLoad()               navToNumbersBtn            .tapPublisher            .sink(receiveValue: {                print(#fileID, #function, #line, &quot;- &quot;)                let numbersVC = NumbersViewController.instantiate(&quot;Numbers&quot;)                self.navigationController?.pushViewController(numbersVC, animated: true)                            })            // 구독에 대한 찌꺼기가 담긴다            .store(in: &amp;subscriptions)                navToNumberSwiftUIBtn            .tapPublisher            .sink(receiveValue: {                print(#fileID, #function, #line, &quot;- &quot;)                let numbersVC = NumbersView().getContainerVC()                self.navigationController?.pushViewController(numbersVC, animated: true)                                /*                let testVC = TestView().getContainerVC()                self.navigationController?.pushViewController(testVC, animated: true)                 */                            })            // 구독에 대한 찌꺼기가 담긴다            .store(in: &amp;subscriptions)                navToValidationUIKitBtn            .tapPublisher            .sink(receiveValue: {                let vc = ValidationExampleViewController(nibName: &quot;ValidationExampleViewController&quot;, bundle: nil)                self.navigationController?.pushViewController(vc, animated: true)            })            // 구독에 대한 찌꺼기가 담긴다            .store(in: &amp;subscriptions)    }}2. ValidationViewController.storyboard에 연결된 ValidationViewController.swiftimport UIKitclass ValidationExampleViewController: UIViewController {        @IBOutlet weak var userNameTF: UITextField!    @IBOutlet weak var userNameValidationLabel: UILabel!        @IBOutlet weak var passwordTF: UITextField!    @IBOutlet weak var passwordValidationLabel: UILabel!         @IBOutlet weak var loginButton: UIButton!            override func viewDidLoad() {        super.viewDidLoad()    }}3. ValidationVC를 편하게 만드는 헬퍼메스드 구현ValidationExampleViewController.swiftimport UIKitclass ValidationExampleViewController: UIViewController {        @IBOutlet weak var userNameTF: UITextField!    @IBOutlet weak var userNameValidationLabel: UILabel!        @IBOutlet weak var passwordTF: UITextField!    @IBOutlet weak var passwordValidationLabel: UILabel!         @IBOutlet weak var loginButton: UIButton!            override func viewDidLoad() {        super.viewDidLoad()    }        // MARK: - Helper Method    // validationExampleVC를 생성하지 않고 만들어주는 역할 - 타입메서드    class func getInstance() -&gt; ValidationExampleViewController { // MARK: - 상속을 고료하지 않는 경우면 static func        ValidationExampleViewController(nibName: &quot;ValidationExampleViewController&quot;, bundle: nil)    }}// MARK: - 조금 더 제네릭하게 한다면extension UIViewController {/// nib 파일 이름이 클래스명과 동일할 때 해당 ViewController 인스턴스를 생성합니다.    ///    /// - Returns: nibName과 동일한 이름의 UIViewController 인스턴스    /// - Example:    /// ```swift    /// let vc = MyViewController.instantiateFromNib()    /// ```    ///Self: 호출하는 타입 자신 (예: MyViewController)    /// String(describing: Self.self): &quot;MyViewController&quot; → nib 파일 이름과 일치    static func instantiateFromNib() -&gt; Self {        return Self(nibName: String(describing: Self.self), bundle: nil)    }}ViewControllernavToValidationUIKitBtn    .tapPublisher    .sink(receiveValue: {                // 원래 방식        // let vc = ValidationExampleViewController(nibName: &quot;ValidationExampleViewController&quot;, bundle: nil)                // Helper Method 방식        // let vc = ValidationExampleViewController.getInstance()                // Helper Method2 방식        let vc = ValidationExampleViewController.instantiateFromNib()        self.navigationController?.pushViewController(vc, animated: true)    })    // 구독에 대한 찌꺼기가 담긴다    .store(in: &amp;subscriptions)3. ViewController.swift에서 버튼 추가시마다 Outlet 연결을 해야하는데 불편하다  매번 Outlet 연결 및 tapPublisher연결을 편리하게 만드는법으로 수정해보자  기존 Main.storyboard에서 Stack내부의 버튼을 지운다  크기아 없어도 상관없다. 아이템을 넣어서 크기를 만들거다  stackView를 View로 감쌌는데 스택뷰를 밖으로 빼고 view를 지운다  StackView를 Frame Layout에 드래그하고 exuql width 설정해준다  Inspector에서 multiplier를 1로 해준다  stackView를 ViewController로 가져온다import UIKitimport Combineimport CombineCocoaenum ExampleType: Int, CaseIterable {    case numbersUIKit    // rawValue: 0    case numbersSwiftUI  // 1    case validationUIKit // 2        func makeButton() -&gt; UIButton {        let button = UIButton(type: .system)        button.configuration = .filled()        button.setTitle(String(describing: self), for: .normal)        button.tag = self.rawValue        return button    }        func makeVC() -&gt; UIViewController {        switch self {        case .numbersUIKit:            NumbersViewController.instantiate(&quot;Numbers&quot;)        case .numbersSwiftUI:            NumbersView().getContainerVC()        case .validationUIKit:            ValidationExampleViewController.instantiateFromNib()        }    }}class ViewController: UIViewController {    // Combine의 구독을 저장하는 Set    // VC가 해제되면 subscriptions 프로퍼티도 함께 메모리에서 해제되고, 그 안에 저장된 구독들도 함께 해제되어 메모리 누수를 방지한다    // 구독 찌꺼기 담는 통: VC가 메모리에서 해제되면 VC에서 사용된 구독 찌꺼기가 담긴다    var subscriptions = Set&lt;AnyCancellable&gt;()        @IBOutlet weak var buttonContainerStackView: UIStackView!        override func viewDidLoad() {        super.viewDidLoad()                let exampleTypes: [ExampleType] = ExampleType.allCases                exampleTypes.forEach { aType in            let button = aType.makeButton()            button                .tapPublisher                .sink(receiveValue: { [weak self] in // 클로저 내에서 self를 사용하니까 강한참조를 뺴기 위해 캡처리스트로 약하게 해준다                    // 각 타입마다 뷰컨트롤러 종류가 다르다(storyboard, swiftUI, xib)                    guard let self = self else { return }                    let vc = aType.makeVC()                    self.navigationController?.pushViewController(vc, animated: true)                })                .store(in: &amp;subscriptions)                        buttonContainerStackView.addArrangedSubview(button)        }    }}">
+    <meta itemprop="datePublished" content="2025-07-19T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/Combine-example-3/" class="u-url" itemprop="url">[Combine] 예제 3 &amp; UIKit Validation
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=Combine">Combine</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-07-19T00:00:00+00:00">July 19, 2025</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
+
+<table>
+  <tr>
+    <td><img src="/assets/img/2025-07-19-%5BCombine%5D-example%203/image-20250719142349430.png" alt="커스텀셀1" width="100%" /></td>
+    <td><img src="/assets/img/2025-07-19-%5BCombine%5D-example%203/image-20250719142401972.png" alt="커스텀셀" width="100%" /></td>
+      <!-- <td><img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView5/image-20250511181826302.png" alt="커스텀셀" width="100%"></td> -->
+  </tr>
+  <tr>
+    <td style="text-align:center;">Main.storyboard</td>
+    <td style="text-align:center;">ValidationViewController.swift/storyboard</td>
+    <!-- <td style="text-align:center;">Code 커스텀 셀</td> -->
+  </tr>
+</table>
+
+<h4 id="1-mainstoryboard에-연결된-viewcontrollerswift">1. Main.storyboard에 연결된 ViewController.swift</h4>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+<span class="kd">import</span> <span class="kt">Combine</span>
+<span class="kd">import</span> <span class="kt">CombineCocoa</span>
+
+<span class="kd">class</span> <span class="kt">ViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+
+    <span class="c1">// Combine의 구독을 저장하는 Set</span>
+    <span class="c1">// VC가 해제되면 subscriptions 프로퍼티도 함께 메모리에서 해제되고, 그 안에 저장된 구독들도 함께 해제되어 메모리 누수를 방지한다</span>
+    <span class="c1">// 구독 찌꺼기 담는 통: VC가 메모리에서 해제되면 VC에서 사용된 구독 찌꺼기가 담긴다</span>
+    <span class="k">var</span> <span class="nv">subscriptions</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">AnyCancellable</span><span class="o">&gt;</span><span class="p">()</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">navToNumbersBtn</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">navToNumberSwiftUIBtn</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">navToValidationUIKitBtn</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+       
+        <span class="n">navToNumbersBtn</span>
+            <span class="o">.</span><span class="n">tapPublisher</span>
+            <span class="o">.</span><span class="nf">sink</span><span class="p">(</span><span class="nv">receiveValue</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+
+                <span class="k">let</span> <span class="nv">numbersVC</span> <span class="o">=</span> <span class="kt">NumbersViewController</span><span class="o">.</span><span class="nf">instantiate</span><span class="p">(</span><span class="s">"Numbers"</span><span class="p">)</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">navigationController</span><span class="p">?</span><span class="o">.</span><span class="nf">pushViewController</span><span class="p">(</span><span class="n">numbersVC</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+                
+            <span class="p">})</span>
+            <span class="c1">// 구독에 대한 찌꺼기가 담긴다</span>
+            <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
+        
+        <span class="n">navToNumberSwiftUIBtn</span>
+            <span class="o">.</span><span class="n">tapPublisher</span>
+            <span class="o">.</span><span class="nf">sink</span><span class="p">(</span><span class="nv">receiveValue</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+
+                <span class="k">let</span> <span class="nv">numbersVC</span> <span class="o">=</span> <span class="kt">NumbersView</span><span class="p">()</span><span class="o">.</span><span class="nf">getContainerVC</span><span class="p">()</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">navigationController</span><span class="p">?</span><span class="o">.</span><span class="nf">pushViewController</span><span class="p">(</span><span class="n">numbersVC</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+                
+                <span class="cm">/*
+                let testVC = TestView().getContainerVC()
+                self.navigationController?.pushViewController(testVC, animated: true)
+                 */</span>
+                
+            <span class="p">})</span>
+            <span class="c1">// 구독에 대한 찌꺼기가 담긴다</span>
+            <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
+        
+        <span class="n">navToValidationUIKitBtn</span>
+            <span class="o">.</span><span class="n">tapPublisher</span>
+            <span class="o">.</span><span class="nf">sink</span><span class="p">(</span><span class="nv">receiveValue</span><span class="p">:</span> <span class="p">{</span>
+                <span class="k">let</span> <span class="nv">vc</span> <span class="o">=</span> <span class="kt">ValidationExampleViewController</span><span class="p">(</span><span class="nv">nibName</span><span class="p">:</span> <span class="s">"ValidationExampleViewController"</span><span class="p">,</span> <span class="nv">bundle</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">navigationController</span><span class="p">?</span><span class="o">.</span><span class="nf">pushViewController</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+            <span class="p">})</span>
+            <span class="c1">// 구독에 대한 찌꺼기가 담긴다</span>
+            <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="2-validationviewcontrollerstoryboard에-연결된-validationviewcontrollerswift">2. ValidationViewController.storyboard에 연결된 ValidationViewController.swift</h4>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">class</span> <span class="kt">ValidationExampleViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">userNameTF</span><span class="p">:</span> <span class="kt">UITextField</span><span class="o">!</span>
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">userNameValidationLabel</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">passwordTF</span><span class="p">:</span> <span class="kt">UITextField</span><span class="o">!</span>
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">passwordValidationLabel</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span>
+     
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">loginButton</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="3-validationvc를-편하게-만드는-헬퍼메스드-구현">3. ValidationVC를 편하게 만드는 헬퍼메스드 구현</h4>
+
+<h4 id="validationexampleviewcontrollerswift">ValidationExampleViewController.swift</h4>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">class</span> <span class="kt">ValidationExampleViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">userNameTF</span><span class="p">:</span> <span class="kt">UITextField</span><span class="o">!</span>
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">userNameValidationLabel</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">passwordTF</span><span class="p">:</span> <span class="kt">UITextField</span><span class="o">!</span>
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">passwordValidationLabel</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span>
+     
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">loginButton</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - Helper Method</span>
+    <span class="c1">// validationExampleVC를 생성하지 않고 만들어주는 역할 - 타입메서드</span>
+    <span class="kd">class</span> <span class="kd">func</span> <span class="nf">getInstance</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">ValidationExampleViewController</span> <span class="p">{</span> <span class="c1">// MARK: - 상속을 고료하지 않는 경우면 static func</span>
+        <span class="kt">ValidationExampleViewController</span><span class="p">(</span><span class="nv">nibName</span><span class="p">:</span> <span class="s">"ValidationExampleViewController"</span><span class="p">,</span> <span class="nv">bundle</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - 조금 더 제네릭하게 한다면</span>
+<span class="kd">extension</span> <span class="kt">UIViewController</span> <span class="p">{</span><span class="c1">/// nib 파일 이름이 클래스명과 동일할 때 해당 ViewController 인스턴스를 생성합니다.</span>
+    <span class="c1">///</span>
+    <span class="c1">/// - Returns: nibName과 동일한 이름의 UIViewController 인스턴스</span>
+    <span class="c1">/// - Example:</span>
+    <span class="c1">/// ```swift</span>
+    <span class="c1">/// let vc = MyViewController.instantiateFromNib()</span>
+    <span class="c1">/// ```</span>
+    <span class="c1">///Self: 호출하는 타입 자신 (예: MyViewController)</span>
+    <span class="c1">/// String(describing: Self.self): "MyViewController" → nib 파일 이름과 일치</span>
+    <span class="kd">static</span> <span class="kd">func</span> <span class="nf">instantiateFromNib</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="k">Self</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kt">Self</span><span class="p">(</span><span class="nv">nibName</span><span class="p">:</span> <span class="kt">String</span><span class="p">(</span><span class="nv">describing</span><span class="p">:</span> <span class="k">Self</span><span class="o">.</span><span class="k">self</span><span class="p">),</span> <span class="nv">bundle</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="viewcontroller">ViewController</h4>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">navToValidationUIKitBtn</span>
+    <span class="o">.</span><span class="n">tapPublisher</span>
+    <span class="o">.</span><span class="nf">sink</span><span class="p">(</span><span class="nv">receiveValue</span><span class="p">:</span> <span class="p">{</span>
+        
+        <span class="c1">// 원래 방식</span>
+        <span class="c1">// let vc = ValidationExampleViewController(nibName: "ValidationExampleViewController", bundle: nil)</span>
+        
+        <span class="c1">// Helper Method 방식</span>
+        <span class="c1">// let vc = ValidationExampleViewController.getInstance()</span>
+        
+        <span class="c1">// Helper Method2 방식</span>
+        <span class="k">let</span> <span class="nv">vc</span> <span class="o">=</span> <span class="kt">ValidationExampleViewController</span><span class="o">.</span><span class="nf">instantiateFromNib</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">navigationController</span><span class="p">?</span><span class="o">.</span><span class="nf">pushViewController</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+    <span class="p">})</span>
+    <span class="c1">// 구독에 대한 찌꺼기가 담긴다</span>
+    <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h4 id="3-viewcontrollerswift에서-버튼-추가시마다-outlet-연결을-해야하는데-불편하다">3. ViewController.swift에서 버튼 추가시마다 Outlet 연결을 해야하는데 불편하다</h4>
+<ul>
+  <li>매번 Outlet 연결 및 tapPublisher연결을 편리하게 만드는법으로 수정해보자</li>
+</ul>
+
+<ol>
+  <li>기존 Main.storyboard에서 Stack내부의 버튼을 지운다</li>
+  <li>크기아 없어도 상관없다. 아이템을 넣어서 크기를 만들거다</li>
+  <li>stackView를 View로 감쌌는데 스택뷰를 밖으로 빼고 view를 지운다</li>
+  <li>StackView를 Frame Layout에 드래그하고 exuql width 설정해준다</li>
+  <li>Inspector에서 multiplier를 1로 해준다</li>
+  <li>stackView를 ViewController로 가져온다</li>
+</ol>
+
+<p><img src="/assets/img/2025-07-19-%5BCombine%5D-example%203/image-20250719153121655.png" alt="이미지" width="100%" /></p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+<span class="kd">import</span> <span class="kt">Combine</span>
+<span class="kd">import</span> <span class="kt">CombineCocoa</span>
+
+<span class="kd">enum</span> <span class="kt">ExampleType</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="kt">CaseIterable</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">numbersUIKit</span>    <span class="c1">// rawValue: 0</span>
+    <span class="k">case</span> <span class="n">numbersSwiftUI</span>  <span class="c1">// 1</span>
+    <span class="k">case</span> <span class="n">validationUIKit</span> <span class="c1">// 2</span>
+    
+    <span class="kd">func</span> <span class="nf">makeButton</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">UIButton</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">button</span> <span class="o">=</span> <span class="kt">UIButton</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="o">.</span><span class="n">system</span><span class="p">)</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="o">.</span><span class="nf">filled</span><span class="p">()</span>
+        <span class="n">button</span><span class="o">.</span><span class="nf">setTitle</span><span class="p">(</span><span class="kt">String</span><span class="p">(</span><span class="nv">describing</span><span class="p">:</span> <span class="k">self</span><span class="p">),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">normal</span><span class="p">)</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">rawValue</span>
+        <span class="k">return</span> <span class="n">button</span>
+    <span class="p">}</span>
+    
+    <span class="kd">func</span> <span class="nf">makeVC</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+        <span class="k">switch</span> <span class="k">self</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">numbersUIKit</span><span class="p">:</span>
+            <span class="kt">NumbersViewController</span><span class="o">.</span><span class="nf">instantiate</span><span class="p">(</span><span class="s">"Numbers"</span><span class="p">)</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">numbersSwiftUI</span><span class="p">:</span>
+            <span class="kt">NumbersView</span><span class="p">()</span><span class="o">.</span><span class="nf">getContainerVC</span><span class="p">()</span>
+        <span class="k">case</span> <span class="o">.</span><span class="nv">validationUIKit</span><span class="p">:</span>
+            <span class="kt">ValidationExampleViewController</span><span class="o">.</span><span class="nf">instantiateFromNib</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">ViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+
+    <span class="c1">// Combine의 구독을 저장하는 Set</span>
+    <span class="c1">// VC가 해제되면 subscriptions 프로퍼티도 함께 메모리에서 해제되고, 그 안에 저장된 구독들도 함께 해제되어 메모리 누수를 방지한다</span>
+    <span class="c1">// 구독 찌꺼기 담는 통: VC가 메모리에서 해제되면 VC에서 사용된 구독 찌꺼기가 담긴다</span>
+    <span class="k">var</span> <span class="nv">subscriptions</span> <span class="o">=</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">AnyCancellable</span><span class="o">&gt;</span><span class="p">()</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">buttonContainerStackView</span><span class="p">:</span> <span class="kt">UIStackView</span><span class="o">!</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        
+        <span class="k">let</span> <span class="nv">exampleTypes</span><span class="p">:</span> <span class="p">[</span><span class="kt">ExampleType</span><span class="p">]</span> <span class="o">=</span> <span class="kt">ExampleType</span><span class="o">.</span><span class="n">allCases</span>
+        
+        <span class="n">exampleTypes</span><span class="o">.</span><span class="n">forEach</span> <span class="p">{</span> <span class="n">aType</span> <span class="k">in</span>
+            <span class="k">let</span> <span class="nv">button</span> <span class="o">=</span> <span class="n">aType</span><span class="o">.</span><span class="nf">makeButton</span><span class="p">()</span>
+            <span class="n">button</span>
+                <span class="o">.</span><span class="n">tapPublisher</span>
+                <span class="o">.</span><span class="nf">sink</span><span class="p">(</span><span class="nv">receiveValue</span><span class="p">:</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="k">in</span> <span class="c1">// 클로저 내에서 self를 사용하니까 강한참조를 뺴기 위해 캡처리스트로 약하게 해준다</span>
+                    <span class="c1">// 각 타입마다 뷰컨트롤러 종류가 다르다(storyboard, swiftUI, xib)</span>
+                    <span class="k">guard</span> <span class="k">let</span> <span class="nv">self</span> <span class="o">=</span> <span class="k">self</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+                    <span class="k">let</span> <span class="nv">vc</span> <span class="o">=</span> <span class="n">aType</span><span class="o">.</span><span class="nf">makeVC</span><span class="p">()</span>
+                    <span class="k">self</span><span class="o">.</span><span class="n">navigationController</span><span class="p">?</span><span class="o">.</span><span class="nf">pushViewController</span><span class="p">(</span><span class="n">vc</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+                <span class="p">})</span>
+                <span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">subscriptions</span><span class="p">)</span>
+            
+            <span class="n">buttonContainerStackView</span><span class="o">.</span><span class="nf">addArrangedSubview</span><span class="p">(</span><span class="n">button</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/2025-07-19-%5BCombine%5D-example%203/image-20250719153211663.png" alt="이미지" width="85%" /></p>
+
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/Combine-example-2/" class="pagination--pager" title="[Combine] 예제 2 &amp; MVVM[SwiftUI/UIKit]
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

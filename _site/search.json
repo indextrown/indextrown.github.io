@@ -1,18 +1,18 @@
 [
     
         {
-        "title"    : "[Combine] 예제 1 &amp; MVVM[SwiftUI/UIKit]",
+        "title"    : "[Combine] 예제 3 &amp; UIKit Validation",
         "category" : "",
         "tags"     : "Combine",
-        "url"      : "/Combine-example-2/",
-        "date"     : "2025-07-18 00:00:00 +0000"
+        "url"      : "/Combine-example-3/",
+        "date"     : "2025-07-19 00:00:00 +0000"
         } ,
     
         {
-        "title"    : "",
+        "title"    : "[Combine] 예제 2 &amp; MVVM[SwiftUI/UIKit]",
         "category" : "",
-        "tags"     : "",
-        "url"      : "/Makefile/",
+        "tags"     : "Combine",
+        "url"      : "/Combine-example-2/",
         "date"     : "2025-07-18 00:00:00 +0000"
         } ,
     
