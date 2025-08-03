@@ -1,4 +1,349 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-07-19T06:33:08+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[Combine] 예제 3 &amp;amp; UIKit Validation</title><link href="http://localhost:4000/Combine-example-3/" rel="alternate" type="text/html" title="[Combine] 예제 3 &amp;amp; UIKit Validation" /><published>2025-07-19T00:00:00+00:00</published><updated>2025-07-19T00:00:00+00:00</updated><id>http://localhost:4000/%5BCombine%5D-example%203</id><content type="html" xml:base="http://localhost:4000/Combine-example-3/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-08-03T08:56:14+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[RxDataSource] 3. CustomDatasource 개선하기</title><link href="http://localhost:4000/RxDataSource-RxDataSource-3/" rel="alternate" type="text/html" title="[RxDataSource] 3. CustomDatasource 개선하기" /><published>2025-08-03T00:00:00+00:00</published><updated>2025-08-03T00:00:00+00:00</updated><id>http://localhost:4000/%5BRxDataSource%5D-RxDataSource-3</id><content type="html" xml:base="http://localhost:4000/RxDataSource-RxDataSource-3/"><![CDATA[<!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
+
+<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
+
+<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
+
+<p>지난 포스트에서 커스텀 델리게이트를 만들어 보았다. 이번에는 기존 코드를 개선하여 셀 구성 로직을 VC에서 정의할 수 있도록 매개변수로 빼서 위임해보자.</p>
+
+<h2 id="지난-코드">지난 코드</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protocol</span> <span class="kt">ReuseIdentifiable</span> <span class="p">{</span>
+    <span class="c1">/// 프로토콜에서 로직을 정의할 수 없어서 가져올 수 있도록 설정</span>
+    <span class="kd">static</span> <span class="k">var</span> <span class="nv">reuseIdentifier</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">ReuseIdentifiable</span> <span class="p">{</span>
+    <span class="c1">/// 로직에 대한 정의는 Extension에서 간능</span>
+    <span class="kd">static</span> <span class="k">var</span> <span class="nv">reuseIdentifier</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kt">String</span><span class="p">(</span><span class="nv">describing</span><span class="p">:</span> <span class="k">Self</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">UITableViewCell</span><span class="p">:</span> <span class="kt">ReuseIdentifiable</span> <span class="p">{}</span>
+
+<span class="c1">// MARK: - Model</span>
+<span class="kd">struct</span> <span class="kt">Todo</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">id</span><span class="p">:</span> <span class="kt">Int</span>
+    <span class="k">let</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span>
+    <span class="k">var</span> <span class="nv">isDone</span><span class="p">:</span> <span class="kt">Bool</span>
+    
+    <span class="kd">static</span> <span class="kd">func</span> <span class="nf">getDumies</span><span class="p">(</span><span class="n">_</span> <span class="nv">count</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">Todo</span><span class="p">]</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">faker</span> <span class="o">=</span> <span class="kt">Faker</span><span class="p">(</span><span class="nv">locale</span><span class="p">:</span> <span class="s">"ko"</span><span class="p">)</span>
+        <span class="nf">return</span> <span class="p">(</span><span class="mi">1</span><span class="o">...</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">id</span> <span class="k">in</span>
+            <span class="k">let</span> <span class="nv">firstName</span> <span class="o">=</span> <span class="n">faker</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="nf">firstName</span><span class="p">()</span>
+            <span class="k">let</span> <span class="nv">lastName</span> <span class="o">=</span> <span class="n">faker</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="nf">lastName</span><span class="p">()</span>
+            <span class="k">let</span> <span class="nv">title</span> <span class="o">=</span> <span class="s">"</span><span class="se">\(</span><span class="n">lastName</span><span class="se">)</span><span class="s"> </span><span class="se">\(</span><span class="n">firstName</span><span class="se">)</span><span class="s">"</span>
+            <span class="k">return</span> <span class="kt">Todo</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="n">id</span><span class="p">,</span> <span class="nv">title</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span> <span class="nv">isDone</span><span class="p">:</span> <span class="kc">false</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">TodoCell</span><span class="p">:</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
+    
+    <span class="c1">// 디버깅용</span>
+    <span class="k">var</span> <span class="nv">cellData</span><span class="p">:</span> <span class="kt">Todo</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+    
+    <span class="c1">// (uuid, 변경된상태)</span>
+    <span class="k">var</span> <span class="nv">isDoneChange</span><span class="p">:</span> <span class="p">((</span><span class="kt">Int</span><span class="p">,</span> <span class="n">_</span> <span class="nv">newValue</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span>
+    
+    <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">isDoneSwitch</span><span class="p">:</span> <span class="kt">UISwitch</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">sw</span> <span class="o">=</span> <span class="kt">UISwitch</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">sw</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">titleLabel</span><span class="p">:</span> <span class="kt">UILabel</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">label</span> <span class="o">=</span> <span class="kt">UILabel</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">label</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">idLabel</span><span class="p">:</span> <span class="kt">UILabel</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">label</span> <span class="o">=</span> <span class="kt">UILabel</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">label</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">vStack</span><span class="p">:</span> <span class="kt">UIStackView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">st</span> <span class="o">=</span> <span class="kt">UIStackView</span><span class="p">(</span><span class="nv">arrangedSubviews</span><span class="p">:</span> <span class="p">[</span><span class="n">titleLabel</span><span class="p">,</span> <span class="n">idLabel</span><span class="p">])</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="o">.</span><span class="n">vertical</span>
+        <span class="k">return</span> <span class="n">st</span>
+    <span class="p">}()</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">hStack</span><span class="p">:</span> <span class="kt">UIStackView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">st</span> <span class="o">=</span> <span class="kt">UIStackView</span><span class="p">(</span><span class="nv">arrangedSubviews</span><span class="p">:</span> <span class="p">[</span><span class="n">vStack</span><span class="p">,</span> <span class="n">isDoneSwitch</span><span class="p">])</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="o">.</span><span class="n">horizontal</span>
+        <span class="k">return</span> <span class="n">st</span>
+    <span class="p">}()</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">prepareForReuse</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">prepareForReuse</span><span class="p">()</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"prepareForReuse() - cellData.id: </span><span class="se">\(</span><span class="n">cellData</span><span class="p">?</span><span class="o">.</span><span class="n">id</span> <span class="p">??</span> <span class="mi">0</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// 원래는 awakefromnib을 타지만 코드로 UI를 진행한다면 awakefromnib을 타지 않는다.</span>
+    <span class="k">override</span> <span class="nf">init</span><span class="p">(</span><span class="nv">style</span><span class="p">:</span> <span class="kt">UITableViewCell</span><span class="o">.</span><span class="kt">CellStyle</span><span class="p">,</span> <span class="nv">reuseIdentifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">?)</span> <span class="p">{</span>
+        <span class="c1">/// 부모의 로직을 싱행시키는 의미</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">style</span><span class="p">:</span> <span class="n">style</span><span class="p">,</span> <span class="nv">reuseIdentifier</span><span class="p">:</span> <span class="n">reuseIdentifier</span><span class="p">)</span>
+        <span class="nf">makeUI</span><span class="p">()</span>
+        <span class="nf">constraints</span><span class="p">()</span>
+        
+        <span class="n">isDoneSwitch</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span>
+                               <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="n">handleIsDOne</span><span class="p">),</span>
+                               <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">valueChanged</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">required</span> <span class="nf">init</span><span class="p">?(</span><span class="nv">coder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">fatalError</span><span class="p">(</span><span class="s">"init(coder:) has not been implemented"</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="p">[</span><span class="n">hStack</span><span class="p">]</span><span class="o">.</span><span class="n">forEach</span> <span class="p">{</span>
+            <span class="n">contentView</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span>
+            <span class="nv">$0</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">constraints</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">hStack</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">contentView</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">10</span><span class="p">),</span>
+            <span class="n">hStack</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">contentView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">10</span><span class="p">),</span>
+            <span class="n">hStack</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">contentView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">10</span><span class="p">),</span>
+            <span class="n">hStack</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">contentView</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">10</span><span class="p">),</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@objc</span> <span class="kd">func</span> <span class="nf">handleIsDOne</span><span class="p">(</span><span class="n">_</span> <span class="nv">sender</span><span class="p">:</span> <span class="kt">UISwitch</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- id: </span><span class="se">\(</span><span class="n">cellData</span><span class="p">?</span><span class="o">.</span><span class="n">id</span> <span class="p">??</span> <span class="mi">0</span><span class="se">)</span><span class="s">, sendar: </span><span class="se">\(</span><span class="n">sender</span><span class="o">.</span><span class="n">isOn</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">id</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">cellData</span><span class="p">?</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+        <span class="nf">isDoneChange</span><span class="p">?(</span><span class="n">id</span><span class="p">,</span> <span class="n">sender</span><span class="o">.</span><span class="n">isOn</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">TodoCell</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">configure</span><span class="p">(</span><span class="n">with</span> <span class="nv">todo</span><span class="p">:</span> <span class="kt">Todo</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">cellData</span> <span class="o">=</span> <span class="n">todo</span>
+        <span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">todo</span><span class="o">.</span><span class="n">title</span>
+        <span class="n">idLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">"ID: </span><span class="se">\(</span><span class="n">todo</span><span class="o">.</span><span class="n">id</span><span class="se">)</span><span class="s">"</span>
+        <span class="n">isDoneSwitch</span><span class="o">.</span><span class="n">isOn</span> <span class="o">=</span> <span class="n">todo</span><span class="o">.</span><span class="n">isDone</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// MARK: - 구현 목적: VC에 부담을 주지말자</span>
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">TodosDataSource</span><span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">UITableViewDataSource</span><span class="p">,</span> <span class="kt">UITableViewDelegate</span> <span class="p">{</span>
+    
+    <span class="k">var</span> <span class="nv">todoList</span><span class="p">:</span> <span class="p">[</span><span class="kt">Todo</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">var</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+    
+    <span class="nf">init</span><span class="p">(</span><span class="nv">todoList</span><span class="p">:</span> <span class="p">[</span><span class="kt">Todo</span><span class="p">],</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">todoList</span> <span class="o">=</span> <span class="n">todoList</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">tableView</span> <span class="o">=</span> <span class="n">tableView</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - Register</span>
+    <span class="kd">func</span> <span class="n">register</span><span class="o">&lt;</span><span class="kt">T</span><span class="p">:</span> <span class="kt">UITableViewCell</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">cellType</span><span class="p">:</span> <span class="kt">T</span><span class="o">.</span><span class="k">Type</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">tableView</span><span class="p">?</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="n">cellType</span><span class="p">,</span> <span class="nv">forCellReuseIdentifier</span><span class="p">:</span> <span class="kt">T</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - UITableView Datasource Methods</span>
+    <span class="c1">/// 하나의 섹션에 몇개의 rows가 있냐</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">numberOfRowsInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">todoList</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라</span>
+    <span class="c1">/// - indexPath: 셀의 위치를 나타내는 인덱스 경로</span>
+    <span class="c1">/// - returns: 구성된 UITableViewCell 객체e</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">cellForRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
+        
+        
+        <span class="c1">// MARK: - 로직 -&gt; 함수로 만들어서 매개변수로 활용해보자</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span><span class="p">:</span> <span class="kt">TodoCell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="kt">TodoCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">TodoCell</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
+        <span class="p">}</span>
+        
+        <span class="k">let</span> <span class="nv">cellData</span> <span class="o">=</span> <span class="n">todoList</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">]</span>
+        <span class="n">cell</span><span class="o">.</span><span class="nf">configure</span><span class="p">(</span><span class="nv">with</span><span class="p">:</span> <span class="n">cellData</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cell</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">TodosVC</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">myTableView</span><span class="p">:</span> <span class="kt">UITableView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">tv</span> <span class="o">=</span> <span class="kt">UITableView</span><span class="p">()</span>
+        <span class="c1">// MARK: - 이 부분도 TodosDataSource에 위임</span>
+        <span class="c1">// tv.register(TodoCell.self, forCellReuseIdentifier: TodoCell.reuseIdentifier)</span>
+        <span class="k">return</span> <span class="n">tv</span>
+    <span class="p">}()</span>
+    
+    <span class="k">var</span> <span class="nv">todoList</span><span class="p">:</span> <span class="p">[</span><span class="kt">Todo</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">var</span> <span class="nv">todosDataSource</span><span class="p">:</span> <span class="kt">TodosDataSource</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">makeUI</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">constraints</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">todoList</span> <span class="o">=</span> <span class="kt">Todo</span><span class="o">.</span><span class="nf">getDumies</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">setCustomDataSource</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">setCustomDataSource</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// 1️⃣ dataSource 생성</span>
+        <span class="k">let</span> <span class="nv">dataSource</span> <span class="o">=</span> <span class="kt">TodosDataSource</span><span class="p">(</span><span class="nv">todoList</span><span class="p">:</span> <span class="n">todoList</span><span class="p">,</span> <span class="nv">tableView</span><span class="p">:</span> <span class="n">myTableView</span><span class="p">)</span>
+        
+        <span class="c1">// 2️⃣ register 호출 (이 시점에 tableView는 이미 존재함)</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="nv">cellType</span><span class="p">:</span> <span class="kt">TodoCell</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>
+        
+        <span class="c1">// 3️⃣ 연결</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">todosDataSource</span> <span class="o">=</span> <span class="n">dataSource</span>
+        <span class="n">myTableView</span><span class="o">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="n">dataSource</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="p">[</span><span class="n">myTableView</span><span class="p">]</span><span class="o">.</span><span class="n">forEach</span> <span class="p">{</span>
+            <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span>
+            <span class="nv">$0</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">constraints</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">myTableView</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">),</span>
+            <span class="n">myTableView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">),</span>
+            <span class="n">myTableView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">),</span>
+            <span class="n">myTableView</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">)</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="개선-코드">개선 코드</h2>
+
+<h3 id="custom-delegate">Custom Delegate</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="c1">// MARK: - 구현 목적: VC에 부담을 주지말자</span>
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">TodosDataSource2</span><span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">UITableViewDataSource</span><span class="p">,</span> <span class="kt">UITableViewDelegate</span> <span class="p">{</span>
+    
+    <span class="k">var</span> <span class="nv">todoList</span><span class="p">:</span> <span class="p">[</span><span class="kt">Todo</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">var</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+    
+    <span class="c1">// MARK: - 로직을 밖으로 뺄 수 있다 즉 VC에서 클로저로 사용 가능하다.</span>
+    <span class="c1">// configureCell 클로저: 셀 구성 로직을 VC에서 정의할 수 있게 위임함</span>
+    <span class="c1">// 매개변수 tableView, indexPath는 외부에서 받아오고</span>
+    <span class="c1">// cellData(todo)는 내부 todoList에서 가져와 주입</span>
+    <span class="k">var</span> <span class="nv">configureCell</span><span class="p">:</span> <span class="p">((</span><span class="kt">UITableView</span><span class="p">,</span> <span class="kt">IndexPath</span><span class="p">,</span> <span class="kt">Todo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITableViewCell</span><span class="p">)?</span>
+    
+    <span class="nf">init</span><span class="p">(</span><span class="nv">todoList</span><span class="p">:</span> <span class="p">[</span><span class="kt">Todo</span><span class="p">],</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">todoList</span> <span class="o">=</span> <span class="n">todoList</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">tableView</span> <span class="o">=</span> <span class="n">tableView</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - Register</span>
+    <span class="kd">func</span> <span class="n">register</span><span class="o">&lt;</span><span class="kt">T</span><span class="p">:</span> <span class="kt">UITableViewCell</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">cellType</span><span class="p">:</span> <span class="kt">T</span><span class="o">.</span><span class="k">Type</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">tableView</span><span class="p">?</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="n">cellType</span><span class="p">,</span> <span class="nv">forCellReuseIdentifier</span><span class="p">:</span> <span class="kt">T</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - UITableView Datasource Methods</span>
+    <span class="c1">/// 하나의 섹션에 몇개의 rows가 있냐</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">numberOfRowsInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">todoList</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라</span>
+    <span class="c1">/// - indexPath: 셀의 위치를 나타내는 인덱스 경로</span>
+    <span class="c1">/// - returns: 구성된 UITableViewCell 객체e</span>
+    <span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="n">_</span> <span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">cellForRowAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
+        
+        <span class="k">let</span> <span class="nv">cellData</span> <span class="o">=</span> <span class="n">todoList</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nf">configureCell</span><span class="p">?(</span><span class="n">tableView</span><span class="p">,</span> <span class="n">indexPath</span><span class="p">,</span> <span class="n">cellData</span><span class="p">)</span> <span class="p">??</span> <span class="kt">UITableViewCell</span><span class="p">()</span>
+        
+        <span class="c1">// MARK: - 로직 -&gt; 함수로 만들어서 매개변수로 활용해보자</span>
+        <span class="cm">/*
+        guard let cell: TodoCell = tableView.dequeueReusableCell(withIdentifier: TodoCell.reuseIdentifier, for: indexPath) as? TodoCell else {
+            return UITableViewCell()
+        }
+        
+        cell.configure(with: cellData)
+        return cell
+         */</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<h3 id="viewcontroller">ViewController</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="kt">TodosVC2</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="kd">private</span> <span class="kd">lazy</span> <span class="k">var</span> <span class="nv">myTableView</span><span class="p">:</span> <span class="kt">UITableView</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">tv</span> <span class="o">=</span> <span class="kt">UITableView</span><span class="p">()</span>
+        <span class="c1">// MARK: - 이 부분도 TodosDataSource에 위임</span>
+        <span class="c1">// tv.register(TodoCell.self, forCellReuseIdentifier: TodoCell.reuseIdentifier)</span>
+        <span class="k">return</span> <span class="n">tv</span>
+    <span class="p">}()</span>
+    
+    <span class="k">var</span> <span class="nv">todoList</span><span class="p">:</span> <span class="p">[</span><span class="kt">Todo</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">var</span> <span class="nv">todosDataSource</span><span class="p">:</span> <span class="kt">TodosDataSource2</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">white</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">makeUI</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">constraints</span><span class="p">()</span>
+        
+        <span class="k">self</span><span class="o">.</span><span class="n">todoList</span> <span class="o">=</span> <span class="kt">Todo</span><span class="o">.</span><span class="nf">getDumies</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">setCustomDataSource</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">setCustomDataSource</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// 1️⃣ dataSource 생성</span>
+        <span class="n">todosDataSource</span> <span class="o">=</span> <span class="kt">TodosDataSource2</span><span class="p">(</span><span class="nv">todoList</span><span class="p">:</span> <span class="n">todoList</span><span class="p">,</span> <span class="nv">tableView</span><span class="p">:</span> <span class="n">myTableView</span><span class="p">)</span>
+        
+        <span class="c1">// MARK: - 여기에 클로저 추가</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">todosDataSource</span><span class="p">?</span><span class="o">.</span><span class="n">configureCell</span> <span class="o">=</span> <span class="p">{</span> <span class="n">mytableView</span><span class="p">,</span> <span class="n">indexPath</span><span class="p">,</span> <span class="n">cellData</span> <span class="k">in</span>
+            
+            <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span><span class="p">:</span> <span class="kt">TodoCell</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="kt">TodoCell</span><span class="o">.</span><span class="n">reuseIdentifier</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">TodoCell</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="kt">UITableViewCell</span><span class="p">()</span> <span class="p">}</span>
+            
+            <span class="n">cell</span><span class="o">.</span><span class="nf">configure</span><span class="p">(</span><span class="nv">with</span><span class="p">:</span> <span class="n">cellData</span><span class="p">)</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">isDoneChange</span> <span class="o">=</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">id</span><span class="p">,</span> <span class="n">isDone</span> <span class="k">in</span>
+                <span class="k">guard</span> <span class="k">let</span> <span class="nv">self</span> <span class="o">=</span> <span class="k">self</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+                <span class="k">if</span> <span class="k">let</span> <span class="nv">foundIndex</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">todoList</span><span class="o">.</span><span class="nf">firstIndex</span><span class="p">(</span> <span class="nv">where</span><span class="p">:</span> <span class="p">{</span><span class="nv">$0</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">id</span><span class="p">}</span> <span class="p">)</span> <span class="p">{</span>
+                    <span class="k">self</span><span class="o">.</span><span class="n">todosDataSource</span><span class="p">?</span><span class="o">.</span><span class="n">todoList</span><span class="p">[</span><span class="n">foundIndex</span><span class="p">]</span><span class="o">.</span><span class="n">isDone</span> <span class="o">=</span> <span class="n">isDone</span>
+                    <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="k">async</span> <span class="p">{</span>
+                        <span class="k">self</span><span class="o">.</span><span class="n">myTableView</span><span class="o">.</span><span class="nf">reloadRows</span><span class="p">(</span><span class="nv">at</span><span class="p">:</span> <span class="p">[</span><span class="kt">IndexPath</span><span class="p">(</span><span class="nv">row</span><span class="p">:</span> <span class="n">foundIndex</span><span class="p">,</span> <span class="nv">section</span><span class="p">:</span> <span class="mi">0</span><span class="p">)],</span> <span class="nv">with</span><span class="p">:</span> <span class="o">.</span><span class="n">fade</span><span class="p">)</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            
+            <span class="k">return</span> <span class="n">cell</span>
+        <span class="p">}</span>
+        
+        <span class="c1">// 2️⃣ register 호출 (이 시점에 tableView는 이미 존재함)</span>
+        <span class="n">todosDataSource</span><span class="p">?</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="nv">cellType</span><span class="p">:</span> <span class="kt">TodoCell</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>
+        
+        <span class="c1">// 3️⃣ 연결</span>
+        <span class="n">myTableView</span><span class="o">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="n">todosDataSource</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">makeUI</span><span class="p">()</span> <span class="p">{</span>
+        <span class="p">[</span><span class="n">myTableView</span><span class="p">]</span><span class="o">.</span><span class="n">forEach</span> <span class="p">{</span>
+            <span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span>
+            <span class="nv">$0</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">constraints</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">myTableView</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">safeAreaLayoutGuide</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">),</span>
+            <span class="n">myTableView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">),</span>
+            <span class="n">myTableView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">),</span>
+            <span class="n">myTableView</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">)</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="ReactiveX" /><category term="RxDataSource" /><summary type="html"><![CDATA[지난 포스트에서 커스텀 델리게이트를 만들어 보았다. 이번에는 기존 코드를 개선하여 셀 구성 로직을 VC에서 정의할 수 있도록 매개변수로 빼서 위임해보자. 지난 코드 protocol ReuseIdentifiable { /// 프로토콜에서 로직을 정의할 수 없어서 가져올 수 있도록 설정 static var reuseIdentifier: String { get } } extension ReuseIdentifiable { /// 로직에 대한 정의는 Extension에서 간능 static var reuseIdentifier: String { return String(describing: Self.self) } } extension UITableViewCell: ReuseIdentifiable {} // MARK: - Model struct Todo { let id: Int let title: String var isDone: Bool static func getDumies(_ count: Int = 10) -&gt; [Todo] { let faker = Faker(locale: "ko") return (1...count).map { id in let firstName = faker.name.firstName() let lastName = faker.name.lastName() let title = "\(lastName) \(firstName)" return Todo(id: id, title: title, isDone: false) } } } final class TodoCell: UITableViewCell { // 디버깅용 var cellData: Todo? = nil // (uuid, 변경된상태) var isDoneChange: ((Int, _ newValue: Bool) -&gt; Void)? = nil lazy var isDoneSwitch: UISwitch = { let sw = UISwitch() return sw }() lazy var titleLabel: UILabel = { let label = UILabel() return label }() lazy var idLabel: UILabel = { let label = UILabel() return label }() private lazy var vStack: UIStackView = { let st = UIStackView(arrangedSubviews: [titleLabel, idLabel]) st.axis = .vertical return st }() private lazy var hStack: UIStackView = { let st = UIStackView(arrangedSubviews: [vStack, isDoneSwitch]) st.axis = .horizontal return st }() override func prepareForReuse() { super.prepareForReuse() print(#fileID, #function, #line, "prepareForReuse() - cellData.id: \(cellData?.id ?? 0)") } // 원래는 awakefromnib을 타지만 코드로 UI를 진행한다면 awakefromnib을 타지 않는다. override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) { /// 부모의 로직을 싱행시키는 의미 super.init(style: style, reuseIdentifier: reuseIdentifier) makeUI() constraints() isDoneSwitch.addTarget(self, action: #selector(handleIsDOne), for: .valueChanged) } required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") } private func makeUI() { [hStack].forEach { contentView.addSubview($0) $0.translatesAutoresizingMaskIntoConstraints = false } } private func constraints() { NSLayoutConstraint.activate([ hStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10), hStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10), hStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10), hStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10), ]) } @objc func handleIsDOne(_ sender: UISwitch) { print(#fileID, #function, #line, "- id: \(cellData?.id ?? 0), sendar: \(sender.isOn)") guard let id = self.cellData?.id else { return } isDoneChange?(id, sender.isOn) } } extension TodoCell { func configure(with todo: Todo) { self.cellData = todo titleLabel.text = todo.title idLabel.text = "ID: \(todo.id)" isDoneSwitch.isOn = todo.isDone } } // MARK: - 구현 목적: VC에 부담을 주지말자 final class TodosDataSource: NSObject, UITableViewDataSource, UITableViewDelegate { var todoList: [Todo] = [] var tableView: UITableView? = nil init(todoList: [Todo], tableView: UITableView) { self.todoList = todoList self.tableView = tableView } // MARK: - Register func register&lt;T: UITableViewCell&gt;(cellType: T.Type) { tableView?.register(cellType, forCellReuseIdentifier: T.reuseIdentifier) } // MARK: - UITableView Datasource Methods /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return todoList.count } // 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 /// - returns: 구성된 UITableViewCell 객체e func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { // MARK: - 로직 -&gt; 함수로 만들어서 매개변수로 활용해보자 guard let cell: TodoCell = tableView.dequeueReusableCell(withIdentifier: TodoCell.reuseIdentifier, for: indexPath) as? TodoCell else { return UITableViewCell() } let cellData = todoList[indexPath.row] cell.configure(with: cellData) return cell } } final class TodosVC: UIViewController { private lazy var myTableView: UITableView = { let tv = UITableView() // MARK: - 이 부분도 TodosDataSource에 위임 // tv.register(TodoCell.self, forCellReuseIdentifier: TodoCell.reuseIdentifier) return tv }() var todoList: [Todo] = [] var todosDataSource: TodosDataSource? = nil override func viewDidLoad() { super.viewDidLoad() view.backgroundColor = .white self.makeUI() self.constraints() self.todoList = Todo.getDumies() self.setCustomDataSource() } private func setCustomDataSource() { // 1️⃣ dataSource 생성 let dataSource = TodosDataSource(todoList: todoList, tableView: myTableView) // 2️⃣ register 호출 (이 시점에 tableView는 이미 존재함) dataSource.register(cellType: TodoCell.self) // 3️⃣ 연결 self.todosDataSource = dataSource myTableView.dataSource = dataSource } private func makeUI() { [myTableView].forEach { view.addSubview($0) $0.translatesAutoresizingMaskIntoConstraints = false } } private func constraints() { NSLayoutConstraint.activate([ myTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), myTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor), myTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor), myTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor) ]) } } 개선 코드 Custom Delegate import UIKit // MARK: - 구현 목적: VC에 부담을 주지말자 final class TodosDataSource2: NSObject, UITableViewDataSource, UITableViewDelegate { var todoList: [Todo] = [] var tableView: UITableView? = nil // MARK: - 로직을 밖으로 뺄 수 있다 즉 VC에서 클로저로 사용 가능하다. // configureCell 클로저: 셀 구성 로직을 VC에서 정의할 수 있게 위임함 // 매개변수 tableView, indexPath는 외부에서 받아오고 // cellData(todo)는 내부 todoList에서 가져와 주입 var configureCell: ((UITableView, IndexPath, Todo) -&gt; UITableViewCell)? init(todoList: [Todo], tableView: UITableView) { self.todoList = todoList self.tableView = tableView } // MARK: - Register func register&lt;T: UITableViewCell&gt;(cellType: T.Type) { tableView?.register(cellType, forCellReuseIdentifier: T.reuseIdentifier) } // MARK: - UITableView Datasource Methods /// 하나의 섹션에 몇개의 rows가 있냐 func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int { return todoList.count } // 각 셀에 대한 내용을 구성하여 반환 -&gt; 셀의 종류를 정하기 - 테이블뷰 셀을 만들어서 반환해라 /// - indexPath: 셀의 위치를 나타내는 인덱스 경로 /// - returns: 구성된 UITableViewCell 객체e func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell { let cellData = todoList[indexPath.row] return configureCell?(tableView, indexPath, cellData) ?? UITableViewCell() // MARK: - 로직 -&gt; 함수로 만들어서 매개변수로 활용해보자 /* guard let cell: TodoCell = tableView.dequeueReusableCell(withIdentifier: TodoCell.reuseIdentifier, for: indexPath) as? TodoCell else { return UITableViewCell() } cell.configure(with: cellData) return cell */ } } ViewController import UIKit final class TodosVC2: UIViewController { private lazy var myTableView: UITableView = { let tv = UITableView() // MARK: - 이 부분도 TodosDataSource에 위임 // tv.register(TodoCell.self, forCellReuseIdentifier: TodoCell.reuseIdentifier) return tv }() var todoList: [Todo] = [] var todosDataSource: TodosDataSource2? = nil override func viewDidLoad() { super.viewDidLoad() view.backgroundColor = .white self.makeUI() self.constraints() self.todoList = Todo.getDumies() self.setCustomDataSource() } private func setCustomDataSource() { // 1️⃣ dataSource 생성 todosDataSource = TodosDataSource2(todoList: todoList, tableView: myTableView) // MARK: - 여기에 클로저 추가 self.todosDataSource?.configureCell = { mytableView, indexPath, cellData in guard let cell: TodoCell = self.myTableView.dequeueReusableCell(withIdentifier: TodoCell.reuseIdentifier, for: indexPath) as? TodoCell else { return UITableViewCell() } cell.configure(with: cellData) cell.isDoneChange = { [weak self] id, isDone in guard let self = self else { return } if let foundIndex = self.todoList.firstIndex( where: {$0.id == id} ) { self.todosDataSource?.todoList[foundIndex].isDone = isDone DispatchQueue.main.async { self.myTableView.reloadRows(at: [IndexPath(row: foundIndex, section: 0)], with: .fade) } } } return cell } // 2️⃣ register 호출 (이 시점에 tableView는 이미 존재함) todosDataSource?.register(cellType: TodoCell.self) // 3️⃣ 연결 myTableView.dataSource = todosDataSource } private func makeUI() { [myTableView].forEach { view.addSubview($0) $0.translatesAutoresizingMaskIntoConstraints = false } } private func constraints() { NSLayoutConstraint.activate([ myTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor), myTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor), myTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor), myTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor) ]) } }]]></summary></entry><entry><title type="html">[Combine] 예제 3 &amp;amp; UIKit Validation</title><link href="http://localhost:4000/Combine-example-3/" rel="alternate" type="text/html" title="[Combine] 예제 3 &amp;amp; UIKit Validation" /><published>2025-07-19T00:00:00+00:00</published><updated>2025-07-19T00:00:00+00:00</updated><id>http://localhost:4000/%5BCombine%5D-example%203</id><content type="html" xml:base="http://localhost:4000/Combine-example-3/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
 
 <table>
   <tr>
@@ -801,13 +1146,38 @@ import CombineCocoa</li>
 연산에는 산술, 대입, 비교, 이동 연산 등이 포함되며,  <br />
 이를 통해 알고리즘 간 성능 비교가 가능합니다.</p>
 
+<h2 id="순환recursion">순환(Recursion)</h2>
+<p>어떤 알고리즘이나 함수가 자기 자신을 호출하여 문제를 해결하는 프로그래밍 기법입니다.  <br />
+주어진 문제를 더 작은 동일한 문제들로 분해하여 해결하는 분할 정복이 있습니다.  <br />
+순환 호출시에는 호출이 일어날 때마다 호출하는 함수의 상태를 기억해야 하므로 여분의 기억장소가 필요합니다.<br />
+순환은 이해하기 쉽지만 비효율적인 경우가 많습니다.</p>
+
+<h2 id="활성-레코드activation-record">활성 레코드(Activation Record)</h2>
+<p>프로그래밍 언어에서 하나의 함수가 자기 자신을 다시 호출하는 것은 다른 함수를 호출하는 것과 동일합니다.  <br />
+복귀주소가 시스템 스택에 저장되고 호출되는 함수를 위한 매개변수(parameter)와 지역변수를 스택으로부터 할당받는데 이러한 공간을 활성 레코드라고 합니다. 호출된 함수가 자기 자신이라면 자기 자신의 시작 위치로 점프하게 됩니다. 호출된 함수가 끝나게 되면 시스템 스택에서 복귀주소를 추출하여 호출한 함수로 되돌아갑니다.</p>
+
+<h2 id="꼬리-순환tail-recursion">꼬리 순환(Tail Recursion)</h2>
+<p>순환 호출이 끝에서 이루어지는 순환을 꼬리 순환이라고 하는데 이를 반복 알고리즘으로 쉽게 바꾸어 쓸 수 있습니다.</p>
+<ul>
+  <li>반복이 빠른 예시
+    <ul>
+      <li>팩토리얼(순환, 반복 둘다 시간복잡도는 O(n)이지만 순환에서는 여분의 기억공간이 필요하고 함수를 호출하기 위해 함수의 매개변수들을 스택에 저장하는 사전 작업이 필요하다.)</li>
+    </ul>
+  </li>
+  <li>순환이 빠른 예시
+    <ul>
+      <li>거듭제곱(logn)</li>
+    </ul>
+  </li>
+</ul>
+
 <h2 id="reference">Reference</h2>
 <ul>
   <li>https://bnzn2426.tistory.com/115</li>
   <li>https://developer-haru.tistory.com/70</li>
   <li>https://wikidocs.net/224929</li>
   <li>https://velog.io/@ghldjfldj/자료구조-자료구조란</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Data Structure" /><summary type="html"><![CDATA[자료구조(Data Structure) 자료구조는 데이터를 효율적으로 저장하고 관리하는 방식입니다. 대량의 데이터를 다룰 때 삽입, 삭제, 검색, 정렬, 순회 같은 기본 연산을 효율적으로 처리하도록 도와줍니다. 자료구조는 크게 두 가지로 나누어집니다: 선형 자료구조: 배열, 연결 리스트, 스택, 큐처럼 데이터를 순서대로 나열하는 구조 비선형 자료구조: 트리, 그래프처럼 계층적이거나 복잡한 관계를 표현하는 구조 자료구조 특징 효율성 문제에 적절한 자료구조를 사용하면 속도와 자원 효율이 향상됩니다. 추상화 복잡한 내부 구조는 숨기고 핵심적인 기능만을 표현함으로써 사용자는 사용법에 집중할 수 있습니다. 재사용성 범용적으로 설계된 자료구조는 여러 프로젝트에서 재사용이 가능하여 유지보수에도 유리합니다. 알고리즘(Algorithms) 알고리즘은 문제를 해결하기 위한 단계적인 절차입니다. 입력을 받아 원하는 출력을 만들어내는 과정을 의미하며, 좋은 알고리즘은 빠르게 실행되면서도 적은 자원을 사용합니다. 자료형(Data Type) 자료형은 데이터의 종류와 형식을 정의한 것입니다. 예를 들어, 정수형(Int), 실수형(Float), 문자열(String) 등은 기초 자료형(Primitive Type)에 해당합니다. 이 외에도 여러 데이터를 묶은 구조체, 클래스 같은 복합 자료형(Composite Type)도 존재합니다. 추상 자료형(Abstruct Data Types, ADT) 추상 자료형은 데이터의 구조와 이를 처리하는 연산만 정의하고, 구체적인 구현은 숨기는 개념입니다. 사용자는 내부 구현을 몰라도 되고, 기능(인터페이스)만 알면 됩니다. 대표적인 ADT 예시: 스택, 큐, 리스트, 트리 정보 은닉과 모듈화를 통해 재사용성과 유지보수성이 뛰어납니다. 수학적으로 정의된 개념으로, 실제 구현(배열, 연결 리스트 등)과는 분리되어 있습니다. ➡️ 즉, ADT는 ‘무엇을 할 수 있는가’에 집중하고, 구현 방식은 자유롭게 선택할 수 있는 설계 방식입니다. 추상화(Abstraction) 추상화는 불필요한 세부 사항을 숨기고, 핵심 기능에 집중하는 것입니다. 복잡한 시스템을 단순하게 바라보게 해 주며, 유지보수성과 이해도를 높입니다. 프로그램 프로그램 = 자료구조 + 알고리즘 소프트웨어는 결국 데이터를 어떻게 구조화(자료구조)하고, 그 데이터를 어떻게 처리할지(알고리즘) 결정하는 것이 핵심입니다. 시간복잡도 시간 복잡도는 알고리즘이 실행될 때 주요 연산이 얼마나 반복되는지를 정량적으로 나타낸 값입니다. 연산에는 산술, 대입, 비교, 이동 연산 등이 포함되며, 이를 통해 알고리즘 간 성능 비교가 가능합니다. Reference https://bnzn2426.tistory.com/115 https://developer-haru.tistory.com/70 https://wikidocs.net/224929 https://velog.io/@ghldjfldj/자료구조-자료구조란]]></summary></entry><entry><title type="html">[Pindora] Dependency Injection란?</title><link href="http://localhost:4000/Pindora-di/" rel="alternate" type="text/html" title="[Pindora] Dependency Injection란?" /><published>2025-07-15T00:00:00+00:00</published><updated>2025-07-15T00:00:00+00:00</updated><id>http://localhost:4000/%5BPindora%5D-di</id><content type="html" xml:base="http://localhost:4000/Pindora-di/"><![CDATA[<!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Data Structure" /><summary type="html"><![CDATA[자료구조(Data Structure) 자료구조는 데이터를 효율적으로 저장하고 관리하는 방식입니다. 대량의 데이터를 다룰 때 삽입, 삭제, 검색, 정렬, 순회 같은 기본 연산을 효율적으로 처리하도록 도와줍니다. 자료구조는 크게 두 가지로 나누어집니다: 선형 자료구조: 배열, 연결 리스트, 스택, 큐처럼 데이터를 순서대로 나열하는 구조 비선형 자료구조: 트리, 그래프처럼 계층적이거나 복잡한 관계를 표현하는 구조 자료구조 특징 효율성 문제에 적절한 자료구조를 사용하면 속도와 자원 효율이 향상됩니다. 추상화 복잡한 내부 구조는 숨기고 핵심적인 기능만을 표현함으로써 사용자는 사용법에 집중할 수 있습니다. 재사용성 범용적으로 설계된 자료구조는 여러 프로젝트에서 재사용이 가능하여 유지보수에도 유리합니다. 알고리즘(Algorithms) 알고리즘은 문제를 해결하기 위한 단계적인 절차입니다. 입력을 받아 원하는 출력을 만들어내는 과정을 의미하며, 좋은 알고리즘은 빠르게 실행되면서도 적은 자원을 사용합니다. 자료형(Data Type) 자료형은 데이터의 종류와 형식을 정의한 것입니다. 예를 들어, 정수형(Int), 실수형(Float), 문자열(String) 등은 기초 자료형(Primitive Type)에 해당합니다. 이 외에도 여러 데이터를 묶은 구조체, 클래스 같은 복합 자료형(Composite Type)도 존재합니다. 추상 자료형(Abstruct Data Types, ADT) 추상 자료형은 데이터의 구조와 이를 처리하는 연산만 정의하고, 구체적인 구현은 숨기는 개념입니다. 사용자는 내부 구현을 몰라도 되고, 기능(인터페이스)만 알면 됩니다. 대표적인 ADT 예시: 스택, 큐, 리스트, 트리 정보 은닉과 모듈화를 통해 재사용성과 유지보수성이 뛰어납니다. 수학적으로 정의된 개념으로, 실제 구현(배열, 연결 리스트 등)과는 분리되어 있습니다. ➡️ 즉, ADT는 ‘무엇을 할 수 있는가’에 집중하고, 구현 방식은 자유롭게 선택할 수 있는 설계 방식입니다. 추상화(Abstraction) 추상화는 불필요한 세부 사항을 숨기고, 핵심 기능에 집중하는 것입니다. 복잡한 시스템을 단순하게 바라보게 해 주며, 유지보수성과 이해도를 높입니다. 프로그램 프로그램 = 자료구조 + 알고리즘 소프트웨어는 결국 데이터를 어떻게 구조화(자료구조)하고, 그 데이터를 어떻게 처리할지(알고리즘) 결정하는 것이 핵심입니다. 시간복잡도 시간 복잡도는 알고리즘이 실행될 때 주요 연산이 얼마나 반복되는지를 정량적으로 나타낸 값입니다. 연산에는 산술, 대입, 비교, 이동 연산 등이 포함되며, 이를 통해 알고리즘 간 성능 비교가 가능합니다. 순환(Recursion) 어떤 알고리즘이나 함수가 자기 자신을 호출하여 문제를 해결하는 프로그래밍 기법입니다. 주어진 문제를 더 작은 동일한 문제들로 분해하여 해결하는 분할 정복이 있습니다. 순환 호출시에는 호출이 일어날 때마다 호출하는 함수의 상태를 기억해야 하므로 여분의 기억장소가 필요합니다. 순환은 이해하기 쉽지만 비효율적인 경우가 많습니다. 활성 레코드(Activation Record) 프로그래밍 언어에서 하나의 함수가 자기 자신을 다시 호출하는 것은 다른 함수를 호출하는 것과 동일합니다. 복귀주소가 시스템 스택에 저장되고 호출되는 함수를 위한 매개변수(parameter)와 지역변수를 스택으로부터 할당받는데 이러한 공간을 활성 레코드라고 합니다. 호출된 함수가 자기 자신이라면 자기 자신의 시작 위치로 점프하게 됩니다. 호출된 함수가 끝나게 되면 시스템 스택에서 복귀주소를 추출하여 호출한 함수로 되돌아갑니다. 꼬리 순환(Tail Recursion) 순환 호출이 끝에서 이루어지는 순환을 꼬리 순환이라고 하는데 이를 반복 알고리즘으로 쉽게 바꾸어 쓸 수 있습니다. 반복이 빠른 예시 팩토리얼(순환, 반복 둘다 시간복잡도는 O(n)이지만 순환에서는 여분의 기억공간이 필요하고 함수를 호출하기 위해 함수의 매개변수들을 스택에 저장하는 사전 작업이 필요하다.) 순환이 빠른 예시 거듭제곱(logn) Reference https://bnzn2426.tistory.com/115 https://developer-haru.tistory.com/70 https://wikidocs.net/224929 https://velog.io/@ghldjfldj/자료구조-자료구조란]]></summary></entry><entry><title type="html">[Pindora] Dependency Injection란?</title><link href="http://localhost:4000/Pindora-di/" rel="alternate" type="text/html" title="[Pindora] Dependency Injection란?" /><published>2025-07-15T00:00:00+00:00</published><updated>2025-07-15T00:00:00+00:00</updated><id>http://localhost:4000/%5BPindora%5D-di</id><content type="html" xml:base="http://localhost:4000/Pindora-di/"><![CDATA[<!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
 
 <!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
 
@@ -2079,86 +2449,4 @@ cellForRowAt – 각 셀에 들어갈 내용과 셀 객체 반환</p>
 <ul>
   <li>테이블뷰 로드방식이 기존 테이블뷰와 다르다.</li>
   <li>dataSource.apply(스냅샷) -&gt; 이런 데이터를 보여줄거라고 스냅샷이라는 사진을 찍어두고 찍어둔 사진을 반영한다.</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[DiffableDataSource Diffable 다른 이라는 뜻이다. 아이템들간의 서로 다름을 알게 되는 것이다. 애니메이션 처리가 자연스럽게 되는 데이터소스이다. datasource cellProvider - 셀 만들기 가능하다. snapshot(사진 찍어둠) 테이블뷰 로드방식이 기존 테이블뷰와 다르다. dataSource.apply(스냅샷) -&gt; 이런 데이터를 보여줄거라고 스냅샷이라는 사진을 찍어두고 찍어둔 사진을 반영한다.]]></summary></entry><entry><title type="html">[Haruhancut] Widget</title><link href="http://localhost:4000/Haruhancut-Widget/" rel="alternate" type="text/html" title="[Haruhancut] Widget" /><published>2025-05-30T00:00:00+00:00</published><updated>2025-05-30T00:00:00+00:00</updated><id>http://localhost:4000/%5BHaruhancut%5D-Widget</id><content type="html" xml:base="http://localhost:4000/Haruhancut-Widget/"><![CDATA[<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h2 id="widget-도입">Widget 도입</h2>
-<p>하루한컷 앱에 위젯을 추가하여 앱의 사진을 위젯으로 보여주려고 한다.</p>
-
-<h2 id="기존-번들-식별자에-app-groups-체크-및-저장">기존 번들 식별자에 App Groups 체크 및 저장</h2>
-<p>Identifiers에서 com.indextrown.Haruhancut를 찾아서 App Groups 체크박스를 추가 및 저장한다.</p>
-
-<h3 id="1-위젯용-번들-식별자-준비">1. 위젯용 번들 식별자 준비</h3>
-<p><img src="/assets/img/2025-05-30-%5BHaruhancut%5D-Widget/image-20250610145644562.png" alt="이미지" width="30%" /><br />
-com.indextrown.Haruhancut.WidgetExtension로 번들 식별자를 만들고 App Groups만 체크해준다.<br />
-이제 프로비저닝 프로파일을 만들건데 편의를 위해 fastlane을 사용하겠다.</p>
-
-<h3 id="2-프로비저닝-프로파일-만들기">2. 프로비저닝 프로파일 만들기</h3>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 기존 프로젝트가 이거면  </span>
-<span class="c"># match Development com.indextrown.Haruhancut</span>
-
-<span class="c"># 위젯은 아래와 같이 프로비저닝 프로파일을 만들어준다.   </span>
-<span class="c"># match Development com.indextrown.Haruhancut.WidgetExtension</span>
-
-<span class="c"># 개발용</span>
-fastlane match development <span class="nt">--app_identifier</span> <span class="s2">"com.indextrown.Haruhancut.WidgetExtension"</span>
-
-<span class="c"># 배포용</span>
-fastlane match appstore <span class="nt">--app_identifier</span> <span class="s2">"com.indextrown.Haruhancut.WidgetExtension"</span>
-
-<span class="c"># ⚠️Provisioning profile "" doesn't include signing ...발생시</span>
-fastlane match development <span class="nt">--force</span>
-fastlane match appstore <span class="nt">--force</span>  
-</code></pre></div></div>
-
-<h3 id="3-widget-extension-생성">3. Widget Extension 생성</h3>
-
-<ul>
-  <li>Targets목록 아래 + 버튼 눌러서 WIdget Extension 생성한다.</li>
-</ul>
-
-<h3 id="4-app-groups-설정">4. App Groups 설정</h3>
-<p>기존 프로젝트와 WIdgetExtension 프로젝트에 각각 App Groups 추가한다.</p>
-
-<h2 id="widgetkit">WidgetKit</h2>
-<ul>
-  <li>iOS 14부터 도입되었으며 SwiftUI로만 구현 가능하다.</li>
-  <li>UIViewRepresentable 불가능하다.</li>
-</ul>
-
-<h3 id="widget-configuration속성-편집에-대한-기능">Widget COnfiguration(속성 편집에 대한 기능)</h3>
-<ul>
-  <li>Static configuration
-    <ul>
-      <li>위젯 편집 항목이 나타나지 않으며, 사용자가 설정을 변경할 수 있는 옵션이 없다.</li>
-    </ul>
-  </li>
-  <li>Intent Configuration
-    <ul>
-      <li>위젯 편집 기능을 통해 여러 Intent 값을 수정할 수 있도록 위젯을 구성할 수 있다.</li>
-      <li>iOS 17부터 AppIntentCOnfiguration으로 변경</li>
-    </ul>
-  </li>
-  <li>Activity Configuration
-    <ul>
-      <li>Live Activity</li>
-    </ul>
-  </li>
-</ul>
-
-<h3 id="widget은-크게-4가지의-struct로-구성">Widget은 크게 4가지의 struct로 구성</h3>
-
-<p><img src="/assets/img/2025-05-30-%5BHaruhancut%5D-Widget/image-20250610173933798.png" alt="이미지" width="30%" /></p>
-
-<ul>
-  <li>Provider에서 사용자가 설정한 시간에 맞춰 위젯을 업데이트할 수 있게 한다</li>
-  <li>Entry에서 위젯에 필요한 데이터를 제공한다</li>
-  <li>EntryView는 Entry를 통해 구성하며, UI를 담당하는 역할과 유사하다</li>
-  <li>Widget에서는 static, intent, activity인지에 따라 최종적인 위젯을 구성한다</li>
-</ul>
-
-<h2 id="reference">Reference</h2>
-<ul>
-  <li>https://velog.io/@s_sub/새싹-iOS-20주차</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Haruhancut" /><summary type="html"><![CDATA[Widget 도입 하루한컷 앱에 위젯을 추가하여 앱의 사진을 위젯으로 보여주려고 한다. 기존 번들 식별자에 App Groups 체크 및 저장 Identifiers에서 com.indextrown.Haruhancut를 찾아서 App Groups 체크박스를 추가 및 저장한다. 1. 위젯용 번들 식별자 준비 com.indextrown.Haruhancut.WidgetExtension로 번들 식별자를 만들고 App Groups만 체크해준다. 이제 프로비저닝 프로파일을 만들건데 편의를 위해 fastlane을 사용하겠다. 2. 프로비저닝 프로파일 만들기 # 기존 프로젝트가 이거면 # match Development com.indextrown.Haruhancut # 위젯은 아래와 같이 프로비저닝 프로파일을 만들어준다. # match Development com.indextrown.Haruhancut.WidgetExtension # 개발용 fastlane match development --app_identifier "com.indextrown.Haruhancut.WidgetExtension" # 배포용 fastlane match appstore --app_identifier "com.indextrown.Haruhancut.WidgetExtension" # ⚠️Provisioning profile "" doesn't include signing ...발생시 fastlane match development --force fastlane match appstore --force 3. Widget Extension 생성 Targets목록 아래 + 버튼 눌러서 WIdget Extension 생성한다. 4. App Groups 설정 기존 프로젝트와 WIdgetExtension 프로젝트에 각각 App Groups 추가한다. WidgetKit iOS 14부터 도입되었으며 SwiftUI로만 구현 가능하다. UIViewRepresentable 불가능하다. Widget COnfiguration(속성 편집에 대한 기능) Static configuration 위젯 편집 항목이 나타나지 않으며, 사용자가 설정을 변경할 수 있는 옵션이 없다. Intent Configuration 위젯 편집 기능을 통해 여러 Intent 값을 수정할 수 있도록 위젯을 구성할 수 있다. iOS 17부터 AppIntentCOnfiguration으로 변경 Activity Configuration Live Activity Widget은 크게 4가지의 struct로 구성 Provider에서 사용자가 설정한 시간에 맞춰 위젯을 업데이트할 수 있게 한다 Entry에서 위젯에 필요한 데이터를 제공한다 EntryView는 Entry를 통해 구성하며, UI를 담당하는 역할과 유사하다 Widget에서는 static, intent, activity인지에 따라 최종적인 위젯을 구성한다 Reference https://velog.io/@s_sub/새싹-iOS-20주차]]></summary></entry></feed>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><category term="TableView" /><summary type="html"><![CDATA[DiffableDataSource Diffable 다른 이라는 뜻이다. 아이템들간의 서로 다름을 알게 되는 것이다. 애니메이션 처리가 자연스럽게 되는 데이터소스이다. datasource cellProvider - 셀 만들기 가능하다. snapshot(사진 찍어둠) 테이블뷰 로드방식이 기존 테이블뷰와 다르다. dataSource.apply(스냅샷) -&gt; 이런 데이터를 보여줄거라고 스냅샷이라는 사진을 찍어두고 찍어둔 사진을 반영한다.]]></summary></entry></feed>
