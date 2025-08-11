@@ -515,22 +515,16 @@ var store = [{
         "url": "/RxDataSource-RxDataSource-3/",
         "teaser": "/assets/logos/background.png"
       },{
-        "title": "",
-        "excerpt":" ","categories": [],
-        "tags": [],
-        "url": "/Makefile/",
+        "title": "[AutoLayout] 0. 오토레이아웃 요약",
+        "excerpt":"               내용       Summary       날짜                       0. 강의링크       유튜브 재생목록 바로가기       2025년 3월 17일                 1. 오토레이아웃 기본 개념       - 0. 오토레이아웃 개념 - 오토레이아웃은 항상 크기와 위치가 필요하다. - 크기를 만들고 위치를 지정하자. - anchor를 한 방향에서 서로 걸게 되면 서로 당기는 성질이 있어서 별도로 크기를 지정하지 않아도 핸드폰이 자체적으로 크기를 결정할 수 있다.       2025년 3월 18일                 2. 컨스트레인트 기본       - safeArea란 노치에 상관없이 안전하게 뷰를 보여줄 수 있는 부분을 의미한다. - align이 된 상태에서 한쪽에 constraint를 걸면 반대쪽도 자동으로 걸어진다.       2025년 3월 18일                 3. 멀티뷰 연결       - control 누르면서 뷰를 다른 뷰에 드래그하여 제약 조건을 지정할 수 있다. - 이때 option을 누르면 현재 위치로 제약이 된다.       2025년 3월 18일                 4. 컨테이너 개념       - label의 크기는 안 넣어도 된다. - horizontal = 수평정렬 = x축 가운데정렬이다. - UIView 크기를 하드코딩하지 않고 constraints로 지정할 수 있다.       2025년 3월 18일          ","categories": [],
+        "tags": ["AutoLayout"],
+        "url": "/AutoLayout-autolayoutTable/",
         "teaser": "/assets/logos/background.png"
       },{
         "title": "[AutoLayout] 0. 오토레이아웃 개념",
-        "excerpt":"    ViewController에서 View는 화면을 그리는 부분이다.    UI를 만들기 위한 그래픽 환경을 InterfaceBuilder라고 한다.     현재 SafeArea위에 View를 올렸다. View 자체는 크기가 없기 때문에 크기 지정을 해주자.    오토 레이아웃에서는 크기와 위치가 중요하다. 크기를 지정하고 위치를 지정해주는게 핵심이다.    사진에서는 위치는 좌측과 상단만 anchor를 걸고 크기는 width, height를 고정값으로 지정하였다.   먄약 좌우로 앵커를 걸면 width 고정값을 없애주자. 좌우 앵커일 때 width 고정값이 존재한다면 기기에 따라 에러가 발생할 수 있어서 width 고정값을 없애주자. 그럼 서로 늘어당기는 성질이 있어서 알아서 너비가 정해진다. 가능한 이유는 기종에 따라 크기를 알 수 있기 때문이다.   ","categories": [],
+        "excerpt":"    ViewController에서 View는 화면을 그리는 부분이다.    UI를 만들기 위한 그래픽 환경을 InterfaceBuilder라고 한다.           현재 SafeArea위에 View를 올렸다. View 자체는 크기가 없기 때문에 크기 지정을 해주자.    오토 레이아웃에서는 크기와 위치가 중요하다. 크기를 지정하고 위치를 지정해주는게 핵심이다.    사진에서는 위치는 좌측과 상단만 anchor를 걸고 크기는 width, height를 고정값으로 지정하였다.           Tip  만약 좌우로 앵커를 모두 설정한다면, width 고정값은 제거하자.    좌우 앵커와 width 고정값이 동시에 존재하면,    기기 화면 크기에 따라 레이아웃 충돌 에러가 발생할 수 있다.   width 고정값을 제거하면 좌우 앵커가 서로 당기는 힘을 주어,    기기 화면 크기에 맞춰 자동으로 너비가 결정된다.    이는 기종별 화면 크기를 오토레이아웃이 인식하기 때문에 가능하다.   정리     오토레이아웃은 항상 크기와 위치가 필요하다.   크기를 만들고 위치를 지정하자.   anchor를 한 방향에서 서로 걸게 되면 서로 당기는 성질이 있어서 별도로 크기를 지정하지 않아도 핸드폰이 자체적으로 크기를 결정할 수 있다.   ","categories": [],
         "tags": ["AutoLayout"],
         "url": "/AutoLayout-autolayout0/",
-        "teaser": "/assets/logos/background.png"
-      },{
-        "title": "",
-        "excerpt":" ","categories": [],
-        "tags": [],
-        "url": "/Makefile/",
         "teaser": "/assets/logos/background.png"
       },{
         "title": "Star Bridge: 생일카페 알리미",

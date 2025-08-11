@@ -1,14 +1,6 @@
 [
     
         {
-        "title"    : "",
-        "category" : "",
-        "tags"     : "",
-        "url"      : "/Makefile/",
-        "date"     : "2025-08-11 00:00:00 +0000"
-        } ,
-    
-        {
         "title"    : "[AutoLayout] 0. 오토레이아웃 개념",
         "category" : "",
         "tags"     : "AutoLayout",
@@ -17,11 +9,11 @@
         } ,
     
         {
-        "title"    : "",
+        "title"    : "[AutoLayout] 0. 오토레이아웃 요약",
         "category" : "",
-        "tags"     : "",
-        "url"      : "/Makefile/",
-        "date"     : "2025-08-08 00:00:00 +0000"
+        "tags"     : "AutoLayout",
+        "url"      : "/AutoLayout-autolayoutTable/",
+        "date"     : "2025-08-07 00:00:00 +0000"
         } ,
     
         {

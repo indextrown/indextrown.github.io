@@ -10,7 +10,7 @@
     <meta charset="utf-8">
 
 <!-- begin _includes/seo.html --><title>[AutoLayout] 0. 오토레이아웃 개념 - DongHyeon Kim’s Blog</title>
-<meta name="description" content="ViewController에서 View는 화면을 그리는 부분이다.   UI를 만들기 위한 그래픽 환경을 InterfaceBuilder라고 한다.   현재 SafeArea위에 View를 올렸다. View 자체는 크기가 없기 때문에 크기 지정을 해주자.   오토 레이아웃에서는 크기와 위치가 중요하다. 크기를 지정하고 위치를 지정해주는게 핵심이다.   사진에서는 위치는 좌측과 상단만 anchor를 걸고 크기는 width, height를 고정값으로 지정하였다.  먄약 좌우로 앵커를 걸면 width 고정값을 없애주자. 좌우 앵커일 때 width 고정값이 존재한다면 기기에 따라 에러가 발생할 수 있어서 width 고정값을 없애주자. 그럼 서로 늘어당기는 성질이 있어서 알아서 너비가 정해진다. 가능한 이유는 기종에 따라 크기를 알 수 있기 때문이다.">
+<meta name="description" content="ViewController에서 View는 화면을 그리는 부분이다.   UI를 만들기 위한 그래픽 환경을 InterfaceBuilder라고 한다.    현재 SafeArea위에 View를 올렸다. View 자체는 크기가 없기 때문에 크기 지정을 해주자.   오토 레이아웃에서는 크기와 위치가 중요하다. 크기를 지정하고 위치를 지정해주는게 핵심이다.   사진에서는 위치는 좌측과 상단만 anchor를 걸고 크기는 width, height를 고정값으로 지정하였다.     Tip 만약 좌우로 앵커를 모두 설정한다면, width 고정값은 제거하자.   좌우 앵커와 width 고정값이 동시에 존재하면,   기기 화면 크기에 따라 레이아웃 충돌 에러가 발생할 수 있다.  width 고정값을 제거하면 좌우 앵커가 서로 당기는 힘을 주어,   기기 화면 크기에 맞춰 자동으로 너비가 결정된다.   이는 기종별 화면 크기를 오토레이아웃이 인식하기 때문에 가능하다.  정리    오토레이아웃은 항상 크기와 위치가 필요하다.   크기를 만들고 위치를 지정하자.   anchor를 한 방향에서 서로 걸게 되면 서로 당기는 성질이 있어서 별도로 크기를 지정하지 않아도 핸드폰이 자체적으로 크기를 결정할 수 있다.">
 
 
   <meta name="author" content="Dong Hyeon">
@@ -26,7 +26,7 @@
 <meta property="og:url" content="http://localhost:4000/AutoLayout-autolayout0/">
 
 
-  <meta property="og:description" content="ViewController에서 View는 화면을 그리는 부분이다.   UI를 만들기 위한 그래픽 환경을 InterfaceBuilder라고 한다.   현재 SafeArea위에 View를 올렸다. View 자체는 크기가 없기 때문에 크기 지정을 해주자.   오토 레이아웃에서는 크기와 위치가 중요하다. 크기를 지정하고 위치를 지정해주는게 핵심이다.   사진에서는 위치는 좌측과 상단만 anchor를 걸고 크기는 width, height를 고정값으로 지정하였다.  먄약 좌우로 앵커를 걸면 width 고정값을 없애주자. 좌우 앵커일 때 width 고정값이 존재한다면 기기에 따라 에러가 발생할 수 있어서 width 고정값을 없애주자. 그럼 서로 늘어당기는 성질이 있어서 알아서 너비가 정해진다. 가능한 이유는 기종에 따라 크기를 알 수 있기 때문이다.">
+  <meta property="og:description" content="ViewController에서 View는 화면을 그리는 부분이다.   UI를 만들기 위한 그래픽 환경을 InterfaceBuilder라고 한다.    현재 SafeArea위에 View를 올렸다. View 자체는 크기가 없기 때문에 크기 지정을 해주자.   오토 레이아웃에서는 크기와 위치가 중요하다. 크기를 지정하고 위치를 지정해주는게 핵심이다.   사진에서는 위치는 좌측과 상단만 anchor를 걸고 크기는 width, height를 고정값으로 지정하였다.     Tip 만약 좌우로 앵커를 모두 설정한다면, width 고정값은 제거하자.   좌우 앵커와 width 고정값이 동시에 존재하면,   기기 화면 크기에 따라 레이아웃 충돌 에러가 발생할 수 있다.  width 고정값을 제거하면 좌우 앵커가 서로 당기는 힘을 주어,   기기 화면 크기에 맞춰 자동으로 너비가 결정된다.   이는 기종별 화면 크기를 오토레이아웃이 인식하기 때문에 가능하다.  정리    오토레이아웃은 항상 크기와 위치가 필요하다.   크기를 만들고 위치를 지정하자.   anchor를 한 방향에서 서로 걸게 되면 서로 당기는 성질이 있어서 별도로 크기를 지정하지 않아도 핸드폰이 자체적으로 크기를 결정할 수 있다.">
 
 
 
@@ -457,7 +457,7 @@ checkbox.addEventListener('change', function() {
 
   <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
     <meta itemprop="headline" content="[AutoLayout] 0. 오토레이아웃 개념">
-    <meta itemprop="description" content="ViewController에서 View는 화면을 그리는 부분이다.  UI를 만들기 위한 그래픽 환경을 InterfaceBuilder라고 한다.현재 SafeArea위에 View를 올렸다. View 자체는 크기가 없기 때문에 크기 지정을 해주자.  오토 레이아웃에서는 크기와 위치가 중요하다. 크기를 지정하고 위치를 지정해주는게 핵심이다.  사진에서는 위치는 좌측과 상단만 anchor를 걸고 크기는 width, height를 고정값으로 지정하였다.먄약 좌우로 앵커를 걸면 width 고정값을 없애주자. 좌우 앵커일 때 width 고정값이 존재한다면 기기에 따라 에러가 발생할 수 있어서 width 고정값을 없애주자. 그럼 서로 늘어당기는 성질이 있어서 알아서 너비가 정해진다. 가능한 이유는 기종에 따라 크기를 알 수 있기 때문이다.">
+    <meta itemprop="description" content="ViewController에서 View는 화면을 그리는 부분이다.  UI를 만들기 위한 그래픽 환경을 InterfaceBuilder라고 한다.현재 SafeArea위에 View를 올렸다. View 자체는 크기가 없기 때문에 크기 지정을 해주자.  오토 레이아웃에서는 크기와 위치가 중요하다. 크기를 지정하고 위치를 지정해주는게 핵심이다.  사진에서는 위치는 좌측과 상단만 anchor를 걸고 크기는 width, height를 고정값으로 지정하였다.  Tip만약 좌우로 앵커를 모두 설정한다면, width 고정값은 제거하자.  좌우 앵커와 width 고정값이 동시에 존재하면,  기기 화면 크기에 따라 레이아웃 충돌 에러가 발생할 수 있다.width 고정값을 제거하면 좌우 앵커가 서로 당기는 힘을 주어,  기기 화면 크기에 맞춰 자동으로 너비가 결정된다.  이는 기종별 화면 크기를 오토레이아웃이 인식하기 때문에 가능하다.정리  오토레이아웃은 항상 크기와 위치가 필요하다.  크기를 만들고 위치를 지정하자.  anchor를 한 방향에서 서로 걸게 되면 서로 당기는 성질이 있어서 별도로 크기를 지정하지 않아도 핸드폰이 자체적으로 크기를 결정할 수 있다.">
     <meta itemprop="datePublished" content="2025-08-08T00:00:00+00:00">
     
 
@@ -503,14 +503,30 @@ checkbox.addEventListener('change', function() {
 
 <p><img src="/assets/img/2025-08-08-%5BAutoLayout%5D-autolayout0/image-20250808170826492.png" alt="이미지" width="70%" /><br />
 ViewController에서 View는 화면을 그리는 부분이다.  <br />
-UI를 만들기 위한 그래픽 환경을 InterfaceBuilder라고 한다.</p>
+UI를 만들기 위한 그래픽 환경을 InterfaceBuilder라고 한다.<br />
+<br /><br /><br /><br /></p>
 
 <p><img src="/assets/img/2025-08-08-%5BAutoLayout%5D-autolayout0/image-20250808174834409.png" alt="이미지" width="70%" /><br />
 현재 SafeArea위에 View를 올렸다. View 자체는 크기가 없기 때문에 크기 지정을 해주자.  <br />
 오토 레이아웃에서는 <strong>크기와 위치가</strong> 중요하다. <strong>크기</strong>를 지정하고 <strong>위치</strong>를 지정해주는게 핵심이다.  <br />
-사진에서는 위치는 좌측과 상단만 anchor를 걸고 크기는 width, height를 고정값으로 지정하였다.</p>
+사진에서는 위치는 좌측과 상단만 anchor를 걸고 크기는 width, height를 고정값으로 지정하였다.  <br />
+<br /><br /><br /><br /></p>
 
-<p>먄약 좌우로 앵커를 걸면 width 고정값을 없애주자. 좌우 앵커일 때 width 고정값이 존재한다면 기기에 따라 에러가 발생할 수 있어서 width 고정값을 없애주자. 그럼 서로 늘어당기는 성질이 있어서 알아서 너비가 정해진다. 가능한 이유는 기종에 따라 크기를 알 수 있기 때문이다.</p>
+<h2 id="tip">Tip</h2>
+<p>만약 <strong>좌우로 앵커를 모두 설정</strong>한다면, <code class="language-plaintext highlighter-rouge">width</code> 고정값은 제거하자.  <br />
+좌우 앵커와 width 고정값이 동시에 존재하면,  <br />
+기기 화면 크기에 따라 <strong>레이아웃 충돌 에러</strong>가 발생할 수 있다.</p>
+
+<p>width 고정값을 제거하면 좌우 앵커가 서로 당기는 힘을 주어,  <br />
+기기 화면 크기에 맞춰 <strong>자동으로 너비가 결정</strong>된다.  <br />
+이는 기종별 화면 크기를 오토레이아웃이 인식하기 때문에 가능하다.</p>
+
+<h2 id="정리">정리</h2>
+<ul>
+  <li>오토레이아웃은 항상 크기와 위치가 필요하다.</li>
+  <li>크기를 만들고 위치를 지정하자.</li>
+  <li>anchor를 한 방향에서 서로 걸게 되면 서로 당기는 성질이 있어서 별도로 크기를 지정하지 않아도 핸드폰이 자체적으로 크기를 결정할 수 있다.</li>
+</ul>
 
 
         
@@ -521,12 +537,11 @@ UI를 만들기 위한 그래픽 환경을 InterfaceBuilder라고 한다.</p>
       
   <nav class="pagination">
     
-      <a href="/Makefile/" class="pagination--pager" title="
+      <a href="/AutoLayout-autolayoutTable/" class="pagination--pager" title="[AutoLayout] 0. 오토레이아웃 요약
 ">Previous</a>
     
     
-      <a href="/Makefile/" class="pagination--pager" title="
-">Next</a>
+      <a href="#" class="pagination--pager disabled">Next</a>
     
   </nav>
 
