@@ -9,8 +9,8 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>[AutoLayout] 2. 다른 뷰에 뷰를 연결하는법 - DongHyeon Kim’s Blog</title>
-<meta name="description" content="Leading     Option + Leading                green view에서 yellow view로 드래그 해서 Leading을 해주면yellow view leading과 동일한 효과를 얻을 수 있다.               green view에서 yellow view로 드래그 할 때 option을 누르면서 Leading을 해주면 현재 green위치에서 yellow leading 사이의 여백을 더해줄 수 있다.                                     Top Anchor 1번방식     Top Anchor 2번방식                green에서 Top Anchor를 설정하면 작살이 위로 날라가서 제일 가까운 top에 꽃힌다.               만약 1번방식 대신 드래그로 하는방법은 green의 top을 yellow의 바텀으로 거는 설정이 없기 때문에     yellow의 바텀으로 일단 걸고 우측 인스펙터에서 green Bottom -&gt; green Top으로 옮기고 constant를 주면 된다.">
+<!-- begin _includes/seo.html --><title>[AutoLayout] 3. 컨테이너 - DongHyeon Kim’s Blog</title>
+<meta name="description" content="View vs label    일반적인 view는 크기와 위치를 지정해줘야 한다.   label은 자체적으로 크기를 가지기 때문에 크기는 정해주지 않아고 위치만 정해준다.   크기를 대신해줄 수 있는 것은 constraints이다.                           Yellow의 위치와 크기 고정     Yellow의 위치만 고정(크기x)                컨테이너 뷰(Yellow)의 크기와 위치를 모두 고정하는 방식     width와 height를 직접 지정하여 레이아웃을 확정한다.                 크기는 직접 지정하지 않고 내부 Yellow 컨테이너의 subview들의 constraints로 대체하는 방식.             예를 들어, yellow의 subview(top)와 label의 top, bottom을 서로 연결하면         label의 높이가 곧 yellow의 높이가 된다.        width는 subview 또는 label에서 yellow로 leading 제약을 주어 결정할 수 있다.           정리 크기를 대신해서 할 수 있는게 constraints이다.    yellow container의 크기를 해당 컨테이너 내부의 constraints로 대체할 수 있다.    가능한 이유는 yellow의 subview의 top이 존재하고 label의 top과 subView의 바텀이 연결되어 있다. 추가적으로 label의 bottom을 yellow의 bottom으로 연결해주면 높이는 대체가 된다. width는 label이나 subView에서 yellow로 왼쪽으로 작살을 던져주면 해결된다.  (subView의 top이 yellow의 top에 연결되어 있고 subView가 가운데 정렬이기 때문에 subView에서 왼쪽으로 anchor를 놓든 subView의 leading을 따르는 label의 왼쪽으로 anchor를 놓든 width를 결정할 수 있다.)">
 
 
   <meta name="author" content="Dong Hyeon">
@@ -22,11 +22,11 @@
 <meta property="og:type" content="article">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="DongHyeon Kim's Blog">
-<meta property="og:title" content="[AutoLayout] 2. 다른 뷰에 뷰를 연결하는법">
-<meta property="og:url" content="http://localhost:4000/AutoLayout-autolayout2/">
+<meta property="og:title" content="[AutoLayout] 3. 컨테이너">
+<meta property="og:url" content="http://localhost:4000/AutoLayout-autolayout3/">
 
 
-  <meta property="og:description" content="Leading     Option + Leading                green view에서 yellow view로 드래그 해서 Leading을 해주면yellow view leading과 동일한 효과를 얻을 수 있다.               green view에서 yellow view로 드래그 할 때 option을 누르면서 Leading을 해주면 현재 green위치에서 yellow leading 사이의 여백을 더해줄 수 있다.                                     Top Anchor 1번방식     Top Anchor 2번방식                green에서 Top Anchor를 설정하면 작살이 위로 날라가서 제일 가까운 top에 꽃힌다.               만약 1번방식 대신 드래그로 하는방법은 green의 top을 yellow의 바텀으로 거는 설정이 없기 때문에     yellow의 바텀으로 일단 걸고 우측 인스펙터에서 green Bottom -&gt; green Top으로 옮기고 constant를 주면 된다.">
+  <meta property="og:description" content="View vs label    일반적인 view는 크기와 위치를 지정해줘야 한다.   label은 자체적으로 크기를 가지기 때문에 크기는 정해주지 않아고 위치만 정해준다.   크기를 대신해줄 수 있는 것은 constraints이다.                           Yellow의 위치와 크기 고정     Yellow의 위치만 고정(크기x)                컨테이너 뷰(Yellow)의 크기와 위치를 모두 고정하는 방식     width와 height를 직접 지정하여 레이아웃을 확정한다.                 크기는 직접 지정하지 않고 내부 Yellow 컨테이너의 subview들의 constraints로 대체하는 방식.             예를 들어, yellow의 subview(top)와 label의 top, bottom을 서로 연결하면         label의 높이가 곧 yellow의 높이가 된다.        width는 subview 또는 label에서 yellow로 leading 제약을 주어 결정할 수 있다.           정리 크기를 대신해서 할 수 있는게 constraints이다.    yellow container의 크기를 해당 컨테이너 내부의 constraints로 대체할 수 있다.    가능한 이유는 yellow의 subview의 top이 존재하고 label의 top과 subView의 바텀이 연결되어 있다. 추가적으로 label의 bottom을 yellow의 bottom으로 연결해주면 높이는 대체가 된다. width는 label이나 subView에서 yellow로 왼쪽으로 작살을 던져주면 해결된다.  (subView의 top이 yellow의 top에 연결되어 있고 subView가 가운데 정렬이기 때문에 subView에서 왼쪽으로 anchor를 놓든 subView의 leading을 따르는 label의 왼쪽으로 anchor를 놓든 width를 결정할 수 있다.)">
 
 
 
@@ -45,7 +45,7 @@
   
 
 
-<link rel="canonical" href="http://localhost:4000/AutoLayout-autolayout2/">
+<link rel="canonical" href="http://localhost:4000/AutoLayout-autolayout3/">
 
 
 
@@ -456,8 +456,8 @@ checkbox.addEventListener('change', function() {
 
 
   <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="[AutoLayout] 2. 다른 뷰에 뷰를 연결하는법">
-    <meta itemprop="description" content="                  Leading    Option + Leading            green view에서 yellow view로 드래그 해서 Leading을 해주면yellow view leading과 동일한 효과를 얻을 수 있다.            green view에서 yellow view로 드래그 할 때 option을 누르면서 Leading을 해주면 현재 green위치에서 yellow leading 사이의 여백을 더해줄 수 있다.                        Top Anchor 1번방식    Top Anchor 2번방식            green에서 Top Anchor를 설정하면 작살이 위로 날라가서 제일 가까운 top에 꽃힌다.            만약 1번방식 대신 드래그로 하는방법은 green의 top을 yellow의 바텀으로 거는 설정이 없기 때문에    yellow의 바텀으로 일단 걸고 우측 인스펙터에서 green Bottom -&gt; green Top으로 옮기고 constant를 주면 된다.      ">
+    <meta itemprop="headline" content="[AutoLayout] 3. 컨테이너">
+    <meta itemprop="description" content="View vs label  일반적인 view는 크기와 위치를 지정해줘야 한다.  label은 자체적으로 크기를 가지기 때문에 크기는 정해주지 않아고 위치만 정해준다.  크기를 대신해줄 수 있는 것은 constraints이다.                  Yellow의 위치와 크기 고정    Yellow의 위치만 고정(크기x)            컨테이너 뷰(Yellow)의 크기와 위치를 모두 고정하는 방식    width와 height를 직접 지정하여 레이아웃을 확정한다.              크기는 직접 지정하지 않고 내부 Yellow 컨테이너의 subview들의 constraints로 대체하는 방식.            예를 들어, yellow의 subview(top)와 label의 top, bottom을 서로 연결하면        label의 높이가 곧 yellow의 높이가 된다.       width는 subview 또는 label에서 yellow로 leading 제약을 주어 결정할 수 있다.      정리크기를 대신해서 할 수 있는게 constraints이다.   yellow container의 크기를 해당 컨테이너 내부의 constraints로 대체할 수 있다.   가능한 이유는 yellow의 subview의 top이 존재하고 label의 top과 subView의 바텀이 연결되어 있다. 추가적으로 label의 bottom을 yellow의 bottom으로 연결해주면 높이는 대체가 된다.width는 label이나 subView에서 yellow로 왼쪽으로 작살을 던져주면 해결된다.(subView의 top이 yellow의 top에 연결되어 있고 subView가 가운데 정렬이기 때문에 subView에서 왼쪽으로 anchor를 놓든 subView의 leading을 따르는 label의 왼쪽으로 anchor를 놓든 width를 결정할 수 있다.)">
     <meta itemprop="datePublished" content="2025-08-12T00:00:00+00:00">
     
 
@@ -465,7 +465,7 @@ checkbox.addEventListener('change', function() {
       
         <header>
           <h1 id="page-title" class="page__title p-name" itemprop="headline">
-            <a href="http://localhost:4000/AutoLayout-autolayout2/" class="u-url" itemprop="url">[AutoLayout] 2. 다른 뷰에 뷰를 연결하는법
+            <a href="http://localhost:4000/AutoLayout-autolayout3/" class="u-url" itemprop="url">[AutoLayout] 3. 컨테이너
 </a>
           </h1>
           <footer class="page__meta">
@@ -501,47 +501,43 @@ checkbox.addEventListener('change', function() {
         
         <!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
 
+<h2 id="view-vs-label">View vs label</h2>
+<ul>
+  <li>일반적인 view는 크기와 위치를 지정해줘야 한다.</li>
+  <li>label은 자체적으로 크기를 가지기 때문에 크기는 정해주지 않아고 위치만 정해준다.</li>
+  <li>크기를 대신해줄 수 있는 것은 <strong>constraints</strong>이다.</li>
+</ul>
+
 <table>
   <tr>
-    <td><img src="/assets/img/2025-08-12-%5BAutoLayout%5D-autolayout2/image-20250812160116357.png" alt="커스텀셀1" width="100%" /></td>
-    <td><img src="/assets/img/2025-08-08-%5BAutoLayout%5D-autolayout1/image-20250812160511084.png" alt="커스텀셀" width="100%" /></td>
+    <td><img src="/assets/img/2025-08-12-%5BAutoLayout%5D-autolayout3/image-20250812164741262.png" alt="커스텀셀1" width="90%" /></td>
+    <td><img src="/assets/img/2025-08-12-%5BAutoLayout%5D-autolayout3/image-20250812165643354.png" alt="커스텀셀" width="100%" /></td>
   </tr>
   <tr>
-    <td style="text-align:center;">Leading</td>
-    <td style="text-align:center;">Option + Leading</td>
+    <td style="text-align:center;">Yellow의 위치와 크기 고정</td>
+    <td style="text-align:center;">Yellow의 위치만 고정(크기x)</td>
   </tr>
   <tr>
     <td style="text-align:center; font-size:14px; color:#666;">
-    green view에서 yellow view로 드래그 해서 Leading을 해주면<br />yellow view leading과 동일한 효과를 얻을 수 있다.
+    컨테이너 뷰(Yellow)의 크기와 위치를 모두 고정하는 방식<br />
+    width와 height를 직접 지정하여 레이아웃을 확정한다.
     </td>
     <td style="text-align:center; font-size:14px; color:#666;">
-    green view에서 yellow view로 드래그 할 때 option을 누르면서 Leading을 해주면<br /> 현재 green위치에서 yellow leading 사이의 여백을 더해줄 수 있다.
+      크기는 직접 지정하지 않고 내부 Yellow 컨테이너의 subview들의 constraints로 대체하는 방식.      
+      예를 들어, <code>yellow</code>의 subview(top)와 label의 top, bottom을 서로 연결하면  
+      label의 높이가 곧 yellow의 높이가 된다.<br /> 
+      width는 subview 또는 label에서 yellow로 <b>leading</b> 제약을 주어 결정할 수 있다.
     </td>
   </tr>
 </table>
 
-<p><br /><br /><br /><br /></p>
+<h2 id="정리">정리</h2>
+<p>크기를 대신해서 할 수 있는게 constraints이다.   <br />
+yellow container의 크기를 해당 컨테이너 내부의 constraints로 대체할 수 있다.   <br />
+가능한 이유는 yellow의 subview의 top이 존재하고 label의 top과 subView의 바텀이 연결되어 있다. 추가적으로 label의 bottom을 yellow의 bottom으로 연결해주면 높이는 대체가 된다.<br />
+width는 label이나 subView에서 yellow로 왼쪽으로 작살을 던져주면 해결된다.</p>
 
-<table>
-  <tr>
-    <td><img src="/assets/img/2025-08-12-%5BAutoLayout%5D-autolayout2/image-20250812161107136.png" alt="커스텀셀1" width="100%" /></td>
-    <td><img src="/assets/img/2025-08-12-%5BAutoLayout%5D-autolayout2/image-20250812161522955.png" alt="커스텀셀" width="100%" /></td>
-  </tr>
-  <tr>
-    <td style="text-align:center;">Top Anchor 1번방식</td>
-    <td style="text-align:center;">Top Anchor 2번방식</td>
-  </tr>
-  <tr>
-    <td style="text-align:center; font-size:14px; color:#666;">
-    green에서 Top Anchor를 설정하면 작살이 위로 날라가서 제일 가까운 top에 꽃힌다.
-    </td>
-    <td style="text-align:center; font-size:14px; color:#666;">
-    만약 1번방식 대신 드래그로 하는방법은 green의 top을 yellow의 바텀으로 거는 설정이 없기 때문에
-    yellow의 바텀으로 일단 걸고 우측 인스펙터에서 green Bottom -&gt; green Top으로 옮기고 constant를 주면 된다.
-    </td>
-  </tr>
-</table>
-
+<p>(subView의 top이 yellow의 top에 연결되어 있고 subView가 가운데 정렬이기 때문에 subView에서 왼쪽으로 anchor를 놓든 subView의 leading을 따르는 label의 왼쪽으로 anchor를 놓든 width를 결정할 수 있다.)</p>
 
         
       </section>
@@ -551,12 +547,11 @@ checkbox.addEventListener('change', function() {
       
   <nav class="pagination">
     
-      <a href="/AutoLayout-autolayout1/" class="pagination--pager" title="[AutoLayout] 1. Constraint
+      <a href="/AutoLayout-autolayout2/" class="pagination--pager" title="[AutoLayout] 2. 다른 뷰에 뷰를 연결하는법
 ">Previous</a>
     
     
-      <a href="/AutoLayout-autolayout3/" class="pagination--pager" title="[AutoLayout] 3. 컨테이너
-">Next</a>
+      <a href="#" class="pagination--pager disabled">Next</a>
     
   </nav>
 
