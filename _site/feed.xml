@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-08-12T08:06:13+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[AutoLayout] 2. 다른 뷰에 뷰를 연결하는법</title><link href="http://localhost:4000/AutoLayout-autolayout2/" rel="alternate" type="text/html" title="[AutoLayout] 2. 다른 뷰에 뷰를 연결하는법" /><published>2025-08-12T00:00:00+00:00</published><updated>2025-08-12T00:00:00+00:00</updated><id>http://localhost:4000/%5BAutoLayout%5D-autolayout2</id><content type="html" xml:base="http://localhost:4000/AutoLayout-autolayout2/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-08-12T09:35:48+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[AutoLayout] 2. 다른 뷰에 뷰를 연결하는법</title><link href="http://localhost:4000/AutoLayout-autolayout2/" rel="alternate" type="text/html" title="[AutoLayout] 2. 다른 뷰에 뷰를 연결하는법" /><published>2025-08-12T00:00:00+00:00</published><updated>2025-08-12T00:00:00+00:00</updated><id>http://localhost:4000/%5BAutoLayout%5D-autolayout2</id><content type="html" xml:base="http://localhost:4000/AutoLayout-autolayout2/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
 
 <table>
   <tr>
@@ -39,7 +39,237 @@
     yellow의 바텀으로 일단 걸고 우측 인스펙터에서 green Bottom -&gt; green Top으로 옮기고 constant를 주면 된다.
     </td>
   </tr>
-</table>]]></content><author><name>Dong Hyeon</name></author><category term="AutoLayout" /><summary type="html"><![CDATA[Leading Option + Leading green view에서 yellow view로 드래그 해서 Leading을 해주면yellow view leading과 동일한 효과를 얻을 수 있다. green view에서 yellow view로 드래그 할 때 option을 누르면서 Leading을 해주면 현재 green위치에서 yellow leading 사이의 여백을 더해줄 수 있다. Top Anchor 1번방식 Top Anchor 2번방식 green에서 Top Anchor를 설정하면 작살이 위로 날라가서 제일 가까운 top에 꽃힌다. 만약 1번방식 대신 드래그로 하는방법은 green의 top을 yellow의 바텀으로 거는 설정이 없기 때문에 yellow의 바텀으로 일단 걸고 우측 인스펙터에서 green Bottom -&gt; green Top으로 옮기고 constant를 주면 된다.]]></summary></entry><entry><title type="html">[AutoLayout] 3. 컨테이너</title><link href="http://localhost:4000/AutoLayout-autolayout3/" rel="alternate" type="text/html" title="[AutoLayout] 3. 컨테이너" /><published>2025-08-12T00:00:00+00:00</published><updated>2025-08-12T00:00:00+00:00</updated><id>http://localhost:4000/%5BAutoLayout%5D-autolayout3</id><content type="html" xml:base="http://localhost:4000/AutoLayout-autolayout3/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
+</table>]]></content><author><name>Dong Hyeon</name></author><category term="AutoLayout" /><summary type="html"><![CDATA[Leading Option + Leading green view에서 yellow view로 드래그 해서 Leading을 해주면yellow view leading과 동일한 효과를 얻을 수 있다. green view에서 yellow view로 드래그 할 때 option을 누르면서 Leading을 해주면 현재 green위치에서 yellow leading 사이의 여백을 더해줄 수 있다. Top Anchor 1번방식 Top Anchor 2번방식 green에서 Top Anchor를 설정하면 작살이 위로 날라가서 제일 가까운 top에 꽃힌다. 만약 1번방식 대신 드래그로 하는방법은 green의 top을 yellow의 바텀으로 거는 설정이 없기 때문에 yellow의 바텀으로 일단 걸고 우측 인스펙터에서 green Bottom -&gt; green Top으로 옮기고 constant를 주면 된다.]]></summary></entry><entry><title type="html">[AutoLayout] 4. customView with IBDesignable and IBInspectable &amp;amp;</title><link href="http://localhost:4000/AutoLayout-autolayout4/" rel="alternate" type="text/html" title="[AutoLayout] 4. customView with IBDesignable and IBInspectable &amp;amp;" /><published>2025-08-12T00:00:00+00:00</published><updated>2025-08-12T00:00:00+00:00</updated><id>http://localhost:4000/%5BAutoLayout%5D-autolayout4</id><content type="html" xml:base="http://localhost:4000/AutoLayout-autolayout4/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
+
+<h2 id="1-코드-방식">1. 코드 방식</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">class</span> <span class="kt">Autolayout4ViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">yellowView</span><span class="p">:</span> <span class="kt">UIView</span><span class="o">!</span>
+    
+    <span class="c1">// viewController가 생성되어 메모리에 올라가면 호출됨</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">yellowView</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cp">#Preview {</span>
+    <span class="kt">Autolayout4ViewController</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><br /><br /><br /><br /></p>
+
+<h2 id="2-ibinspectable-방식">2. @IBInspectable 방식</h2>
+<ul>
+  <li>이 방식은 deprecated되었다.<br />
+<img src="/assets/img/2025-08-12-%5BAutoLayout%5D-autolayout4/image-20250812174801984.png" alt="이미지" width="100%" /></li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// storyboard에서 네모View 클릭 후 option + command + 4 눌러서 class를 CustomView로 바꿔준다</span>
+<span class="c1">// storyboard에서 네모View 클릭 후 option + command + 5 누르면 Corner radius가 생긴다</span>
+<span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="c1">// @IBDesignable: 인터페이스 빌더에서 디자인으로 확인 가능해짐</span>
+<span class="kd">@IBDesignable</span>
+<span class="kd">class</span> <span class="kt">CustomView</span><span class="p">:</span> <span class="kt">UIView</span> <span class="p">{</span>
+    
+    <span class="c1">// @IBInspectable: 인스펙터 패널에서 사용할 수 있도록 설정</span>
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">cornerRaadius</span><span class="p">:</span> <span class="kt">CGFloat</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="k">self</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="n">cornerRaadius</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">Autolayout4ViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">yellowView</span><span class="p">:</span> <span class="kt">CustomView</span><span class="o">!</span>
+    
+    <span class="c1">// viewController가 생성되어 메모리에 올라가면 호출됨</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">yellowView</span><span class="o">.</span><span class="n">cornerRaadius</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cp">#Preview {</span>
+    <span class="kt">Autolayout4ViewController</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="3-최종코드">3. 최종코드</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="c1">// @IBDesignable: 인터페이스 빌더에서 디자인으로 확인 가능해짐</span>
+<span class="kd">@IBDesignable</span>
+<span class="kd">class</span> <span class="kt">CustomView</span><span class="p">:</span> <span class="kt">UIView</span> <span class="p">{</span>
+    
+    <span class="c1">// @IBInspectable: 인스펙터 패널에서 사용할 수 있도록 설정</span>
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">cornerRaadius</span><span class="p">:</span> <span class="kt">CGFloat</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="k">self</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="n">cornerRaadius</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">Autolayout4ViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">yellowView</span><span class="p">:</span> <span class="kt">CustomView</span><span class="o">!</span>
+    
+    <span class="c1">// viewController가 생성되어 메모리에 올라가면 호출됨</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">yellowView</span><span class="o">.</span><span class="n">cornerRaadius</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 스토리보드에서 VC의 Storyboard ID를 클래스명과 동일하게 설정했다고 가정</span>
+<span class="c1">//   - Storyboard 파일명: "AutoLayout4"</span>
+<span class="c1">//   - Storyboard ID: "Autolayout4ViewController"</span>
+<span class="cp">#Preview("AutoLayout4 (Storyboard VC)") {</span>
+    <span class="c1">// 미리보기에서 종종 Bundle.main 대신 타입 기반 번들이 더 안전합니다</span>
+    
+    <span class="c1">// bundle: 스토리보드, 이미지, nib, JSON 등을 묶어 관리하는 타입</span>
+    <span class="c1">// 스토리보드 리소스를 찾을 번들을 지정</span>
+    <span class="k">let</span> <span class="nv">bundle</span> <span class="o">=</span> <span class="kt">Bundle</span><span class="p">(</span><span class="nv">for</span><span class="p">:</span> <span class="kt">Autolayout4ViewController</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>
+    <span class="k">let</span> <span class="nv">sb</span> <span class="o">=</span> <span class="kt">UIStoryboard</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"AutoLayout4"</span><span class="p">,</span> <span class="nv">bundle</span><span class="p">:</span> <span class="n">bundle</span><span class="p">)</span> <span class="c1">// 스토리보드 파일 로드</span>
+    <span class="k">let</span> <span class="nv">vc</span> <span class="o">=</span> <span class="n">sb</span><span class="o">.</span><span class="nf">instantiateViewController</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="s">"Autolayout4ViewController"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vc</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="4-전체-코드">4. 전체 코드</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="c1">// @IBDesignable: 인터페이스 빌더에서 디자인으로 확인 가능해짐</span>
+<span class="kd">@IBDesignable</span>
+<span class="kd">class</span> <span class="kt">CustomView</span><span class="p">:</span> <span class="kt">UIView</span> <span class="p">{</span>
+    
+    <span class="c1">/// 정사각형 여부</span>
+    <span class="c1">/// - Returns: 여부</span>
+    <span class="kd">private</span> <span class="k">var</span> <span class="nv">isSquare</span><span class="p">:</span> <span class="kt">Bool</span> <span class="p">{</span>
+        <span class="c1">// get</span>
+        <span class="k">return</span> <span class="k">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">width</span> <span class="o">==</span> <span class="k">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">height</span>
+    <span class="p">}</span>
+
+    <span class="c1">// @IBInspectable: 인스펙터 패널에서 사용할 수 있도록 설정</span>
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">cornerRaadius</span><span class="p">:</span> <span class="kt">CGFloat</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="k">self</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="n">cornerRaadius</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// 가장자리 두꼐</span>
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">borderWidth</span><span class="p">:</span> <span class="kt">CGFloat</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="k">self</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">borderWidth</span> <span class="o">=</span> <span class="n">borderWidth</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// 색상</span>
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">borderColor</span><span class="p">:</span> <span class="kt">UIColor</span> <span class="o">=</span> <span class="kt">UIColor</span><span class="o">.</span><span class="n">clear</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="k">self</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">borderColor</span> <span class="o">=</span> <span class="n">borderColor</span><span class="o">.</span><span class="n">cgColor</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// 동그라미 뷰</span>
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">isCircle</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="c1">// 정사각형이면서 isCircle이 true라면?</span>
+            <span class="k">if</span> <span class="n">isSquare</span> <span class="o">&amp;&amp;</span> <span class="n">isCircle</span> <span class="p">{</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// 그림자</span>
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">hasShadow</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="n">hasShadow</span> <span class="p">{</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="nf">applyShadow</span><span class="p">()</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">CALayer</span> <span class="p">{</span>
+    
+    <span class="c1">/// 뷰에 그림자 적용</span>
+    <span class="c1">/// - Parameters:</span>
+    <span class="c1">///   - color: 그림자 색</span>
+    <span class="c1">///   - alpha: 투명도</span>
+    <span class="c1">///   - x: 가로 위치</span>
+    <span class="c1">///   - y: 세로 위치</span>
+    <span class="c1">///   - blur: 블러</span>
+    <span class="c1">///   - spread: 퍼짐 정도</span>
+    <span class="kd">func</span> <span class="nf">applyShadow</span><span class="p">(</span>
+        <span class="nv">color</span><span class="p">:</span> <span class="kt">UIColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">black</span><span class="p">,</span>
+        <span class="nv">alpha</span><span class="p">:</span> <span class="kt">Float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="nv">x</span><span class="p">:</span> <span class="kt">CGFloat</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nv">y</span><span class="p">:</span> <span class="kt">CGFloat</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="nv">blur</span><span class="p">:</span> <span class="kt">CGFloat</span> <span class="o">=</span> <span class="mi">35</span><span class="p">,</span>
+        <span class="nv">spread</span><span class="p">:</span> <span class="kt">CGFloat</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">masksToBounds</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="n">shadowColor</span> <span class="o">=</span> <span class="n">color</span><span class="o">.</span><span class="n">cgColor</span>
+        <span class="n">shadowOpacity</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="n">shadowOffset</span> <span class="o">=</span> <span class="kt">CGSize</span><span class="p">(</span><span class="nv">width</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="nv">height</span><span class="p">:</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">shadowRadius</span> <span class="o">=</span> <span class="n">blur</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="k">if</span> <span class="n">spread</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+            <span class="n">shadowPath</span> <span class="o">=</span> <span class="kc">nil</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">let</span> <span class="nv">dx</span> <span class="o">=</span> <span class="o">-</span><span class="n">spread</span>
+            <span class="k">let</span> <span class="nv">rect</span> <span class="o">=</span> <span class="n">bounds</span><span class="o">.</span><span class="nf">insetBy</span><span class="p">(</span><span class="nv">dx</span><span class="p">:</span> <span class="n">dx</span><span class="p">,</span> <span class="nv">dy</span><span class="p">:</span> <span class="n">dx</span><span class="p">)</span>
+            <span class="n">shadowPath</span> <span class="o">=</span> <span class="kt">UIBezierPath</span><span class="p">(</span><span class="nv">rect</span><span class="p">:</span> <span class="n">rect</span><span class="p">)</span><span class="o">.</span><span class="n">cgPath</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">Autolayout4ViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">yellowView</span><span class="p">:</span> <span class="kt">CustomView</span><span class="o">!</span>
+    
+    <span class="c1">// viewController가 생성되어 메모리에 올라가면 호출됨</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">yellowView</span><span class="o">.</span><span class="n">cornerRaadius</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">yellowView</span><span class="o">.</span><span class="n">borderWidth</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">yellowView</span><span class="o">.</span><span class="n">borderColor</span> <span class="o">=</span> <span class="o">.</span><span class="n">blue</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">yellowView</span><span class="o">.</span><span class="n">isCircle</span> <span class="o">=</span> <span class="kc">true</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">yellowView</span><span class="o">.</span><span class="n">hasShadow</span> <span class="o">=</span> <span class="kc">true</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 스토리보드에서 VC의 Storyboard ID를 클래스명과 동일하게 설정했다고 가정</span>
+<span class="c1">//   - Storyboard 파일명: "AutoLayout4"</span>
+<span class="c1">//   - Storyboard ID: "Autolayout4ViewController"</span>
+<span class="cp">#Preview("AutoLayout4 (Storyboard VC)") {</span>
+    <span class="c1">// 미리보기에서 종종 Bundle.main 대신 타입 기반 번들이 더 안전합니다</span>
+    
+    <span class="c1">// bundle: 스토리보드, 이미지, nib, JSON 등을 묶어 관리하는 타입</span>
+    <span class="c1">// 스토리보드 리소스를 찾을 번들을 지정</span>
+    <span class="k">let</span> <span class="nv">bundle</span> <span class="o">=</span> <span class="kt">Bundle</span><span class="p">(</span><span class="nv">for</span><span class="p">:</span> <span class="kt">Autolayout4ViewController</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>
+    <span class="k">let</span> <span class="nv">sb</span> <span class="o">=</span> <span class="kt">UIStoryboard</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"AutoLayout4"</span><span class="p">,</span> <span class="nv">bundle</span><span class="p">:</span> <span class="n">bundle</span><span class="p">)</span> <span class="c1">// 스토리보드 파일 로드</span>
+    <span class="k">let</span> <span class="nv">vc</span> <span class="o">=</span> <span class="n">sb</span><span class="o">.</span><span class="nf">instantiateViewController</span><span class="p">(</span><span class="nv">withIdentifier</span><span class="p">:</span> <span class="s">"Autolayout4ViewController"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vc</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="reference">Reference</h2>
+<ul>
+  <li>https://jeong9216.tistory.com/694#google_vignette</li>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="AutoLayout" /><summary type="html"><![CDATA[1. 코드 방식 import UIKit class Autolayout4ViewController: UIViewController { @IBOutlet weak var yellowView: UIView! // viewController가 생성되어 메모리에 올라가면 호출됨 override func viewDidLoad() { super.viewDidLoad() self.yellowView.layer.cornerRadius = 20 } } #Preview { Autolayout4ViewController() } 2. @IBInspectable 방식 이 방식은 deprecated되었다. // storyboard에서 네모View 클릭 후 option + command + 4 눌러서 class를 CustomView로 바꿔준다 // storyboard에서 네모View 클릭 후 option + command + 5 누르면 Corner radius가 생긴다 import UIKit // @IBDesignable: 인터페이스 빌더에서 디자인으로 확인 가능해짐 @IBDesignable class CustomView: UIView { // @IBInspectable: 인스펙터 패널에서 사용할 수 있도록 설정 @IBInspectable var cornerRaadius: CGFloat = 0 { didSet { self.layer.cornerRadius = cornerRaadius } } } class Autolayout4ViewController: UIViewController { @IBOutlet weak var yellowView: CustomView! // viewController가 생성되어 메모리에 올라가면 호출됨 override func viewDidLoad() { super.viewDidLoad() self.yellowView.cornerRaadius = 20 } } #Preview { Autolayout4ViewController() } 3. 최종코드 import UIKit // @IBDesignable: 인터페이스 빌더에서 디자인으로 확인 가능해짐 @IBDesignable class CustomView: UIView { // @IBInspectable: 인스펙터 패널에서 사용할 수 있도록 설정 @IBInspectable var cornerRaadius: CGFloat = 0 { didSet { self.layer.cornerRadius = cornerRaadius } } } class Autolayout4ViewController: UIViewController { @IBOutlet weak var yellowView: CustomView! // viewController가 생성되어 메모리에 올라가면 호출됨 override func viewDidLoad() { super.viewDidLoad() self.yellowView.cornerRaadius = 20 } } // 스토리보드에서 VC의 Storyboard ID를 클래스명과 동일하게 설정했다고 가정 // - Storyboard 파일명: "AutoLayout4" // - Storyboard ID: "Autolayout4ViewController" #Preview("AutoLayout4 (Storyboard VC)") { // 미리보기에서 종종 Bundle.main 대신 타입 기반 번들이 더 안전합니다 // bundle: 스토리보드, 이미지, nib, JSON 등을 묶어 관리하는 타입 // 스토리보드 리소스를 찾을 번들을 지정 let bundle = Bundle(for: Autolayout4ViewController.self) let sb = UIStoryboard(name: "AutoLayout4", bundle: bundle) // 스토리보드 파일 로드 let vc = sb.instantiateViewController(withIdentifier: "Autolayout4ViewController") return vc } 4. 전체 코드 import UIKit // @IBDesignable: 인터페이스 빌더에서 디자인으로 확인 가능해짐 @IBDesignable class CustomView: UIView { /// 정사각형 여부 /// - Returns: 여부 private var isSquare: Bool { // get return self.frame.width == self.frame.height } // @IBInspectable: 인스펙터 패널에서 사용할 수 있도록 설정 @IBInspectable var cornerRaadius: CGFloat = 0 { didSet { self.layer.cornerRadius = cornerRaadius } } // 가장자리 두꼐 @IBInspectable var borderWidth: CGFloat = 0 { didSet { self.layer.borderWidth = borderWidth } } // 색상 @IBInspectable var borderColor: UIColor = UIColor.clear { didSet { self.layer.borderColor = borderColor.cgColor } } // 동그라미 뷰 @IBInspectable var isCircle: Bool = false { didSet { // 정사각형이면서 isCircle이 true라면? if isSquare &amp;&amp; isCircle { self.layer.cornerRadius = self.frame.width / 2 } } } // 그림자 @IBInspectable var hasShadow: Bool = false { didSet { if hasShadow { self.layer.applyShadow() } } } } extension CALayer { /// 뷰에 그림자 적용 /// - Parameters: /// - color: 그림자 색 /// - alpha: 투명도 /// - x: 가로 위치 /// - y: 세로 위치 /// - blur: 블러 /// - spread: 퍼짐 정도 func applyShadow( color: UIColor = .black, alpha: Float = 0.5, x: CGFloat = 0, y: CGFloat = 20, blur: CGFloat = 35, spread: CGFloat = 0) { masksToBounds = false shadowColor = color.cgColor shadowOpacity = alpha shadowOffset = CGSize(width: x, height: y) shadowRadius = blur / 2.0 if spread == 0 { shadowPath = nil } else { let dx = -spread let rect = bounds.insetBy(dx: dx, dy: dx) shadowPath = UIBezierPath(rect: rect).cgPath } } } class Autolayout4ViewController: UIViewController { @IBOutlet weak var yellowView: CustomView! // viewController가 생성되어 메모리에 올라가면 호출됨 override func viewDidLoad() { super.viewDidLoad() self.yellowView.cornerRaadius = 20 self.yellowView.borderWidth = 10 self.yellowView.borderColor = .blue self.yellowView.isCircle = true self.yellowView.hasShadow = true } } // 스토리보드에서 VC의 Storyboard ID를 클래스명과 동일하게 설정했다고 가정 // - Storyboard 파일명: "AutoLayout4" // - Storyboard ID: "Autolayout4ViewController" #Preview("AutoLayout4 (Storyboard VC)") { // 미리보기에서 종종 Bundle.main 대신 타입 기반 번들이 더 안전합니다 // bundle: 스토리보드, 이미지, nib, JSON 등을 묶어 관리하는 타입 // 스토리보드 리소스를 찾을 번들을 지정 let bundle = Bundle(for: Autolayout4ViewController.self) let sb = UIStoryboard(name: "AutoLayout4", bundle: bundle) // 스토리보드 파일 로드 let vc = sb.instantiateViewController(withIdentifier: "Autolayout4ViewController") return vc } Reference https://jeong9216.tistory.com/694#google_vignette]]></summary></entry><entry><title type="html">[AutoLayout] 3. 컨테이너</title><link href="http://localhost:4000/AutoLayout-autolayout3/" rel="alternate" type="text/html" title="[AutoLayout] 3. 컨테이너" /><published>2025-08-12T00:00:00+00:00</published><updated>2025-08-12T00:00:00+00:00</updated><id>http://localhost:4000/%5BAutoLayout%5D-autolayout3</id><content type="html" xml:base="http://localhost:4000/AutoLayout-autolayout3/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
 
 <h2 id="view-vs-label">View vs label</h2>
 <ul>
@@ -77,34 +307,7 @@ yellow container의 크기를 해당 컨테이너 내부의 constraints로 대�
 가능한 이유는 yellow의 subview의 top이 존재하고 label의 top과 subView의 바텀이 연결되어 있다. 추가적으로 label의 bottom을 yellow의 bottom으로 연결해주면 높이는 대체가 된다.<br />
 width는 label이나 subView에서 yellow로 왼쪽으로 작살을 던져주면 해결된다.</p>
 
-<p>(subView의 top이 yellow의 top에 연결되어 있고 subView가 가운데 정렬이기 때문에 subView에서 왼쪽으로 anchor를 놓든 subView의 leading을 따르는 label의 왼쪽으로 anchor를 놓든 width를 결정할 수 있다.)</p>]]></content><author><name>Dong Hyeon</name></author><category term="AutoLayout" /><summary type="html"><![CDATA[View vs label 일반적인 view는 크기와 위치를 지정해줘야 한다. label은 자체적으로 크기를 가지기 때문에 크기는 정해주지 않아고 위치만 정해준다. 크기를 대신해줄 수 있는 것은 constraints이다. Yellow의 위치와 크기 고정 Yellow의 위치만 고정(크기x) 컨테이너 뷰(Yellow)의 크기와 위치를 모두 고정하는 방식 width와 height를 직접 지정하여 레이아웃을 확정한다. 크기는 직접 지정하지 않고 내부 Yellow 컨테이너의 subview들의 constraints로 대체하는 방식. 예를 들어, yellow의 subview(top)와 label의 top, bottom을 서로 연결하면 label의 높이가 곧 yellow의 높이가 된다. width는 subview 또는 label에서 yellow로 leading 제약을 주어 결정할 수 있다. 정리 크기를 대신해서 할 수 있는게 constraints이다. yellow container의 크기를 해당 컨테이너 내부의 constraints로 대체할 수 있다. 가능한 이유는 yellow의 subview의 top이 존재하고 label의 top과 subView의 바텀이 연결되어 있다. 추가적으로 label의 bottom을 yellow의 bottom으로 연결해주면 높이는 대체가 된다. width는 label이나 subView에서 yellow로 왼쪽으로 작살을 던져주면 해결된다. (subView의 top이 yellow의 top에 연결되어 있고 subView가 가운데 정렬이기 때문에 subView에서 왼쪽으로 anchor를 놓든 subView의 leading을 따르는 label의 왼쪽으로 anchor를 놓든 width를 결정할 수 있다.)]]></summary></entry><entry><title type="html">[AutoLayout] 0. 오토레이아웃 개념</title><link href="http://localhost:4000/AutoLayout-autolayout0/" rel="alternate" type="text/html" title="[AutoLayout] 0. 오토레이아웃 개념" /><published>2025-08-08T00:00:00+00:00</published><updated>2025-08-08T00:00:00+00:00</updated><id>http://localhost:4000/%5BAutoLayout%5D-autolayout0</id><content type="html" xml:base="http://localhost:4000/AutoLayout-autolayout0/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
-
-<p><img src="/assets/img/2025-08-08-%5BAutoLayout%5D-autolayout0/image-20250808170826492.png" alt="이미지" width="70%" /><br />
-ViewController에서 View는 화면을 그리는 부분이다.  <br />
-UI를 만들기 위한 그래픽 환경을 InterfaceBuilder라고 한다.<br />
-<br /><br /><br /><br /></p>
-
-<p><img src="/assets/img/2025-08-08-%5BAutoLayout%5D-autolayout0/image-20250808174834409.png" alt="이미지" width="70%" /><br />
-현재 SafeArea위에 View를 올렸다. View 자체는 크기가 없기 때문에 크기 지정을 해주자.  <br />
-오토 레이아웃에서는 <strong>크기와 위치가</strong> 중요하다. <strong>크기</strong>를 지정하고 <strong>위치</strong>를 지정해주는게 핵심이다.  <br />
-사진에서는 위치는 좌측과 상단만 anchor를 걸고 크기는 width, height를 고정값으로 지정하였다.  <br />
-<br /><br /><br /><br /></p>
-
-<h2 id="tip">Tip</h2>
-<p>만약 <strong>좌우로 앵커를 모두 설정</strong>한다면, <code class="language-plaintext highlighter-rouge">width</code> 고정값은 제거하자.  <br />
-좌우 앵커와 width 고정값이 동시에 존재하면,  <br />
-기기 화면 크기에 따라 <strong>레이아웃 충돌 에러</strong>가 발생할 수 있다.</p>
-
-<p>width 고정값을 제거하면 좌우 앵커가 서로 당기는 힘을 주어,  <br />
-기기 화면 크기에 맞춰 <strong>자동으로 너비가 결정</strong>된다.  <br />
-이는 기종별 화면 크기를 오토레이아웃이 인식하기 때문에 가능하다.</p>
-
-<h2 id="정리">정리</h2>
-<ul>
-  <li>오토레이아웃은 항상 크기와 위치가 필요하다.</li>
-  <li>크기를 만들고 위치를 지정하자.</li>
-  <li>anchor를 한 방향에서 서로 걸게 되면 서로 당기는 성질이 있어서 별도로 크기를 지정하지 않아도 핸드폰이 자체적으로 크기를 결정할 수 있다.</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="AutoLayout" /><summary type="html"><![CDATA[ViewController에서 View는 화면을 그리는 부분이다. UI를 만들기 위한 그래픽 환경을 InterfaceBuilder라고 한다. 현재 SafeArea위에 View를 올렸다. View 자체는 크기가 없기 때문에 크기 지정을 해주자. 오토 레이아웃에서는 크기와 위치가 중요하다. 크기를 지정하고 위치를 지정해주는게 핵심이다. 사진에서는 위치는 좌측과 상단만 anchor를 걸고 크기는 width, height를 고정값으로 지정하였다. Tip 만약 좌우로 앵커를 모두 설정한다면, width 고정값은 제거하자. 좌우 앵커와 width 고정값이 동시에 존재하면, 기기 화면 크기에 따라 레이아웃 충돌 에러가 발생할 수 있다. width 고정값을 제거하면 좌우 앵커가 서로 당기는 힘을 주어, 기기 화면 크기에 맞춰 자동으로 너비가 결정된다. 이는 기종별 화면 크기를 오토레이아웃이 인식하기 때문에 가능하다. 정리 오토레이아웃은 항상 크기와 위치가 필요하다. 크기를 만들고 위치를 지정하자. anchor를 한 방향에서 서로 걸게 되면 서로 당기는 성질이 있어서 별도로 크기를 지정하지 않아도 핸드폰이 자체적으로 크기를 결정할 수 있다.]]></summary></entry><entry><title type="html">[AutoLayout] 1. Constraint</title><link href="http://localhost:4000/AutoLayout-autolayout1/" rel="alternate" type="text/html" title="[AutoLayout] 1. Constraint" /><published>2025-08-08T00:00:00+00:00</published><updated>2025-08-08T00:00:00+00:00</updated><id>http://localhost:4000/%5BAutoLayout%5D-autolayout1</id><content type="html" xml:base="http://localhost:4000/AutoLayout-autolayout1/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
+<p>(subView의 top이 yellow의 top에 연결되어 있고 subView가 가운데 정렬이기 때문에 subView에서 왼쪽으로 anchor를 놓든 subView의 leading을 따르는 label의 왼쪽으로 anchor를 놓든 width를 결정할 수 있다.)</p>]]></content><author><name>Dong Hyeon</name></author><category term="AutoLayout" /><summary type="html"><![CDATA[View vs label 일반적인 view는 크기와 위치를 지정해줘야 한다. label은 자체적으로 크기를 가지기 때문에 크기는 정해주지 않아고 위치만 정해준다. 크기를 대신해줄 수 있는 것은 constraints이다. Yellow의 위치와 크기 고정 Yellow의 위치만 고정(크기x) 컨테이너 뷰(Yellow)의 크기와 위치를 모두 고정하는 방식 width와 height를 직접 지정하여 레이아웃을 확정한다. 크기는 직접 지정하지 않고 내부 Yellow 컨테이너의 subview들의 constraints로 대체하는 방식. 예를 들어, yellow의 subview(top)와 label의 top, bottom을 서로 연결하면 label의 높이가 곧 yellow의 높이가 된다. width는 subview 또는 label에서 yellow로 leading 제약을 주어 결정할 수 있다. 정리 크기를 대신해서 할 수 있는게 constraints이다. yellow container의 크기를 해당 컨테이너 내부의 constraints로 대체할 수 있다. 가능한 이유는 yellow의 subview의 top이 존재하고 label의 top과 subView의 바텀이 연결되어 있다. 추가적으로 label의 bottom을 yellow의 bottom으로 연결해주면 높이는 대체가 된다. width는 label이나 subView에서 yellow로 왼쪽으로 작살을 던져주면 해결된다. (subView의 top이 yellow의 top에 연결되어 있고 subView가 가운데 정렬이기 때문에 subView에서 왼쪽으로 anchor를 놓든 subView의 leading을 따르는 label의 왼쪽으로 anchor를 놓든 width를 결정할 수 있다.)]]></summary></entry><entry><title type="html">[AutoLayout] 1. Constraint</title><link href="http://localhost:4000/AutoLayout-autolayout1/" rel="alternate" type="text/html" title="[AutoLayout] 1. Constraint" /><published>2025-08-08T00:00:00+00:00</published><updated>2025-08-08T00:00:00+00:00</updated><id>http://localhost:4000/%5BAutoLayout%5D-autolayout1</id><content type="html" xml:base="http://localhost:4000/AutoLayout-autolayout1/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
 
 <ul>
   <li>오토레이아웃에서는 크기와 위치가 중요하다. 기본 개념은 크기를 지정하고 위치를 지정해준다.</li>
@@ -137,7 +340,34 @@ UI를 만들기 위한 그래픽 환경을 InterfaceBuilder라고 한다.<br />
       좌측 앵커만 수정해도 좌우 여백을 조절할 수 있다.
     </td>
   </tr>
-</table>]]></content><author><name>Dong Hyeon</name></author><category term="AutoLayout" /><summary type="html"><![CDATA[오토레이아웃에서는 크기와 위치가 중요하다. 기본 개념은 크기를 지정하고 위치를 지정해준다. 크기를 지정하고위치를 지정 상단 위치만 지정하고수평 정렬 상단 위치만 지정하고좌우 앵커 지정 상단 위치만 지정하고좌측 앵커와 가운데 정렬, width 제거 크기와 위치를 모두 지정해레이아웃 고정. 가운데 정렬로 기기별 가로 위치 일관성 확보. 기기마다 크기가 달라서 문제가 발생할 수 있다.이때는 width를 없애주자. 좌측 앵커만 수정해도 좌우 여백을 조절할 수 있다.]]></summary></entry><entry><title type="html">[AutoLayout] 0. 오토레이아웃 요약</title><link href="http://localhost:4000/AutoLayout-autolayoutTable/" rel="alternate" type="text/html" title="[AutoLayout] 0. 오토레이아웃 요약" /><published>2025-08-07T00:00:00+00:00</published><updated>2025-08-07T00:00:00+00:00</updated><id>http://localhost:4000/%5BAutoLayout%5D-autolayoutTable</id><content type="html" xml:base="http://localhost:4000/AutoLayout-autolayoutTable/"><![CDATA[<table>
+</table>]]></content><author><name>Dong Hyeon</name></author><category term="AutoLayout" /><summary type="html"><![CDATA[오토레이아웃에서는 크기와 위치가 중요하다. 기본 개념은 크기를 지정하고 위치를 지정해준다. 크기를 지정하고위치를 지정 상단 위치만 지정하고수평 정렬 상단 위치만 지정하고좌우 앵커 지정 상단 위치만 지정하고좌측 앵커와 가운데 정렬, width 제거 크기와 위치를 모두 지정해레이아웃 고정. 가운데 정렬로 기기별 가로 위치 일관성 확보. 기기마다 크기가 달라서 문제가 발생할 수 있다.이때는 width를 없애주자. 좌측 앵커만 수정해도 좌우 여백을 조절할 수 있다.]]></summary></entry><entry><title type="html">[AutoLayout] 0. 오토레이아웃 개념</title><link href="http://localhost:4000/AutoLayout-autolayout0/" rel="alternate" type="text/html" title="[AutoLayout] 0. 오토레이아웃 개념" /><published>2025-08-08T00:00:00+00:00</published><updated>2025-08-08T00:00:00+00:00</updated><id>http://localhost:4000/%5BAutoLayout%5D-autolayout0</id><content type="html" xml:base="http://localhost:4000/AutoLayout-autolayout0/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
+
+<p><img src="/assets/img/2025-08-08-%5BAutoLayout%5D-autolayout0/image-20250808170826492.png" alt="이미지" width="70%" /><br />
+ViewController에서 View는 화면을 그리는 부분이다.  <br />
+UI를 만들기 위한 그래픽 환경을 InterfaceBuilder라고 한다.<br />
+<br /><br /><br /><br /></p>
+
+<p><img src="/assets/img/2025-08-08-%5BAutoLayout%5D-autolayout0/image-20250808174834409.png" alt="이미지" width="70%" /><br />
+현재 SafeArea위에 View를 올렸다. View 자체는 크기가 없기 때문에 크기 지정을 해주자.  <br />
+오토 레이아웃에서는 <strong>크기와 위치가</strong> 중요하다. <strong>크기</strong>를 지정하고 <strong>위치</strong>를 지정해주는게 핵심이다.  <br />
+사진에서는 위치는 좌측과 상단만 anchor를 걸고 크기는 width, height를 고정값으로 지정하였다.  <br />
+<br /><br /><br /><br /></p>
+
+<h2 id="tip">Tip</h2>
+<p>만약 <strong>좌우로 앵커를 모두 설정</strong>한다면, <code class="language-plaintext highlighter-rouge">width</code> 고정값은 제거하자.  <br />
+좌우 앵커와 width 고정값이 동시에 존재하면,  <br />
+기기 화면 크기에 따라 <strong>레이아웃 충돌 에러</strong>가 발생할 수 있다.</p>
+
+<p>width 고정값을 제거하면 좌우 앵커가 서로 당기는 힘을 주어,  <br />
+기기 화면 크기에 맞춰 <strong>자동으로 너비가 결정</strong>된다.  <br />
+이는 기종별 화면 크기를 오토레이아웃이 인식하기 때문에 가능하다.</p>
+
+<h2 id="정리">정리</h2>
+<ul>
+  <li>오토레이아웃은 항상 크기와 위치가 필요하다.</li>
+  <li>크기를 만들고 위치를 지정하자.</li>
+  <li>anchor를 한 방향에서 서로 걸게 되면 서로 당기는 성질이 있어서 별도로 크기를 지정하지 않아도 핸드폰이 자체적으로 크기를 결정할 수 있다.</li>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="AutoLayout" /><summary type="html"><![CDATA[ViewController에서 View는 화면을 그리는 부분이다. UI를 만들기 위한 그래픽 환경을 InterfaceBuilder라고 한다. 현재 SafeArea위에 View를 올렸다. View 자체는 크기가 없기 때문에 크기 지정을 해주자. 오토 레이아웃에서는 크기와 위치가 중요하다. 크기를 지정하고 위치를 지정해주는게 핵심이다. 사진에서는 위치는 좌측과 상단만 anchor를 걸고 크기는 width, height를 고정값으로 지정하였다. Tip 만약 좌우로 앵커를 모두 설정한다면, width 고정값은 제거하자. 좌우 앵커와 width 고정값이 동시에 존재하면, 기기 화면 크기에 따라 레이아웃 충돌 에러가 발생할 수 있다. width 고정값을 제거하면 좌우 앵커가 서로 당기는 힘을 주어, 기기 화면 크기에 맞춰 자동으로 너비가 결정된다. 이는 기종별 화면 크기를 오토레이아웃이 인식하기 때문에 가능하다. 정리 오토레이아웃은 항상 크기와 위치가 필요하다. 크기를 만들고 위치를 지정하자. anchor를 한 방향에서 서로 걸게 되면 서로 당기는 성질이 있어서 별도로 크기를 지정하지 않아도 핸드폰이 자체적으로 크기를 결정할 수 있다.]]></summary></entry><entry><title type="html">[AutoLayout] 0. 오토레이아웃 요약</title><link href="http://localhost:4000/AutoLayout-autolayoutTable/" rel="alternate" type="text/html" title="[AutoLayout] 0. 오토레이아웃 요약" /><published>2025-08-07T00:00:00+00:00</published><updated>2025-08-07T00:00:00+00:00</updated><id>http://localhost:4000/%5BAutoLayout%5D-autolayoutTable</id><content type="html" xml:base="http://localhost:4000/AutoLayout-autolayoutTable/"><![CDATA[<table>
   <thead>
     <tr>
       <th>내용</th>
@@ -1351,188 +1581,4 @@ import CombineCocoa</li>
   <li>https://developer-haru.tistory.com/70</li>
   <li>https://wikidocs.net/224929</li>
   <li>https://velog.io/@ghldjfldj/자료구조-자료구조란</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Data Structure" /><summary type="html"><![CDATA[자료구조(Data Structure) 자료구조는 데이터를 효율적으로 저장하고 관리하는 방식입니다. 대량의 데이터를 다룰 때 삽입, 삭제, 검색, 정렬, 순회 같은 기본 연산을 효율적으로 처리하도록 도와줍니다. 자료구조는 크게 두 가지로 나누어집니다: 선형 자료구조: 배열, 연결 리스트, 스택, 큐처럼 데이터를 순서대로 나열하는 구조 비선형 자료구조: 트리, 그래프처럼 계층적이거나 복잡한 관계를 표현하는 구조 자료구조 특징 효율성 문제에 적절한 자료구조를 사용하면 속도와 자원 효율이 향상됩니다. 추상화 복잡한 내부 구조는 숨기고 핵심적인 기능만을 표현함으로써 사용자는 사용법에 집중할 수 있습니다. 재사용성 범용적으로 설계된 자료구조는 여러 프로젝트에서 재사용이 가능하여 유지보수에도 유리합니다. 알고리즘(Algorithms) 알고리즘은 문제를 해결하기 위한 단계적인 절차입니다. 입력을 받아 원하는 출력을 만들어내는 과정을 의미하며, 좋은 알고리즘은 빠르게 실행되면서도 적은 자원을 사용합니다. 자료형(Data Type) 자료형은 데이터의 종류와 형식을 정의한 것입니다. 예를 들어, 정수형(Int), 실수형(Float), 문자열(String) 등은 기초 자료형(Primitive Type)에 해당합니다. 이 외에도 여러 데이터를 묶은 구조체, 클래스 같은 복합 자료형(Composite Type)도 존재합니다. 추상 자료형(Abstruct Data Types, ADT) 추상 자료형은 데이터의 구조와 이를 처리하는 연산만 정의하고, 구체적인 구현은 숨기는 개념입니다. 사용자는 내부 구현을 몰라도 되고, 기능(인터페이스)만 알면 됩니다. 대표적인 ADT 예시: 스택, 큐, 리스트, 트리 정보 은닉과 모듈화를 통해 재사용성과 유지보수성이 뛰어납니다. 수학적으로 정의된 개념으로, 실제 구현(배열, 연결 리스트 등)과는 분리되어 있습니다. ➡️ 즉, ADT는 ‘무엇을 할 수 있는가’에 집중하고, 구현 방식은 자유롭게 선택할 수 있는 설계 방식입니다. 추상화(Abstraction) 추상화는 불필요한 세부 사항을 숨기고, 핵심 기능에 집중하는 것입니다. 복잡한 시스템을 단순하게 바라보게 해 주며, 유지보수성과 이해도를 높입니다. 프로그램 프로그램 = 자료구조 + 알고리즘 소프트웨어는 결국 데이터를 어떻게 구조화(자료구조)하고, 그 데이터를 어떻게 처리할지(알고리즘) 결정하는 것이 핵심입니다. 시간복잡도 시간 복잡도는 알고리즘이 실행될 때 주요 연산이 얼마나 반복되는지를 정량적으로 나타낸 값입니다. 연산에는 산술, 대입, 비교, 이동 연산 등이 포함되며, 이를 통해 알고리즘 간 성능 비교가 가능합니다. 순환(Recursion) 어떤 알고리즘이나 함수가 자기 자신을 호출하여 문제를 해결하는 프로그래밍 기법입니다. 주어진 문제를 더 작은 동일한 문제들로 분해하여 해결하는 분할 정복이 있습니다. 순환 호출시에는 호출이 일어날 때마다 호출하는 함수의 상태를 기억해야 하므로 여분의 기억장소가 필요합니다. 순환은 이해하기 쉽지만 비효율적인 경우가 많습니다. 활성 레코드(Activation Record) 프로그래밍 언어에서 하나의 함수가 자기 자신을 다시 호출하는 것은 다른 함수를 호출하는 것과 동일합니다. 복귀주소가 시스템 스택에 저장되고 호출되는 함수를 위한 매개변수(parameter)와 지역변수를 스택으로부터 할당받는데 이러한 공간을 활성 레코드라고 합니다. 호출된 함수가 자기 자신이라면 자기 자신의 시작 위치로 점프하게 됩니다. 호출된 함수가 끝나게 되면 시스템 스택에서 복귀주소를 추출하여 호출한 함수로 되돌아갑니다. 꼬리 순환(Tail Recursion) 순환 호출이 끝에서 이루어지는 순환을 꼬리 순환이라고 하는데 이를 반복 알고리즘으로 쉽게 바꾸어 쓸 수 있습니다. 반복이 빠른 예시 팩토리얼(순환, 반복 둘다 시간복잡도는 O(n)이지만 순환에서는 여분의 기억공간이 필요하고 함수를 호출하기 위해 함수의 매개변수들을 스택에 저장하는 사전 작업이 필요하다.) 순환이 빠른 예시 거듭제곱(logn) Reference https://bnzn2426.tistory.com/115 https://developer-haru.tistory.com/70 https://wikidocs.net/224929 https://velog.io/@ghldjfldj/자료구조-자료구조란]]></summary></entry><entry><title type="html">[Pindora] Dependency Injection란?</title><link href="http://localhost:4000/Pindora-di/" rel="alternate" type="text/html" title="[Pindora] Dependency Injection란?" /><published>2025-07-15T00:00:00+00:00</published><updated>2025-07-15T00:00:00+00:00</updated><id>http://localhost:4000/%5BPindora%5D-di</id><content type="html" xml:base="http://localhost:4000/Pindora-di/"><![CDATA[<!-- https://www.youtube.com/watch?v=sBybUm8yVbI&list=PLgOlaPUIbynpuq9GKCwAedgWkkPm2Wo8v&index=18 -->
-
-<!-- <img src="/assets/img/2025-05-08-[UIKit]-tableView2/1.png" alt="1" width="50%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<!-- <img src="/assets/img/2025-05-08-%5BUIKit%5D-tableView2/1.png" alt="이미지" width="30%"> -->
-
-<h2 id="dependency-injection란-무엇인가">Dependency Injection란 무엇인가?</h2>
-<p>DI는 Dependency Injection의 줄임말로, 다양한 우리말 번역이 있지만, 이 글에서는 의존성 주입이라는 말로 사용하고자 한다.<br />
-먼저 의존성, 주입, 의존성 주입 순서대로 알아보자.</p>
-
-<h3 id="dependency의존성">Dependency(의존성)</h3>
-<p>객체 지향 프로그래밍에서 Dependency, 의존성은 <code class="language-plaintext highlighter-rouge">서로 다른 객체 사이에 의존 관계가 있다는 것</code>을 말한다. 즉 <code class="language-plaintext highlighter-rouge">의존하는 객체가 수정되면 다른 객체도 영향을 받는다는 것</code>이다.</p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Foundation</span>
-
-<span class="kd">class</span> <span class="kt">A부품</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"A부품"</span>
-<span class="p">}</span>
-
-<span class="kd">class</span> <span class="kt">B부품</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"B부품"</span>
-<span class="p">}</span>
-
-
-<span class="c1">/// ex: ViewController()</span>
-<span class="kd">class</span> <span class="kt">C완성품</span> <span class="p">{</span>
-    
-    <span class="c1">/// ex: NetworkManager()</span>
-    <span class="c1">// C완성품이 A부품에 의존한다 = 의존성이 생긴다</span>
-    <span class="c1">// A부품의 코드가 바뀌면 C완성품의 코드를 바꿔줘야하는 문제가 생긴다</span>
-    <span class="c1">// 부품을 바꾸고 싶을 때는 코드를 B부품으로 버꿔야 하는 문제가 생긴다</span>
-    <span class="k">var</span> <span class="nv">a</span><span class="p">:</span> <span class="kt">A부품</span> <span class="o">=</span> <span class="kt">A부품</span><span class="p">()</span>
-    
-    <span class="kd">func</span> <span class="nf">printName</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nf">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-<p>하나의 객체가 다른 객체에 의존하고 있는 코드를 의존하고 있다고 말한다.<br />
-이렇게 의존성이 생기는 코드를 확장성있게 바꾸기 위해 의존성 주입을 통해 코드를 개선할 수 있다.</p>
-
-<h2 id="주입injection">주입(Injection)</h2>
-
-<p>생성자를 통해 저장속성을 외부에서 주입하는 개념이다.  <br />
-의존성 코드에서는 저장속성에 기본값을 인스턴스로 생성&amp;할당하여 생성자를 만들어 주지 않아도 괜찮았다.</p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 주입(Injection)</span>
-<span class="kd">class</span> <span class="kt">Person</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span>
-    
-    <span class="nf">init</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="c1">// 외부에서 값을 주입(할당/초기화)해서 인스턴스 생성</span>
-<span class="k">let</span> <span class="nv">people</span> <span class="o">=</span> <span class="kt">Person</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"Index"</span><span class="p">)</span>
-</code></pre></div></div>
-<p>실제로는 기본값보다는 생성자를 통해서 외부에서 들어온 값을 통해 저장속성에 할당할 수 있게 해주는 개념인 주입의 개념을 실제로 많이 사용한다.<br />
-정리하자면 인스턴스를 생성할 때 저장속성을 외부에서 할당(=주입=초기화)해줄 수 있다고 한다.</p>
-
-<h2 id="의존성-주입">의존성 주입</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">Foundation</span>
-
-<span class="kd">class</span> <span class="kt">A부품</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"A부품"</span>
-<span class="p">}</span>
-
-<span class="kd">class</span> <span class="kt">B부품</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"B부품"</span>
-<span class="p">}</span>
-
-<span class="kd">class</span> <span class="kt">C완성품</span> <span class="p">{</span>
-    
-    <span class="k">var</span> <span class="nv">a</span><span class="p">:</span> <span class="kt">A부품</span>
-    
-    <span class="nf">init</span><span class="p">(</span><span class="nv">a</span><span class="p">:</span> <span class="kt">A부품</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">a</span>
-    <span class="p">}</span>
-    
-    <span class="kd">func</span> <span class="nf">printName</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nf">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="c1">// 1. 인스턴스를 미리 만들고</span>
-<span class="k">let</span> <span class="nv">a</span><span class="p">:</span> <span class="kt">A부품</span> <span class="o">=</span> <span class="kt">A부품</span><span class="p">()</span>
-<span class="n">a</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">"비싼 A부품"</span>
-
-<span class="c1">// 2. C완성품을 만들 때 주입(Injection)을 해줄 수 있다</span>
-<span class="c1">// 하지만 이 코드를 의존성 주입(Dependency Injection)이라고 부르지는 않는다</span>
-<span class="k">let</span> <span class="nv">c</span><span class="p">:</span> <span class="kt">C완성품</span> <span class="o">=</span> <span class="kt">C완성품</span><span class="p">(</span><span class="nv">a</span><span class="p">:</span> <span class="n">a</span><span class="p">)</span>
-</code></pre></div></div>
-<p>C완성품을 만들 때 미리 만들어 둔 A부품을 주입할 수 있지만 이 코드를 의존성 주입이라고 부르지는 않는다.  <br />
-의존적이지 않게 만들어주는 코드를 추가해야 의존성 주입이라는 개념이 된다.</p>
-
-<h3 id="주입을-의존성-주입으로-개선">주입을 의존성 주입으로 개선</h3>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// protocol은 자격증이라고 생각하자</span>
-<span class="c1">// 각 부품에서 이 자격증을 채택한다</span>
-<span class="c1">// 자격증을 정의할 때 name이라는 속성을 가지면서 읽기, 쓰기가 가능한 name이라는 속성을 가진다고 정의하고 이를 각 모듈에서 채택한다</span>
-<span class="c1">// 이 protocol 덕분에 모듈화가 가능해지고 확장적인 코드를 작성할 수 있게 된다</span>
-<span class="kd">protocol</span> <span class="n">모듈화된부품</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="kd">class</span> <span class="kt">A부품</span><span class="p">:</span> <span class="n">모듈화된부품</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"A부품"</span>
-<span class="p">}</span>
-
-<span class="kd">class</span> <span class="kt">B부품</span><span class="p">:</span> <span class="n">모듈화된부품</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"B부품"</span>
-<span class="p">}</span>
-
-<span class="kd">class</span> <span class="kt">C완성품</span> <span class="p">{</span>
-    
-    <span class="c1">// 프로토콜로 타입을 선언하여 이 프로토콜(자격증)을 채택한 모든 타입들을 할당해줄 수 있다</span>
-    <span class="k">var</span> <span class="nv">a</span><span class="p">:</span> <span class="n">모듈화된부품</span>
-    
-    <span class="nf">init</span><span class="p">(</span><span class="nv">a</span><span class="p">:</span> <span class="n">모듈화된부품</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">a</span>
-    <span class="p">}</span>
-    
-    <span class="kd">func</span> <span class="nf">printName</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nf">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="kd">@main</span>
-<span class="kd">struct</span> <span class="kt">Main</span> <span class="p">{</span>
-    <span class="kd">static</span> <span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="nv">moduledA</span> <span class="o">=</span> <span class="kt">A부품</span><span class="p">()</span>
-        <span class="k">let</span> <span class="nv">moduledB</span> <span class="o">=</span> <span class="kt">B부품</span><span class="p">()</span>
-        
-        <span class="c1">// 모듈화된 A를 주입할 수도 있고 모듈화된 B를 주입할 수도 있다</span>
-        <span class="k">let</span> <span class="nv">c1</span><span class="p">:</span> <span class="kt">C완성품</span> <span class="o">=</span> <span class="kt">C완성품</span><span class="p">(</span><span class="nv">a</span><span class="p">:</span> <span class="n">moduledA</span><span class="p">)</span>
-        <span class="k">let</span> <span class="nv">c2</span><span class="p">:</span> <span class="kt">C완성품</span> <span class="o">=</span> <span class="kt">C완성품</span><span class="p">(</span><span class="nv">a</span><span class="p">:</span> <span class="n">moduledB</span><span class="p">)</span>
-        
-        <span class="n">c1</span><span class="o">.</span><span class="nf">printName</span><span class="p">()</span>
-        <span class="n">c2</span><span class="o">.</span><span class="nf">printName</span><span class="p">()</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-<p>주입 코드를 의존성 주입으로 개선하기 위해 protocol을 선언하고 클래스의 저장속성 타입들이 해당 protocol을 채택하면 된다.   <br />
-이를 통해 C완성품은 저장속성으로 A부품도 주입할 수 있고 B부품도 주입할 수 있다.</p>
-
-<p>정리하자면 각 부품이 서로 다른 타입이지만 모듈화가 가능해지고 확장적인 코드를 작성할 수 있게 된다.   <br />
-protocol 자체를 타입으로 사용할 수 있어서 모듈화를 시킬 수 있는 장점이 존재하고, protocol을 채택한 여러 타입들이 속성에 할당될 수 있는 것이다.</p>
-
-<h2 id="정리">정리</h2>
-<p>의존성</p>
-<ul>
-  <li>서로 다른 객체 사이에 의존 관계가 있다는 것</li>
-  <li>(한 객체가 다른 객체에 직접 접근하거나 사용하는 관계)</li>
-</ul>
-
-<p>주입</p>
-<ul>
-  <li>외부에서 객체(또는 데이터)를 생성해서 생성자를 통해 넣는 것</li>
-  <li>(클래스 내부에서 직접 생성하지 않고, 외부에서 주입)</li>
-</ul>
-
-<p>의존성 주입(개선된 의존성)</p>
-<ul>
-  <li>프로토콜을 사용해서 의존성을 분리시키고 의존관계를 역전 시킨다
-    <ul>
-      <li>객체 간의 결합도를 낮추고, 의존 관계를 외부로 분리하여 더 유연한 구조를 만드는 설계 방식</li>
-      <li><strong>의존 관계 역전 원칙(DIP)</strong>과 <strong>단일 책임 원칙(SRP)</strong>을 따르도록 도와준다</li>
-      <li>주입 시 <strong>프로토콜(인터페이스)</strong>을 사용하면 모듈화와 확장성이 높아진다</li>
-      <li>이를 통해 구체적인 클래스가 아닌 추상화(프로토콜)에 의존하게 되고, 이것이 바로 의존 관계의 역전</li>
-    </ul>
-  </li>
-</ul>
-
-<h2 id="reference">Reference</h2>
-<ul>
-  <li>https://eunjin3786.tistory.com/233</li>
-  <li>https://medium.com/@jang.wangsu/di-dependency-injection-이란-1b12fdefec4f</li>
-  <li>https://medium.com/@jang.wangsu/di-inversion-of-control-container-란-12ecd70ac7ea</li>
-  <li>https://tecoble.techcourse.co.kr/post/2021-04-27-dependency-injection/</li>
-  <li>https://dokit.tistory.com/54</li>
-  <li>https://80000coding.oopy.io/68ee8d89-5d05-449d-87e2-5fba84d604ca</li>
-  <li>https://www.inflearn.com/courses/lecture?courseId=328390&amp;type=LECTURE&amp;unitId=163822&amp;subtitleLanguage=ko&amp;tab=curriculum</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Pindora" /><summary type="html"><![CDATA[Dependency Injection란 무엇인가? DI는 Dependency Injection의 줄임말로, 다양한 우리말 번역이 있지만, 이 글에서는 의존성 주입이라는 말로 사용하고자 한다. 먼저 의존성, 주입, 의존성 주입 순서대로 알아보자. Dependency(의존성) 객체 지향 프로그래밍에서 Dependency, 의존성은 서로 다른 객체 사이에 의존 관계가 있다는 것을 말한다. 즉 의존하는 객체가 수정되면 다른 객체도 영향을 받는다는 것이다. import Foundation class A부품 { var name: String = "A부품" } class B부품 { var name: String = "B부품" } /// ex: ViewController() class C완성품 { /// ex: NetworkManager() // C완성품이 A부품에 의존한다 = 의존성이 생긴다 // A부품의 코드가 바뀌면 C완성품의 코드를 바꿔줘야하는 문제가 생긴다 // 부품을 바꾸고 싶을 때는 코드를 B부품으로 버꿔야 하는 문제가 생긴다 var a: A부품 = A부품() func printName() { print(a.name) } } 하나의 객체가 다른 객체에 의존하고 있는 코드를 의존하고 있다고 말한다. 이렇게 의존성이 생기는 코드를 확장성있게 바꾸기 위해 의존성 주입을 통해 코드를 개선할 수 있다. 주입(Injection) 생성자를 통해 저장속성을 외부에서 주입하는 개념이다. 의존성 코드에서는 저장속성에 기본값을 인스턴스로 생성&amp;할당하여 생성자를 만들어 주지 않아도 괜찮았다. // 주입(Injection) class Person { var name: String init(name: String) { self.name = name } } // 외부에서 값을 주입(할당/초기화)해서 인스턴스 생성 let people = Person(name: "Index") 실제로는 기본값보다는 생성자를 통해서 외부에서 들어온 값을 통해 저장속성에 할당할 수 있게 해주는 개념인 주입의 개념을 실제로 많이 사용한다. 정리하자면 인스턴스를 생성할 때 저장속성을 외부에서 할당(=주입=초기화)해줄 수 있다고 한다. 의존성 주입 import Foundation class A부품 { var name: String = "A부품" } class B부품 { var name: String = "B부품" } class C완성품 { var a: A부품 init(a: A부품) { self.a = a } func printName() { print(a.name) } } // 1. 인스턴스를 미리 만들고 let a: A부품 = A부품() a.name = "비싼 A부품" // 2. C완성품을 만들 때 주입(Injection)을 해줄 수 있다 // 하지만 이 코드를 의존성 주입(Dependency Injection)이라고 부르지는 않는다 let c: C완성품 = C완성품(a: a) C완성품을 만들 때 미리 만들어 둔 A부품을 주입할 수 있지만 이 코드를 의존성 주입이라고 부르지는 않는다. 의존적이지 않게 만들어주는 코드를 추가해야 의존성 주입이라는 개념이 된다. 주입을 의존성 주입으로 개선 // protocol은 자격증이라고 생각하자 // 각 부품에서 이 자격증을 채택한다 // 자격증을 정의할 때 name이라는 속성을 가지면서 읽기, 쓰기가 가능한 name이라는 속성을 가진다고 정의하고 이를 각 모듈에서 채택한다 // 이 protocol 덕분에 모듈화가 가능해지고 확장적인 코드를 작성할 수 있게 된다 protocol 모듈화된부품 { var name: String { get set } } class A부품: 모듈화된부품 { var name: String = "A부품" } class B부품: 모듈화된부품 { var name: String = "B부품" } class C완성품 { // 프로토콜로 타입을 선언하여 이 프로토콜(자격증)을 채택한 모든 타입들을 할당해줄 수 있다 var a: 모듈화된부품 init(a: 모듈화된부품) { self.a = a } func printName() { print(a.name) } } @main struct Main { static func main() { let moduledA = A부품() let moduledB = B부품() // 모듈화된 A를 주입할 수도 있고 모듈화된 B를 주입할 수도 있다 let c1: C완성품 = C완성품(a: moduledA) let c2: C완성품 = C완성품(a: moduledB) c1.printName() c2.printName() } } 주입 코드를 의존성 주입으로 개선하기 위해 protocol을 선언하고 클래스의 저장속성 타입들이 해당 protocol을 채택하면 된다. 이를 통해 C완성품은 저장속성으로 A부품도 주입할 수 있고 B부품도 주입할 수 있다. 정리하자면 각 부품이 서로 다른 타입이지만 모듈화가 가능해지고 확장적인 코드를 작성할 수 있게 된다. protocol 자체를 타입으로 사용할 수 있어서 모듈화를 시킬 수 있는 장점이 존재하고, protocol을 채택한 여러 타입들이 속성에 할당될 수 있는 것이다. 정리 의존성 서로 다른 객체 사이에 의존 관계가 있다는 것 (한 객체가 다른 객체에 직접 접근하거나 사용하는 관계) 주입 외부에서 객체(또는 데이터)를 생성해서 생성자를 통해 넣는 것 (클래스 내부에서 직접 생성하지 않고, 외부에서 주입) 의존성 주입(개선된 의존성) 프로토콜을 사용해서 의존성을 분리시키고 의존관계를 역전 시킨다 객체 간의 결합도를 낮추고, 의존 관계를 외부로 분리하여 더 유연한 구조를 만드는 설계 방식 의존 관계 역전 원칙(DIP)과 단일 책임 원칙(SRP)을 따르도록 도와준다 주입 시 프로토콜(인터페이스)을 사용하면 모듈화와 확장성이 높아진다 이를 통해 구체적인 클래스가 아닌 추상화(프로토콜)에 의존하게 되고, 이것이 바로 의존 관계의 역전 Reference https://eunjin3786.tistory.com/233 https://medium.com/@jang.wangsu/di-dependency-injection-이란-1b12fdefec4f https://medium.com/@jang.wangsu/di-inversion-of-control-container-란-12ecd70ac7ea https://tecoble.techcourse.co.kr/post/2021-04-27-dependency-injection/ https://dokit.tistory.com/54 https://80000coding.oopy.io/68ee8d89-5d05-449d-87e2-5fba84d604ca https://www.inflearn.com/courses/lecture?courseId=328390&amp;type=LECTURE&amp;unitId=163822&amp;subtitleLanguage=ko&amp;tab=curriculum]]></summary></entry></feed>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Data Structure" /><summary type="html"><![CDATA[자료구조(Data Structure) 자료구조는 데이터를 효율적으로 저장하고 관리하는 방식입니다. 대량의 데이터를 다룰 때 삽입, 삭제, 검색, 정렬, 순회 같은 기본 연산을 효율적으로 처리하도록 도와줍니다. 자료구조는 크게 두 가지로 나누어집니다: 선형 자료구조: 배열, 연결 리스트, 스택, 큐처럼 데이터를 순서대로 나열하는 구조 비선형 자료구조: 트리, 그래프처럼 계층적이거나 복잡한 관계를 표현하는 구조 자료구조 특징 효율성 문제에 적절한 자료구조를 사용하면 속도와 자원 효율이 향상됩니다. 추상화 복잡한 내부 구조는 숨기고 핵심적인 기능만을 표현함으로써 사용자는 사용법에 집중할 수 있습니다. 재사용성 범용적으로 설계된 자료구조는 여러 프로젝트에서 재사용이 가능하여 유지보수에도 유리합니다. 알고리즘(Algorithms) 알고리즘은 문제를 해결하기 위한 단계적인 절차입니다. 입력을 받아 원하는 출력을 만들어내는 과정을 의미하며, 좋은 알고리즘은 빠르게 실행되면서도 적은 자원을 사용합니다. 자료형(Data Type) 자료형은 데이터의 종류와 형식을 정의한 것입니다. 예를 들어, 정수형(Int), 실수형(Float), 문자열(String) 등은 기초 자료형(Primitive Type)에 해당합니다. 이 외에도 여러 데이터를 묶은 구조체, 클래스 같은 복합 자료형(Composite Type)도 존재합니다. 추상 자료형(Abstruct Data Types, ADT) 추상 자료형은 데이터의 구조와 이를 처리하는 연산만 정의하고, 구체적인 구현은 숨기는 개념입니다. 사용자는 내부 구현을 몰라도 되고, 기능(인터페이스)만 알면 됩니다. 대표적인 ADT 예시: 스택, 큐, 리스트, 트리 정보 은닉과 모듈화를 통해 재사용성과 유지보수성이 뛰어납니다. 수학적으로 정의된 개념으로, 실제 구현(배열, 연결 리스트 등)과는 분리되어 있습니다. ➡️ 즉, ADT는 ‘무엇을 할 수 있는가’에 집중하고, 구현 방식은 자유롭게 선택할 수 있는 설계 방식입니다. 추상화(Abstraction) 추상화는 불필요한 세부 사항을 숨기고, 핵심 기능에 집중하는 것입니다. 복잡한 시스템을 단순하게 바라보게 해 주며, 유지보수성과 이해도를 높입니다. 프로그램 프로그램 = 자료구조 + 알고리즘 소프트웨어는 결국 데이터를 어떻게 구조화(자료구조)하고, 그 데이터를 어떻게 처리할지(알고리즘) 결정하는 것이 핵심입니다. 시간복잡도 시간 복잡도는 알고리즘이 실행될 때 주요 연산이 얼마나 반복되는지를 정량적으로 나타낸 값입니다. 연산에는 산술, 대입, 비교, 이동 연산 등이 포함되며, 이를 통해 알고리즘 간 성능 비교가 가능합니다. 순환(Recursion) 어떤 알고리즘이나 함수가 자기 자신을 호출하여 문제를 해결하는 프로그래밍 기법입니다. 주어진 문제를 더 작은 동일한 문제들로 분해하여 해결하는 분할 정복이 있습니다. 순환 호출시에는 호출이 일어날 때마다 호출하는 함수의 상태를 기억해야 하므로 여분의 기억장소가 필요합니다. 순환은 이해하기 쉽지만 비효율적인 경우가 많습니다. 활성 레코드(Activation Record) 프로그래밍 언어에서 하나의 함수가 자기 자신을 다시 호출하는 것은 다른 함수를 호출하는 것과 동일합니다. 복귀주소가 시스템 스택에 저장되고 호출되는 함수를 위한 매개변수(parameter)와 지역변수를 스택으로부터 할당받는데 이러한 공간을 활성 레코드라고 합니다. 호출된 함수가 자기 자신이라면 자기 자신의 시작 위치로 점프하게 됩니다. 호출된 함수가 끝나게 되면 시스템 스택에서 복귀주소를 추출하여 호출한 함수로 되돌아갑니다. 꼬리 순환(Tail Recursion) 순환 호출이 끝에서 이루어지는 순환을 꼬리 순환이라고 하는데 이를 반복 알고리즘으로 쉽게 바꾸어 쓸 수 있습니다. 반복이 빠른 예시 팩토리얼(순환, 반복 둘다 시간복잡도는 O(n)이지만 순환에서는 여분의 기억공간이 필요하고 함수를 호출하기 위해 함수의 매개변수들을 스택에 저장하는 사전 작업이 필요하다.) 순환이 빠른 예시 거듭제곱(logn) Reference https://bnzn2426.tistory.com/115 https://developer-haru.tistory.com/70 https://wikidocs.net/224929 https://velog.io/@ghldjfldj/자료구조-자료구조란]]></summary></entry></feed>
