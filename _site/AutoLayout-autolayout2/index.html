@@ -9,8 +9,8 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>[AutoLayout] 1. Constraint - DongHyeon Kim’s Blog</title>
-<meta name="description" content="오토레이아웃에서는 크기와 위치가 중요하다. 기본 개념은 크기를 지정하고 위치를 지정해준다.                                     크기를 지정하고위치를 지정     상단 위치만 지정하고수평 정렬     상단 위치만 지정하고좌우 앵커 지정     상단 위치만 지정하고좌측 앵커와 가운데 정렬, width 제거                크기와 위치를 모두 지정해레이아웃 고정.               가운데 정렬로 기기별 가로 위치 일관성 확보.                 기기마다 크기가 달라서 문제가 발생할 수 있다.이때는 width를 없애주자.                 좌측 앵커만 수정해도 좌우 여백을 조절할 수 있다.">
+<!-- begin _includes/seo.html --><title>[AutoLayout] 2. 다른 뷰에 뷰를 연결하는법 - DongHyeon Kim’s Blog</title>
+<meta name="description" content="Leading     Option + Leading                green view에서 yellow view로 드래그 해서 Leading을 해주면yellow view leading과 동일한 효과를 얻을 수 있다.               green view에서 yellow view로 드래그 할 때 option을 누르면서 Leading을 해주면 현재 green위치에서 yellow leading 사이의 여백을 더해줄 수 있다.                                     Top Anchor 1번방식     Top Anchor 2번방식                green에서 Top Anchor를 설정하면 작살이 위로 날라가서 제일 가까운 top에 꽃힌다.               만약 1번방식 대신 드래그로 하는방법은 green의 top을 yellow의 바텀으로 거는 설정이 없기 때문에     yellow의 바텀으로 일단 걸고 우측 인스펙터에서 green Bottom -&gt; green Top으로 옮기고 constant를 주면 된다.">
 
 
   <meta name="author" content="Dong Hyeon">
@@ -22,30 +22,30 @@
 <meta property="og:type" content="article">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="DongHyeon Kim's Blog">
-<meta property="og:title" content="[AutoLayout] 1. Constraint">
-<meta property="og:url" content="http://localhost:4000/AutoLayout-autolayout1/">
+<meta property="og:title" content="[AutoLayout] 2. 다른 뷰에 뷰를 연결하는법">
+<meta property="og:url" content="http://localhost:4000/AutoLayout-autolayout2/">
 
 
-  <meta property="og:description" content="오토레이아웃에서는 크기와 위치가 중요하다. 기본 개념은 크기를 지정하고 위치를 지정해준다.                                     크기를 지정하고위치를 지정     상단 위치만 지정하고수평 정렬     상단 위치만 지정하고좌우 앵커 지정     상단 위치만 지정하고좌측 앵커와 가운데 정렬, width 제거                크기와 위치를 모두 지정해레이아웃 고정.               가운데 정렬로 기기별 가로 위치 일관성 확보.                 기기마다 크기가 달라서 문제가 발생할 수 있다.이때는 width를 없애주자.                 좌측 앵커만 수정해도 좌우 여백을 조절할 수 있다.">
-
-
-
-
-
-
-
-  <meta property="article:published_time" content="2025-08-08T00:00:00+00:00">
+  <meta property="og:description" content="Leading     Option + Leading                green view에서 yellow view로 드래그 해서 Leading을 해주면yellow view leading과 동일한 효과를 얻을 수 있다.               green view에서 yellow view로 드래그 할 때 option을 누르면서 Leading을 해주면 현재 green위치에서 yellow leading 사이의 여백을 더해줄 수 있다.                                     Top Anchor 1번방식     Top Anchor 2번방식                green에서 Top Anchor를 설정하면 작살이 위로 날라가서 제일 가까운 top에 꽃힌다.               만약 1번방식 대신 드래그로 하는방법은 green의 top을 yellow의 바텀으로 거는 설정이 없기 때문에     yellow의 바텀으로 일단 걸고 우측 인스펙터에서 green Bottom -&gt; green Top으로 옮기고 constant를 주면 된다.">
 
 
 
 
 
-  
+
+
+  <meta property="article:published_time" content="2025-08-12T00:00:00+00:00">
+
+
+
+
 
   
 
+  
 
-<link rel="canonical" href="http://localhost:4000/AutoLayout-autolayout1/">
+
+<link rel="canonical" href="http://localhost:4000/AutoLayout-autolayout2/">
 
 
 
@@ -456,16 +456,16 @@ checkbox.addEventListener('change', function() {
 
 
   <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="[AutoLayout] 1. Constraint">
-    <meta itemprop="description" content="  오토레이아웃에서는 크기와 위치가 중요하다. 기본 개념은 크기를 지정하고 위치를 지정해준다.                          크기를 지정하고위치를 지정    상단 위치만 지정하고수평 정렬    상단 위치만 지정하고좌우 앵커 지정    상단 위치만 지정하고좌측 앵커와 가운데 정렬, width 제거            크기와 위치를 모두 지정해레이아웃 고정.            가운데 정렬로 기기별 가로 위치 일관성 확보.              기기마다 크기가 달라서 문제가 발생할 수 있다.이때는 width를 없애주자.              좌측 앵커만 수정해도 좌우 여백을 조절할 수 있다.      ">
-    <meta itemprop="datePublished" content="2025-08-08T00:00:00+00:00">
+    <meta itemprop="headline" content="[AutoLayout] 2. 다른 뷰에 뷰를 연결하는법">
+    <meta itemprop="description" content="                  Leading    Option + Leading            green view에서 yellow view로 드래그 해서 Leading을 해주면yellow view leading과 동일한 효과를 얻을 수 있다.            green view에서 yellow view로 드래그 할 때 option을 누르면서 Leading을 해주면 현재 green위치에서 yellow leading 사이의 여백을 더해줄 수 있다.                        Top Anchor 1번방식    Top Anchor 2번방식            green에서 Top Anchor를 설정하면 작살이 위로 날라가서 제일 가까운 top에 꽃힌다.            만약 1번방식 대신 드래그로 하는방법은 green의 top을 yellow의 바텀으로 거는 설정이 없기 때문에    yellow의 바텀으로 일단 걸고 우측 인스펙터에서 green Bottom -&gt; green Top으로 옮기고 constant를 주면 된다.      ">
+    <meta itemprop="datePublished" content="2025-08-12T00:00:00+00:00">
     
 
     <div class="page__inner-wrap">
       
         <header>
           <h1 id="page-title" class="page__title p-name" itemprop="headline">
-            <a href="http://localhost:4000/AutoLayout-autolayout1/" class="u-url" itemprop="url">[AutoLayout] 1. Constraint
+            <a href="http://localhost:4000/AutoLayout-autolayout2/" class="u-url" itemprop="url">[AutoLayout] 2. 다른 뷰에 뷰를 연결하는법
 </a>
           </h1>
           <footer class="page__meta">
@@ -491,7 +491,7 @@ checkbox.addEventListener('change', function() {
 <!--  -->
             
 
-  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-08-08T00:00:00+00:00">August 8, 2025</time></p>
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-08-12T00:00:00+00:00">August 12, 2025</time></p>
 
           </footer>
         </header>
@@ -501,35 +501,43 @@ checkbox.addEventListener('change', function() {
         
         <!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
 
-<ul>
-  <li>오토레이아웃에서는 크기와 위치가 중요하다. 기본 개념은 크기를 지정하고 위치를 지정해준다.</li>
-</ul>
+<table>
+  <tr>
+    <td><img src="/assets/img/2025-08-12-%5BAutoLayout%5D-autolayout2/image-20250812160116357.png" alt="커스텀셀1" width="100%" /></td>
+    <td><img src="/assets/img/2025-08-08-%5BAutoLayout%5D-autolayout1/image-20250812160511084.png" alt="커스텀셀" width="100%" /></td>
+  </tr>
+  <tr>
+    <td style="text-align:center;">Leading</td>
+    <td style="text-align:center;">Option + Leading</td>
+  </tr>
+  <tr>
+    <td style="text-align:center; font-size:14px; color:#666;">
+    green view에서 yellow view로 드래그 해서 Leading을 해주면<br />yellow view leading과 동일한 효과를 얻을 수 있다.
+    </td>
+    <td style="text-align:center; font-size:14px; color:#666;">
+    green view에서 yellow view로 드래그 할 때 option을 누르면서 Leading을 해주면<br /> 현재 green위치에서 yellow leading 사이의 여백을 더해줄 수 있다.
+    </td>
+  </tr>
+</table>
+
+<p><br /><br /><br /><br /></p>
 
 <table>
   <tr>
-    <td><img src="/assets/img/2025-08-08-%5BAutoLayout%5D-autolayout1/image-20250812152018585.png" alt="커스텀셀1" width="100%" /></td>
-    <td><img src="/assets/img/2025-08-08-%5BAutoLayout%5D-autolayout1/image-20250812152323796.png" alt="커스텀셀" width="100%" /></td>
-    <td><img src="/assets/img/2025-08-08-%5BAutoLayout%5D-autolayout1/image-20250812153048794.png" alt="커스텀셀" width="100%" /></td>
-    <td><img src="/assets/img/2025-08-08-%5BAutoLayout%5D-autolayout1/image-20250812153505739.png" alt="커스텀셀" width="100%" /></td>
+    <td><img src="/assets/img/2025-08-12-%5BAutoLayout%5D-autolayout2/image-20250812161107136.png" alt="커스텀셀1" width="100%" /></td>
+    <td><img src="/assets/img/2025-08-12-%5BAutoLayout%5D-autolayout2/image-20250812161522955.png" alt="커스텀셀" width="100%" /></td>
   </tr>
   <tr>
-    <td style="text-align:center;">크기를 지정하고<br />위치를 지정</td>
-    <td style="text-align:center;">상단 위치만 지정하고<br />수평 정렬</td>
-    <td style="text-align:center;">상단 위치만 지정하고<br />좌우 앵커 지정</td>
-    <td style="text-align:center;">상단 위치만 지정하고<br />좌측 앵커와 가운데 정렬, width 제거</td>
+    <td style="text-align:center;">Top Anchor 1번방식</td>
+    <td style="text-align:center;">Top Anchor 2번방식</td>
   </tr>
   <tr>
     <td style="text-align:center; font-size:14px; color:#666;">
-    크기와 위치를 모두 지정해<br />레이아웃 고정.
+    green에서 Top Anchor를 설정하면 작살이 위로 날라가서 제일 가까운 top에 꽃힌다.
     </td>
     <td style="text-align:center; font-size:14px; color:#666;">
-    가운데 정렬로 기기별 가로 위치 일관성 확보.
-    </td>
-    <td style="text-align:center; font-size:14px; color:#666;">
-      기기마다 크기가 달라서 문제가 발생할 수 있다.<br />이때는 width를 없애주자.
-    </td>
-    <td style="text-align:center; font-size:14px; color:#666;">
-      좌측 앵커만 수정해도 좌우 여백을 조절할 수 있다.
+    만약 1번방식 대신 드래그로 하는방법은 green의 top을 yellow의 바텀으로 거는 설정이 없기 때문에
+    yellow의 바텀으로 일단 걸고 우측 인스펙터에서 green Bottom -&gt; green Top으로 옮기고 constant를 주면 된다.
     </td>
   </tr>
 </table>
@@ -543,12 +551,11 @@ checkbox.addEventListener('change', function() {
       
   <nav class="pagination">
     
-      <a href="/AutoLayout-autolayout0/" class="pagination--pager" title="[AutoLayout] 0. 오토레이아웃 개념
+      <a href="/AutoLayout-autolayout1/" class="pagination--pager" title="[AutoLayout] 1. Constraint
 ">Previous</a>
     
     
-      <a href="/AutoLayout-autolayout2/" class="pagination--pager" title="[AutoLayout] 2. 다른 뷰에 뷰를 연결하는법
-">Next</a>
+      <a href="#" class="pagination--pager disabled">Next</a>
     
   </nav>
 

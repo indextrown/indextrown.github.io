@@ -1,6 +1,14 @@
 [
     
         {
+        "title"    : "[AutoLayout] 2. 다른 뷰에 뷰를 연결하는법",
+        "category" : "",
+        "tags"     : "AutoLayout",
+        "url"      : "/AutoLayout-autolayout2/",
+        "date"     : "2025-08-12 00:00:00 +0000"
+        } ,
+    
+        {
         "title"    : "[AutoLayout] 1. Constraint",
         "category" : "",
         "tags"     : "AutoLayout",
