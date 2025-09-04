@@ -1,0 +1,1390 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>[CustomView] 1. 커스텀뷰 만들기 - DongHyeon Kim’s Blog</title>
+<meta name="description" content="커스텀뷰 만들기  우선 Storyboard에서 사진 처럼 UI를 만든다. Button을 hstack으로 묶고, label, textfield, hstack을 vstack으로 묶는다. 그리고 view를 embed하고 색성을 주고, vstack을 view로 드래그하여 상하좌우 전부 10씩 공간을 주고, 이 view를 safearea top: 10, leading: 10, horizontal center 설정을 해주었다.  그리고 이 화면을 복사하고 empty라는 파일을 만들어서 파일이름을 InputView로 하고 여기에 붙여넣는다 이 파일을 nib 파일(인터페이스 빌더)이라고 부른다.      그럼 InputView에서 이렇게 깨지는데 사이즈 인스펙터(삼각형) 부분에서 Layout Guides에서 Safe area 제거한다. 그리고 View를 누르고 attribute(삼각형 바로 왼쪽) 눌러서 Size를 Inferred에서 Freform으로 바꾼다. 그러면 사이즈를 편하게 조절할 수 있다.   file owner에서 코드 클래스를 연결한다.  // 코드 클래스 import UIKit  class InputView: UIView {     /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)     /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다     override func awakeFromNib() {         super.awakeFromNib()         print(#fileID, #function, #line, &quot;- &quot;)     }          /// 코드로 InputView를 생성한다면 사용하는 생성자     override init(frame: CGRect) {         super.init(frame: frame)         print(#fileID, #function, #line, &quot;- &quot;)     }          required init?(coder: NSCoder) {         super.init(coder: coder) // 스토리보드용         /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용     } }    View를 생성후 노란색 View에 드래그해서 Vertical Spacing, Leading, Trailing, Equal Height 설정을 해준다.   새로 만든 뷰를 SecondInputView로 하고 option + cmd + 4하고 class를 InputView로 해준다. 그리고 실행해보면 아래 awakefromnib은 탔다고 로그가 뜨지만 우리가 원하는 Nib파일과의 연결이 안되서 여전히 민트색으로 나온다.  이를 해결해보자.                          Before     After(applyNib 생성/호출)     // 로그 SwiftUILab/InputView.swift init(coder:) 26 -  SwiftUILab/InputView.swift awakeFromNib() 15 -    import UIKit   class InputView: UIView {     /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)     /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다     override func awakeFromNib() {         super.awakeFromNib()         print(#fileID, #function, #line, &quot;- &quot;)         applyNib()     }          /// 코드로 InputView를 생성한다면 사용하는 생성자     override init(frame: CGRect) {         super.init(frame: frame)         print(#fileID, #function, #line, &quot;- &quot;)     }          required init?(coder: NSCoder) {         super.init(coder: coder) // 스토리보드용         print(#fileID, #function, #line, &quot;- &quot;)         /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용     }          fileprivate func applyNib() {         print(#fileID, #function, #line, &quot;- &quot;)         let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;         let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                  // nib의 첫 요소를 UIView 형태로 가져오겠다         guard let view = nib?.first as? UIView else { return }                  // autoLauout         addSubview(view)         view.translatesAutoresizingMaskIntoConstraints = false         NSLayoutConstraint.activate([             view.topAnchor.constraint(equalTo: self.topAnchor),             view.leadingAnchor.constraint(equalTo: self.leadingAnchor),             view.trailingAnchor.constraint(equalTo: self.trailingAnchor),             view.bottomAnchor.constraint(equalTo: self.bottomAnchor),         ])     } }    추가: 라벨, 버튼, 텍스트필드 각각 커스텀하고싶다면 각각 Nib에서 InputView 코드로 드래그해주고 커스텀을 하면되는데, 코드로 해도 되지만  @IBInspactable를 활용하면 Interface Builder에서 편하게 수정할 수 있다. 수정은 Main 즉 호출쪽에서 UserDefined Runtime Attributes에서 넣어주면 된다.                          파란칸 작성     실행 화면      import UIKit   class InputView: UIView {          @IBOutlet weak var titleLabel: UILabel!          @IBOutlet weak var inputTextField: UITextField!          @IBOutlet weak var buttonA: UIButton!          @IBOutlet weak var buttonB: UIButton!          // @IBInspectable: Interface Builder에서 속성을 넣어주는 역할     // 프로퍼티 옵저버     @IBInspectable     var title: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.titleLabel.text = self.title             }         }     }          @IBInspectable     var placeHolder: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.inputTextField.placeholder = self.placeHolder.isEmpty ? &quot;글자를 입력해주세요&quot; : self.placeHolder             }         }     }          /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)     /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다     override func awakeFromNib() {         super.awakeFromNib()         print(#fileID, #function, #line, &quot;- &quot;)         applyNib()     }          /// 코드로 InputView를 생성한다면 사용하는 생성자     override init(frame: CGRect) {         super.init(frame: frame)         print(#fileID, #function, #line, &quot;- &quot;)     }          required init?(coder: NSCoder) {         super.init(coder: coder) // 스토리보드용         print(#fileID, #function, #line, &quot;- &quot;)         /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용     }          fileprivate func applyNib() {         print(#fileID, #function, #line, &quot;- &quot;)         let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;         let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                  // nib의 첫 요소를 UIView 형태로 가져오겠다         guard let view = nib?.first as? UIView else { return }                  // autoLauout         addSubview(view)         view.translatesAutoresizingMaskIntoConstraints = false         NSLayoutConstraint.activate([             view.topAnchor.constraint(equalTo: self.topAnchor),             view.leadingAnchor.constraint(equalTo: self.leadingAnchor),             view.trailingAnchor.constraint(equalTo: self.trailingAnchor),             view.bottomAnchor.constraint(equalTo: self.bottomAnchor),         ])     } }   코드로 UI 만드는법 import UIKit  class CustomStoryboardViewController: UIViewController {          @IBOutlet weak var secondInputView: InputView!          override func loadView() {         super.loadView()         print(#fileID, #function, #line, &quot;- &quot;)         let thirdInputView = InputView(title: &quot;편의생성자 타이틀&quot;, placeHolder: &quot;편의생성자 홀더&quot;)         thirdInputView.translatesAutoresizingMaskIntoConstraints = false         self.view.addSubview(thirdInputView)         NSLayoutConstraint.activate([             thirdInputView.topAnchor.constraint(equalTo: secondInputView.bottomAnchor, constant: 10),             thirdInputView.leadingAnchor.constraint(equalTo: secondInputView.leadingAnchor),             thirdInputView.trailingAnchor.constraint(equalTo: secondInputView.trailingAnchor),             thirdInputView.heightAnchor.constraint(equalTo: secondInputView.heightAnchor)         ])     }          override func viewDidLoad() {              } }    // override init(frame: CGRect)에 applyNib 호출 추가, 편의생성자 추가하여 뷰 생성시 title, placeHolder 파라미터 받기 import UIKit   class InputView: UIView {          @IBOutlet weak var titleLabel: UILabel!          @IBOutlet weak var inputTextField: UITextField!          @IBOutlet weak var buttonA: UIButton!          @IBOutlet weak var buttonB: UIButton!          // @IBInspectable: Interface Builder에서 속성을 넣어주는 역할     // 프로퍼티 옵저버     @IBInspectable     var title: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.titleLabel.text = self.title             }         }     }          @IBInspectable     var placeHolder: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.inputTextField.placeholder = self.placeHolder.isEmpty ? &quot;글자를 입력해주세요&quot; : self.placeHolder             }         }     }          /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)     /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다     override func awakeFromNib() {         super.awakeFromNib()         print(#fileID, #function, #line, &quot;- &quot;)         applyNib()     }          /// 코드로 InputView를 생성한다면 사용하는 생성자     override init(frame: CGRect) {         super.init(frame: frame)         print(#fileID, #function, #line, &quot;- &quot;)         applyNib() // MARK: - 이거 추가     }          // MARK: - 편의생성자 추가     convenience init(title: String = &quot;&quot;, placeHolder: String) {         self.init(frame: .zero)         self.titleLabel.text = title         self.inputTextField.placeholder = placeHolder     }          required init?(coder: NSCoder) {         super.init(coder: coder) // 스토리보드용         print(#fileID, #function, #line, &quot;- &quot;)         /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용     }          fileprivate func applyNib() {         print(#fileID, #function, #line, &quot;- &quot;)         let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;         let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                  // nib의 첫 요소를 UIView 형태로 가져오겠다         guard let view = nib?.first as? UIView else { return }                  // autoLauout         addSubview(view)         view.translatesAutoresizingMaskIntoConstraints = false         NSLayoutConstraint.activate([             view.topAnchor.constraint(equalTo: self.topAnchor),             view.leadingAnchor.constraint(equalTo: self.leadingAnchor),             view.trailingAnchor.constraint(equalTo: self.trailingAnchor),             view.bottomAnchor.constraint(equalTo: self.bottomAnchor),         ])     } }   버튼 연결 추가법 applyNib 메서드를 추가하면된다. import UIKit   class InputView: UIView {          @IBOutlet weak var titleLabel: UILabel!          @IBOutlet weak var inputTextField: UITextField!          @IBOutlet weak var buttonA: UIButton!          @IBOutlet weak var buttonB: UIButton!          // @IBInspectable: Interface Builder에서 속성을 넣어주는 역할     // 프로퍼티 옵저버     @IBInspectable     var title: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.titleLabel.text = self.title             }         }     }          @IBInspectable     var placeHolder: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.inputTextField.placeholder = self.placeHolder.isEmpty ? &quot;글자를 입력해주세요&quot; : self.placeHolder             }         }     }          /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)     /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다     override func awakeFromNib() {         super.awakeFromNib()         print(#fileID, #function, #line, &quot;- &quot;)         applyNib()         applyAction()     }          /// 코드로 InputView를 생성한다면 사용하는 생성자     override init(frame: CGRect) {         super.init(frame: frame)         print(#fileID, #function, #line, &quot;- &quot;)         applyNib() // MARK: - 이거 추가         applyAction()     }          // MARK: - 편의생성자 추가     convenience init(title: String = &quot;&quot;, placeHolder: String) {         self.init(frame: .zero)         self.titleLabel.text = title         self.inputTextField.placeholder = placeHolder     }          required init?(coder: NSCoder) {         super.init(coder: coder) // 스토리보드용         print(#fileID, #function, #line, &quot;- &quot;)         /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용     }          fileprivate func applyNib() {         print(#fileID, #function, #line, &quot;- &quot;)         let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;         let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                  // nib의 첫 요소를 UIView 형태로 가져오겠다         guard let view = nib?.first as? UIView else { return }                  // autoLauout         addSubview(view)         view.translatesAutoresizingMaskIntoConstraints = false         NSLayoutConstraint.activate([             view.topAnchor.constraint(equalTo: self.topAnchor),             view.leadingAnchor.constraint(equalTo: self.leadingAnchor),             view.trailingAnchor.constraint(equalTo: self.trailingAnchor),             view.bottomAnchor.constraint(equalTo: self.bottomAnchor),         ])     }          fileprivate func applyAction() {         print(#fileID, #function, #line, &quot;- &quot;)         self.buttonA.addTarget(self, action: #selector(onBtnAClicked(selder:)), for: .touchUpInside)         self.buttonB.addTarget(self, action: #selector(onBtnBClicked(selder:)), for: .touchUpInside)     } }  extension InputView {     @objc func onBtnAClicked(selder: UIButton) {         print(#fileID, #function, #line, &quot;- &quot;)     }          @objc func onBtnBClicked(selder: UIButton) {         print(#fileID, #function, #line, &quot;- &quot;)     } }   텍스트필드 연결 추가법 import UIKit   class InputView: UIView {          @IBOutlet weak var titleLabel: UILabel!          @IBOutlet weak var inputTextField: UITextField!          @IBOutlet weak var buttonA: UIButton!          @IBOutlet weak var buttonB: UIButton!          // @IBInspectable: Interface Builder에서 속성을 넣어주는 역할     // 프로퍼티 옵저버     @IBInspectable     var title: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.titleLabel.text = self.title             }         }     }          @IBInspectable     var placeHolder: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.inputTextField.placeholder = self.placeHolder.isEmpty ? &quot;글자를 입력해주세요&quot; : self.placeHolder             }         }     }          /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)     /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다     override func awakeFromNib() {         super.awakeFromNib()         print(#fileID, #function, #line, &quot;- &quot;)         applyNib()         applyAction()     }          /// 코드로 InputView를 생성한다면 사용하는 생성자     override init(frame: CGRect) {         super.init(frame: frame)         print(#fileID, #function, #line, &quot;- &quot;)         applyNib() // MARK: - 이거 추가         applyAction()     }          // MARK: - 편의생성자 추가     convenience init(title: String = &quot;&quot;, placeHolder: String) {         self.init(frame: .zero)         self.titleLabel.text = title         self.inputTextField.placeholder = placeHolder     }          required init?(coder: NSCoder) {         super.init(coder: coder) // 스토리보드용         print(#fileID, #function, #line, &quot;- &quot;)         /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용     }          fileprivate func applyNib() {         print(#fileID, #function, #line, &quot;- &quot;)         let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;         let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                  // nib의 첫 요소를 UIView 형태로 가져오겠다         guard let view = nib?.first as? UIView else { return }                  // autoLauout         addSubview(view)         view.translatesAutoresizingMaskIntoConstraints = false         NSLayoutConstraint.activate([             view.topAnchor.constraint(equalTo: self.topAnchor),             view.leadingAnchor.constraint(equalTo: self.leadingAnchor),             view.trailingAnchor.constraint(equalTo: self.trailingAnchor),             view.bottomAnchor.constraint(equalTo: self.bottomAnchor),         ])     }          fileprivate func applyAction() {         print(#fileID, #function, #line, &quot;- &quot;)         self.buttonA.addTarget(self, action: #selector(onBtnAClicked(selder:)), for: .touchUpInside)         self.buttonB.addTarget(self, action: #selector(onBtnBClicked(selder:)), for: .touchUpInside)         self.inputTextField.addTarget(self, action: #selector(onInputChanged(sender: )), for: .editingChanged)     } }  extension InputView {     @objc func onBtnAClicked(selder: UIButton) {         print(#fileID, #function, #line, &quot;- &quot;)     }          @objc func onBtnBClicked(selder: UIButton) {         print(#fileID, #function, #line, &quot;- &quot;)     }          // MARK: - 텍스트필드 이벤트 받는법 delegate도 되지만 간단하게 selector로도 된다     @objc func onInputChanged(sender: UITextField) {         print(#fileID, #function, #line, &quot;- input: \(sender.text!)&quot;)     } }   액션을 viewController에서 받고 싶다    클로저를 활용하자.   클로저는 정의, 할당, 호출 3가지를 기억하면 된다.   // //  InputView.swift //  SwiftUILab // //  Created by 김동현 on 9/4/25. //  import UIKit   class InputView: UIView {          @IBOutlet weak var titleLabel: UILabel!          @IBOutlet weak var inputTextField: UITextField!          @IBOutlet weak var buttonA: UIButton!          @IBOutlet weak var buttonB: UIButton!          var onBtnAClicked: (() -&gt; Void)? = nil     var onBtnBClicked: ((String) -&gt; Void)? = nil          // @IBInspectable: Interface Builder에서 속성을 넣어주는 역할     // 프로퍼티 옵저버     @IBInspectable     var title: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.titleLabel.text = self.title             }         }     }          @IBInspectable     var placeHolder: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.inputTextField.placeholder = self.placeHolder.isEmpty ? &quot;글자를 입력해주세요&quot; : self.placeHolder             }         }     }          /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)     /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다     override func awakeFromNib() {         super.awakeFromNib()         print(#fileID, #function, #line, &quot;- &quot;)         applyNib()         applyAction()     }          /// 코드로 InputView를 생성한다면 사용하는 생성자     override init(frame: CGRect) {         super.init(frame: frame)         print(#fileID, #function, #line, &quot;- &quot;)         applyNib() // MARK: - 이거 추가         applyAction()     }          // MARK: - 편의생성자 추가     convenience init(title: String = &quot;&quot;, placeHolder: String) {         self.init(frame: .zero)         self.titleLabel.text = title         self.inputTextField.placeholder = placeHolder     }          // MARK: - 버튼 세번째 방식     convenience init(title: String = &quot;&quot;,                      placeHolder: String,                      onBtnAClicked: (() -&gt; Void)? = nil,                      onBtnBClicked: ((String) -&gt; Void)? = nil     ) {         self.init(frame: .zero)         self.titleLabel.text = title         self.inputTextField.placeholder = placeHolder                  self.onBtnAClicked = onBtnAClicked         self.onBtnBClicked = onBtnBClicked     }          required init?(coder: NSCoder) {         super.init(coder: coder) // 스토리보드용         print(#fileID, #function, #line, &quot;- &quot;)         /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용     }          fileprivate func applyNib() {         print(#fileID, #function, #line, &quot;- &quot;)         let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;         let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                  // nib의 첫 요소를 UIView 형태로 가져오겠다         guard let view = nib?.first as? UIView else { return }                  // autoLauout         addSubview(view)         view.translatesAutoresizingMaskIntoConstraints = false         NSLayoutConstraint.activate([             view.topAnchor.constraint(equalTo: self.topAnchor),             view.leadingAnchor.constraint(equalTo: self.leadingAnchor),             view.trailingAnchor.constraint(equalTo: self.trailingAnchor),             view.bottomAnchor.constraint(equalTo: self.bottomAnchor),         ])     }          fileprivate func applyAction() {         print(#fileID, #function, #line, &quot;- &quot;)         self.buttonA.addTarget(self, action: #selector(onBtnAClicked(sender:)), for: .touchUpInside)         self.buttonB.addTarget(self, action: #selector(onBtnBClicked(sender:)), for: .touchUpInside)         self.inputTextField.addTarget(self, action: #selector(onInputChanged(sender: )), for: .editingChanged)     }              func resetAction(target: Any?,                      aBtnAction: Selector,                      bBtnAction: Selector,                      inputChangeAction: Selector     ) {         // 이전 걸려있던 액션 지우기         print(#fileID, #function, #line, &quot;- &quot;)         self.buttonA.removeTarget(self, action: #selector(onBtnAClicked(sender:)), for: .touchUpInside)         self.buttonB.removeTarget(self, action: #selector(onBtnBClicked(sender:)), for: .touchUpInside)         self.inputTextField.removeTarget(self, action: #selector(onInputChanged(sender: )), for: .editingChanged)         // 새 액션 넣기         self.buttonA.addTarget(target, action: aBtnAction, for: .touchUpInside)         self.buttonB.addTarget(target, action: bBtnAction, for: .touchUpInside)         self.inputTextField.addTarget(target, action: inputChangeAction, for: .editingChanged)     } }  extension InputView {     @objc func onBtnAClicked(sender: UIButton) {         print(#fileID, #function, #line, &quot;- &quot;)         onBtnAClicked?()     }          @objc func onBtnBClicked(sender: UIButton) {         print(#fileID, #function, #line, &quot;- &quot;)         guard let userInput = self.inputTextField.text else { return }         onBtnBClicked?(userInput)     }          // MARK: - 텍스트필드 이벤트 받는법 delegate도 되지만 간단하게 selector로도 된다     @objc func onInputChanged(sender: UITextField) {         print(#fileID, #function, #line, &quot;- input: \(sender.text!)&quot;)     } }   import UIKit  class CustomStoryboardViewController: UIViewController {          @IBOutlet weak var secondInputView: InputView!          override func loadView() {         super.loadView()         print(#fileID, #function, #line, &quot;- &quot;)         // let thirdInputView = InputView(title: &quot;편의생성자 타이틀&quot;, placeHolder: &quot;편의생성자 홀더&quot;)                  // MARK: - 4번 방식(생성자로 버튼 등록)         let thirdInputView = InputView(title: &quot;편의생성자 타이틀&quot;,                                        placeHolder: &quot;편의생성자 홀더&quot;,                                        onBtnAClicked: { self.handleBtnACLicked() },                                        onBtnBClicked: { self.handleBtnBClicked(userInput: $0) })                           thirdInputView.translatesAutoresizingMaskIntoConstraints = false         self.view.addSubview(thirdInputView)         NSLayoutConstraint.activate([             thirdInputView.topAnchor.constraint(equalTo: secondInputView.bottomAnchor, constant: 10),             thirdInputView.leadingAnchor.constraint(equalTo: secondInputView.leadingAnchor),             thirdInputView.trailingAnchor.constraint(equalTo: secondInputView.trailingAnchor),             thirdInputView.heightAnchor.constraint(equalTo: secondInputView.heightAnchor)         ])     }          override func viewDidLoad() {                  // MARK: - 1번 방식(클로저로 버튼 등록)         secondInputView.onBtnAClicked = {             print(&quot;onBtnAClicked 실행됨&quot;)         }                  // MARK: - 2번 방식(클로저로 버튼 등록 + 클로저 파라미터 활용)         secondInputView.onBtnBClicked = {             print(&quot;onBtnBClicked 실행됨 / userInput: \($0)&quot;)         }                  // MARK: - 3번 방식(메서드로 버튼 등록)         // 핸들링을 InputView가 아닌 VC에서 가능해진다         secondInputView.resetAction(target: self,                                     aBtnAction: #selector(onBtnAClicked(sender: )),                                     bBtnAction: #selector(onBtnBClicked(sender: )),                                     inputChangeAction: #selector(onInputChanged(sender: )))     } }   extension CustomStoryboardViewController {     @objc func onBtnAClicked(sender: UIButton) {         print(#fileID, #function, #line, &quot;- &quot;)     }          @objc func onBtnBClicked(sender: UIButton) {         print(#fileID, #function, #line, &quot;- &quot;)     }          // MARK: - 텍스트필드 이벤트 받는법 delegate도 되지만 간단하게 selector로도 된다     @objc func onInputChanged(sender: UITextField) {         print(#fileID, #function, #line, &quot;- input: \(sender.text!)&quot;)     } }  extension CustomStoryboardViewController {     private func handleBtnACLicked() {         print(&quot;onBtnAClicked&quot;)     }          private func handleBtnBClicked(userInput: String) {         print(&quot;onBtnBClicked&quot;)         print(&quot;onBtnBClicked!!!: \(userInput)&quot;)     } }   정리    UIKit으로 커스텀 뷰 만들 때 컴포넌트 단위로 구현하는게 편하다.   코드로만 만드는 방식도 있지만, 특정 부분을 Xib파일로 따로 빼서 구성할 수 있다,            이떄는 연결을 View가 아니라 Files Owner에 원하는 UIView 클래스룰 연결해준다.       해당하는 Nib파일을 가져와서 Nib파일의 첫번째 뷰를 UIView 타입으로 가져오고 오토레이아웃을 한번 잡아준다.           Main 스토리보드에서 UIView를 클래스 이름 연결하면 awakeFromNib을 탄다.            커스텀으로 속성 변경할거면 @IBInspactable를 사용하면 된다.           Xib파일을 코드로 생성할때는 init(frame)을 탄다            커스텀 속성을 넣고싶으면 convenience init을 통해 매개변수를 넣어서 해결하면 된다.">
+
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[CustomView] 1. 커스텀뷰 만들기">
+<meta property="og:url" content="http://localhost:4000/CustomView-customView1/">
+
+
+  <meta property="og:description" content="커스텀뷰 만들기  우선 Storyboard에서 사진 처럼 UI를 만든다. Button을 hstack으로 묶고, label, textfield, hstack을 vstack으로 묶는다. 그리고 view를 embed하고 색성을 주고, vstack을 view로 드래그하여 상하좌우 전부 10씩 공간을 주고, 이 view를 safearea top: 10, leading: 10, horizontal center 설정을 해주었다.  그리고 이 화면을 복사하고 empty라는 파일을 만들어서 파일이름을 InputView로 하고 여기에 붙여넣는다 이 파일을 nib 파일(인터페이스 빌더)이라고 부른다.      그럼 InputView에서 이렇게 깨지는데 사이즈 인스펙터(삼각형) 부분에서 Layout Guides에서 Safe area 제거한다. 그리고 View를 누르고 attribute(삼각형 바로 왼쪽) 눌러서 Size를 Inferred에서 Freform으로 바꾼다. 그러면 사이즈를 편하게 조절할 수 있다.   file owner에서 코드 클래스를 연결한다.  // 코드 클래스 import UIKit  class InputView: UIView {     /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)     /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다     override func awakeFromNib() {         super.awakeFromNib()         print(#fileID, #function, #line, &quot;- &quot;)     }          /// 코드로 InputView를 생성한다면 사용하는 생성자     override init(frame: CGRect) {         super.init(frame: frame)         print(#fileID, #function, #line, &quot;- &quot;)     }          required init?(coder: NSCoder) {         super.init(coder: coder) // 스토리보드용         /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용     } }    View를 생성후 노란색 View에 드래그해서 Vertical Spacing, Leading, Trailing, Equal Height 설정을 해준다.   새로 만든 뷰를 SecondInputView로 하고 option + cmd + 4하고 class를 InputView로 해준다. 그리고 실행해보면 아래 awakefromnib은 탔다고 로그가 뜨지만 우리가 원하는 Nib파일과의 연결이 안되서 여전히 민트색으로 나온다.  이를 해결해보자.                          Before     After(applyNib 생성/호출)     // 로그 SwiftUILab/InputView.swift init(coder:) 26 -  SwiftUILab/InputView.swift awakeFromNib() 15 -    import UIKit   class InputView: UIView {     /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)     /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다     override func awakeFromNib() {         super.awakeFromNib()         print(#fileID, #function, #line, &quot;- &quot;)         applyNib()     }          /// 코드로 InputView를 생성한다면 사용하는 생성자     override init(frame: CGRect) {         super.init(frame: frame)         print(#fileID, #function, #line, &quot;- &quot;)     }          required init?(coder: NSCoder) {         super.init(coder: coder) // 스토리보드용         print(#fileID, #function, #line, &quot;- &quot;)         /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용     }          fileprivate func applyNib() {         print(#fileID, #function, #line, &quot;- &quot;)         let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;         let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                  // nib의 첫 요소를 UIView 형태로 가져오겠다         guard let view = nib?.first as? UIView else { return }                  // autoLauout         addSubview(view)         view.translatesAutoresizingMaskIntoConstraints = false         NSLayoutConstraint.activate([             view.topAnchor.constraint(equalTo: self.topAnchor),             view.leadingAnchor.constraint(equalTo: self.leadingAnchor),             view.trailingAnchor.constraint(equalTo: self.trailingAnchor),             view.bottomAnchor.constraint(equalTo: self.bottomAnchor),         ])     } }    추가: 라벨, 버튼, 텍스트필드 각각 커스텀하고싶다면 각각 Nib에서 InputView 코드로 드래그해주고 커스텀을 하면되는데, 코드로 해도 되지만  @IBInspactable를 활용하면 Interface Builder에서 편하게 수정할 수 있다. 수정은 Main 즉 호출쪽에서 UserDefined Runtime Attributes에서 넣어주면 된다.                          파란칸 작성     실행 화면      import UIKit   class InputView: UIView {          @IBOutlet weak var titleLabel: UILabel!          @IBOutlet weak var inputTextField: UITextField!          @IBOutlet weak var buttonA: UIButton!          @IBOutlet weak var buttonB: UIButton!          // @IBInspectable: Interface Builder에서 속성을 넣어주는 역할     // 프로퍼티 옵저버     @IBInspectable     var title: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.titleLabel.text = self.title             }         }     }          @IBInspectable     var placeHolder: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.inputTextField.placeholder = self.placeHolder.isEmpty ? &quot;글자를 입력해주세요&quot; : self.placeHolder             }         }     }          /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)     /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다     override func awakeFromNib() {         super.awakeFromNib()         print(#fileID, #function, #line, &quot;- &quot;)         applyNib()     }          /// 코드로 InputView를 생성한다면 사용하는 생성자     override init(frame: CGRect) {         super.init(frame: frame)         print(#fileID, #function, #line, &quot;- &quot;)     }          required init?(coder: NSCoder) {         super.init(coder: coder) // 스토리보드용         print(#fileID, #function, #line, &quot;- &quot;)         /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용     }          fileprivate func applyNib() {         print(#fileID, #function, #line, &quot;- &quot;)         let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;         let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                  // nib의 첫 요소를 UIView 형태로 가져오겠다         guard let view = nib?.first as? UIView else { return }                  // autoLauout         addSubview(view)         view.translatesAutoresizingMaskIntoConstraints = false         NSLayoutConstraint.activate([             view.topAnchor.constraint(equalTo: self.topAnchor),             view.leadingAnchor.constraint(equalTo: self.leadingAnchor),             view.trailingAnchor.constraint(equalTo: self.trailingAnchor),             view.bottomAnchor.constraint(equalTo: self.bottomAnchor),         ])     } }   코드로 UI 만드는법 import UIKit  class CustomStoryboardViewController: UIViewController {          @IBOutlet weak var secondInputView: InputView!          override func loadView() {         super.loadView()         print(#fileID, #function, #line, &quot;- &quot;)         let thirdInputView = InputView(title: &quot;편의생성자 타이틀&quot;, placeHolder: &quot;편의생성자 홀더&quot;)         thirdInputView.translatesAutoresizingMaskIntoConstraints = false         self.view.addSubview(thirdInputView)         NSLayoutConstraint.activate([             thirdInputView.topAnchor.constraint(equalTo: secondInputView.bottomAnchor, constant: 10),             thirdInputView.leadingAnchor.constraint(equalTo: secondInputView.leadingAnchor),             thirdInputView.trailingAnchor.constraint(equalTo: secondInputView.trailingAnchor),             thirdInputView.heightAnchor.constraint(equalTo: secondInputView.heightAnchor)         ])     }          override func viewDidLoad() {              } }    // override init(frame: CGRect)에 applyNib 호출 추가, 편의생성자 추가하여 뷰 생성시 title, placeHolder 파라미터 받기 import UIKit   class InputView: UIView {          @IBOutlet weak var titleLabel: UILabel!          @IBOutlet weak var inputTextField: UITextField!          @IBOutlet weak var buttonA: UIButton!          @IBOutlet weak var buttonB: UIButton!          // @IBInspectable: Interface Builder에서 속성을 넣어주는 역할     // 프로퍼티 옵저버     @IBInspectable     var title: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.titleLabel.text = self.title             }         }     }          @IBInspectable     var placeHolder: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.inputTextField.placeholder = self.placeHolder.isEmpty ? &quot;글자를 입력해주세요&quot; : self.placeHolder             }         }     }          /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)     /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다     override func awakeFromNib() {         super.awakeFromNib()         print(#fileID, #function, #line, &quot;- &quot;)         applyNib()     }          /// 코드로 InputView를 생성한다면 사용하는 생성자     override init(frame: CGRect) {         super.init(frame: frame)         print(#fileID, #function, #line, &quot;- &quot;)         applyNib() // MARK: - 이거 추가     }          // MARK: - 편의생성자 추가     convenience init(title: String = &quot;&quot;, placeHolder: String) {         self.init(frame: .zero)         self.titleLabel.text = title         self.inputTextField.placeholder = placeHolder     }          required init?(coder: NSCoder) {         super.init(coder: coder) // 스토리보드용         print(#fileID, #function, #line, &quot;- &quot;)         /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용     }          fileprivate func applyNib() {         print(#fileID, #function, #line, &quot;- &quot;)         let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;         let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                  // nib의 첫 요소를 UIView 형태로 가져오겠다         guard let view = nib?.first as? UIView else { return }                  // autoLauout         addSubview(view)         view.translatesAutoresizingMaskIntoConstraints = false         NSLayoutConstraint.activate([             view.topAnchor.constraint(equalTo: self.topAnchor),             view.leadingAnchor.constraint(equalTo: self.leadingAnchor),             view.trailingAnchor.constraint(equalTo: self.trailingAnchor),             view.bottomAnchor.constraint(equalTo: self.bottomAnchor),         ])     } }   버튼 연결 추가법 applyNib 메서드를 추가하면된다. import UIKit   class InputView: UIView {          @IBOutlet weak var titleLabel: UILabel!          @IBOutlet weak var inputTextField: UITextField!          @IBOutlet weak var buttonA: UIButton!          @IBOutlet weak var buttonB: UIButton!          // @IBInspectable: Interface Builder에서 속성을 넣어주는 역할     // 프로퍼티 옵저버     @IBInspectable     var title: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.titleLabel.text = self.title             }         }     }          @IBInspectable     var placeHolder: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.inputTextField.placeholder = self.placeHolder.isEmpty ? &quot;글자를 입력해주세요&quot; : self.placeHolder             }         }     }          /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)     /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다     override func awakeFromNib() {         super.awakeFromNib()         print(#fileID, #function, #line, &quot;- &quot;)         applyNib()         applyAction()     }          /// 코드로 InputView를 생성한다면 사용하는 생성자     override init(frame: CGRect) {         super.init(frame: frame)         print(#fileID, #function, #line, &quot;- &quot;)         applyNib() // MARK: - 이거 추가         applyAction()     }          // MARK: - 편의생성자 추가     convenience init(title: String = &quot;&quot;, placeHolder: String) {         self.init(frame: .zero)         self.titleLabel.text = title         self.inputTextField.placeholder = placeHolder     }          required init?(coder: NSCoder) {         super.init(coder: coder) // 스토리보드용         print(#fileID, #function, #line, &quot;- &quot;)         /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용     }          fileprivate func applyNib() {         print(#fileID, #function, #line, &quot;- &quot;)         let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;         let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                  // nib의 첫 요소를 UIView 형태로 가져오겠다         guard let view = nib?.first as? UIView else { return }                  // autoLauout         addSubview(view)         view.translatesAutoresizingMaskIntoConstraints = false         NSLayoutConstraint.activate([             view.topAnchor.constraint(equalTo: self.topAnchor),             view.leadingAnchor.constraint(equalTo: self.leadingAnchor),             view.trailingAnchor.constraint(equalTo: self.trailingAnchor),             view.bottomAnchor.constraint(equalTo: self.bottomAnchor),         ])     }          fileprivate func applyAction() {         print(#fileID, #function, #line, &quot;- &quot;)         self.buttonA.addTarget(self, action: #selector(onBtnAClicked(selder:)), for: .touchUpInside)         self.buttonB.addTarget(self, action: #selector(onBtnBClicked(selder:)), for: .touchUpInside)     } }  extension InputView {     @objc func onBtnAClicked(selder: UIButton) {         print(#fileID, #function, #line, &quot;- &quot;)     }          @objc func onBtnBClicked(selder: UIButton) {         print(#fileID, #function, #line, &quot;- &quot;)     } }   텍스트필드 연결 추가법 import UIKit   class InputView: UIView {          @IBOutlet weak var titleLabel: UILabel!          @IBOutlet weak var inputTextField: UITextField!          @IBOutlet weak var buttonA: UIButton!          @IBOutlet weak var buttonB: UIButton!          // @IBInspectable: Interface Builder에서 속성을 넣어주는 역할     // 프로퍼티 옵저버     @IBInspectable     var title: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.titleLabel.text = self.title             }         }     }          @IBInspectable     var placeHolder: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.inputTextField.placeholder = self.placeHolder.isEmpty ? &quot;글자를 입력해주세요&quot; : self.placeHolder             }         }     }          /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)     /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다     override func awakeFromNib() {         super.awakeFromNib()         print(#fileID, #function, #line, &quot;- &quot;)         applyNib()         applyAction()     }          /// 코드로 InputView를 생성한다면 사용하는 생성자     override init(frame: CGRect) {         super.init(frame: frame)         print(#fileID, #function, #line, &quot;- &quot;)         applyNib() // MARK: - 이거 추가         applyAction()     }          // MARK: - 편의생성자 추가     convenience init(title: String = &quot;&quot;, placeHolder: String) {         self.init(frame: .zero)         self.titleLabel.text = title         self.inputTextField.placeholder = placeHolder     }          required init?(coder: NSCoder) {         super.init(coder: coder) // 스토리보드용         print(#fileID, #function, #line, &quot;- &quot;)         /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용     }          fileprivate func applyNib() {         print(#fileID, #function, #line, &quot;- &quot;)         let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;         let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                  // nib의 첫 요소를 UIView 형태로 가져오겠다         guard let view = nib?.first as? UIView else { return }                  // autoLauout         addSubview(view)         view.translatesAutoresizingMaskIntoConstraints = false         NSLayoutConstraint.activate([             view.topAnchor.constraint(equalTo: self.topAnchor),             view.leadingAnchor.constraint(equalTo: self.leadingAnchor),             view.trailingAnchor.constraint(equalTo: self.trailingAnchor),             view.bottomAnchor.constraint(equalTo: self.bottomAnchor),         ])     }          fileprivate func applyAction() {         print(#fileID, #function, #line, &quot;- &quot;)         self.buttonA.addTarget(self, action: #selector(onBtnAClicked(selder:)), for: .touchUpInside)         self.buttonB.addTarget(self, action: #selector(onBtnBClicked(selder:)), for: .touchUpInside)         self.inputTextField.addTarget(self, action: #selector(onInputChanged(sender: )), for: .editingChanged)     } }  extension InputView {     @objc func onBtnAClicked(selder: UIButton) {         print(#fileID, #function, #line, &quot;- &quot;)     }          @objc func onBtnBClicked(selder: UIButton) {         print(#fileID, #function, #line, &quot;- &quot;)     }          // MARK: - 텍스트필드 이벤트 받는법 delegate도 되지만 간단하게 selector로도 된다     @objc func onInputChanged(sender: UITextField) {         print(#fileID, #function, #line, &quot;- input: \(sender.text!)&quot;)     } }   액션을 viewController에서 받고 싶다    클로저를 활용하자.   클로저는 정의, 할당, 호출 3가지를 기억하면 된다.   // //  InputView.swift //  SwiftUILab // //  Created by 김동현 on 9/4/25. //  import UIKit   class InputView: UIView {          @IBOutlet weak var titleLabel: UILabel!          @IBOutlet weak var inputTextField: UITextField!          @IBOutlet weak var buttonA: UIButton!          @IBOutlet weak var buttonB: UIButton!          var onBtnAClicked: (() -&gt; Void)? = nil     var onBtnBClicked: ((String) -&gt; Void)? = nil          // @IBInspectable: Interface Builder에서 속성을 넣어주는 역할     // 프로퍼티 옵저버     @IBInspectable     var title: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.titleLabel.text = self.title             }         }     }          @IBInspectable     var placeHolder: String = &quot;&quot; {         didSet {             DispatchQueue.main.async {                 self.inputTextField.placeholder = self.placeHolder.isEmpty ? &quot;글자를 입력해주세요&quot; : self.placeHolder             }         }     }          /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)     /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다     override func awakeFromNib() {         super.awakeFromNib()         print(#fileID, #function, #line, &quot;- &quot;)         applyNib()         applyAction()     }          /// 코드로 InputView를 생성한다면 사용하는 생성자     override init(frame: CGRect) {         super.init(frame: frame)         print(#fileID, #function, #line, &quot;- &quot;)         applyNib() // MARK: - 이거 추가         applyAction()     }          // MARK: - 편의생성자 추가     convenience init(title: String = &quot;&quot;, placeHolder: String) {         self.init(frame: .zero)         self.titleLabel.text = title         self.inputTextField.placeholder = placeHolder     }          // MARK: - 버튼 세번째 방식     convenience init(title: String = &quot;&quot;,                      placeHolder: String,                      onBtnAClicked: (() -&gt; Void)? = nil,                      onBtnBClicked: ((String) -&gt; Void)? = nil     ) {         self.init(frame: .zero)         self.titleLabel.text = title         self.inputTextField.placeholder = placeHolder                  self.onBtnAClicked = onBtnAClicked         self.onBtnBClicked = onBtnBClicked     }          required init?(coder: NSCoder) {         super.init(coder: coder) // 스토리보드용         print(#fileID, #function, #line, &quot;- &quot;)         /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용     }          fileprivate func applyNib() {         print(#fileID, #function, #line, &quot;- &quot;)         let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;         let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                  // nib의 첫 요소를 UIView 형태로 가져오겠다         guard let view = nib?.first as? UIView else { return }                  // autoLauout         addSubview(view)         view.translatesAutoresizingMaskIntoConstraints = false         NSLayoutConstraint.activate([             view.topAnchor.constraint(equalTo: self.topAnchor),             view.leadingAnchor.constraint(equalTo: self.leadingAnchor),             view.trailingAnchor.constraint(equalTo: self.trailingAnchor),             view.bottomAnchor.constraint(equalTo: self.bottomAnchor),         ])     }          fileprivate func applyAction() {         print(#fileID, #function, #line, &quot;- &quot;)         self.buttonA.addTarget(self, action: #selector(onBtnAClicked(sender:)), for: .touchUpInside)         self.buttonB.addTarget(self, action: #selector(onBtnBClicked(sender:)), for: .touchUpInside)         self.inputTextField.addTarget(self, action: #selector(onInputChanged(sender: )), for: .editingChanged)     }              func resetAction(target: Any?,                      aBtnAction: Selector,                      bBtnAction: Selector,                      inputChangeAction: Selector     ) {         // 이전 걸려있던 액션 지우기         print(#fileID, #function, #line, &quot;- &quot;)         self.buttonA.removeTarget(self, action: #selector(onBtnAClicked(sender:)), for: .touchUpInside)         self.buttonB.removeTarget(self, action: #selector(onBtnBClicked(sender:)), for: .touchUpInside)         self.inputTextField.removeTarget(self, action: #selector(onInputChanged(sender: )), for: .editingChanged)         // 새 액션 넣기         self.buttonA.addTarget(target, action: aBtnAction, for: .touchUpInside)         self.buttonB.addTarget(target, action: bBtnAction, for: .touchUpInside)         self.inputTextField.addTarget(target, action: inputChangeAction, for: .editingChanged)     } }  extension InputView {     @objc func onBtnAClicked(sender: UIButton) {         print(#fileID, #function, #line, &quot;- &quot;)         onBtnAClicked?()     }          @objc func onBtnBClicked(sender: UIButton) {         print(#fileID, #function, #line, &quot;- &quot;)         guard let userInput = self.inputTextField.text else { return }         onBtnBClicked?(userInput)     }          // MARK: - 텍스트필드 이벤트 받는법 delegate도 되지만 간단하게 selector로도 된다     @objc func onInputChanged(sender: UITextField) {         print(#fileID, #function, #line, &quot;- input: \(sender.text!)&quot;)     } }   import UIKit  class CustomStoryboardViewController: UIViewController {          @IBOutlet weak var secondInputView: InputView!          override func loadView() {         super.loadView()         print(#fileID, #function, #line, &quot;- &quot;)         // let thirdInputView = InputView(title: &quot;편의생성자 타이틀&quot;, placeHolder: &quot;편의생성자 홀더&quot;)                  // MARK: - 4번 방식(생성자로 버튼 등록)         let thirdInputView = InputView(title: &quot;편의생성자 타이틀&quot;,                                        placeHolder: &quot;편의생성자 홀더&quot;,                                        onBtnAClicked: { self.handleBtnACLicked() },                                        onBtnBClicked: { self.handleBtnBClicked(userInput: $0) })                           thirdInputView.translatesAutoresizingMaskIntoConstraints = false         self.view.addSubview(thirdInputView)         NSLayoutConstraint.activate([             thirdInputView.topAnchor.constraint(equalTo: secondInputView.bottomAnchor, constant: 10),             thirdInputView.leadingAnchor.constraint(equalTo: secondInputView.leadingAnchor),             thirdInputView.trailingAnchor.constraint(equalTo: secondInputView.trailingAnchor),             thirdInputView.heightAnchor.constraint(equalTo: secondInputView.heightAnchor)         ])     }          override func viewDidLoad() {                  // MARK: - 1번 방식(클로저로 버튼 등록)         secondInputView.onBtnAClicked = {             print(&quot;onBtnAClicked 실행됨&quot;)         }                  // MARK: - 2번 방식(클로저로 버튼 등록 + 클로저 파라미터 활용)         secondInputView.onBtnBClicked = {             print(&quot;onBtnBClicked 실행됨 / userInput: \($0)&quot;)         }                  // MARK: - 3번 방식(메서드로 버튼 등록)         // 핸들링을 InputView가 아닌 VC에서 가능해진다         secondInputView.resetAction(target: self,                                     aBtnAction: #selector(onBtnAClicked(sender: )),                                     bBtnAction: #selector(onBtnBClicked(sender: )),                                     inputChangeAction: #selector(onInputChanged(sender: )))     } }   extension CustomStoryboardViewController {     @objc func onBtnAClicked(sender: UIButton) {         print(#fileID, #function, #line, &quot;- &quot;)     }          @objc func onBtnBClicked(sender: UIButton) {         print(#fileID, #function, #line, &quot;- &quot;)     }          // MARK: - 텍스트필드 이벤트 받는법 delegate도 되지만 간단하게 selector로도 된다     @objc func onInputChanged(sender: UITextField) {         print(#fileID, #function, #line, &quot;- input: \(sender.text!)&quot;)     } }  extension CustomStoryboardViewController {     private func handleBtnACLicked() {         print(&quot;onBtnAClicked&quot;)     }          private func handleBtnBClicked(userInput: String) {         print(&quot;onBtnBClicked&quot;)         print(&quot;onBtnBClicked!!!: \(userInput)&quot;)     } }   정리    UIKit으로 커스텀 뷰 만들 때 컴포넌트 단위로 구현하는게 편하다.   코드로만 만드는 방식도 있지만, 특정 부분을 Xib파일로 따로 빼서 구성할 수 있다,            이떄는 연결을 View가 아니라 Files Owner에 원하는 UIView 클래스룰 연결해준다.       해당하는 Nib파일을 가져와서 Nib파일의 첫번째 뷰를 UIView 타입으로 가져오고 오토레이아웃을 한번 잡아준다.           Main 스토리보드에서 UIView를 클래스 이름 연결하면 awakeFromNib을 탄다.            커스텀으로 속성 변경할거면 @IBInspactable를 사용하면 된다.           Xib파일을 코드로 생성할때는 init(frame)을 탄다            커스텀 속성을 넣고싶으면 convenience init을 통해 매개변수를 넣어서 해결하면 된다.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-09-04T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/CustomView-customView1/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li><li class="masthead__menu-item">
+              <a href="/projects/">Projects</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[CustomView] 1. 커스텀뷰 만들기">
+    <meta itemprop="description" content="커스텀뷰 만들기우선 Storyboard에서 사진 처럼 UI를 만든다. Button을 hstack으로 묶고, label, textfield, hstack을 vstack으로 묶는다. 그리고 view를 embed하고 색성을 주고, vstack을 view로 드래그하여 상하좌우 전부 10씩 공간을 주고, 이 view를 safearea top: 10, leading: 10, horizontal center 설정을 해주었다.그리고 이 화면을 복사하고 empty라는 파일을 만들어서 파일이름을 InputView로 하고 여기에 붙여넣는다 이 파일을 nib 파일(인터페이스 빌더)이라고 부른다.그럼 InputView에서 이렇게 깨지는데 사이즈 인스펙터(삼각형) 부분에서 Layout Guides에서 Safe area 제거한다. 그리고 View를 누르고 attribute(삼각형 바로 왼쪽) 눌러서 Size를 Inferred에서 Freform으로 바꾼다. 그러면 사이즈를 편하게 조절할 수 있다.file owner에서 코드 클래스를 연결한다.// 코드 클래스import UIKitclass InputView: UIView {    /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)    /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다    override func awakeFromNib() {        super.awakeFromNib()        print(#fileID, #function, #line, &quot;- &quot;)    }        /// 코드로 InputView를 생성한다면 사용하는 생성자    override init(frame: CGRect) {        super.init(frame: frame)        print(#fileID, #function, #line, &quot;- &quot;)    }        required init?(coder: NSCoder) {        super.init(coder: coder) // 스토리보드용        /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용    }}View를 생성후 노란색 View에 드래그해서 Vertical Spacing, Leading, Trailing, Equal Height 설정을 해준다.새로 만든 뷰를 SecondInputView로 하고 option + cmd + 4하고 class를 InputView로 해준다.그리고 실행해보면 아래 awakefromnib은 탔다고 로그가 뜨지만 우리가 원하는 Nib파일과의 연결이 안되서 여전히 민트색으로 나온다. 이를 해결해보자.                  Before    After(applyNib 생성/호출)  // 로그SwiftUILab/InputView.swift init(coder:) 26 - SwiftUILab/InputView.swift awakeFromNib() 15 - import UIKit class InputView: UIView {    /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)    /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다    override func awakeFromNib() {        super.awakeFromNib()        print(#fileID, #function, #line, &quot;- &quot;)        applyNib()    }        /// 코드로 InputView를 생성한다면 사용하는 생성자    override init(frame: CGRect) {        super.init(frame: frame)        print(#fileID, #function, #line, &quot;- &quot;)    }        required init?(coder: NSCoder) {        super.init(coder: coder) // 스토리보드용        print(#fileID, #function, #line, &quot;- &quot;)        /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용    }        fileprivate func applyNib() {        print(#fileID, #function, #line, &quot;- &quot;)        let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;        let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                // nib의 첫 요소를 UIView 형태로 가져오겠다        guard let view = nib?.first as? UIView else { return }                // autoLauout        addSubview(view)        view.translatesAutoresizingMaskIntoConstraints = false        NSLayoutConstraint.activate([            view.topAnchor.constraint(equalTo: self.topAnchor),            view.leadingAnchor.constraint(equalTo: self.leadingAnchor),            view.trailingAnchor.constraint(equalTo: self.trailingAnchor),            view.bottomAnchor.constraint(equalTo: self.bottomAnchor),        ])    }}추가: 라벨, 버튼, 텍스트필드 각각 커스텀하고싶다면각각 Nib에서 InputView 코드로 드래그해주고 커스텀을 하면되는데, 코드로 해도 되지만 @IBInspactable를 활용하면 Interface Builder에서 편하게 수정할 수 있다.수정은 Main 즉 호출쪽에서 UserDefined Runtime Attributes에서 넣어주면 된다.                  파란칸 작성    실행 화면  import UIKit class InputView: UIView {        @IBOutlet weak var titleLabel: UILabel!        @IBOutlet weak var inputTextField: UITextField!        @IBOutlet weak var buttonA: UIButton!        @IBOutlet weak var buttonB: UIButton!        // @IBInspectable: Interface Builder에서 속성을 넣어주는 역할    // 프로퍼티 옵저버    @IBInspectable    var title: String = &quot;&quot; {        didSet {            DispatchQueue.main.async {                self.titleLabel.text = self.title            }        }    }        @IBInspectable    var placeHolder: String = &quot;&quot; {        didSet {            DispatchQueue.main.async {                self.inputTextField.placeholder = self.placeHolder.isEmpty ? &quot;글자를 입력해주세요&quot; : self.placeHolder            }        }    }        /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)    /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다    override func awakeFromNib() {        super.awakeFromNib()        print(#fileID, #function, #line, &quot;- &quot;)        applyNib()    }        /// 코드로 InputView를 생성한다면 사용하는 생성자    override init(frame: CGRect) {        super.init(frame: frame)        print(#fileID, #function, #line, &quot;- &quot;)    }        required init?(coder: NSCoder) {        super.init(coder: coder) // 스토리보드용        print(#fileID, #function, #line, &quot;- &quot;)        /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용    }        fileprivate func applyNib() {        print(#fileID, #function, #line, &quot;- &quot;)        let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;        let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                // nib의 첫 요소를 UIView 형태로 가져오겠다        guard let view = nib?.first as? UIView else { return }                // autoLauout        addSubview(view)        view.translatesAutoresizingMaskIntoConstraints = false        NSLayoutConstraint.activate([            view.topAnchor.constraint(equalTo: self.topAnchor),            view.leadingAnchor.constraint(equalTo: self.leadingAnchor),            view.trailingAnchor.constraint(equalTo: self.trailingAnchor),            view.bottomAnchor.constraint(equalTo: self.bottomAnchor),        ])    }}코드로 UI 만드는법import UIKitclass CustomStoryboardViewController: UIViewController {        @IBOutlet weak var secondInputView: InputView!        override func loadView() {        super.loadView()        print(#fileID, #function, #line, &quot;- &quot;)        let thirdInputView = InputView(title: &quot;편의생성자 타이틀&quot;, placeHolder: &quot;편의생성자 홀더&quot;)        thirdInputView.translatesAutoresizingMaskIntoConstraints = false        self.view.addSubview(thirdInputView)        NSLayoutConstraint.activate([            thirdInputView.topAnchor.constraint(equalTo: secondInputView.bottomAnchor, constant: 10),            thirdInputView.leadingAnchor.constraint(equalTo: secondInputView.leadingAnchor),            thirdInputView.trailingAnchor.constraint(equalTo: secondInputView.trailingAnchor),            thirdInputView.heightAnchor.constraint(equalTo: secondInputView.heightAnchor)        ])    }        override func viewDidLoad() {            }}// override init(frame: CGRect)에 applyNib 호출 추가, 편의생성자 추가하여 뷰 생성시 title, placeHolder 파라미터 받기import UIKit class InputView: UIView {        @IBOutlet weak var titleLabel: UILabel!        @IBOutlet weak var inputTextField: UITextField!        @IBOutlet weak var buttonA: UIButton!        @IBOutlet weak var buttonB: UIButton!        // @IBInspectable: Interface Builder에서 속성을 넣어주는 역할    // 프로퍼티 옵저버    @IBInspectable    var title: String = &quot;&quot; {        didSet {            DispatchQueue.main.async {                self.titleLabel.text = self.title            }        }    }        @IBInspectable    var placeHolder: String = &quot;&quot; {        didSet {            DispatchQueue.main.async {                self.inputTextField.placeholder = self.placeHolder.isEmpty ? &quot;글자를 입력해주세요&quot; : self.placeHolder            }        }    }        /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)    /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다    override func awakeFromNib() {        super.awakeFromNib()        print(#fileID, #function, #line, &quot;- &quot;)        applyNib()    }        /// 코드로 InputView를 생성한다면 사용하는 생성자    override init(frame: CGRect) {        super.init(frame: frame)        print(#fileID, #function, #line, &quot;- &quot;)        applyNib() // MARK: - 이거 추가    }        // MARK: - 편의생성자 추가    convenience init(title: String = &quot;&quot;, placeHolder: String) {        self.init(frame: .zero)        self.titleLabel.text = title        self.inputTextField.placeholder = placeHolder    }        required init?(coder: NSCoder) {        super.init(coder: coder) // 스토리보드용        print(#fileID, #function, #line, &quot;- &quot;)        /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용    }        fileprivate func applyNib() {        print(#fileID, #function, #line, &quot;- &quot;)        let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;        let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                // nib의 첫 요소를 UIView 형태로 가져오겠다        guard let view = nib?.first as? UIView else { return }                // autoLauout        addSubview(view)        view.translatesAutoresizingMaskIntoConstraints = false        NSLayoutConstraint.activate([            view.topAnchor.constraint(equalTo: self.topAnchor),            view.leadingAnchor.constraint(equalTo: self.leadingAnchor),            view.trailingAnchor.constraint(equalTo: self.trailingAnchor),            view.bottomAnchor.constraint(equalTo: self.bottomAnchor),        ])    }}버튼 연결 추가법applyNib 메서드를 추가하면된다.import UIKit class InputView: UIView {        @IBOutlet weak var titleLabel: UILabel!        @IBOutlet weak var inputTextField: UITextField!        @IBOutlet weak var buttonA: UIButton!        @IBOutlet weak var buttonB: UIButton!        // @IBInspectable: Interface Builder에서 속성을 넣어주는 역할    // 프로퍼티 옵저버    @IBInspectable    var title: String = &quot;&quot; {        didSet {            DispatchQueue.main.async {                self.titleLabel.text = self.title            }        }    }        @IBInspectable    var placeHolder: String = &quot;&quot; {        didSet {            DispatchQueue.main.async {                self.inputTextField.placeholder = self.placeHolder.isEmpty ? &quot;글자를 입력해주세요&quot; : self.placeHolder            }        }    }        /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)    /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다    override func awakeFromNib() {        super.awakeFromNib()        print(#fileID, #function, #line, &quot;- &quot;)        applyNib()        applyAction()    }        /// 코드로 InputView를 생성한다면 사용하는 생성자    override init(frame: CGRect) {        super.init(frame: frame)        print(#fileID, #function, #line, &quot;- &quot;)        applyNib() // MARK: - 이거 추가        applyAction()    }        // MARK: - 편의생성자 추가    convenience init(title: String = &quot;&quot;, placeHolder: String) {        self.init(frame: .zero)        self.titleLabel.text = title        self.inputTextField.placeholder = placeHolder    }        required init?(coder: NSCoder) {        super.init(coder: coder) // 스토리보드용        print(#fileID, #function, #line, &quot;- &quot;)        /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용    }        fileprivate func applyNib() {        print(#fileID, #function, #line, &quot;- &quot;)        let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;        let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                // nib의 첫 요소를 UIView 형태로 가져오겠다        guard let view = nib?.first as? UIView else { return }                // autoLauout        addSubview(view)        view.translatesAutoresizingMaskIntoConstraints = false        NSLayoutConstraint.activate([            view.topAnchor.constraint(equalTo: self.topAnchor),            view.leadingAnchor.constraint(equalTo: self.leadingAnchor),            view.trailingAnchor.constraint(equalTo: self.trailingAnchor),            view.bottomAnchor.constraint(equalTo: self.bottomAnchor),        ])    }        fileprivate func applyAction() {        print(#fileID, #function, #line, &quot;- &quot;)        self.buttonA.addTarget(self, action: #selector(onBtnAClicked(selder:)), for: .touchUpInside)        self.buttonB.addTarget(self, action: #selector(onBtnBClicked(selder:)), for: .touchUpInside)    }}extension InputView {    @objc func onBtnAClicked(selder: UIButton) {        print(#fileID, #function, #line, &quot;- &quot;)    }        @objc func onBtnBClicked(selder: UIButton) {        print(#fileID, #function, #line, &quot;- &quot;)    }}텍스트필드 연결 추가법import UIKit class InputView: UIView {        @IBOutlet weak var titleLabel: UILabel!        @IBOutlet weak var inputTextField: UITextField!        @IBOutlet weak var buttonA: UIButton!        @IBOutlet weak var buttonB: UIButton!        // @IBInspectable: Interface Builder에서 속성을 넣어주는 역할    // 프로퍼티 옵저버    @IBInspectable    var title: String = &quot;&quot; {        didSet {            DispatchQueue.main.async {                self.titleLabel.text = self.title            }        }    }        @IBInspectable    var placeHolder: String = &quot;&quot; {        didSet {            DispatchQueue.main.async {                self.inputTextField.placeholder = self.placeHolder.isEmpty ? &quot;글자를 입력해주세요&quot; : self.placeHolder            }        }    }        /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)    /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다    override func awakeFromNib() {        super.awakeFromNib()        print(#fileID, #function, #line, &quot;- &quot;)        applyNib()        applyAction()    }        /// 코드로 InputView를 생성한다면 사용하는 생성자    override init(frame: CGRect) {        super.init(frame: frame)        print(#fileID, #function, #line, &quot;- &quot;)        applyNib() // MARK: - 이거 추가        applyAction()    }        // MARK: - 편의생성자 추가    convenience init(title: String = &quot;&quot;, placeHolder: String) {        self.init(frame: .zero)        self.titleLabel.text = title        self.inputTextField.placeholder = placeHolder    }        required init?(coder: NSCoder) {        super.init(coder: coder) // 스토리보드용        print(#fileID, #function, #line, &quot;- &quot;)        /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용    }        fileprivate func applyNib() {        print(#fileID, #function, #line, &quot;- &quot;)        let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;        let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                // nib의 첫 요소를 UIView 형태로 가져오겠다        guard let view = nib?.first as? UIView else { return }                // autoLauout        addSubview(view)        view.translatesAutoresizingMaskIntoConstraints = false        NSLayoutConstraint.activate([            view.topAnchor.constraint(equalTo: self.topAnchor),            view.leadingAnchor.constraint(equalTo: self.leadingAnchor),            view.trailingAnchor.constraint(equalTo: self.trailingAnchor),            view.bottomAnchor.constraint(equalTo: self.bottomAnchor),        ])    }        fileprivate func applyAction() {        print(#fileID, #function, #line, &quot;- &quot;)        self.buttonA.addTarget(self, action: #selector(onBtnAClicked(selder:)), for: .touchUpInside)        self.buttonB.addTarget(self, action: #selector(onBtnBClicked(selder:)), for: .touchUpInside)        self.inputTextField.addTarget(self, action: #selector(onInputChanged(sender: )), for: .editingChanged)    }}extension InputView {    @objc func onBtnAClicked(selder: UIButton) {        print(#fileID, #function, #line, &quot;- &quot;)    }        @objc func onBtnBClicked(selder: UIButton) {        print(#fileID, #function, #line, &quot;- &quot;)    }        // MARK: - 텍스트필드 이벤트 받는법 delegate도 되지만 간단하게 selector로도 된다    @objc func onInputChanged(sender: UITextField) {        print(#fileID, #function, #line, &quot;- input: \(sender.text!)&quot;)    }}액션을 viewController에서 받고 싶다  클로저를 활용하자.  클로저는 정의, 할당, 호출 3가지를 기억하면 된다.////  InputView.swift//  SwiftUILab////  Created by 김동현 on 9/4/25.//import UIKit class InputView: UIView {        @IBOutlet weak var titleLabel: UILabel!        @IBOutlet weak var inputTextField: UITextField!        @IBOutlet weak var buttonA: UIButton!        @IBOutlet weak var buttonB: UIButton!        var onBtnAClicked: (() -&gt; Void)? = nil    var onBtnBClicked: ((String) -&gt; Void)? = nil        // @IBInspectable: Interface Builder에서 속성을 넣어주는 역할    // 프로퍼티 옵저버    @IBInspectable    var title: String = &quot;&quot; {        didSet {            DispatchQueue.main.async {                self.titleLabel.text = self.title            }        }    }        @IBInspectable    var placeHolder: String = &quot;&quot; {        didSet {            DispatchQueue.main.async {                self.inputTextField.placeholder = self.placeHolder.isEmpty ? &quot;글자를 입력해주세요&quot; : self.placeHolder            }        }    }        /// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)    /// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다    override func awakeFromNib() {        super.awakeFromNib()        print(#fileID, #function, #line, &quot;- &quot;)        applyNib()        applyAction()    }        /// 코드로 InputView를 생성한다면 사용하는 생성자    override init(frame: CGRect) {        super.init(frame: frame)        print(#fileID, #function, #line, &quot;- &quot;)        applyNib() // MARK: - 이거 추가        applyAction()    }        // MARK: - 편의생성자 추가    convenience init(title: String = &quot;&quot;, placeHolder: String) {        self.init(frame: .zero)        self.titleLabel.text = title        self.inputTextField.placeholder = placeHolder    }        // MARK: - 버튼 세번째 방식    convenience init(title: String = &quot;&quot;,                     placeHolder: String,                     onBtnAClicked: (() -&gt; Void)? = nil,                     onBtnBClicked: ((String) -&gt; Void)? = nil    ) {        self.init(frame: .zero)        self.titleLabel.text = title        self.inputTextField.placeholder = placeHolder                self.onBtnAClicked = onBtnAClicked        self.onBtnBClicked = onBtnBClicked    }        required init?(coder: NSCoder) {        super.init(coder: coder) // 스토리보드용        print(#fileID, #function, #line, &quot;- &quot;)        /// fatalError(&quot;init(coder:) has not been implemented&quot;) // 코드용    }        fileprivate func applyNib() {        print(#fileID, #function, #line, &quot;- &quot;)        let nibName = String(describing: Self.self)     // 나의 타입을 가져온다 &quot;InputView&quot;        let nib = Bundle.main.loadNibNamed(nibName, owner: self)  // Bundle에서 Nib파일을 불러오겠다, 주인은 self                // nib의 첫 요소를 UIView 형태로 가져오겠다        guard let view = nib?.first as? UIView else { return }                // autoLauout        addSubview(view)        view.translatesAutoresizingMaskIntoConstraints = false        NSLayoutConstraint.activate([            view.topAnchor.constraint(equalTo: self.topAnchor),            view.leadingAnchor.constraint(equalTo: self.leadingAnchor),            view.trailingAnchor.constraint(equalTo: self.trailingAnchor),            view.bottomAnchor.constraint(equalTo: self.bottomAnchor),        ])    }        fileprivate func applyAction() {        print(#fileID, #function, #line, &quot;- &quot;)        self.buttonA.addTarget(self, action: #selector(onBtnAClicked(sender:)), for: .touchUpInside)        self.buttonB.addTarget(self, action: #selector(onBtnBClicked(sender:)), for: .touchUpInside)        self.inputTextField.addTarget(self, action: #selector(onInputChanged(sender: )), for: .editingChanged)    }           func resetAction(target: Any?,                     aBtnAction: Selector,                     bBtnAction: Selector,                     inputChangeAction: Selector    ) {        // 이전 걸려있던 액션 지우기        print(#fileID, #function, #line, &quot;- &quot;)        self.buttonA.removeTarget(self, action: #selector(onBtnAClicked(sender:)), for: .touchUpInside)        self.buttonB.removeTarget(self, action: #selector(onBtnBClicked(sender:)), for: .touchUpInside)        self.inputTextField.removeTarget(self, action: #selector(onInputChanged(sender: )), for: .editingChanged)        // 새 액션 넣기        self.buttonA.addTarget(target, action: aBtnAction, for: .touchUpInside)        self.buttonB.addTarget(target, action: bBtnAction, for: .touchUpInside)        self.inputTextField.addTarget(target, action: inputChangeAction, for: .editingChanged)    }}extension InputView {    @objc func onBtnAClicked(sender: UIButton) {        print(#fileID, #function, #line, &quot;- &quot;)        onBtnAClicked?()    }        @objc func onBtnBClicked(sender: UIButton) {        print(#fileID, #function, #line, &quot;- &quot;)        guard let userInput = self.inputTextField.text else { return }        onBtnBClicked?(userInput)    }        // MARK: - 텍스트필드 이벤트 받는법 delegate도 되지만 간단하게 selector로도 된다    @objc func onInputChanged(sender: UITextField) {        print(#fileID, #function, #line, &quot;- input: \(sender.text!)&quot;)    }}import UIKitclass CustomStoryboardViewController: UIViewController {        @IBOutlet weak var secondInputView: InputView!        override func loadView() {        super.loadView()        print(#fileID, #function, #line, &quot;- &quot;)        // let thirdInputView = InputView(title: &quot;편의생성자 타이틀&quot;, placeHolder: &quot;편의생성자 홀더&quot;)                // MARK: - 4번 방식(생성자로 버튼 등록)        let thirdInputView = InputView(title: &quot;편의생성자 타이틀&quot;,                                       placeHolder: &quot;편의생성자 홀더&quot;,                                       onBtnAClicked: { self.handleBtnACLicked() },                                       onBtnBClicked: { self.handleBtnBClicked(userInput: $0) })                        thirdInputView.translatesAutoresizingMaskIntoConstraints = false        self.view.addSubview(thirdInputView)        NSLayoutConstraint.activate([            thirdInputView.topAnchor.constraint(equalTo: secondInputView.bottomAnchor, constant: 10),            thirdInputView.leadingAnchor.constraint(equalTo: secondInputView.leadingAnchor),            thirdInputView.trailingAnchor.constraint(equalTo: secondInputView.trailingAnchor),            thirdInputView.heightAnchor.constraint(equalTo: secondInputView.heightAnchor)        ])    }        override func viewDidLoad() {                // MARK: - 1번 방식(클로저로 버튼 등록)        secondInputView.onBtnAClicked = {            print(&quot;onBtnAClicked 실행됨&quot;)        }                // MARK: - 2번 방식(클로저로 버튼 등록 + 클로저 파라미터 활용)        secondInputView.onBtnBClicked = {            print(&quot;onBtnBClicked 실행됨 / userInput: \($0)&quot;)        }                // MARK: - 3번 방식(메서드로 버튼 등록)        // 핸들링을 InputView가 아닌 VC에서 가능해진다        secondInputView.resetAction(target: self,                                    aBtnAction: #selector(onBtnAClicked(sender: )),                                    bBtnAction: #selector(onBtnBClicked(sender: )),                                    inputChangeAction: #selector(onInputChanged(sender: )))    }}extension CustomStoryboardViewController {    @objc func onBtnAClicked(sender: UIButton) {        print(#fileID, #function, #line, &quot;- &quot;)    }        @objc func onBtnBClicked(sender: UIButton) {        print(#fileID, #function, #line, &quot;- &quot;)    }        // MARK: - 텍스트필드 이벤트 받는법 delegate도 되지만 간단하게 selector로도 된다    @objc func onInputChanged(sender: UITextField) {        print(#fileID, #function, #line, &quot;- input: \(sender.text!)&quot;)    }}extension CustomStoryboardViewController {    private func handleBtnACLicked() {        print(&quot;onBtnAClicked&quot;)    }        private func handleBtnBClicked(userInput: String) {        print(&quot;onBtnBClicked&quot;)        print(&quot;onBtnBClicked!!!: \(userInput)&quot;)    }}정리  UIKit으로 커스텀 뷰 만들 때 컴포넌트 단위로 구현하는게 편하다.  코드로만 만드는 방식도 있지만, 특정 부분을 Xib파일로 따로 빼서 구성할 수 있다,          이떄는 연결을 View가 아니라 Files Owner에 원하는 UIView 클래스룰 연결해준다.      해당하는 Nib파일을 가져와서 Nib파일의 첫번째 뷰를 UIView 타입으로 가져오고 오토레이아웃을 한번 잡아준다.        Main 스토리보드에서 UIView를 클래스 이름 연결하면 awakeFromNib을 탄다.          커스텀으로 속성 변경할거면 @IBInspactable를 사용하면 된다.        Xib파일을 코드로 생성할때는 init(frame)을 탄다          커스텀 속성을 넣고싶으면 convenience init을 통해 매개변수를 넣어서 해결하면 된다.      ">
+    <meta itemprop="datePublished" content="2025-09-04T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/CustomView-customView1/" class="u-url" itemprop="url">[CustomView] 1. 커스텀뷰 만들기
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-09-04T00:00:00+00:00">September 4, 2025</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
+
+<h2 id="커스텀뷰-만들기">커스텀뷰 만들기</h2>
+<p><img src="/assets/img/2025-09-04-%5BCustomView%5D-customView1/image-20250904153909426.png" alt="이미지" width="30%" /><br />
+우선 Storyboard에서 사진 처럼 UI를 만든다. Button을 hstack으로 묶고, label, textfield, hstack을 vstack으로 묶는다. 그리고 view를 embed하고 색성을 주고, vstack을 view로 드래그하여 상하좌우 전부 10씩 공간을 주고, 이 view를 safearea top: 10, leading: 10, horizontal center 설정을 해주었다.</p>
+
+<p>그리고 이 화면을 복사하고 empty라는 파일을 만들어서 파일이름을 InputView로 하고 여기에 붙여넣는다 이 파일을 nib 파일(인터페이스 빌더)이라고 부른다.</p>
+
+<p><img src="/assets/img/2025-09-04-%5BCustomView%5D-customView1/image-20250904154758361.png" alt="이미지" width="30%" /></p>
+
+<p><img src="/assets/img/2025-09-04-%5BCustomView%5D-customView1/image-20250904155040418.png" alt="이미지" width="30%" /></p>
+
+<p>그럼 InputView에서 이렇게 깨지는데 사이즈 인스펙터(삼각형) 부분에서 Layout Guides에서 Safe area 제거한다. 그리고 View를 누르고 attribute(삼각형 바로 왼쪽) 눌러서 Size를 Inferred에서 Freform으로 바꾼다. 그러면 사이즈를 편하게 조절할 수 있다.</p>
+
+<p><img src="/assets/img/2025-09-04-%5BCustomView%5D-customView1/image-20250904155715893.png" alt="이미지" width="70%" /><br />
+file owner에서 코드 클래스를 연결한다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 코드 클래스</span>
+<span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">class</span> <span class="kt">InputView</span><span class="p">:</span> <span class="kt">UIView</span> <span class="p">{</span>
+    <span class="c1">/// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)</span>
+    <span class="c1">/// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">awakeFromNib</span><span class="p">()</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 코드로 InputView를 생성한다면 사용하는 생성자</span>
+    <span class="k">override</span> <span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="kt">CGRect</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="n">frame</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">required</span> <span class="nf">init</span><span class="p">?(</span><span class="nv">coder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">coder</span><span class="p">:</span> <span class="n">coder</span><span class="p">)</span> <span class="c1">// 스토리보드용</span>
+        <span class="c1">/// fatalError("init(coder:) has not been implemented") // 코드용</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/2025-09-04-%5BCustomView%5D-customView1/image-20250904160046690.png" alt="이미지" width="30%" /><br />
+View를 생성후 노란색 View에 드래그해서 Vertical Spacing, Leading, Trailing, Equal Height 설정을 해준다.</p>
+
+<p><img src="/assets/img/2025-09-04-%5BCustomView%5D-customView1/image-20250904160335271.png" alt="이미지" width="30%" /><br />
+새로 만든 뷰를 SecondInputView로 하고 option + cmd + 4하고 class를 InputView로 해준다.<br />
+그리고 실행해보면 아래 awakefromnib은 탔다고 로그가 뜨지만 우리가 원하는 Nib파일과의 연결이 안되서 여전히 민트색으로 나온다. <br />
+이를 해결해보자.</p>
+
+<table>
+  <tr>
+    <td><img src="/assets/img/2025-09-04-%5BCustomView%5D-customView1/image-20250904161610102.png" alt="Before" width="90%" /></td>
+    <td><img src="/assets/img/2025-09-04-%5BCustomView%5D-customView1/image-20250904162604822.png" alt="After" width="80%" /></td>
+  </tr>
+  <tr>
+    <td style="text-align:center;">Before</td>
+    <td style="text-align:center;">After(applyNib 생성/호출)</td>
+  </tr>
+</table>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 로그</span>
+<span class="kt">SwiftUILab</span><span class="o">/</span><span class="kt">InputView</span><span class="o">.</span><span class="n">swift</span> <span class="nf">init</span><span class="p">(</span><span class="nv">coder</span><span class="p">:)</span> <span class="mi">26</span> <span class="o">-</span> 
+<span class="kt">SwiftUILab</span><span class="o">/</span><span class="kt">InputView</span><span class="o">.</span><span class="n">swift</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="mi">15</span> <span class="o">-</span> 
+</code></pre></div></div>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+ 
+<span class="kd">class</span> <span class="kt">InputView</span><span class="p">:</span> <span class="kt">UIView</span> <span class="p">{</span>
+    <span class="c1">/// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)</span>
+    <span class="c1">/// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">awakeFromNib</span><span class="p">()</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="nf">applyNib</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 코드로 InputView를 생성한다면 사용하는 생성자</span>
+    <span class="k">override</span> <span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="kt">CGRect</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="n">frame</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">required</span> <span class="nf">init</span><span class="p">?(</span><span class="nv">coder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">coder</span><span class="p">:</span> <span class="n">coder</span><span class="p">)</span> <span class="c1">// 스토리보드용</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="c1">/// fatalError("init(coder:) has not been implemented") // 코드용</span>
+    <span class="p">}</span>
+    
+    <span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">applyNib</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="k">let</span> <span class="nv">nibName</span> <span class="o">=</span> <span class="kt">String</span><span class="p">(</span><span class="nv">describing</span><span class="p">:</span> <span class="k">Self</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>     <span class="c1">// 나의 타입을 가져온다 "InputView"</span>
+        <span class="k">let</span> <span class="nv">nib</span> <span class="o">=</span> <span class="kt">Bundle</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="nf">loadNibNamed</span><span class="p">(</span><span class="n">nibName</span><span class="p">,</span> <span class="nv">owner</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span>  <span class="c1">// Bundle에서 Nib파일을 불러오겠다, 주인은 self</span>
+        
+        <span class="c1">// nib의 첫 요소를 UIView 형태로 가져오겠다</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="n">nib</span><span class="p">?</span><span class="o">.</span><span class="n">first</span> <span class="k">as?</span> <span class="kt">UIView</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+        
+        <span class="c1">// autoLauout</span>
+        <span class="nf">addSubview</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">),</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<h2 id="추가-라벨-버튼-텍스트필드-각각-커스텀하고싶다면">추가: 라벨, 버튼, 텍스트필드 각각 커스텀하고싶다면</h2>
+<p>각각 Nib에서 InputView 코드로 드래그해주고 커스텀을 하면되는데, 코드로 해도 되지만 <br />
+@IBInspactable를 활용하면 Interface Builder에서 편하게 수정할 수 있다.<br />
+수정은 Main 즉 호출쪽에서 UserDefined Runtime Attributes에서 넣어주면 된다.</p>
+
+<table>
+  <tr>
+    <td><img src="/assets/img/2025-09-04-%5BCustomView%5D-customView1/image-20250904164204030.png" alt="Before" width="80%" /></td>
+    <td><img src="/assets/img/2025-09-04-%5BCustomView%5D-customView1/image-20250904164312431.png" alt="After" width="80%" /></td>
+  </tr>
+  <tr>
+    <td style="text-align:center;">파란칸 작성</td>
+    <td style="text-align:center;">실행 화면</td>
+  </tr>
+</table>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+ 
+<span class="kd">class</span> <span class="kt">InputView</span><span class="p">:</span> <span class="kt">UIView</span> <span class="p">{</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">titleLabel</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">inputTextField</span><span class="p">:</span> <span class="kt">UITextField</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">buttonA</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">buttonB</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    
+    <span class="c1">// @IBInspectable: Interface Builder에서 속성을 넣어주는 역할</span>
+    <span class="c1">// 프로퍼티 옵저버</span>
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="k">async</span> <span class="p">{</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">title</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">placeHolder</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="k">async</span> <span class="p">{</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">inputTextField</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">placeHolder</span><span class="o">.</span><span class="n">isEmpty</span> <span class="p">?</span> <span class="s">"글자를 입력해주세요"</span> <span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">placeHolder</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)</span>
+    <span class="c1">/// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">awakeFromNib</span><span class="p">()</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="nf">applyNib</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 코드로 InputView를 생성한다면 사용하는 생성자</span>
+    <span class="k">override</span> <span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="kt">CGRect</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="n">frame</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">required</span> <span class="nf">init</span><span class="p">?(</span><span class="nv">coder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">coder</span><span class="p">:</span> <span class="n">coder</span><span class="p">)</span> <span class="c1">// 스토리보드용</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="c1">/// fatalError("init(coder:) has not been implemented") // 코드용</span>
+    <span class="p">}</span>
+    
+    <span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">applyNib</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="k">let</span> <span class="nv">nibName</span> <span class="o">=</span> <span class="kt">String</span><span class="p">(</span><span class="nv">describing</span><span class="p">:</span> <span class="k">Self</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>     <span class="c1">// 나의 타입을 가져온다 "InputView"</span>
+        <span class="k">let</span> <span class="nv">nib</span> <span class="o">=</span> <span class="kt">Bundle</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="nf">loadNibNamed</span><span class="p">(</span><span class="n">nibName</span><span class="p">,</span> <span class="nv">owner</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span>  <span class="c1">// Bundle에서 Nib파일을 불러오겠다, 주인은 self</span>
+        
+        <span class="c1">// nib의 첫 요소를 UIView 형태로 가져오겠다</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="n">nib</span><span class="p">?</span><span class="o">.</span><span class="n">first</span> <span class="k">as?</span> <span class="kt">UIView</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+        
+        <span class="c1">// autoLauout</span>
+        <span class="nf">addSubview</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">),</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="코드로-ui-만드는법">코드로 UI 만드는법</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">class</span> <span class="kt">CustomStoryboardViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">secondInputView</span><span class="p">:</span> <span class="kt">InputView</span><span class="o">!</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">loadView</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">loadView</span><span class="p">()</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="k">let</span> <span class="nv">thirdInputView</span> <span class="o">=</span> <span class="kt">InputView</span><span class="p">(</span><span class="nv">title</span><span class="p">:</span> <span class="s">"편의생성자 타이틀"</span><span class="p">,</span> <span class="nv">placeHolder</span><span class="p">:</span> <span class="s">"편의생성자 홀더"</span><span class="p">)</span>
+        <span class="n">thirdInputView</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="n">thirdInputView</span><span class="p">)</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">thirdInputView</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">secondInputView</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">10</span><span class="p">),</span>
+            <span class="n">thirdInputView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">secondInputView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">),</span>
+            <span class="n">thirdInputView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">secondInputView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">),</span>
+            <span class="n">thirdInputView</span><span class="o">.</span><span class="n">heightAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">secondInputView</span><span class="o">.</span><span class="n">heightAnchor</span><span class="p">)</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// override init(frame: CGRect)에 applyNib 호출 추가, 편의생성자 추가하여 뷰 생성시 title, placeHolder 파라미터 받기</span>
+<span class="kd">import</span> <span class="kt">UIKit</span>
+ 
+<span class="kd">class</span> <span class="kt">InputView</span><span class="p">:</span> <span class="kt">UIView</span> <span class="p">{</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">titleLabel</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">inputTextField</span><span class="p">:</span> <span class="kt">UITextField</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">buttonA</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">buttonB</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    
+    <span class="c1">// @IBInspectable: Interface Builder에서 속성을 넣어주는 역할</span>
+    <span class="c1">// 프로퍼티 옵저버</span>
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="k">async</span> <span class="p">{</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">title</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">placeHolder</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="k">async</span> <span class="p">{</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">inputTextField</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">placeHolder</span><span class="o">.</span><span class="n">isEmpty</span> <span class="p">?</span> <span class="s">"글자를 입력해주세요"</span> <span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">placeHolder</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)</span>
+    <span class="c1">/// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">awakeFromNib</span><span class="p">()</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="nf">applyNib</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 코드로 InputView를 생성한다면 사용하는 생성자</span>
+    <span class="k">override</span> <span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="kt">CGRect</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="n">frame</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="nf">applyNib</span><span class="p">()</span> <span class="c1">// MARK: - 이거 추가</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - 편의생성자 추가</span>
+    <span class="kd">convenience</span> <span class="nf">init</span><span class="p">(</span><span class="nv">title</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span><span class="p">,</span> <span class="nv">placeHolder</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="o">.</span><span class="n">zero</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">inputTextField</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">=</span> <span class="n">placeHolder</span>
+    <span class="p">}</span>
+    
+    <span class="kd">required</span> <span class="nf">init</span><span class="p">?(</span><span class="nv">coder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">coder</span><span class="p">:</span> <span class="n">coder</span><span class="p">)</span> <span class="c1">// 스토리보드용</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="c1">/// fatalError("init(coder:) has not been implemented") // 코드용</span>
+    <span class="p">}</span>
+    
+    <span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">applyNib</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="k">let</span> <span class="nv">nibName</span> <span class="o">=</span> <span class="kt">String</span><span class="p">(</span><span class="nv">describing</span><span class="p">:</span> <span class="k">Self</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>     <span class="c1">// 나의 타입을 가져온다 "InputView"</span>
+        <span class="k">let</span> <span class="nv">nib</span> <span class="o">=</span> <span class="kt">Bundle</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="nf">loadNibNamed</span><span class="p">(</span><span class="n">nibName</span><span class="p">,</span> <span class="nv">owner</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span>  <span class="c1">// Bundle에서 Nib파일을 불러오겠다, 주인은 self</span>
+        
+        <span class="c1">// nib의 첫 요소를 UIView 형태로 가져오겠다</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="n">nib</span><span class="p">?</span><span class="o">.</span><span class="n">first</span> <span class="k">as?</span> <span class="kt">UIView</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+        
+        <span class="c1">// autoLauout</span>
+        <span class="nf">addSubview</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">),</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="버튼-연결-추가법">버튼 연결 추가법</h2>
+<p>applyNib 메서드를 추가하면된다.</p>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+ 
+<span class="kd">class</span> <span class="kt">InputView</span><span class="p">:</span> <span class="kt">UIView</span> <span class="p">{</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">titleLabel</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">inputTextField</span><span class="p">:</span> <span class="kt">UITextField</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">buttonA</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">buttonB</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    
+    <span class="c1">// @IBInspectable: Interface Builder에서 속성을 넣어주는 역할</span>
+    <span class="c1">// 프로퍼티 옵저버</span>
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="k">async</span> <span class="p">{</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">title</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">placeHolder</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="k">async</span> <span class="p">{</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">inputTextField</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">placeHolder</span><span class="o">.</span><span class="n">isEmpty</span> <span class="p">?</span> <span class="s">"글자를 입력해주세요"</span> <span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">placeHolder</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)</span>
+    <span class="c1">/// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">awakeFromNib</span><span class="p">()</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="nf">applyNib</span><span class="p">()</span>
+        <span class="nf">applyAction</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 코드로 InputView를 생성한다면 사용하는 생성자</span>
+    <span class="k">override</span> <span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="kt">CGRect</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="n">frame</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="nf">applyNib</span><span class="p">()</span> <span class="c1">// MARK: - 이거 추가</span>
+        <span class="nf">applyAction</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - 편의생성자 추가</span>
+    <span class="kd">convenience</span> <span class="nf">init</span><span class="p">(</span><span class="nv">title</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span><span class="p">,</span> <span class="nv">placeHolder</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="o">.</span><span class="n">zero</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">inputTextField</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">=</span> <span class="n">placeHolder</span>
+    <span class="p">}</span>
+    
+    <span class="kd">required</span> <span class="nf">init</span><span class="p">?(</span><span class="nv">coder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">coder</span><span class="p">:</span> <span class="n">coder</span><span class="p">)</span> <span class="c1">// 스토리보드용</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="c1">/// fatalError("init(coder:) has not been implemented") // 코드용</span>
+    <span class="p">}</span>
+    
+    <span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">applyNib</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="k">let</span> <span class="nv">nibName</span> <span class="o">=</span> <span class="kt">String</span><span class="p">(</span><span class="nv">describing</span><span class="p">:</span> <span class="k">Self</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>     <span class="c1">// 나의 타입을 가져온다 "InputView"</span>
+        <span class="k">let</span> <span class="nv">nib</span> <span class="o">=</span> <span class="kt">Bundle</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="nf">loadNibNamed</span><span class="p">(</span><span class="n">nibName</span><span class="p">,</span> <span class="nv">owner</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span>  <span class="c1">// Bundle에서 Nib파일을 불러오겠다, 주인은 self</span>
+        
+        <span class="c1">// nib의 첫 요소를 UIView 형태로 가져오겠다</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="n">nib</span><span class="p">?</span><span class="o">.</span><span class="n">first</span> <span class="k">as?</span> <span class="kt">UIView</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+        
+        <span class="c1">// autoLauout</span>
+        <span class="nf">addSubview</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">),</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+    
+    <span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">applyAction</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">buttonA</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="nf">onBtnAClicked</span><span class="p">(</span><span class="nv">selder</span><span class="p">:)),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">buttonB</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="nf">onBtnBClicked</span><span class="p">(</span><span class="nv">selder</span><span class="p">:)),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">InputView</span> <span class="p">{</span>
+    <span class="kd">@objc</span> <span class="kd">func</span> <span class="nf">onBtnAClicked</span><span class="p">(</span><span class="nv">selder</span><span class="p">:</span> <span class="kt">UIButton</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@objc</span> <span class="kd">func</span> <span class="nf">onBtnBClicked</span><span class="p">(</span><span class="nv">selder</span><span class="p">:</span> <span class="kt">UIButton</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="텍스트필드-연결-추가법">텍스트필드 연결 추가법</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+ 
+<span class="kd">class</span> <span class="kt">InputView</span><span class="p">:</span> <span class="kt">UIView</span> <span class="p">{</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">titleLabel</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">inputTextField</span><span class="p">:</span> <span class="kt">UITextField</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">buttonA</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">buttonB</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    
+    <span class="c1">// @IBInspectable: Interface Builder에서 속성을 넣어주는 역할</span>
+    <span class="c1">// 프로퍼티 옵저버</span>
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="k">async</span> <span class="p">{</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">title</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">placeHolder</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="k">async</span> <span class="p">{</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">inputTextField</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">placeHolder</span><span class="o">.</span><span class="n">isEmpty</span> <span class="p">?</span> <span class="s">"글자를 입력해주세요"</span> <span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">placeHolder</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)</span>
+    <span class="c1">/// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">awakeFromNib</span><span class="p">()</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="nf">applyNib</span><span class="p">()</span>
+        <span class="nf">applyAction</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 코드로 InputView를 생성한다면 사용하는 생성자</span>
+    <span class="k">override</span> <span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="kt">CGRect</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="n">frame</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="nf">applyNib</span><span class="p">()</span> <span class="c1">// MARK: - 이거 추가</span>
+        <span class="nf">applyAction</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - 편의생성자 추가</span>
+    <span class="kd">convenience</span> <span class="nf">init</span><span class="p">(</span><span class="nv">title</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span><span class="p">,</span> <span class="nv">placeHolder</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="o">.</span><span class="n">zero</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">inputTextField</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">=</span> <span class="n">placeHolder</span>
+    <span class="p">}</span>
+    
+    <span class="kd">required</span> <span class="nf">init</span><span class="p">?(</span><span class="nv">coder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">coder</span><span class="p">:</span> <span class="n">coder</span><span class="p">)</span> <span class="c1">// 스토리보드용</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="c1">/// fatalError("init(coder:) has not been implemented") // 코드용</span>
+    <span class="p">}</span>
+    
+    <span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">applyNib</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="k">let</span> <span class="nv">nibName</span> <span class="o">=</span> <span class="kt">String</span><span class="p">(</span><span class="nv">describing</span><span class="p">:</span> <span class="k">Self</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>     <span class="c1">// 나의 타입을 가져온다 "InputView"</span>
+        <span class="k">let</span> <span class="nv">nib</span> <span class="o">=</span> <span class="kt">Bundle</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="nf">loadNibNamed</span><span class="p">(</span><span class="n">nibName</span><span class="p">,</span> <span class="nv">owner</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span>  <span class="c1">// Bundle에서 Nib파일을 불러오겠다, 주인은 self</span>
+        
+        <span class="c1">// nib의 첫 요소를 UIView 형태로 가져오겠다</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="n">nib</span><span class="p">?</span><span class="o">.</span><span class="n">first</span> <span class="k">as?</span> <span class="kt">UIView</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+        
+        <span class="c1">// autoLauout</span>
+        <span class="nf">addSubview</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">),</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+    
+    <span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">applyAction</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">buttonA</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="nf">onBtnAClicked</span><span class="p">(</span><span class="nv">selder</span><span class="p">:)),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">buttonB</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="nf">onBtnBClicked</span><span class="p">(</span><span class="nv">selder</span><span class="p">:)),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">inputTextField</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="nf">onInputChanged</span><span class="p">(</span><span class="nv">sender</span><span class="p">:</span> <span class="p">)),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">editingChanged</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">InputView</span> <span class="p">{</span>
+    <span class="kd">@objc</span> <span class="kd">func</span> <span class="nf">onBtnAClicked</span><span class="p">(</span><span class="nv">selder</span><span class="p">:</span> <span class="kt">UIButton</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@objc</span> <span class="kd">func</span> <span class="nf">onBtnBClicked</span><span class="p">(</span><span class="nv">selder</span><span class="p">:</span> <span class="kt">UIButton</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - 텍스트필드 이벤트 받는법 delegate도 되지만 간단하게 selector로도 된다</span>
+    <span class="kd">@objc</span> <span class="kd">func</span> <span class="nf">onInputChanged</span><span class="p">(</span><span class="nv">sender</span><span class="p">:</span> <span class="kt">UITextField</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- input: </span><span class="se">\(</span><span class="n">sender</span><span class="o">.</span><span class="n">text</span><span class="o">!</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="액션을-viewcontroller에서-받고-싶다">액션을 viewController에서 받고 싶다</h2>
+<ul>
+  <li>클로저를 활용하자.</li>
+  <li>클로저는 정의, 할당, 호출 3가지를 기억하면 된다.</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//</span>
+<span class="c1">//  InputView.swift</span>
+<span class="c1">//  SwiftUILab</span>
+<span class="c1">//</span>
+<span class="c1">//  Created by 김동현 on 9/4/25.</span>
+<span class="c1">//</span>
+
+<span class="kd">import</span> <span class="kt">UIKit</span>
+ 
+<span class="kd">class</span> <span class="kt">InputView</span><span class="p">:</span> <span class="kt">UIView</span> <span class="p">{</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">titleLabel</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">inputTextField</span><span class="p">:</span> <span class="kt">UITextField</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">buttonA</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">buttonB</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span>
+    
+    <span class="k">var</span> <span class="nv">onBtnAClicked</span><span class="p">:</span> <span class="p">(()</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span>
+    <span class="k">var</span> <span class="nv">onBtnBClicked</span><span class="p">:</span> <span class="p">((</span><span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span>
+    
+    <span class="c1">// @IBInspectable: Interface Builder에서 속성을 넣어주는 역할</span>
+    <span class="c1">// 프로퍼티 옵저버</span>
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="k">async</span> <span class="p">{</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">title</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@IBInspectable</span>
+    <span class="k">var</span> <span class="nv">placeHolder</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span> <span class="p">{</span>
+        <span class="k">didSet</span> <span class="p">{</span>
+            <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="k">async</span> <span class="p">{</span>
+                <span class="k">self</span><span class="o">.</span><span class="n">inputTextField</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">placeHolder</span><span class="o">.</span><span class="n">isEmpty</span> <span class="p">?</span> <span class="s">"글자를 입력해주세요"</span> <span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">placeHolder</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 인터페이스 빌더로 생성이되는 생성자(nib == interfacebuilder)</span>
+    <span class="c1">/// 스토리보드나 Nib을 통해 생성되면 이걸 사용한다</span>
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">awakeFromNib</span><span class="p">()</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="nf">applyNib</span><span class="p">()</span>
+        <span class="nf">applyAction</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">/// 코드로 InputView를 생성한다면 사용하는 생성자</span>
+    <span class="k">override</span> <span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="kt">CGRect</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="n">frame</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="nf">applyNib</span><span class="p">()</span> <span class="c1">// MARK: - 이거 추가</span>
+        <span class="nf">applyAction</span><span class="p">()</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - 편의생성자 추가</span>
+    <span class="kd">convenience</span> <span class="nf">init</span><span class="p">(</span><span class="nv">title</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span><span class="p">,</span> <span class="nv">placeHolder</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="o">.</span><span class="n">zero</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">inputTextField</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">=</span> <span class="n">placeHolder</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - 버튼 세번째 방식</span>
+    <span class="kd">convenience</span> <span class="nf">init</span><span class="p">(</span><span class="nv">title</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span><span class="p">,</span>
+                     <span class="nv">placeHolder</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span>
+                     <span class="nv">onBtnAClicked</span><span class="p">:</span> <span class="p">(()</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
+                     <span class="nv">onBtnBClicked</span><span class="p">:</span> <span class="p">((</span><span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)?</span> <span class="o">=</span> <span class="kc">nil</span>
+    <span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="o">.</span><span class="n">zero</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">titleLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">inputTextField</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">=</span> <span class="n">placeHolder</span>
+        
+        <span class="k">self</span><span class="o">.</span><span class="n">onBtnAClicked</span> <span class="o">=</span> <span class="n">onBtnAClicked</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">onBtnBClicked</span> <span class="o">=</span> <span class="n">onBtnBClicked</span>
+    <span class="p">}</span>
+    
+    <span class="kd">required</span> <span class="nf">init</span><span class="p">?(</span><span class="nv">coder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">coder</span><span class="p">:</span> <span class="n">coder</span><span class="p">)</span> <span class="c1">// 스토리보드용</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="c1">/// fatalError("init(coder:) has not been implemented") // 코드용</span>
+    <span class="p">}</span>
+    
+    <span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">applyNib</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="k">let</span> <span class="nv">nibName</span> <span class="o">=</span> <span class="kt">String</span><span class="p">(</span><span class="nv">describing</span><span class="p">:</span> <span class="k">Self</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>     <span class="c1">// 나의 타입을 가져온다 "InputView"</span>
+        <span class="k">let</span> <span class="nv">nib</span> <span class="o">=</span> <span class="kt">Bundle</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="nf">loadNibNamed</span><span class="p">(</span><span class="n">nibName</span><span class="p">,</span> <span class="nv">owner</span><span class="p">:</span> <span class="k">self</span><span class="p">)</span>  <span class="c1">// Bundle에서 Nib파일을 불러오겠다, 주인은 self</span>
+        
+        <span class="c1">// nib의 첫 요소를 UIView 형태로 가져오겠다</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="n">nib</span><span class="p">?</span><span class="o">.</span><span class="n">first</span> <span class="k">as?</span> <span class="kt">UIView</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+        
+        <span class="c1">// autoLauout</span>
+        <span class="nf">addSubview</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">topAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">),</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">),</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+    
+    <span class="kd">fileprivate</span> <span class="kd">func</span> <span class="nf">applyAction</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">buttonA</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="nf">onBtnAClicked</span><span class="p">(</span><span class="nv">sender</span><span class="p">:)),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">buttonB</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="nf">onBtnBClicked</span><span class="p">(</span><span class="nv">sender</span><span class="p">:)),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">inputTextField</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="nf">onInputChanged</span><span class="p">(</span><span class="nv">sender</span><span class="p">:</span> <span class="p">)),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">editingChanged</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+   
+    <span class="kd">func</span> <span class="nf">resetAction</span><span class="p">(</span><span class="nv">target</span><span class="p">:</span> <span class="kt">Any</span><span class="p">?,</span>
+                     <span class="nv">aBtnAction</span><span class="p">:</span> <span class="kt">Selector</span><span class="p">,</span>
+                     <span class="nv">bBtnAction</span><span class="p">:</span> <span class="kt">Selector</span><span class="p">,</span>
+                     <span class="nv">inputChangeAction</span><span class="p">:</span> <span class="kt">Selector</span>
+    <span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 이전 걸려있던 액션 지우기</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">buttonA</span><span class="o">.</span><span class="nf">removeTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="nf">onBtnAClicked</span><span class="p">(</span><span class="nv">sender</span><span class="p">:)),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">buttonB</span><span class="o">.</span><span class="nf">removeTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="nf">onBtnBClicked</span><span class="p">(</span><span class="nv">sender</span><span class="p">:)),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">inputTextField</span><span class="o">.</span><span class="nf">removeTarget</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="nf">onInputChanged</span><span class="p">(</span><span class="nv">sender</span><span class="p">:</span> <span class="p">)),</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">editingChanged</span><span class="p">)</span>
+        <span class="c1">// 새 액션 넣기</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">buttonA</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="n">aBtnAction</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">buttonB</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="n">bBtnAction</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">touchUpInside</span><span class="p">)</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">inputTextField</span><span class="o">.</span><span class="nf">addTarget</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nv">action</span><span class="p">:</span> <span class="n">inputChangeAction</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="o">.</span><span class="n">editingChanged</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">InputView</span> <span class="p">{</span>
+    <span class="kd">@objc</span> <span class="kd">func</span> <span class="nf">onBtnAClicked</span><span class="p">(</span><span class="nv">sender</span><span class="p">:</span> <span class="kt">UIButton</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="nf">onBtnAClicked</span><span class="p">?()</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@objc</span> <span class="kd">func</span> <span class="nf">onBtnBClicked</span><span class="p">(</span><span class="nv">sender</span><span class="p">:</span> <span class="kt">UIButton</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">userInput</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">inputTextField</span><span class="o">.</span><span class="n">text</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+        <span class="nf">onBtnBClicked</span><span class="p">?(</span><span class="n">userInput</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - 텍스트필드 이벤트 받는법 delegate도 되지만 간단하게 selector로도 된다</span>
+    <span class="kd">@objc</span> <span class="kd">func</span> <span class="nf">onInputChanged</span><span class="p">(</span><span class="nv">sender</span><span class="p">:</span> <span class="kt">UITextField</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- input: </span><span class="se">\(</span><span class="n">sender</span><span class="o">.</span><span class="n">text</span><span class="o">!</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">UIKit</span>
+
+<span class="kd">class</span> <span class="kt">CustomStoryboardViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    
+    <span class="kd">@IBOutlet</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">secondInputView</span><span class="p">:</span> <span class="kt">InputView</span><span class="o">!</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">loadView</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">loadView</span><span class="p">()</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+        <span class="c1">// let thirdInputView = InputView(title: "편의생성자 타이틀", placeHolder: "편의생성자 홀더")</span>
+        
+        <span class="c1">// MARK: - 4번 방식(생성자로 버튼 등록)</span>
+        <span class="k">let</span> <span class="nv">thirdInputView</span> <span class="o">=</span> <span class="kt">InputView</span><span class="p">(</span><span class="nv">title</span><span class="p">:</span> <span class="s">"편의생성자 타이틀"</span><span class="p">,</span>
+                                       <span class="nv">placeHolder</span><span class="p">:</span> <span class="s">"편의생성자 홀더"</span><span class="p">,</span>
+                                       <span class="nv">onBtnAClicked</span><span class="p">:</span> <span class="p">{</span> <span class="k">self</span><span class="o">.</span><span class="nf">handleBtnACLicked</span><span class="p">()</span> <span class="p">},</span>
+                                       <span class="nv">onBtnBClicked</span><span class="p">:</span> <span class="p">{</span> <span class="k">self</span><span class="o">.</span><span class="nf">handleBtnBClicked</span><span class="p">(</span><span class="nv">userInput</span><span class="p">:</span> <span class="nv">$0</span><span class="p">)</span> <span class="p">})</span>
+        
+        
+        <span class="n">thirdInputView</span><span class="o">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="kc">false</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="nf">addSubview</span><span class="p">(</span><span class="n">thirdInputView</span><span class="p">)</span>
+        <span class="kt">NSLayoutConstraint</span><span class="o">.</span><span class="nf">activate</span><span class="p">([</span>
+            <span class="n">thirdInputView</span><span class="o">.</span><span class="n">topAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">secondInputView</span><span class="o">.</span><span class="n">bottomAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="mi">10</span><span class="p">),</span>
+            <span class="n">thirdInputView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">secondInputView</span><span class="o">.</span><span class="n">leadingAnchor</span><span class="p">),</span>
+            <span class="n">thirdInputView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">secondInputView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="p">),</span>
+            <span class="n">thirdInputView</span><span class="o">.</span><span class="n">heightAnchor</span><span class="o">.</span><span class="nf">constraint</span><span class="p">(</span><span class="nv">equalTo</span><span class="p">:</span> <span class="n">secondInputView</span><span class="o">.</span><span class="n">heightAnchor</span><span class="p">)</span>
+        <span class="p">])</span>
+    <span class="p">}</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
+        
+        <span class="c1">// MARK: - 1번 방식(클로저로 버튼 등록)</span>
+        <span class="n">secondInputView</span><span class="o">.</span><span class="n">onBtnAClicked</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"onBtnAClicked 실행됨"</span><span class="p">)</span>
+        <span class="p">}</span>
+        
+        <span class="c1">// MARK: - 2번 방식(클로저로 버튼 등록 + 클로저 파라미터 활용)</span>
+        <span class="n">secondInputView</span><span class="o">.</span><span class="n">onBtnBClicked</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"onBtnBClicked 실행됨 / userInput: </span><span class="se">\(</span><span class="nv">$0</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+        <span class="p">}</span>
+        
+        <span class="c1">// MARK: - 3번 방식(메서드로 버튼 등록)</span>
+        <span class="c1">// 핸들링을 InputView가 아닌 VC에서 가능해진다</span>
+        <span class="n">secondInputView</span><span class="o">.</span><span class="nf">resetAction</span><span class="p">(</span><span class="nv">target</span><span class="p">:</span> <span class="k">self</span><span class="p">,</span>
+                                    <span class="nv">aBtnAction</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="nf">onBtnAClicked</span><span class="p">(</span><span class="nv">sender</span><span class="p">:</span> <span class="p">)),</span>
+                                    <span class="nv">bBtnAction</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="nf">onBtnBClicked</span><span class="p">(</span><span class="nv">sender</span><span class="p">:</span> <span class="p">)),</span>
+                                    <span class="nv">inputChangeAction</span><span class="p">:</span> <span class="k">#selector</span><span class="p">(</span><span class="nf">onInputChanged</span><span class="p">(</span><span class="nv">sender</span><span class="p">:</span> <span class="p">)))</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="kd">extension</span> <span class="kt">CustomStoryboardViewController</span> <span class="p">{</span>
+    <span class="kd">@objc</span> <span class="kd">func</span> <span class="nf">onBtnAClicked</span><span class="p">(</span><span class="nv">sender</span><span class="p">:</span> <span class="kt">UIButton</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">@objc</span> <span class="kd">func</span> <span class="nf">onBtnBClicked</span><span class="p">(</span><span class="nv">sender</span><span class="p">:</span> <span class="kt">UIButton</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- "</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - 텍스트필드 이벤트 받는법 delegate도 되지만 간단하게 selector로도 된다</span>
+    <span class="kd">@objc</span> <span class="kd">func</span> <span class="nf">onInputChanged</span><span class="p">(</span><span class="nv">sender</span><span class="p">:</span> <span class="kt">UITextField</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="k">#fileID</span><span class="p">,</span> <span class="k">#function</span><span class="p">,</span> <span class="k">#line</span><span class="p">,</span> <span class="s">"- input: </span><span class="se">\(</span><span class="n">sender</span><span class="o">.</span><span class="n">text</span><span class="o">!</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">CustomStoryboardViewController</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">handleBtnACLicked</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"onBtnAClicked"</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="kd">private</span> <span class="kd">func</span> <span class="nf">handleBtnBClicked</span><span class="p">(</span><span class="nv">userInput</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"onBtnBClicked"</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"onBtnBClicked!!!: </span><span class="se">\(</span><span class="n">userInput</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="정리">정리</h2>
+<ul>
+  <li>UIKit으로 커스텀 뷰 만들 때 컴포넌트 단위로 구현하는게 편하다.</li>
+  <li>코드로만 만드는 방식도 있지만, 특정 부분을 Xib파일로 따로 빼서 구성할 수 있다,
+    <ul>
+      <li>이떄는 연결을 View가 아니라 Files Owner에 원하는 UIView 클래스룰 연결해준다.</li>
+      <li>해당하는 Nib파일을 가져와서 Nib파일의 첫번째 뷰를 UIView 타입으로 가져오고 오토레이아웃을 한번 잡아준다.</li>
+    </ul>
+  </li>
+  <li>Main 스토리보드에서 UIView를 클래스 이름 연결하면 awakeFromNib을 탄다.
+    <ul>
+      <li>커스텀으로 속성 변경할거면 @IBInspactable를 사용하면 된다.</li>
+    </ul>
+  </li>
+  <li>Xib파일을 코드로 생성할때는 init(frame)을 탄다
+    <ul>
+      <li>커스텀 속성을 넣고싶으면 convenience init을 통해 매개변수를 넣어서 해결하면 된다.</li>
+    </ul>
+  </li>
+</ul>
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/AutoLayout-autolayout6/" class="pagination--pager" title="[AutoLayout] 5. 스택뷰 활용
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

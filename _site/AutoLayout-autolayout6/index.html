@@ -9,8 +9,8 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>[AutoLayout] 3. 컨테이너 - DongHyeon Kim’s Blog</title>
-<meta name="description" content="View vs label    일반적인 view는 크기와 위치를 지정해줘야 한다.   label은 자체적으로 크기를 가지기 때문에 크기는 정해주지 않아고 위치만 정해준다.   크기를 대신해줄 수 있는 것은 constraints이다.                           Yellow의 위치와 크기 고정     Yellow의 위치만 고정(크기x)                컨테이너 뷰(Yellow)의 크기와 위치를 모두 고정하는 방식     width와 height를 직접 지정하여 레이아웃을 확정한다.                 크기는 직접 지정하지 않고 내부 Yellow 컨테이너의 subview들의 constraints로 대체하는 방식.             예를 들어, yellow의 subview(top)와 label의 top, bottom을 서로 연결하면         label의 높이가 곧 yellow의 높이가 된다.        width는 subview 또는 label에서 yellow로 leading 제약을 주어 결정할 수 있다.           정리 크기를 대신해서 할 수 있는게 constraints이다.    yellow container의 크기를 해당 컨테이너 내부의 constraints로 대체할 수 있다.    가능한 이유는 yellow의 subview의 top이 존재하고 label의 top과 subView의 바텀이 연결되어 있다. 추가적으로 label의 bottom을 yellow의 bottom으로 연결해주면 높이는 대체가 된다. width는 label이나 subView에서 yellow로 왼쪽으로 작살을 던져주면 해결된다.  (subView의 top이 yellow의 top에 연결되어 있고 subView가 가운데 정렬이기 때문에 subView에서 왼쪽으로 anchor를 놓든 subView의 leading을 따르는 label의 왼쪽으로 anchor를 놓든 width를 결정할 수 있다.)">
+<!-- begin _includes/seo.html --><title>[AutoLayout] 5. 스택뷰 활용 - DongHyeon Kim’s Blog</title>
+<meta name="description" content="스택뷰 활용  스택뷰를 활용해서 네비게이샨바와 금액 입력 바 만들어보자.  Reference    https://wwit.design/2022/07/07/monimo/">
 
 
   <meta name="author" content="Dong Hyeon">
@@ -22,30 +22,30 @@
 <meta property="og:type" content="article">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="DongHyeon Kim's Blog">
-<meta property="og:title" content="[AutoLayout] 3. 컨테이너">
-<meta property="og:url" content="http://localhost:4000/AutoLayout-autolayout3/">
+<meta property="og:title" content="[AutoLayout] 5. 스택뷰 활용">
+<meta property="og:url" content="http://localhost:4000/AutoLayout-autolayout6/">
 
 
-  <meta property="og:description" content="View vs label    일반적인 view는 크기와 위치를 지정해줘야 한다.   label은 자체적으로 크기를 가지기 때문에 크기는 정해주지 않아고 위치만 정해준다.   크기를 대신해줄 수 있는 것은 constraints이다.                           Yellow의 위치와 크기 고정     Yellow의 위치만 고정(크기x)                컨테이너 뷰(Yellow)의 크기와 위치를 모두 고정하는 방식     width와 height를 직접 지정하여 레이아웃을 확정한다.                 크기는 직접 지정하지 않고 내부 Yellow 컨테이너의 subview들의 constraints로 대체하는 방식.             예를 들어, yellow의 subview(top)와 label의 top, bottom을 서로 연결하면         label의 높이가 곧 yellow의 높이가 된다.        width는 subview 또는 label에서 yellow로 leading 제약을 주어 결정할 수 있다.           정리 크기를 대신해서 할 수 있는게 constraints이다.    yellow container의 크기를 해당 컨테이너 내부의 constraints로 대체할 수 있다.    가능한 이유는 yellow의 subview의 top이 존재하고 label의 top과 subView의 바텀이 연결되어 있다. 추가적으로 label의 bottom을 yellow의 bottom으로 연결해주면 높이는 대체가 된다. width는 label이나 subView에서 yellow로 왼쪽으로 작살을 던져주면 해결된다.  (subView의 top이 yellow의 top에 연결되어 있고 subView가 가운데 정렬이기 때문에 subView에서 왼쪽으로 anchor를 놓든 subView의 leading을 따르는 label의 왼쪽으로 anchor를 놓든 width를 결정할 수 있다.)">
-
-
-
-
-
-
-
-  <meta property="article:published_time" content="2025-08-12T00:00:00+00:00">
+  <meta property="og:description" content="스택뷰 활용  스택뷰를 활용해서 네비게이샨바와 금액 입력 바 만들어보자.  Reference    https://wwit.design/2022/07/07/monimo/">
 
 
 
 
 
-  
+
+
+  <meta property="article:published_time" content="2025-08-14T00:00:00+00:00">
+
+
+
+
 
   
 
+  
 
-<link rel="canonical" href="http://localhost:4000/AutoLayout-autolayout3/">
+
+<link rel="canonical" href="http://localhost:4000/AutoLayout-autolayout6/">
 
 
 
@@ -456,16 +456,16 @@ checkbox.addEventListener('change', function() {
 
 
   <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="[AutoLayout] 3. 컨테이너">
-    <meta itemprop="description" content="View vs label  일반적인 view는 크기와 위치를 지정해줘야 한다.  label은 자체적으로 크기를 가지기 때문에 크기는 정해주지 않아고 위치만 정해준다.  크기를 대신해줄 수 있는 것은 constraints이다.                  Yellow의 위치와 크기 고정    Yellow의 위치만 고정(크기x)            컨테이너 뷰(Yellow)의 크기와 위치를 모두 고정하는 방식    width와 height를 직접 지정하여 레이아웃을 확정한다.              크기는 직접 지정하지 않고 내부 Yellow 컨테이너의 subview들의 constraints로 대체하는 방식.            예를 들어, yellow의 subview(top)와 label의 top, bottom을 서로 연결하면        label의 높이가 곧 yellow의 높이가 된다.       width는 subview 또는 label에서 yellow로 leading 제약을 주어 결정할 수 있다.      정리크기를 대신해서 할 수 있는게 constraints이다.   yellow container의 크기를 해당 컨테이너 내부의 constraints로 대체할 수 있다.   가능한 이유는 yellow의 subview의 top이 존재하고 label의 top과 subView의 바텀이 연결되어 있다. 추가적으로 label의 bottom을 yellow의 bottom으로 연결해주면 높이는 대체가 된다.width는 label이나 subView에서 yellow로 왼쪽으로 작살을 던져주면 해결된다.(subView의 top이 yellow의 top에 연결되어 있고 subView가 가운데 정렬이기 때문에 subView에서 왼쪽으로 anchor를 놓든 subView의 leading을 따르는 label의 왼쪽으로 anchor를 놓든 width를 결정할 수 있다.)">
-    <meta itemprop="datePublished" content="2025-08-12T00:00:00+00:00">
+    <meta itemprop="headline" content="[AutoLayout] 5. 스택뷰 활용">
+    <meta itemprop="description" content="스택뷰 활용스택뷰를 활용해서 네비게이샨바와 금액 입력 바 만들어보자.Reference  https://wwit.design/2022/07/07/monimo/">
+    <meta itemprop="datePublished" content="2025-08-14T00:00:00+00:00">
     
 
     <div class="page__inner-wrap">
       
         <header>
           <h1 id="page-title" class="page__title p-name" itemprop="headline">
-            <a href="http://localhost:4000/AutoLayout-autolayout3/" class="u-url" itemprop="url">[AutoLayout] 3. 컨테이너
+            <a href="http://localhost:4000/AutoLayout-autolayout6/" class="u-url" itemprop="url">[AutoLayout] 5. 스택뷰 활용
 </a>
           </h1>
           <footer class="page__meta">
@@ -491,7 +491,7 @@ checkbox.addEventListener('change', function() {
 <!--  -->
             
 
-  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-08-12T00:00:00+00:00">August 12, 2025</time></p>
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2025-08-14T00:00:00+00:00">August 14, 2025</time></p>
 
           </footer>
         </header>
@@ -501,43 +501,15 @@ checkbox.addEventListener('change', function() {
         
         <!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
 
-<h2 id="view-vs-label">View vs label</h2>
+<h2 id="스택뷰-활용">스택뷰 활용</h2>
+<p><img src="/assets/img/2025-08-14-%5BAutoLayout%5D-autolayout6/KakaoTalk_Photo_2025-08-22-15-19-27.png" alt="이미지" width="50%" /><br />
+스택뷰를 활용해서 네비게이샨바와 금액 입력 바 만들어보자.</p>
+
+<h2 id="reference">Reference</h2>
 <ul>
-  <li>일반적인 view는 크기와 위치를 지정해줘야 한다.</li>
-  <li>label은 자체적으로 크기를 가지기 때문에 크기는 정해주지 않아고 위치만 정해준다.</li>
-  <li>크기를 대신해줄 수 있는 것은 <strong>constraints</strong>이다.</li>
+  <li>https://wwit.design/2022/07/07/monimo/</li>
 </ul>
 
-<table>
-  <tr>
-    <td><img src="/assets/img/2025-08-12-%5BAutoLayout%5D-autolayout3/image-20250812164741262.png" alt="커스텀셀1" width="90%" /></td>
-    <td><img src="/assets/img/2025-08-12-%5BAutoLayout%5D-autolayout3/image-20250812165643354.png" alt="커스텀셀" width="100%" /></td>
-  </tr>
-  <tr>
-    <td style="text-align:center;">Yellow의 위치와 크기 고정</td>
-    <td style="text-align:center;">Yellow의 위치만 고정(크기x)</td>
-  </tr>
-  <tr>
-    <td style="text-align:center; font-size:14px; color:#666;">
-    컨테이너 뷰(Yellow)의 크기와 위치를 모두 고정하는 방식<br />
-    width와 height를 직접 지정하여 레이아웃을 확정한다.
-    </td>
-    <td style="text-align:center; font-size:14px; color:#666;">
-      크기는 직접 지정하지 않고 내부 Yellow 컨테이너의 subview들의 constraints로 대체하는 방식.      
-      예를 들어, <code>yellow</code>의 subview(top)와 label의 top, bottom을 서로 연결하면  
-      label의 높이가 곧 yellow의 높이가 된다.<br /> 
-      width는 subview 또는 label에서 yellow로 <b>leading</b> 제약을 주어 결정할 수 있다.
-    </td>
-  </tr>
-</table>
-
-<h2 id="정리">정리</h2>
-<p>크기를 대신해서 할 수 있는게 constraints이다.   <br />
-yellow container의 크기를 해당 컨테이너 내부의 constraints로 대체할 수 있다.   <br />
-가능한 이유는 yellow의 subview의 top이 존재하고 label의 top과 subView의 바텀이 연결되어 있다. 추가적으로 label의 bottom을 yellow의 bottom으로 연결해주면 높이는 대체가 된다.<br />
-width는 label이나 subView에서 yellow로 왼쪽으로 작살을 던져주면 해결된다.</p>
-
-<p>(subView의 top이 yellow의 top에 연결되어 있고 subView가 가운데 정렬이기 때문에 subView에서 왼쪽으로 anchor를 놓든 subView의 leading을 따르는 label의 왼쪽으로 anchor를 놓든 width를 결정할 수 있다.)</p>
 
         
       </section>
@@ -547,11 +519,11 @@ width는 label이나 subView에서 yellow로 왼쪽으로 작살을 던져주면
       
   <nav class="pagination">
     
-      <a href="/AutoLayout-autolayout2/" class="pagination--pager" title="[AutoLayout] 2. 다른 뷰에 뷰를 연결하는법
+      <a href="/AutoLayout-autolayout5/" class="pagination--pager" title="[AutoLayout] 5. 스택뷰
 ">Previous</a>
     
     
-      <a href="/AutoLayout-autolayout4/" class="pagination--pager" title="[AutoLayout] 4. customView with IBDesignable and IBInspectable, CALayer
+      <a href="/CustomView-customView1/" class="pagination--pager" title="[CustomView] 1. 커스텀뷰 만들기
 ">Next</a>
     
   </nav>

@@ -1,7 +1,31 @@
 [
     
         {
-        "title"    : "[AutoLayout] 4. customView with IBDesignable and IBInspectable",
+        "title"    : "[CustomView] 1. 커스텀뷰 만들기",
+        "category" : "",
+        "tags"     : "",
+        "url"      : "/CustomView-customView1/",
+        "date"     : "2025-09-04 00:00:00 +0000"
+        } ,
+    
+        {
+        "title"    : "[AutoLayout] 5. 스택뷰 활용",
+        "category" : "",
+        "tags"     : "AutoLayout",
+        "url"      : "/AutoLayout-autolayout6/",
+        "date"     : "2025-08-14 00:00:00 +0000"
+        } ,
+    
+        {
+        "title"    : "[AutoLayout] 5. 스택뷰",
+        "category" : "",
+        "tags"     : "AutoLayout",
+        "url"      : "/AutoLayout-autolayout5/",
+        "date"     : "2025-08-14 00:00:00 +0000"
+        } ,
+    
+        {
+        "title"    : "[AutoLayout] 4. customView with IBDesignable and IBInspectable, CALayer",
         "category" : "",
         "tags"     : "AutoLayout",
         "url"      : "/AutoLayout-autolayout4/",
