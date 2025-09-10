@@ -193,6 +193,4 @@ extension ChildViewController {
 ```
 
 # Reference
-- [CustomView] 1. 컨트롤러
-- [CustomView] 3. 컨트롤러
-- [CustomView] 4. 컨트롤러
+- [공식문서](https://developer.apple.com/documentation/uikit/creating-a-custom-container-view-controller)
