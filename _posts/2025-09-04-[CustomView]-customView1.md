@@ -777,7 +777,7 @@ extension CustomStoryboardViewController {
 ## 정리
 - UIKit으로 커스텀 뷰 만들 때 컴포넌트 단위로 구현하는게 편하다.
 - 코드로만 만드는 방식도 있지만, 특정 부분을 Xib파일로 따로 빼서 구성할 수 있다,
-  - 이떄는 연결을 View가 아니라 Files Owner에 원하는 UIView 클래스룰 연결해준다.
+  - 이때는 연결을 View가 아니라 Files Owner에 원하는 UIView 클래스룰 연결해준다.
   - 해당하는 Nib파일을 가져와서 Nib파일의 첫번째 뷰를 UIView 타입으로 가져오고 오토레이아웃을 한번 잡아준다.
 
 - Main 스토리보드에서 UIView를 클래스 이름 연결하면 awakeFromNib을 탄다.
