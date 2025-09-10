@@ -1,7 +1,7 @@
 ---
 title: "[CustomView] 1. Xib파일로 스토리보드기반, 코드기반 커스텀뷰 만들기"
 tags:
-- 
+- "CustomView"
 header:
   teaser:
 typora-root-url: ../

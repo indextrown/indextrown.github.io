@@ -1,7 +1,7 @@
 ---
 title: "[CustomView] 2. 컨테이너뷰 & 스토리보드로 만들어보기"
 tags:
-- 
+- "CustomView"
 header:
   teaser:
 typora-root-url: ../
