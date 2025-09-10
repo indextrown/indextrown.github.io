@@ -23,7 +23,7 @@ UIView안에 ViewController가 들어간 것을 컨테이너뷰라고한다. 대
 
 
 
-
+# 스토리보드로 개발하기
 ```swift
 final class ParentViewController: UIViewController {
     override func viewDidLoad() {
