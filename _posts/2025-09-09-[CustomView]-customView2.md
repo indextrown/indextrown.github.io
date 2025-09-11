@@ -10,7 +10,6 @@ typora-root-url: ../
 
 # ContainerView
 
-
 <img src="{{ 'https://docs-assets.developer.apple.com/published/31b57b164fcd77f6c82549528d86339e/media-3375406%402x.png' | relative_url }}" alt="이미지" width="60%">
 [공식문서](https://developer.apple.com/documentation/uikit/creating-a-custom-container-view-controller)
 UIView안에 ViewController가 들어간 것을 컨테이너뷰라고한다. 대표적인 예시가 NavigationController, TabBarController, PageViewController이다.   
