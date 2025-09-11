@@ -14,9 +14,7 @@ typora-root-url: ../
 
 <!-- <img src="{{ '/assets/img/2025-05-08-[UIKit]-tableView2/1.png' | relative_url }}" alt="이미지" width="30%"> -->
 
-## DiffableDataSource
-
-
+# DiffableDataSource
 Diffable
 - 다른 이라는 뜻이다. 
 - 아이템들간의 서로 다름을 알게 되는 것이다.
@@ -29,3 +27,4 @@ snapshot(사진 찍어둠)
 - 테이블뷰 로드방식이 기존 테이블뷰와 다르다.
 - dataSource.apply(스냅샷) -> 이런 데이터를 보여줄거라고 스냅샷이라는 사진을 찍어두고 찍어둔 사진을 반영한다.
 
+ 

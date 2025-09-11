@@ -7,7 +7,14 @@ header:
   teaser: 
 ---
 
-## 📝 Swift 비동기 처리방식 
+# Concurrency
+<img src="{{ '/assets/img/2025-02-10-[Concurrency-01] 비동기 처리방식/image-20250911163941515.png' | relative_url }}" alt="이미지" width="100%"> 
+Swift 5.5 이후 async, await, task 개념들이 등장하였다. 기존의 동시성 프로그래밍을 할때는 여러 스레드를 한꺼번에 사용하여 Thread Safe하지 않은 코드를 작성할 잠재적인 가능성이 있고 디버깅하기 어려웠다.   
+Swift6의 목표는 컴파일 시점에 Thread Safe한 코드를 작성하기 위한 최적의 솔루션 제공을 목적으로 한다. 
+[공식문서](https://developer.apple.com/videos/play/wwdc2024/10136/)
+<br/><br/><br/><br/>
+
+# 📝 Swift 비동기 처리방식 
 
 ### 1. NSThread
 
@@ -105,7 +112,7 @@ header:
       try await Task.sleep(nanoseconds: 1_000_000_000) // 1초 대기
       return "Fetched Data"
   }
-
+  
   Task {
       let data = await fetchData()
       print(data)
