@@ -1,5 +1,5 @@
 ---
-title: "[RxDataSource] 4. Rx로 테이블 사용해보기"
+title: "[RxDataSource] 4. 버튼 액션을 클로저 이벤트로 전달하기"
 tags: 
 - ReactiveX
 - RxDataSource
