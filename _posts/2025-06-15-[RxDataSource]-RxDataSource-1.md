@@ -73,5 +73,71 @@ cellForRowAt – 각 셀에 들어갈 내용과 셀 객체 반환
 UITableView나 UICollectionView는 셀을 스크롤할 때마다 필요한 셀만 메모리에 올리고, 보이지 않으면 메모리에서 제거한 뒤 재활용한다.
 이로 인해 성능을 크게 향상시킬 수 있으며, 이 재활용 과정에서 각 셀의 개수와 내용은 dataSource가, 셀 선택 등의 사용자 이벤트는 delegate가 처리한다.
 
+## 잘못 설계 예시
+```swift
+final class TodosVC: UIViewController {
+    
+    var todoList: [Todo] = []
+    
+    private lazy var todoTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 60
+        return tableView
+    }()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .systemBackground
+        
+        setupData()
+        setupTableView()
+        setupLayout()
+    }
+    
+    private func setupData() {
+           todoList = Todo.getDumies()
+    }
+    
+    private func setupTableView() {
+        todoTableView.dataSource = self
+        todoTableView.register(
+            TodoCell.self,
+            forCellReuseIdentifier: "TodoCell"
+        )
+        view.addSubview(todoTableView)
+    }
+    
+    private func setupLayout() {
+        NSLayoutConstraint.activate([
+            todoTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            todoTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            todoTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            todoTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+}
 
-
+extension TodosVC: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        todoList.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell: TodoCell = tableView.dequeueReusableCell(withIdentifier: "TodoCell",
+                                                                 for: indexPath) as? TodoCell else {
+            return UITableViewCell()
+        }
+        
+        let cellData = todoList[indexPath.row]
+        cell.configureCell(cellData: cellData)
+        return cell
+    }
+}
+```
+- 이 코드를 실행해보면 상단 셀의 토글믈 몇개 누른 후 스크롤하고 복귀하면 토글이 초기화 되는 버그가 발생한다. 
+이유는 셀이 화면에서 사라질 때 메모리를 버려서 데이터가 사라졌기 때문이다(셀에서 prepareForReuse가 호출되서 그렇다). 
+데이터를 셀 안에서 가지고 있어서 발생한 문제이다. 
+이를 해결하기위해 화면이 보이려고 할 떄(cell for row/item at이 호출될 때) 데이터를 적재해줘야 한다.
+즉 datasource 메서드에서 cell for row/item at에서 해당 데이터가 셀에 데이터를 찔러 넣어줘야 한다.
