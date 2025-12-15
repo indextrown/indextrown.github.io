@@ -46,6 +46,41 @@ nicknameTextField.rx.text = nickname
 
 ---
 
+## Observable
+> 
+```swift
+public class Observable<Element> : ObservableType
+```
+- 관찰 가능한 데이터 흐름(stream)을 표현하는 타입이다.
+- 시간의 흐름에 따라 발생하는 값들의 시퀀스(시간 순서대로 발생하는 값들의 나열)를 생성하고 전달하는 대상이다.
+- RxSwift에서는 모든 비동기 이벤트를 Observable이라는 형태로 감싸서 다룬다.
+
+=> 다시 말해 Observable은 버튼이 눌리는 순간처럼 비동기 이벤트가 발생했을 때 그 이벤트가 발생했음을 알리기 위해 항목(item)을 방출(item)한다.
+
+<!-- 관찰이 가능한 흐름으로 비동기 이벤트의 시퀀스를 생성할 수 있는 대상이다. -->
+
+<!-- 비동기 이벤트를 관찰 가능한 형태로 만든다는 의미는 "비동기 이벤트를 제네릭 타입의 Observable 인스턴스를 만든다는 의미"이다. 쉽게 말하자면 Reactive Programming에서는 데이터의 흐름이 변경되었을 때 전파하는 데 중점을 둔 프로그램이다. -->
+
+
+
+## 예시)  
+> 버튼 클릭을 나타내는 UIButton의 tap 이벤트는 언제 발생할지 알 수 없는 비동기 이벤트이므로 RxSwift에서 Observable 형태로 표현한다.
+버튼이 눌러서 비동기 이벤트가 발생하면 Observable에서 item이 방출되어 데이터 흐름이 변경됨을 알린다.
+
+```swift
+// UIButton이 발생시키는 tap 이벤트를 Observable 형태로 꺼내온 것
+// item: 버튼을 눌렀다는 신호
+button.rx.tap // Observable<Void>
+```
+
+
+**버튼(UIButton)**: 이벤트를 발생시키는 대상
+**Observable(button.rx.tap)**: 버튼 클릭 이벤트를 관찰 가능한 흐름으로 표현한 것
+**버튼 클릭**: 비동기 이벤트 발생(데이터의 흐름이 변경) -> 이미 존재하는 Observable에서 item을 방출(emit)
+**item**: Void(버튼을 눌렸다는 사실을 알리는 신호)
+
+---
+
 ## Subject
 - Subject는 이벤트를 발행(emit)하고 구독(subscribe)모두 할 수 있는 중간 다리 역할을 한다.
     - Observable처럼 이벤트를 방출할 수 있고
@@ -450,3 +485,6 @@ viewModel.nicknameDriver // Driver<String>
 
 ## Reference
 - https://so-kyte.tistory.com/192
+- https://rldd.tistory.com/131
+- https://babbab2.tistory.com/185
+- https://ios-development.tistory.com/97

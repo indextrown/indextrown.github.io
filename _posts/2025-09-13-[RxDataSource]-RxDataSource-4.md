@@ -1,5 +1,5 @@
 ---
-title: "[RxDataSource] 4. 버튼 액션을 클로저 이벤트로 전달하기"
+title: "[RxDataSource] 4. Rx로 테이블 사용해보기"
 tags: 
 - ReactiveX
 - RxDataSource
@@ -9,108 +9,20 @@ typora-root-url: ../
 
 ---
 
-# 기존 코드 개선
+# 정리
+기본적인 Rx테이블 사용방법에 대해 코드로 작성하였다.  
+셀을 Nib파일로 사용하거나 코드기반으로 사용함에 따라서 register 사용방식이 다르다는 것만 이해하면 된다. 다음 포스팅에서 RxDatasource로 CRUD로 진행해볼 예정이다.
 ```swift
-// MARK: - 한번 그려지고 끝나기 때문에 추가/삭제같은 이벤트를 반영할 수 없다.
-let data = Observable<[RxTodo]>.just(RxTodo.getDumies())
-data.bind(to: myTableView.rx.items(cellIdentifier: "RxTodoCell", cellType: RxTodoCell.self)) {
-    index, model, cell in
-    cell.configure(with: model)
-}
+// MARK: - Nib파일 사용한다면
+let cellNib = UINib(nibName: "RxTodoCell", bundle: nil)
+myTableView.register(cellNib, forCellReuseIdentifier: "RxTodoCell")
 
-// => BehaviorRelay를 사용하여 단발성이 아닌 변화가능한 상태를 가진 스트림을 만들어서 사용하자.
-// MARK: - Relay는 Subject계열인데 끊어지지 않는다(.value로 접근시 마지막 데이터 확인가능 = stateful)
-var rxTodosRelay: BehaviorRelay<[RxTodo]> = BehaviorRelay(value: RxTodo.getDumies())
-rxTodosRelay
-    .bind(to: myTableView.rx.items) { (tableView, row, element) in
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: RxTodoCell.reuseIdentifier) as? RxTodoCell else { return UITableViewCell()}
-        cell.configure(with: element)
-        return cell
-    }
-    .disposed(by: disposeBag)
+// MARK: - 코드기반 사용한다면
+myTableView.register(RxTodoCell.self, forCellReuseIdentifier: "RxTodoCell")
 ```
-이전 포스팅에서 아래와 같이 더미 데이터를 한 번만 방출하도록 설정하였다.  
-이 코드는 초기 데이터만 표시하고 변화가 될 수 없기 때문에 한계가 있다.
-<br/><br/><br/><br/>
-
-```swift
-// MARK: - 3초뒤 갱신
-DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-    self.rxTodosRelay.accept(RxTodo.getDumies(count: 3))
-}
-
-// MARK: - Rx스러운 3초뒤 갱신
-Observable.just(())
-    .delay(.seconds(3), scheduler: MainScheduler.instance) // Observable<Void>
-    .map { RxTodo.getDumies(count: 5) }                    // Observable<[RxTodo]>
-    .bind(onNext: self.rxTodosRelay.accept(_:))            // 같은 자료형이면 클로저가 들어갈 수 있다
-    .disposed(by: disposeBag)
-```
-기존 딜레이 코드를 Rx스럽게 변경도 된다 동일한 로직이다.
-<br/><br/><br/><br/>
-
-# RxDataSource
-RxDataSource는 Relay 같은 Observable이 갱신되면 렌더링이 된다.
-지금 코드에서 todosRelay를 BehaviorRelay로 사용한 이유는 마지막 데이터를 알아야 CRUD를 진행할 수 있기 때문이다.
-<br/><br/><br/><br/>
 
 
-
-
-```swift
-// MARK: - 버튼 연결
-addButton.rx.tap
-    .bind(onNext: { [weak self] _ in
-        guard let self = self else { return }
-        var currentTodos = self.rxTodosRelay.value // .value 하면 마지막에 보낸 데이터 할 수 있음
-        currentTodos.insert(RxTodo(), at: 0)       // 첫번째 열에 넣겠다
-        self.rxTodosRelay.accept(currentTodos)
-    })
-    .disposed(by: disposeBag)
-```
-crud 기능을 위해 추가 버튼을 만들었다.   
-맨위에서부터 데이터를 들어가게 하기위해 insert를 사용했으나 아래에 넣고싶으면 append를 사용하면된다.
-<br/><br/><br/><br/>
-
-
-
-```swift
-// ✅ 2. (더 유연하지만 수동 캐스팅 필요 – RxCocoa)
-rxTodosRelay
-    .bind(to: myTableView.rx.items) { (tableView, row, element) in
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: RxTodoCell.reuseIdentifier) as? RxTodoCell else { return UITableViewCell()}
-        cell.configure(with: element)
-        
-        // MARK: - 셀의 delete버튼 선택되었을 때 액션을 여기서 처리
-        cell.deleteAction = { id in
-            let currentTodos = self.rxTodosRelay.value
-            let filteredTodos = currentTodos.filter { $0.id != id }
-            self.rxTodosRelay.accept(filteredTodos)
-        }
-        
-        // MARK: - 셀의 토글 클릭시 액션을 여기서 처리
-        cell.isDoneChange = { [weak self] id, updatedIsDone in
-            guard let self = self else { return }
-            var currentTodos = self.rxTodosRelay.value
-            // 일치하는것 찾기
-            if let foundTodoIndex = currentTodos.firstIndex(where: { $0.id == id }) {
-                currentTodos[foundTodoIndex].isDone = updatedIsDone
-            }
-            self.rxTodosRelay.accept(currentTodos)
-        }
-        
-        return cell
-    }
-    .disposed(by: disposeBag)
-```
-커스텀 셀에서 만든 클로저 버튼 액션 내부 로직을 직접 구현해준다.  
-이제 두가지 문제가 있는데 다음 포스팅에서 진행하겠다.
-- 버튼도 그냥 addTarget말고 Rx로 연결하는게 어떨까?
-- 토글시 애니메이션이 전혀 없어서 어색하게 보인다
-<br/><br/><br/><br/> 
-
-
-# 전체 코드
+# 전체코드
 ```swift
 // Model
 import Fakery
@@ -122,10 +34,10 @@ struct RxTodo {
     let title: String
     var isDone: Bool
 
-    init(title: String? = nil,
+    init(title: String,
          isDone: Bool = false
     ) {
-        self.title = title ?? "터이틀: \(id.uuidString.prefix(8))"
+        self.title = title
         self.isDone = isDone
     }
 
@@ -156,8 +68,9 @@ final class RxTodoCell: UITableViewCell {
 
     // MARK: - Rx
     var disposeBag = DisposeBag()
-    var isDoneChange: ((_ id: UUID, _ newValue: Bool) -> Void)? = nil
-    var deleteAction: ((_ id: UUID) -> Void)? = nil
+    var deleteActionObservable: Observable<UUID> = Observable.empty()
+    var updateActionObservable: Observable<(id: UUID, newValue: Bool)> = Observable.empty()
+
 
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -206,10 +119,7 @@ final class RxTodoCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         makeUI()
         constraints()
-        
-        // MARK: - 버튼 연결
-        isDoneSwitch.addTarget(self, action: #selector(handleIsDone), for: .valueChanged)
-        deleteButton.addTarget(self, action: #selector(handleDeleteButton), for: .touchUpInside)
+        // setRx()
     }
 
     required init?(coder: NSCoder) {
@@ -237,6 +147,24 @@ final class RxTodoCell: UITableViewCell {
         print(#fileID, #function, #line, "prepareForReuse() - cellData.id: \(cellData?.id ?? UUID())")
         self.disposeBag = DisposeBag()
     }
+
+    private func setRx() {
+        print(#fileID, #function, #line, "- ")
+        updateActionObservable = isDoneSwitch
+            .rx.isOn
+            .skip(1)                 // 초기값 무시
+            .debug("isDoneSwitch")
+            /// nul을 제거하고 유효한 값만 방출하는 오퍼레이터
+            /// self 또는 cellData 존재하지 않을 수 있어서 compactMap 사용
+            .compactMap { [weak self] isOn -> (id: UUID, newValue: Bool)? in
+                guard let self = self,
+                      let inWrappedId = self.cellData?.id else {
+                    return nil
+                }
+                // return (id: inWrappedId, newValue: self.isDoneSwitch.isOn)
+                return (id: inWrappedId, newValue: isOn)
+            }
+    }
 }
 
 extension RxTodoCell {
@@ -247,28 +175,15 @@ extension RxTodoCell {
         let idString = String(todo.id.uuidString.prefix(10))
         idLabel.text = "ID: \(idString)"
         isDoneSwitch.isOn = todo.isDone
-        // setRx()
+        setRx()
     }
- 
+
     // MARK: - 디버깅용
     func configure(title: String, id: Int) {
         titleLabel.text = title
         idLabel.text = "ID: \(id)"
         isDoneSwitch.isOn = false
 
-    }
-}
-
-extension RxTodoCell {
-    @objc func handleIsDone(_ sender: UISwitch) {
-        print(#fileID, #function, #line, "- id: \(cellData?.id.uuidString ?? "") sender: \(sender.isOn)")
-        guard let id = self.cellData?.id else { return }
-        isDoneChange?(id, sender.isOn)
-    }
-    
-    @objc func handleDeleteButton(_ sender: UIButton) {
-        guard let id = self.cellData?.id else { return }
-        deleteAction?(id)
     }
 }
 
@@ -295,13 +210,10 @@ import RxSwift
 import RxCocoa
 import RxRelay
 
-final class RxTodoViewController2: UIViewController {
+final class RxTodoViewController: UIViewController {
 
     // MARK: - 구독에 대한 찌꺼기 처리
     var disposeBag =  DisposeBag()
-    
-    // MARK: - Relay는 Subject계열인데 끊어지지 않는다(.value로 접근시 마지막 데이터 확인가능 = stateful)
-    var rxTodosRelay: BehaviorRelay<[RxTodo]> = BehaviorRelay(value: RxTodo.getDumies())
 
     // MARK: - UI
     private lazy var addButton = UIBarButtonItem(title: "추가",
@@ -320,73 +232,22 @@ final class RxTodoViewController2: UIViewController {
         makeUI()
         constraints()
         
+        let data = Observable<[RxTodo]>.just(RxTodo.getDumies())
+        
+        // MARK: - Nib파일 사용한다면
+        // let cellNib = UINib(nibName: "RxTodoCell", bundle: nil)
+        // myTableView.register(cellNib, forCellReuseIdentifier: "RxTodoCell")
+        
         // MARK: - 코드기반 사용한다면
         myTableView.register(RxTodoCell.self, forCellReuseIdentifier: "RxTodoCell")
+
         
-        // ✅ 1. RxTodoCell을 타입으로 명시하여 바인딩하는 간결한 방식
-        /*
-         data.bind(to: myTableView.rx.items(cellIdentifier: RxTodoCell.reuseIdentifier,
-                                            cellType: RxTodoCell.self)) { index, model, cell in
-             cell.configure(with: model)
-         }
-        .disposed(by: disposeBag)
-         */
-        
-        
-        // ✅ 2. (더 유연하지만 수동 캐스팅 필요 – RxCocoa)
-        rxTodosRelay
-            .bind(to: myTableView.rx.items) { (tableView, row, element) in
-                guard let cell = tableView.dequeueReusableCell(withIdentifier: RxTodoCell.reuseIdentifier) as? RxTodoCell else { return UITableViewCell()}
-                cell.configure(with: element)
-                
-                // MARK: - 셀의 delete버튼 선택되었을 때 액션을 여기서 처리
-                cell.deleteAction = { id in
-                    let currentTodos = self.rxTodosRelay.value
-                    let filteredTodos = currentTodos.filter { $0.id != id }
-                    self.rxTodosRelay.accept(filteredTodos)
-                }
-                
-                // MARK: - 셀의 토글 클릭시 액션을 여기서 처리
-                cell.isDoneChange = { [weak self] id, updatedIsDone in
-                    guard let self = self else { return }
-                    var currentTodos = self.rxTodosRelay.value
-                    // 일치하는것 찾기
-                    if let foundTodoIndex = currentTodos.firstIndex(where: { $0.id == id }) {
-                        currentTodos[foundTodoIndex].isDone = updatedIsDone
-                    }
-                    self.rxTodosRelay.accept(currentTodos)
-                }
-                
-                return cell
-            }
-            .disposed(by: disposeBag)
-        
-        
-        // MARK: - 3초뒤 갱신
-        /*
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            self.rxTodosRelay.accept(RxTodo.getDumies(count: 3))
+        data.bind(to: myTableView.rx.items(cellIdentifier: "RxTodoCell", cellType: RxTodoCell.self)) {
+            index, model, cell in
+            cell.configure(with: model)
+            
         }
-         */
-        
-        // MARK: - Rx스러운 3초뒤 갱신
-        /*
-        Observable.just(())
-            .delay(.seconds(3), scheduler: MainScheduler.instance) // Observable<Void>
-            .map { RxTodo.getDumies(count: 5) }                    // Observable<[RxTodo]>
-            .bind(onNext: self.rxTodosRelay.accept(_:))            // 같은 자료형이면 클로저가 들어갈 수 있다
-            .disposed(by: disposeBag)
-        */
-        
-        // MARK: - 버튼 연결
-        addButton.rx.tap
-            .bind(onNext: { [weak self] _ in
-                guard let self = self else { return }
-                var currentTodos = self.rxTodosRelay.value // .value 하면 마지막에 보낸 데이터 할 수 있음
-                currentTodos.insert(RxTodo(), at: 0)       // 첫번째 열에 넣겠다
-                self.rxTodosRelay.accept(currentTodos)
-            })
-            .disposed(by: disposeBag)
+        .disposed(by: disposeBag)
     }
     
     private func makeUI() {
