@@ -47,9 +47,9 @@ struct Item: Identifiable, Equatable {
   - insert/delete/remove 판단
 2.  뷰 업데이트
   - `Equatable`을 채택하지 않은 경우
-      -> 이전 view 새로운 view 비교할 방법이 없어서 비교를 포기하고 항상 해당 View와 자식 View들의 `body`를 다시 계산한다  
+      이전 view 새로운 view 비교할 방법이 없어서 비교를 포기하고 항상 해당 View와 자식 View들의 `body`를 다시 계산한다  
   - `Equatable` 채택한 경우  
-      ->  `==`로 이전 view와 비교하여 같으면 자식 body 계산 생략하고 다르면 자식 body를 계산한다   
+      `==`로 이전 view와 비교하여 같으면 자식 body 계산 생략하고 다르면 자식 body를 계산한다   
 
 ## Equatable는 선택적이지만 쓰면 이점이 있다
 > Equatable이 없으면 같은 셀이어도 body는 항상 다시 계산되고,
