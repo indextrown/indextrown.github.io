@@ -9,8 +9,8 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>[SwiftUI] Equatable, Identifiable - DongHyeon Kim’s Blog</title>
-<meta name="description" content="Equatable, Identifiable 요약 // id: 셀의 정체성 유지 // Equatable: 불필요한 리렌더링 방지 struct Item: Identifiable, Equatable {     let id: UUID     var title: String }     Equatable: 값이 같은가   Identity: 같은 존재인가   -&gt; Equatable은 값 비교이고 Identifiable는 대상 식별이며 동일성은 id로 표현된다.  List나 ForEach는 내부적으로 다음 플로우를 사용한다 1️⃣ Identifiable    └─ 같은 Row인가?       ├─ 아니면 → insert/delete/move       └─ 맞으면 → 다음 단계  2️⃣ View 업데이트 판단    ├─ Equatable 있음    │    ├─ == true  → body skip    │    └─ == false → body 재계산    └─ Equatable 없음         └─ 무조건 body 재계산     Identifiable 혹은 id로 판단            같은 Row인가       insert/delete/remove 판단           뷰 업데이트            Equatable을 채택하지 않은 경우   이전 view 새로운 view 비교할 방법이 없어서 비교를 포기하고 항상 해당 View와 자식 View들의 body를 다시 계산한다       Equatable 채택한 경우     ==로 이전 view와 비교하여 같으면 자식 body 계산 생략하고 다르면 자식 body를 계산한다           Equatable는 선택적이지만 쓰면 이점이 있다    Equatable이 없으면 같은 셀이어도 body는 항상 다시 계산되고, Equatable이 있으면 내용이 같을 때 body 계산을 건너뛸 수 있다.   // ❌ Equatable 없음 // 상위 상태 변경 //  → List body 실행 //  → ForEach 실행 //  → 모든 RowView body 실행 ❗ struct RowView: View {     let model: Item      var body: some View {         HeavyView(model: model)     } }     상위 View가 다시 그려지면 같은 id 셀이라도 RowView.body는 다시 실행된다   하지만 Heavy한 View에서는 문제가 된다.   // ✅ Equatable 있음 // 상위 상태 변경 //  → List body 실행 //  → ForEach 실행 //  → RowView == 비교 //      ├─ true → body skip //      └─ false → body 실행 // 이전 RowView == 새로운 RowView ? // ├─ true  → body 재계산 SKIP // └─ false → body 재계산 struct RowView: View, Equatable {     let model: Item      static func == (lhs: RowView, rhs: RowView) -&gt; Bool {         lhs.model == rhs.model     }      var body: some View {         HeavyView(model: model)     } }  RowView(model: model)     .equatable()     Equatable을 채택하면 아래와 같은 이점이 있다 줄어드는 것   body 실행 횟수   내부 View 트리 생성   Layout / Preference / Modifier 재평가 줄어들지 않는 것   List의 diff 비교   insert/delete/move판단 -&gt; 즉 diff횟수는 감소되지 않고 render 판단 횟수가 감소한다   동등성(Equatable) struct Person: Equatable {     var name: String     var age: Int }  // Equtable은 값의 상태를 기준으로 비교하므로 두 인스턴스는 같다고 판단된다. let user1 = Person(name: &quot;홍길동&quot;, age: 25) let user2 = Person(name: &quot;홍길동&quot;, age: 25) user1 == user2  // true  // 속성들이 Equatable이므로 컴파일러가 자동으로 만들어줌 static func == (lhs: Person, rhs: Person) -&gt; Bool {     lhs.name == rhs.name &amp;&amp;     lhs.age == rhs.age }     값 타입에서는 서로 다른 인스턴스라도 두 값의 전체 상태가 같거나 혹은 정의한 비교 규칙에 따라 일부 상태가 같다고 판단되면 동등하다   Equatable 자동 완성 조건    타입이 struct 또는 enum이고   모든 저장 프로퍼티(또는 연관값)가 Equatable이고   개발자가 == 을 직접 구현하지 않은 경우 컴파일러가 == 를 자동 합성한다. -&gt; 자동 합성된 ==는 모든 저장 프로퍼티를 비교한다 -&gt; 비교 기준을 일부 속성으로 제한하고 싶다면 ==를 직접 구현해 커스텀 비교가 가능하다   동일성(Identity)    내부 상태가 달라도 같은 대상을 가리키는지를 의미한다   struct Person: Equatable {     var name: String     var age: Int     var state: String } let user1 = Person(name: &quot;홍길동&quot;, age: 25, state: &quot;기분 좋음&quot;) let user2 = Person(name: &quot;홍길동&quot;, age: 25, state: &quot;기분 나쁨&quot;) user1 == user2 // false     이름도 같고 나이도 같기 때문에 같은 사람이라고 생각할 수 있다   하지만 Equatable로 비교하면 상태가 다르기 때문에 다르다고 나온다   만약 이 둘을 동일한 사람으로 생각하려면 같은 사람으로 식별할 무언가가 필요하다   주민등록번호같은 유일한 식별자가 필요하다 -&gt; 이처럼 값의 상태만으로는 같은 대상을 판단할 수 없는 경우 동일성을 표현할 방법이 필요하다   Identifiable 탄생 protocol Identifiable {     associatedtype ID: Hashable     var id: ID { get } }     Identifiable는 값의 내용과 무관하게 대상을 구분하기 위한 고유 식별자를 제공한다.   Identifiable 예제 struct Peron: Equatable, Identifiable {     var id: String     var name: String     var age: Int     var state: String } let user1 = Person(id: &quot;고유식별자1&quot;, name: &quot;홍길동&quot;, age: 25, state: &quot;기분 좋음&quot;) let user2 = Person(id: &quot;고유식별자1&quot;, name: &quot;홍길동&quot;, age: 25, state: &quot;기분 좋음&quot;) user1.id == user2.id  // true     두 값의 상태는 다르지만   id가 같기 때문에 같은 대상으로 판단할 수 있다   이 경우 두 값은 동일성(identity)이 같다   Reference    https://green1229.tistory.com/589   https://hasensprung.tistory.com/133   https://eunjin3786.tistory.com/m/559   https://developer.apple.com/documentation/swiftui/view   https://eunjin3786.tistory.com/560   https://terry-some.tistory.com/133   https://developer.apple.com/documentation/swiftui/managing-model-data-in-your-app   https://developer.apple.com/documentation/swiftui/view   https://developer.apple.com/swiftui/   https://clamp-coding.tistory.com/519   https://medium.com/airbnb-engineering/understanding-and-improving-swiftui-performance-37b77ac61896   https://eunjin3786.tistory.com/560   https://lzufs.tistory.com/2">
+<!-- begin _includes/seo.html --><title>[SwiftUI] View - DongHyeon Kim’s Blog</title>
+<meta name="description" content="View @MainActor @preconcurrency protocol View     SwiftUI의 View는 화면 그 자체가 아니라 이 상태라면 이런 화면이어야 한다는 설계도(설명값)이다.   SwiftUI는 state-driven(언제 UI가 바뀌는가), data-driven(UI를 무엇으로 표현하는가)    UI 프레임워크로 state가 변경되면 View의 body가 다시 평가되며 이전 View 트리와 새로운 View 트리를 diff한 결과에 따라 필요한 UI만 업데이트한다.     View 값 생성       var body: some View {      VStack {          Text(&quot;Hello&quot;)          Button(&quot;Tap&quot;) {}      }   }                 body 실행       View Struct 값 생성       아직 화면에는 아무것도 안그려짐           View 트리 구성       // SwiftUI는 body 결과를 모아서 이런 구조를 만든다   VStack  ├─ Text(&quot;Hello&quot;)  └─ Button(&quot;Tap&quot;)           이전 트리와 diff       // Text는 같고 내용만 바뀜(전체 다시그리지 않고 부분 업데이트)   Text(&quot;Hello&quot;) → Text(&quot;World&quot;)                 이전 View Tree vs 새 View Tree       SwiftUI는 View 타입, 위치, identity(id), View 입력값을 비교한다           내부 Render Tree 갱신            SwiftUI는 View Tree를 Render Tree로 그린다       레이아웃 계산       애니메이션       트랜지션       접근성       hit testing           UIKit / AppKit View 업데이트            여기서 실제 화면 객체가 등장한다       iOS → UIKit (UIView)       macOS → AppKit (NSView)           SwiftUI는 뷰를 어떻게 구분하고 업데이트 하는가? 사전 지식으로 동등성(equality)와 동일성(Identity가 필요하다.  사전지식이 필요한 이유    UIKit은 클래스 타입이기 때문에 뷰를 할당하므로 얻는 포인터가 그 뷰의 명시적 ID가 될 수 있다.   SwiftUI는 값 타입이기 때문에 이런 값을 지속적으로 사용할 수 없다. 그래서 Identity가 등장하게 되었고 데이터 및 업데이트 주기에 영향을 미친다.   SwiftUI는 값타입이다. 값타입은 복사에 의해 값이 전달되므로 원본을 변경하지 않고 각각의 복사본이 독립적으로 존재하게 된다. 변수에 값을 할당하거나 함수에 인자로 전달할 때 원본이 아닌 독립된 복사본이 생성된다. 각 복사본이 메모리 상의 다른 위치에 존재한다는 뜻이며 이러한 특성으로 해당 뷰를 지속적으로 추적하기 힘들다.  만약 SwiftUI가 내부적으로 뷰의 메모리 주소를 ID를 사용한다면 뷰가 재생성 될 때마다 새로운 id가 할당된다. SwiftUI는 뷰의 상태와 속성의 변화를 감지하고 변화된 부분만 효율적으로 업데이트한다. 뷰의 새로운 상태외 이 전상태를 비교하게 되는데 이때 id가 다르다면 상태 비교가 불가능하게 된다.  View Identity    명시적(Explicit) Identity   구조적(Structural) Identity   명시적(Explicit) Identity List {     ForEach(viewModel.searchResults, id: \.resultId) { result in         //      } }     직접 id를 설정해준다   하지만 사소한 뷰 하나하나 id를 설정하는건 비효율적이다   구조적(Structural)Identity struct MainView: View {     var body: some View {         if users.isEmpty {             EmptyView()         } else {             UserListView()         }     } }     SwiftUI는 뷰 계층구조를 사용해 함시적 Identity를 생성한다   전반에 걸쳐 구조적 Id를 생성하므로 모든 뷰의 id를 생성할 필요가 없다.   Reference    https://green1229.tistory.com/589   https://hasensprung.tistory.com/133   https://eunjin3786.tistory.com/m/559   https://developer.apple.com/documentation/swiftui/view   https://eunjin3786.tistory.com/560   https://terry-some.tistory.com/133   https://developer.apple.com/documentation/swiftui/managing-model-data-in-your-app   https://developer.apple.com/documentation/swiftui/view   https://developer.apple.com/swiftui/   https://clamp-coding.tistory.com/519   https://medium.com/airbnb-engineering/understanding-and-improving-swiftui-performance-37b77ac61896   https://eunjin3786.tistory.com/560   https://lzufs.tistory.com/2">
 
 
   <meta name="author" content="Dong Hyeon">
@@ -22,11 +22,11 @@
 <meta property="og:type" content="article">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="DongHyeon Kim's Blog">
-<meta property="og:title" content="[SwiftUI] Equatable, Identifiable">
+<meta property="og:title" content="[SwiftUI] View">
 <meta property="og:url" content="http://localhost:4000/SwiftUI-View/">
 
 
-  <meta property="og:description" content="Equatable, Identifiable 요약 // id: 셀의 정체성 유지 // Equatable: 불필요한 리렌더링 방지 struct Item: Identifiable, Equatable {     let id: UUID     var title: String }     Equatable: 값이 같은가   Identity: 같은 존재인가   -&gt; Equatable은 값 비교이고 Identifiable는 대상 식별이며 동일성은 id로 표현된다.  List나 ForEach는 내부적으로 다음 플로우를 사용한다 1️⃣ Identifiable    └─ 같은 Row인가?       ├─ 아니면 → insert/delete/move       └─ 맞으면 → 다음 단계  2️⃣ View 업데이트 판단    ├─ Equatable 있음    │    ├─ == true  → body skip    │    └─ == false → body 재계산    └─ Equatable 없음         └─ 무조건 body 재계산     Identifiable 혹은 id로 판단            같은 Row인가       insert/delete/remove 판단           뷰 업데이트            Equatable을 채택하지 않은 경우   이전 view 새로운 view 비교할 방법이 없어서 비교를 포기하고 항상 해당 View와 자식 View들의 body를 다시 계산한다       Equatable 채택한 경우     ==로 이전 view와 비교하여 같으면 자식 body 계산 생략하고 다르면 자식 body를 계산한다           Equatable는 선택적이지만 쓰면 이점이 있다    Equatable이 없으면 같은 셀이어도 body는 항상 다시 계산되고, Equatable이 있으면 내용이 같을 때 body 계산을 건너뛸 수 있다.   // ❌ Equatable 없음 // 상위 상태 변경 //  → List body 실행 //  → ForEach 실행 //  → 모든 RowView body 실행 ❗ struct RowView: View {     let model: Item      var body: some View {         HeavyView(model: model)     } }     상위 View가 다시 그려지면 같은 id 셀이라도 RowView.body는 다시 실행된다   하지만 Heavy한 View에서는 문제가 된다.   // ✅ Equatable 있음 // 상위 상태 변경 //  → List body 실행 //  → ForEach 실행 //  → RowView == 비교 //      ├─ true → body skip //      └─ false → body 실행 // 이전 RowView == 새로운 RowView ? // ├─ true  → body 재계산 SKIP // └─ false → body 재계산 struct RowView: View, Equatable {     let model: Item      static func == (lhs: RowView, rhs: RowView) -&gt; Bool {         lhs.model == rhs.model     }      var body: some View {         HeavyView(model: model)     } }  RowView(model: model)     .equatable()     Equatable을 채택하면 아래와 같은 이점이 있다 줄어드는 것   body 실행 횟수   내부 View 트리 생성   Layout / Preference / Modifier 재평가 줄어들지 않는 것   List의 diff 비교   insert/delete/move판단 -&gt; 즉 diff횟수는 감소되지 않고 render 판단 횟수가 감소한다   동등성(Equatable) struct Person: Equatable {     var name: String     var age: Int }  // Equtable은 값의 상태를 기준으로 비교하므로 두 인스턴스는 같다고 판단된다. let user1 = Person(name: &quot;홍길동&quot;, age: 25) let user2 = Person(name: &quot;홍길동&quot;, age: 25) user1 == user2  // true  // 속성들이 Equatable이므로 컴파일러가 자동으로 만들어줌 static func == (lhs: Person, rhs: Person) -&gt; Bool {     lhs.name == rhs.name &amp;&amp;     lhs.age == rhs.age }     값 타입에서는 서로 다른 인스턴스라도 두 값의 전체 상태가 같거나 혹은 정의한 비교 규칙에 따라 일부 상태가 같다고 판단되면 동등하다   Equatable 자동 완성 조건    타입이 struct 또는 enum이고   모든 저장 프로퍼티(또는 연관값)가 Equatable이고   개발자가 == 을 직접 구현하지 않은 경우 컴파일러가 == 를 자동 합성한다. -&gt; 자동 합성된 ==는 모든 저장 프로퍼티를 비교한다 -&gt; 비교 기준을 일부 속성으로 제한하고 싶다면 ==를 직접 구현해 커스텀 비교가 가능하다   동일성(Identity)    내부 상태가 달라도 같은 대상을 가리키는지를 의미한다   struct Person: Equatable {     var name: String     var age: Int     var state: String } let user1 = Person(name: &quot;홍길동&quot;, age: 25, state: &quot;기분 좋음&quot;) let user2 = Person(name: &quot;홍길동&quot;, age: 25, state: &quot;기분 나쁨&quot;) user1 == user2 // false     이름도 같고 나이도 같기 때문에 같은 사람이라고 생각할 수 있다   하지만 Equatable로 비교하면 상태가 다르기 때문에 다르다고 나온다   만약 이 둘을 동일한 사람으로 생각하려면 같은 사람으로 식별할 무언가가 필요하다   주민등록번호같은 유일한 식별자가 필요하다 -&gt; 이처럼 값의 상태만으로는 같은 대상을 판단할 수 없는 경우 동일성을 표현할 방법이 필요하다   Identifiable 탄생 protocol Identifiable {     associatedtype ID: Hashable     var id: ID { get } }     Identifiable는 값의 내용과 무관하게 대상을 구분하기 위한 고유 식별자를 제공한다.   Identifiable 예제 struct Peron: Equatable, Identifiable {     var id: String     var name: String     var age: Int     var state: String } let user1 = Person(id: &quot;고유식별자1&quot;, name: &quot;홍길동&quot;, age: 25, state: &quot;기분 좋음&quot;) let user2 = Person(id: &quot;고유식별자1&quot;, name: &quot;홍길동&quot;, age: 25, state: &quot;기분 좋음&quot;) user1.id == user2.id  // true     두 값의 상태는 다르지만   id가 같기 때문에 같은 대상으로 판단할 수 있다   이 경우 두 값은 동일성(identity)이 같다   Reference    https://green1229.tistory.com/589   https://hasensprung.tistory.com/133   https://eunjin3786.tistory.com/m/559   https://developer.apple.com/documentation/swiftui/view   https://eunjin3786.tistory.com/560   https://terry-some.tistory.com/133   https://developer.apple.com/documentation/swiftui/managing-model-data-in-your-app   https://developer.apple.com/documentation/swiftui/view   https://developer.apple.com/swiftui/   https://clamp-coding.tistory.com/519   https://medium.com/airbnb-engineering/understanding-and-improving-swiftui-performance-37b77ac61896   https://eunjin3786.tistory.com/560   https://lzufs.tistory.com/2">
+  <meta property="og:description" content="View @MainActor @preconcurrency protocol View     SwiftUI의 View는 화면 그 자체가 아니라 이 상태라면 이런 화면이어야 한다는 설계도(설명값)이다.   SwiftUI는 state-driven(언제 UI가 바뀌는가), data-driven(UI를 무엇으로 표현하는가)    UI 프레임워크로 state가 변경되면 View의 body가 다시 평가되며 이전 View 트리와 새로운 View 트리를 diff한 결과에 따라 필요한 UI만 업데이트한다.     View 값 생성       var body: some View {      VStack {          Text(&quot;Hello&quot;)          Button(&quot;Tap&quot;) {}      }   }                 body 실행       View Struct 값 생성       아직 화면에는 아무것도 안그려짐           View 트리 구성       // SwiftUI는 body 결과를 모아서 이런 구조를 만든다   VStack  ├─ Text(&quot;Hello&quot;)  └─ Button(&quot;Tap&quot;)           이전 트리와 diff       // Text는 같고 내용만 바뀜(전체 다시그리지 않고 부분 업데이트)   Text(&quot;Hello&quot;) → Text(&quot;World&quot;)                 이전 View Tree vs 새 View Tree       SwiftUI는 View 타입, 위치, identity(id), View 입력값을 비교한다           내부 Render Tree 갱신            SwiftUI는 View Tree를 Render Tree로 그린다       레이아웃 계산       애니메이션       트랜지션       접근성       hit testing           UIKit / AppKit View 업데이트            여기서 실제 화면 객체가 등장한다       iOS → UIKit (UIView)       macOS → AppKit (NSView)           SwiftUI는 뷰를 어떻게 구분하고 업데이트 하는가? 사전 지식으로 동등성(equality)와 동일성(Identity가 필요하다.  사전지식이 필요한 이유    UIKit은 클래스 타입이기 때문에 뷰를 할당하므로 얻는 포인터가 그 뷰의 명시적 ID가 될 수 있다.   SwiftUI는 값 타입이기 때문에 이런 값을 지속적으로 사용할 수 없다. 그래서 Identity가 등장하게 되었고 데이터 및 업데이트 주기에 영향을 미친다.   SwiftUI는 값타입이다. 값타입은 복사에 의해 값이 전달되므로 원본을 변경하지 않고 각각의 복사본이 독립적으로 존재하게 된다. 변수에 값을 할당하거나 함수에 인자로 전달할 때 원본이 아닌 독립된 복사본이 생성된다. 각 복사본이 메모리 상의 다른 위치에 존재한다는 뜻이며 이러한 특성으로 해당 뷰를 지속적으로 추적하기 힘들다.  만약 SwiftUI가 내부적으로 뷰의 메모리 주소를 ID를 사용한다면 뷰가 재생성 될 때마다 새로운 id가 할당된다. SwiftUI는 뷰의 상태와 속성의 변화를 감지하고 변화된 부분만 효율적으로 업데이트한다. 뷰의 새로운 상태외 이 전상태를 비교하게 되는데 이때 id가 다르다면 상태 비교가 불가능하게 된다.  View Identity    명시적(Explicit) Identity   구조적(Structural) Identity   명시적(Explicit) Identity List {     ForEach(viewModel.searchResults, id: \.resultId) { result in         //      } }     직접 id를 설정해준다   하지만 사소한 뷰 하나하나 id를 설정하는건 비효율적이다   구조적(Structural)Identity struct MainView: View {     var body: some View {         if users.isEmpty {             EmptyView()         } else {             UserListView()         }     } }     SwiftUI는 뷰 계층구조를 사용해 함시적 Identity를 생성한다   전반에 걸쳐 구조적 Id를 생성하므로 모든 뷰의 id를 생성할 필요가 없다.   Reference    https://green1229.tistory.com/589   https://hasensprung.tistory.com/133   https://eunjin3786.tistory.com/m/559   https://developer.apple.com/documentation/swiftui/view   https://eunjin3786.tistory.com/560   https://terry-some.tistory.com/133   https://developer.apple.com/documentation/swiftui/managing-model-data-in-your-app   https://developer.apple.com/documentation/swiftui/view   https://developer.apple.com/swiftui/   https://clamp-coding.tistory.com/519   https://medium.com/airbnb-engineering/understanding-and-improving-swiftui-performance-37b77ac61896   https://eunjin3786.tistory.com/560   https://lzufs.tistory.com/2">
 
 
 
@@ -34,7 +34,7 @@
 
 
 
-  <meta property="article:published_time" content="2026-01-07T00:00:00+00:00">
+  <meta property="article:published_time" content="2026-01-06T00:00:00+00:00">
 
 
 
@@ -456,16 +456,16 @@ checkbox.addEventListener('change', function() {
 
 
   <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="[SwiftUI] Equatable, Identifiable">
-    <meta itemprop="description" content="Equatable, Identifiable 요약// id: 셀의 정체성 유지// Equatable: 불필요한 리렌더링 방지struct Item: Identifiable, Equatable {    let id: UUID    var title: String}  Equatable: 값이 같은가  Identity: 같은 존재인가-&gt; Equatable은 값 비교이고 Identifiable는 대상 식별이며 동일성은 id로 표현된다.List나 ForEach는 내부적으로 다음 플로우를 사용한다1️⃣ Identifiable   └─ 같은 Row인가?      ├─ 아니면 → insert/delete/move      └─ 맞으면 → 다음 단계2️⃣ View 업데이트 판단   ├─ Equatable 있음   │    ├─ == true  → body skip   │    └─ == false → body 재계산   └─ Equatable 없음        └─ 무조건 body 재계산  Identifiable 혹은 id로 판단          같은 Row인가      insert/delete/remove 판단        뷰 업데이트          Equatable을 채택하지 않은 경우  이전 view 새로운 view 비교할 방법이 없어서 비교를 포기하고 항상 해당 View와 자식 View들의 body를 다시 계산한다      Equatable 채택한 경우    ==로 이전 view와 비교하여 같으면 자식 body 계산 생략하고 다르면 자식 body를 계산한다      Equatable는 선택적이지만 쓰면 이점이 있다  Equatable이 없으면 같은 셀이어도 body는 항상 다시 계산되고,Equatable이 있으면 내용이 같을 때 body 계산을 건너뛸 수 있다.// ❌ Equatable 없음// 상위 상태 변경//  → List body 실행//  → ForEach 실행//  → 모든 RowView body 실행 ❗struct RowView: View {    let model: Item    var body: some View {        HeavyView(model: model)    }}  상위 View가 다시 그려지면 같은 id 셀이라도 RowView.body는 다시 실행된다  하지만 Heavy한 View에서는 문제가 된다.// ✅ Equatable 있음// 상위 상태 변경//  → List body 실행//  → ForEach 실행//  → RowView == 비교//      ├─ true → body skip//      └─ false → body 실행// 이전 RowView == 새로운 RowView ?// ├─ true  → body 재계산 SKIP// └─ false → body 재계산struct RowView: View, Equatable {    let model: Item    static func == (lhs: RowView, rhs: RowView) -&gt; Bool {        lhs.model == rhs.model    }    var body: some View {        HeavyView(model: model)    }}RowView(model: model)    .equatable()  Equatable을 채택하면 아래와 같은 이점이 있다줄어드는 것  body 실행 횟수  내부 View 트리 생성  Layout / Preference / Modifier 재평가줄어들지 않는 것  List의 diff 비교  insert/delete/move판단-&gt; 즉 diff횟수는 감소되지 않고 render 판단 횟수가 감소한다동등성(Equatable)struct Person: Equatable {    var name: String    var age: Int}// Equtable은 값의 상태를 기준으로 비교하므로 두 인스턴스는 같다고 판단된다.let user1 = Person(name: &quot;홍길동&quot;, age: 25)let user2 = Person(name: &quot;홍길동&quot;, age: 25)user1 == user2  // true// 속성들이 Equatable이므로 컴파일러가 자동으로 만들어줌static func == (lhs: Person, rhs: Person) -&gt; Bool {    lhs.name == rhs.name &amp;&amp;    lhs.age == rhs.age}  값 타입에서는 서로 다른 인스턴스라도 두 값의 전체 상태가 같거나 혹은 정의한 비교 규칙에 따라 일부 상태가 같다고 판단되면 동등하다Equatable 자동 완성 조건  타입이 struct 또는 enum이고  모든 저장 프로퍼티(또는 연관값)가 Equatable이고  개발자가 == 을 직접 구현하지 않은 경우 컴파일러가 == 를 자동 합성한다.-&gt; 자동 합성된 ==는 모든 저장 프로퍼티를 비교한다-&gt; 비교 기준을 일부 속성으로 제한하고 싶다면 ==를 직접 구현해 커스텀 비교가 가능하다동일성(Identity)  내부 상태가 달라도 같은 대상을 가리키는지를 의미한다struct Person: Equatable {    var name: String    var age: Int    var state: String}let user1 = Person(name: &quot;홍길동&quot;, age: 25, state: &quot;기분 좋음&quot;)let user2 = Person(name: &quot;홍길동&quot;, age: 25, state: &quot;기분 나쁨&quot;)user1 == user2 // false  이름도 같고 나이도 같기 때문에 같은 사람이라고 생각할 수 있다  하지만 Equatable로 비교하면 상태가 다르기 때문에 다르다고 나온다  만약 이 둘을 동일한 사람으로 생각하려면 같은 사람으로 식별할 무언가가 필요하다  주민등록번호같은 유일한 식별자가 필요하다-&gt; 이처럼 값의 상태만으로는 같은 대상을 판단할 수 없는 경우 동일성을 표현할 방법이 필요하다Identifiable 탄생protocol Identifiable {    associatedtype ID: Hashable    var id: ID { get }}  Identifiable는 값의 내용과 무관하게 대상을 구분하기 위한 고유 식별자를 제공한다.Identifiable 예제struct Peron: Equatable, Identifiable {    var id: String    var name: String    var age: Int    var state: String}let user1 = Person(id: &quot;고유식별자1&quot;, name: &quot;홍길동&quot;, age: 25, state: &quot;기분 좋음&quot;)let user2 = Person(id: &quot;고유식별자1&quot;, name: &quot;홍길동&quot;, age: 25, state: &quot;기분 좋음&quot;)user1.id == user2.id  // true  두 값의 상태는 다르지만  id가 같기 때문에 같은 대상으로 판단할 수 있다  이 경우 두 값은 동일성(identity)이 같다Reference  https://green1229.tistory.com/589  https://hasensprung.tistory.com/133  https://eunjin3786.tistory.com/m/559  https://developer.apple.com/documentation/swiftui/view  https://eunjin3786.tistory.com/560  https://terry-some.tistory.com/133  https://developer.apple.com/documentation/swiftui/managing-model-data-in-your-app  https://developer.apple.com/documentation/swiftui/view  https://developer.apple.com/swiftui/  https://clamp-coding.tistory.com/519  https://medium.com/airbnb-engineering/understanding-and-improving-swiftui-performance-37b77ac61896  https://eunjin3786.tistory.com/560  https://lzufs.tistory.com/2">
-    <meta itemprop="datePublished" content="2026-01-07T00:00:00+00:00">
+    <meta itemprop="headline" content="[SwiftUI] View">
+    <meta itemprop="description" content="View@MainActor @preconcurrencyprotocol View  SwiftUI의 View는 화면 그 자체가 아니라 이 상태라면 이런 화면이어야 한다는 설계도(설명값)이다.SwiftUI는 state-driven(언제 UI가 바뀌는가), data-driven(UI를 무엇으로 표현하는가)   UI 프레임워크로 state가 변경되면 View의 body가 다시 평가되며 이전 View 트리와 새로운 View 트리를 diff한 결과에 따라 필요한 UI만 업데이트한다.  View 값 생성      var body: some View {     VStack {         Text(&quot;Hello&quot;)         Button(&quot;Tap&quot;) {}     }  }              body 실행      View Struct 값 생성      아직 화면에는 아무것도 안그려짐        View 트리 구성      // SwiftUI는 body 결과를 모아서 이런 구조를 만든다  VStack ├─ Text(&quot;Hello&quot;) └─ Button(&quot;Tap&quot;)        이전 트리와 diff      // Text는 같고 내용만 바뀜(전체 다시그리지 않고 부분 업데이트)  Text(&quot;Hello&quot;) → Text(&quot;World&quot;)              이전 View Tree vs 새 View Tree      SwiftUI는 View 타입, 위치, identity(id), View 입력값을 비교한다        내부 Render Tree 갱신          SwiftUI는 View Tree를 Render Tree로 그린다      레이아웃 계산      애니메이션      트랜지션      접근성      hit testing        UIKit / AppKit View 업데이트          여기서 실제 화면 객체가 등장한다      iOS → UIKit (UIView)      macOS → AppKit (NSView)      SwiftUI는 뷰를 어떻게 구분하고 업데이트 하는가?사전 지식으로 동등성(equality)와 동일성(Identity가 필요하다.사전지식이 필요한 이유  UIKit은 클래스 타입이기 때문에 뷰를 할당하므로 얻는 포인터가 그 뷰의 명시적 ID가 될 수 있다.  SwiftUI는 값 타입이기 때문에 이런 값을 지속적으로 사용할 수 없다.그래서 Identity가 등장하게 되었고 데이터 및 업데이트 주기에 영향을 미친다.SwiftUI는 값타입이다. 값타입은 복사에 의해 값이 전달되므로 원본을 변경하지 않고 각각의 복사본이 독립적으로 존재하게 된다. 변수에 값을 할당하거나 함수에 인자로 전달할 때 원본이 아닌 독립된 복사본이 생성된다. 각 복사본이 메모리 상의 다른 위치에 존재한다는 뜻이며 이러한 특성으로 해당 뷰를 지속적으로 추적하기 힘들다.만약 SwiftUI가 내부적으로 뷰의 메모리 주소를 ID를 사용한다면 뷰가 재생성 될 때마다 새로운 id가 할당된다. SwiftUI는 뷰의 상태와 속성의 변화를 감지하고 변화된 부분만 효율적으로 업데이트한다.뷰의 새로운 상태외 이 전상태를 비교하게 되는데 이때 id가 다르다면 상태 비교가 불가능하게 된다.View Identity  명시적(Explicit) Identity  구조적(Structural) Identity명시적(Explicit) IdentityList {    ForEach(viewModel.searchResults, id: \.resultId) { result in        //     }}  직접 id를 설정해준다  하지만 사소한 뷰 하나하나 id를 설정하는건 비효율적이다구조적(Structural)Identitystruct MainView: View {    var body: some View {        if users.isEmpty {            EmptyView()        } else {            UserListView()        }    }}  SwiftUI는 뷰 계층구조를 사용해 함시적 Identity를 생성한다  전반에 걸쳐 구조적 Id를 생성하므로 모든 뷰의 id를 생성할 필요가 없다.Reference  https://green1229.tistory.com/589  https://hasensprung.tistory.com/133  https://eunjin3786.tistory.com/m/559  https://developer.apple.com/documentation/swiftui/view  https://eunjin3786.tistory.com/560  https://terry-some.tistory.com/133  https://developer.apple.com/documentation/swiftui/managing-model-data-in-your-app  https://developer.apple.com/documentation/swiftui/view  https://developer.apple.com/swiftui/  https://clamp-coding.tistory.com/519  https://medium.com/airbnb-engineering/understanding-and-improving-swiftui-performance-37b77ac61896  https://eunjin3786.tistory.com/560  https://lzufs.tistory.com/2">
+    <meta itemprop="datePublished" content="2026-01-06T00:00:00+00:00">
     
 
     <div class="page__inner-wrap">
       
         <header>
           <h1 id="page-title" class="page__title p-name" itemprop="headline">
-            <a href="http://localhost:4000/SwiftUI-View/" class="u-url" itemprop="url">[SwiftUI] Equatable, Identifiable
+            <a href="http://localhost:4000/SwiftUI-View/" class="u-url" itemprop="url">[SwiftUI] View
 </a>
           </h1>
           <footer class="page__meta">
@@ -491,7 +491,7 @@ checkbox.addEventListener('change', function() {
 <!--  -->
             
 
-  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2026-01-07T00:00:00+00:00">January 7, 2026</time></p>
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2026-01-06T00:00:00+00:00">January 6, 2026</time></p>
 
           </footer>
         </header>
@@ -501,192 +501,114 @@ checkbox.addEventListener('change', function() {
         
         <!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
 
-<!-- ## SwiftUI는 뷰를 어떻게 구분하고 업데이트 하는가?
-사전 지식으로 동등성(equality)와 동일성(Identity)가 필요하다. -->
-
-<h2 id="equatable-identifiable-요약">Equatable, Identifiable 요약</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// id: 셀의 정체성 유지</span>
-<span class="c1">// Equatable: 불필요한 리렌더링 방지</span>
-<span class="kd">struct</span> <span class="kt">Item</span><span class="p">:</span> <span class="kt">Identifiable</span><span class="p">,</span> <span class="kt">Equatable</span> <span class="p">{</span>
-    <span class="k">let</span> <span class="nv">id</span><span class="p">:</span> <span class="kt">UUID</span>
-    <span class="k">var</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span>
-<span class="p">}</span>
+<h2 id="view">View</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">@MainActor</span> <span class="kd">@preconcurrency</span>
+<span class="kd">protocol</span> <span class="kt">View</span>
 </code></pre></div></div>
-<ul>
-  <li>Equatable: 값이 같은가</li>
-  <li>Identity: 같은 존재인가</li>
-</ul>
+<blockquote>
+  <p>SwiftUI의 View는 화면 그 자체가 아니라 이 상태라면 이런 화면이어야 한다는 설계도(설명값)이다.</p>
+</blockquote>
 
-<p>-&gt; Equatable은 값 비교이고 Identifiable는 대상 식별이며 동일성은 id로 표현된다.</p>
+<p>SwiftUI는 state-driven(언제 UI가 바뀌는가), data-driven(UI를 무엇으로 표현하는가)   <br />
+UI 프레임워크로 state가 변경되면 View의 body가 다시 평가되며 이전 View 트리와 새로운 View 트리를 diff한 결과에 따라 필요한 UI만 업데이트한다.</p>
 
-<h2 id="list나-foreach는-내부적으로-다음-플로우를-사용한다">List나 ForEach는 내부적으로 다음 플로우를 사용한다</h2>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1️⃣ Identifiable
-   └─ 같은 Row인가?
-      ├─ 아니면 → insert/delete/move
-      └─ 맞으면 → 다음 단계
-
-2️⃣ View 업데이트 판단
-   ├─ Equatable 있음
-   │    ├─ <span class="o">==</span> <span class="nb">true</span>  → body skip
-   │    └─ <span class="o">==</span> <span class="nb">false</span> → body 재계산
-   └─ Equatable 없음
-        └─ 무조건 body 재계산
-</code></pre></div></div>
 <ol>
-  <li><code class="language-plaintext highlighter-rouge">Identifiable</code> 혹은 id로 판단
+  <li>View 값 생성
+    <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">var</span> <span class="nv">body</span><span class="p">:</span> <span class="kd">some</span> <span class="kt">View</span> <span class="p">{</span>
+     <span class="kt">VStack</span> <span class="p">{</span>
+         <span class="kt">Text</span><span class="p">(</span><span class="s">"Hello"</span><span class="p">)</span>
+         <span class="kt">Button</span><span class="p">(</span><span class="s">"Tap"</span><span class="p">)</span> <span class="p">{}</span>
+     <span class="p">}</span>
+  <span class="p">}</span>
+</code></pre></div>    </div>
     <ul>
-      <li>같은 Row인가</li>
-      <li>insert/delete/remove 판단</li>
+      <li>body 실행</li>
+      <li>View Struct 값 생성</li>
+      <li>아직 화면에는 아무것도 안그려짐</li>
     </ul>
   </li>
-  <li>뷰 업데이트
+  <li>View 트리 구성
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  // SwiftUI는 body 결과를 모아서 이런 구조를 만든다
+  VStack
+ ├─ Text<span class="o">(</span><span class="s2">"Hello"</span><span class="o">)</span>
+ └─ Button<span class="o">(</span><span class="s2">"Tap"</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>이전 트리와 diff
+    <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1">// Text는 같고 내용만 바뀜(전체 다시그리지 않고 부분 업데이트)</span>
+  <span class="kt">Text</span><span class="p">(</span><span class="s">"Hello"</span><span class="p">)</span> <span class="err">→</span> <span class="kt">Text</span><span class="p">(</span><span class="s">"World"</span><span class="p">)</span>
+</code></pre></div>    </div>
     <ul>
-      <li><code class="language-plaintext highlighter-rouge">Equatable</code>을 채택하지 않은 경우<br />
-  이전 view 새로운 view 비교할 방법이 없어서 비교를 포기하고 항상 해당 View와 자식 View들의 <code class="language-plaintext highlighter-rouge">body</code>를 다시 계산한다</li>
-      <li><code class="language-plaintext highlighter-rouge">Equatable</code> 채택한 경우  <br />
-  <code class="language-plaintext highlighter-rouge">==</code>로 이전 view와 비교하여 같으면 자식 body 계산 생략하고 다르면 자식 body를 계산한다</li>
+      <li>이전 View Tree vs 새 View Tree</li>
+      <li>SwiftUI는 View 타입, 위치, identity(id), View 입력값을 비교한다</li>
+    </ul>
+  </li>
+  <li>내부 Render Tree 갱신
+    <ul>
+      <li>SwiftUI는 View Tree를 Render Tree로 그린다</li>
+      <li>레이아웃 계산</li>
+      <li>애니메이션</li>
+      <li>트랜지션</li>
+      <li>접근성</li>
+      <li>hit testing</li>
+    </ul>
+  </li>
+  <li>UIKit / AppKit View 업데이트
+    <ul>
+      <li>여기서 실제 화면 객체가 등장한다</li>
+      <li>iOS → UIKit (UIView)</li>
+      <li>macOS → AppKit (NSView)</li>
     </ul>
   </li>
 </ol>
 
-<h2 id="equatable는-선택적이지만-쓰면-이점이-있다">Equatable는 선택적이지만 쓰면 이점이 있다</h2>
+<h2 id="swiftui는-뷰를-어떻게-구분하고-업데이트-하는가">SwiftUI는 뷰를 어떻게 구분하고 업데이트 하는가?</h2>
+<p>사전 지식으로 <a href="https://indextrown.github.io/SwiftUI-Equatable-Identifiable/">동등성(equality)와 동일성(Identity</a>가 필요하다.</p>
+
+<h3 id="사전지식이-필요한-이유">사전지식이 필요한 이유</h3>
 <blockquote>
-  <p>Equatable이 없으면 같은 셀이어도 body는 항상 다시 계산되고,<br />
-Equatable이 있으면 내용이 같을 때 body 계산을 건너뛸 수 있다.</p>
+  <p>UIKit은 클래스 타입이기 때문에 뷰를 할당하므로 얻는 포인터가 그 뷰의 명시적 ID가 될 수 있다.  <br />
+SwiftUI는 값 타입이기 때문에 이런 값을 지속적으로 사용할 수 없다.<br />
+그래서 Identity가 등장하게 되었고 데이터 및 업데이트 주기에 영향을 미친다.</p>
 </blockquote>
 
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// ❌ Equatable 없음</span>
-<span class="c1">// 상위 상태 변경</span>
-<span class="c1">//  → List body 실행</span>
-<span class="c1">//  → ForEach 실행</span>
-<span class="c1">//  → 모든 RowView body 실행 ❗</span>
-<span class="kd">struct</span> <span class="kt">RowView</span><span class="p">:</span> <span class="kt">View</span> <span class="p">{</span>
-    <span class="k">let</span> <span class="nv">model</span><span class="p">:</span> <span class="kt">Item</span>
+<p>SwiftUI는 값타입이다. 값타입은 복사에 의해 값이 전달되므로 원본을 변경하지 않고 각각의 복사본이 독립적으로 존재하게 된다. 변수에 값을 할당하거나 함수에 인자로 전달할 때 원본이 아닌 독립된 복사본이 생성된다. 각 복사본이 메모리 상의 다른 위치에 존재한다는 뜻이며 이러한 특성으로 해당 뷰를 지속적으로 추적하기 힘들다.</p>
 
+<p>만약 SwiftUI가 내부적으로 뷰의 메모리 주소를 ID를 사용한다면 뷰가 재생성 될 때마다 새로운 id가 할당된다. SwiftUI는 뷰의 상태와 속성의 변화를 감지하고 변화된 부분만 효율적으로 업데이트한다.<br />
+뷰의 새로운 상태외 이 전상태를 비교하게 되는데 이때 id가 다르다면 상태 비교가 불가능하게 된다.</p>
+
+<h3 id="view-identity">View Identity</h3>
+<ul>
+  <li>명시적(Explicit) Identity</li>
+  <li>구조적(Structural) Identity</li>
+</ul>
+
+<h3 id="명시적explicit-identity">명시적(Explicit) Identity</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">List</span> <span class="p">{</span>
+    <span class="kt">ForEach</span><span class="p">(</span><span class="n">viewModel</span><span class="o">.</span><span class="n">searchResults</span><span class="p">,</span> <span class="nv">id</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">resultId</span><span class="p">)</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span>
+        <span class="c1">// </span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>직접 id를 설정해준다</li>
+  <li>하지만 사소한 뷰 하나하나 id를 설정하는건 비효율적이다</li>
+</ul>
+
+<h3 id="구조적structuralidentity">구조적(Structural)Identity</h3>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">struct</span> <span class="kt">MainView</span><span class="p">:</span> <span class="kt">View</span> <span class="p">{</span>
     <span class="k">var</span> <span class="nv">body</span><span class="p">:</span> <span class="kd">some</span> <span class="kt">View</span> <span class="p">{</span>
-        <span class="kt">HeavyView</span><span class="p">(</span><span class="nv">model</span><span class="p">:</span> <span class="n">model</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">users</span><span class="o">.</span><span class="n">isEmpty</span> <span class="p">{</span>
+            <span class="kt">EmptyView</span><span class="p">()</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="kt">UserListView</span><span class="p">()</span>
+        <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div></div>
 <ul>
-  <li>상위 View가 다시 그려지면 같은 id 셀이라도 RowView.body는 다시 실행된다</li>
-  <li>하지만 Heavy한 View에서는 문제가 된다.</li>
-</ul>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// ✅ Equatable 있음</span>
-<span class="c1">// 상위 상태 변경</span>
-<span class="c1">//  → List body 실행</span>
-<span class="c1">//  → ForEach 실행</span>
-<span class="c1">//  → RowView == 비교</span>
-<span class="c1">//      ├─ true → body skip</span>
-<span class="c1">//      └─ false → body 실행</span>
-<span class="c1">// 이전 RowView == 새로운 RowView ?</span>
-<span class="c1">// ├─ true  → body 재계산 SKIP</span>
-<span class="c1">// └─ false → body 재계산</span>
-<span class="kd">struct</span> <span class="kt">RowView</span><span class="p">:</span> <span class="kt">View</span><span class="p">,</span> <span class="kt">Equatable</span> <span class="p">{</span>
-    <span class="k">let</span> <span class="nv">model</span><span class="p">:</span> <span class="kt">Item</span>
-
-    <span class="kd">static</span> <span class="kd">func</span> <span class="o">==</span> <span class="p">(</span><span class="nv">lhs</span><span class="p">:</span> <span class="kt">RowView</span><span class="p">,</span> <span class="nv">rhs</span><span class="p">:</span> <span class="kt">RowView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
-        <span class="n">lhs</span><span class="o">.</span><span class="n">model</span> <span class="o">==</span> <span class="n">rhs</span><span class="o">.</span><span class="n">model</span>
-    <span class="p">}</span>
-
-    <span class="k">var</span> <span class="nv">body</span><span class="p">:</span> <span class="kd">some</span> <span class="kt">View</span> <span class="p">{</span>
-        <span class="kt">HeavyView</span><span class="p">(</span><span class="nv">model</span><span class="p">:</span> <span class="n">model</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="kt">RowView</span><span class="p">(</span><span class="nv">model</span><span class="p">:</span> <span class="n">model</span><span class="p">)</span>
-    <span class="o">.</span><span class="nf">equatable</span><span class="p">()</span>
-</code></pre></div></div>
-<ul>
-  <li>Equatable을 채택하면 아래와 같은 이점이 있다<br />
-줄어드는 것</li>
-  <li>body 실행 횟수</li>
-  <li>내부 View 트리 생성</li>
-  <li>Layout / Preference / Modifier 재평가<br />
-줄어들지 않는 것</li>
-  <li>List의 diff 비교</li>
-  <li>insert/delete/move판단<br />
--&gt; 즉 diff횟수는 감소되지 않고 render 판단 횟수가 감소한다</li>
-</ul>
-
-<h3 id="동등성equatable">동등성(Equatable)</h3>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">struct</span> <span class="kt">Person</span><span class="p">:</span> <span class="kt">Equatable</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span>
-    <span class="k">var</span> <span class="nv">age</span><span class="p">:</span> <span class="kt">Int</span>
-<span class="p">}</span>
-
-<span class="c1">// Equtable은 값의 상태를 기준으로 비교하므로 두 인스턴스는 같다고 판단된다.</span>
-<span class="k">let</span> <span class="nv">user1</span> <span class="o">=</span> <span class="kt">Person</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"홍길동"</span><span class="p">,</span> <span class="nv">age</span><span class="p">:</span> <span class="mi">25</span><span class="p">)</span>
-<span class="k">let</span> <span class="nv">user2</span> <span class="o">=</span> <span class="kt">Person</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"홍길동"</span><span class="p">,</span> <span class="nv">age</span><span class="p">:</span> <span class="mi">25</span><span class="p">)</span>
-<span class="n">user1</span> <span class="o">==</span> <span class="n">user2</span>  <span class="c1">// true</span>
-</code></pre></div></div>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 속성들이 Equatable이므로 컴파일러가 자동으로 만들어줌</span>
-<span class="kd">static</span> <span class="kd">func</span> <span class="o">==</span> <span class="p">(</span><span class="nv">lhs</span><span class="p">:</span> <span class="kt">Person</span><span class="p">,</span> <span class="nv">rhs</span><span class="p">:</span> <span class="kt">Person</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
-    <span class="n">lhs</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">rhs</span><span class="o">.</span><span class="n">name</span> <span class="o">&amp;&amp;</span>
-    <span class="n">lhs</span><span class="o">.</span><span class="n">age</span> <span class="o">==</span> <span class="n">rhs</span><span class="o">.</span><span class="n">age</span>
-<span class="p">}</span>
-</code></pre></div></div>
-<blockquote>
-  <p>값 타입에서는 서로 다른 인스턴스라도 두 값의 전체 상태가 같거나 혹은 정의한 비교 규칙에 따라 일부 상태가 같다고 판단되면 동등하다</p>
-</blockquote>
-
-<h3 id="equatable-자동-완성-조건">Equatable 자동 완성 조건</h3>
-<ul>
-  <li>타입이 struct 또는 enum이고</li>
-  <li>모든 저장 프로퍼티(또는 연관값)가 Equatable이고</li>
-  <li>개발자가 <code class="language-plaintext highlighter-rouge">==</code> 을 직접 구현하지 않은 경우 컴파일러가 <code class="language-plaintext highlighter-rouge">==</code> 를 자동 합성한다.<br />
--&gt; 자동 합성된 <code class="language-plaintext highlighter-rouge">==</code>는 모든 저장 프로퍼티를 비교한다<br />
--&gt; 비교 기준을 일부 속성으로 제한하고 싶다면 <code class="language-plaintext highlighter-rouge">==</code>를 직접 구현해 커스텀 비교가 가능하다</li>
-</ul>
-
-<h3 id="동일성identity">동일성(Identity)</h3>
-<blockquote>
-  <p>내부 상태가 달라도 같은 대상을 가리키는지를 의미한다</p>
-</blockquote>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">struct</span> <span class="kt">Person</span><span class="p">:</span> <span class="kt">Equatable</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span>
-    <span class="k">var</span> <span class="nv">age</span><span class="p">:</span> <span class="kt">Int</span>
-    <span class="k">var</span> <span class="nv">state</span><span class="p">:</span> <span class="kt">String</span>
-<span class="p">}</span>
-<span class="k">let</span> <span class="nv">user1</span> <span class="o">=</span> <span class="kt">Person</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"홍길동"</span><span class="p">,</span> <span class="nv">age</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="nv">state</span><span class="p">:</span> <span class="s">"기분 좋음"</span><span class="p">)</span>
-<span class="k">let</span> <span class="nv">user2</span> <span class="o">=</span> <span class="kt">Person</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"홍길동"</span><span class="p">,</span> <span class="nv">age</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="nv">state</span><span class="p">:</span> <span class="s">"기분 나쁨"</span><span class="p">)</span>
-<span class="n">user1</span> <span class="o">==</span> <span class="n">user2</span> <span class="c1">// false</span>
-</code></pre></div></div>
-<ul>
-  <li>이름도 같고 나이도 같기 때문에 같은 사람이라고 생각할 수 있다</li>
-  <li>하지만 Equatable로 비교하면 상태가 다르기 때문에 다르다고 나온다</li>
-  <li>만약 이 둘을 동일한 사람으로 생각하려면 같은 사람으로 식별할 무언가가 필요하다</li>
-  <li>주민등록번호같은 유일한 식별자가 필요하다<br />
--&gt; 이처럼 값의 상태만으로는 같은 대상을 판단할 수 없는 경우 동일성을 표현할 방법이 필요하다</li>
-</ul>
-
-<h3 id="identifiable-탄생">Identifiable 탄생</h3>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protocol</span> <span class="kt">Identifiable</span> <span class="p">{</span>
-    <span class="kd">associatedtype</span> <span class="kt">ID</span><span class="p">:</span> <span class="kt">Hashable</span>
-    <span class="k">var</span> <span class="nv">id</span><span class="p">:</span> <span class="kt">ID</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-<ul>
-  <li>Identifiable는 값의 내용과 무관하게 대상을 구분하기 위한 고유 식별자를 제공한다.</li>
-</ul>
-
-<h3 id="identifiable-예제">Identifiable 예제</h3>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">struct</span> <span class="kt">Peron</span><span class="p">:</span> <span class="kt">Equatable</span><span class="p">,</span> <span class="kt">Identifiable</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">id</span><span class="p">:</span> <span class="kt">String</span>
-    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span>
-    <span class="k">var</span> <span class="nv">age</span><span class="p">:</span> <span class="kt">Int</span>
-    <span class="k">var</span> <span class="nv">state</span><span class="p">:</span> <span class="kt">String</span>
-<span class="p">}</span>
-<span class="k">let</span> <span class="nv">user1</span> <span class="o">=</span> <span class="kt">Person</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="s">"고유식별자1"</span><span class="p">,</span> <span class="nv">name</span><span class="p">:</span> <span class="s">"홍길동"</span><span class="p">,</span> <span class="nv">age</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="nv">state</span><span class="p">:</span> <span class="s">"기분 좋음"</span><span class="p">)</span>
-<span class="k">let</span> <span class="nv">user2</span> <span class="o">=</span> <span class="kt">Person</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="s">"고유식별자1"</span><span class="p">,</span> <span class="nv">name</span><span class="p">:</span> <span class="s">"홍길동"</span><span class="p">,</span> <span class="nv">age</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="nv">state</span><span class="p">:</span> <span class="s">"기분 좋음"</span><span class="p">)</span>
-<span class="n">user1</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">user2</span><span class="o">.</span><span class="n">id</span>  <span class="c1">// true</span>
-</code></pre></div></div>
-<ul>
-  <li>두 값의 상태는 다르지만</li>
-  <li>id가 같기 때문에 같은 대상으로 판단할 수 있다</li>
-  <li>이 경우 두 값은 동일성(identity)이 같다</li>
+  <li>SwiftUI는 뷰 계층구조를 사용해 함시적 Identity를 생성한다</li>
+  <li>전반에 걸쳐 구조적 Id를 생성하므로 모든 뷰의 id를 생성할 필요가 없다.</li>
 </ul>
 
 <h2 id="reference">Reference</h2>
@@ -714,11 +636,12 @@ Equatable이 있으면 내용이 같을 때 body 계산을 건너뛸 수 있다.
       
   <nav class="pagination">
     
-      <a href="/SwiftUI-View/" class="pagination--pager" title="[SwiftUI] View
+      <a href="/Architecture-TCA-1/" class="pagination--pager" title="[Architecture] TCA 개념 정리
 ">Previous</a>
     
     
-      <a href="#" class="pagination--pager disabled">Next</a>
+      <a href="/SwiftUI-Equatable-Identifiable/" class="pagination--pager" title="[SwiftUI] Equatable, Identifiable
+">Next</a>
     
   </nav>
 

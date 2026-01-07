@@ -4,7 +4,7 @@
         xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     
     <url>
-        <loc>http://localhost:4000/SwiftUI-View/</loc>
+        <loc>http://localhost:4000/SwiftUI-Equatable-Identifiable/</loc>
         
         <lastmod>2026-01-07T00:00:00+00:00</lastmod>
         

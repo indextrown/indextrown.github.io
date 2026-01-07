@@ -1,5 +1,9 @@
 ---
 title: "[SwiftUI] Equatable, Identifiable" 
+toc: true
+toc_sticky: true
+toc_label: "목차"
+toc_icon: "list"
 tags:
 - SwiftUI
 header:
@@ -24,11 +28,11 @@ struct Item: Identifiable, Equatable {
 - Equatable: 값이 같은가
 - Identity: 같은 존재인가  
 
--> Equatable은 값 비교이고 Identifiable는 대상 식별이며 동일성은 id로 표현된다.
+-> Equatable은 값 비교이고 Identifiable는 대상 식별이며 동일성은 id로 표현된다
 
 
 
-## List나 ForEach는 내부적으로 다음 플로우를 사용한다
+## List나 ForEach는 플로우
 ```bash
 1️⃣ Identifiable
    └─ 같은 Row인가?
@@ -51,9 +55,9 @@ struct Item: Identifiable, Equatable {
   - `Equatable` 채택한 경우  
       `==`로 이전 view와 비교하여 같으면 자식 body 계산 생략하고 다르면 자식 body를 계산한다   
 
-## Equatable는 선택적이지만 쓰면 이점이 있다
+## Equatable는 선택적 이점
 > Equatable이 없으면 같은 셀이어도 body는 항상 다시 계산되고,
-Equatable이 있으면 내용이 같을 때 body 계산을 건너뛸 수 있다.
+Equatable이 있으면 내용이 같을 때 body 계산을 건너뛸 수 있다
 
 ```swift
 // ❌ Equatable 없음
@@ -70,7 +74,7 @@ struct RowView: View {
 }
 ```
 - 상위 View가 다시 그려지면 같은 id 셀이라도 RowView.body는 다시 실행된다
-- 하지만 Heavy한 View에서는 문제가 된다.
+- 하지만 Heavy한 View에서는 문제가 된다
 
 ```swift
 // ✅ Equatable 있음
@@ -99,13 +103,14 @@ RowView(model: model)
     .equatable()
 ```
 - Equatable을 채택하면 아래와 같은 이점이 있다
-줄어드는 것
-- body 실행 횟수
-- 내부 View 트리 생성
-- Layout / Preference / Modifier 재평가
-줄어들지 않는 것
-- List의 diff 비교
-- insert/delete/move판단
+
+1. 줄어드는 것
+    - body 실행 횟수
+    - 내부 View 트리 생성
+    - Layout / Preference / Modifier 재평가
+2. 줄어들지 않는 것
+    - List의 diff 비교
+    - insert/delete/move판단
 -> 즉 diff횟수는 감소되지 않고 render 판단 횟수가 감소한다
 
 ### 동등성(Equatable)
@@ -132,7 +137,7 @@ static func == (lhs: Person, rhs: Person) -> Bool {
 ### Equatable 자동 완성 조건
 - 타입이 struct 또는 enum이고
 - 모든 저장 프로퍼티(또는 연관값)가 Equatable이고 
-- 개발자가 `==` 을 직접 구현하지 않은 경우 컴파일러가 `==` 를 자동 합성한다.
+- 개발자가 `==` 을 직접 구현하지 않은 경우 컴파일러가 `==` 를 자동 합성한다
 -> 자동 합성된 `==`는 모든 저장 프로퍼티를 비교한다
 -> 비교 기준을 일부 속성으로 제한하고 싶다면 `==`를 직접 구현해 커스텀 비교가 가능하다
 
@@ -163,7 +168,7 @@ protocol Identifiable {
     var id: ID { get }
 }
 ```
-- Identifiable는 값의 내용과 무관하게 대상을 구분하기 위한 고유 식별자를 제공한다.
+- Identifiable는 값의 내용과 무관하게 대상을 구분하기 위한 고유 식별자를 제공한다
 
 ### Identifiable 예제
 ```swift
