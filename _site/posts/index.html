@@ -501,7 +501,7 @@ checkbox.addEventListener('change', function() {
 
 
 <h3 class="archive__subtitle">전체 게시글
-  <span class="n_posts">(104)</span>
+  <span class="n_posts">(106)</span>
 </h3>
 <!-- 
 <div class="container">
@@ -527,6 +527,11 @@ checkbox.addEventListener('change', function() {
     
     
     <li><span class="tag" data-tag="Algorithm">Algorithm (3)</span></li>
+    
+  
+    
+    
+    <li><span class="tag" data-tag="Architecture">Architecture (1)</span></li>
     
   
     
@@ -654,7 +659,7 @@ checkbox.addEventListener('change', function() {
   
     
     
-    <li><span class="tag" data-tag="SwiftUI">SwiftUI (6)</span></li>
+    <li><span class="tag" data-tag="SwiftUI">SwiftUI (8)</span></li>
     
   
     
@@ -704,6 +709,8 @@ checkbox.addEventListener('change', function() {
   <div class="post-wrapper" 
   
     
+      data-SwiftUI
+    
   >
     
 
@@ -715,7 +722,144 @@ checkbox.addEventListener('change', function() {
     
     <h2 class="archive__item-title no_toc" itemprop="headline">
       
-        <a href="/Makefile/" rel="permalink">
+        <a href="/SwiftUI-View/" rel="permalink">[SwiftUI] Equatable, Identifiable
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-01-07T00:00:00+00:00">January 7, 2026</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+
+
+
+Equatable, Identifiable 요약
+// id: 셀의 정체성 유지
+// Equatable: 불필요한 리렌더링 방지
+struct Item: Identifiable, Equatable {
+    let id: UUID
+    var title: String
+}
+
+
+...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=SwiftUI">SwiftUI</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-SwiftUI
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/SwiftUI-View/" rel="permalink">[SwiftUI] View
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-01-06T00:00:00+00:00">January 6, 2026</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+
+View
+@MainActor @preconcurrency
+protocol View
+
+
+  SwiftUI의 View는 화면 그 자체가 아니라 이 상태라면 이런 화면이어야 한다는 설계도(설명값)이다.
+
+
+SwiftUI는 state-driven(언제 UI가 바뀌는가), data-dr...</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=SwiftUI">SwiftUI</a>
+          
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+      data-Architecture
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Architecture-TCA-1/" rel="permalink">[Architecture] TCA 개념 정리
 </a>
       
     </h2>
@@ -741,12 +885,21 @@ checkbox.addEventListener('change', function() {
 
 
     <p class="archive__item-excerpt" itemprop="description">
-</p>
+
+TCA(The Composable Architecture)
+TCA는 오픈소스 아키텍처 라이브러리다. Swift Composable Architecture, SCA라는 이름으로 부르는 경우도 있지만 공식문서상에는 TCA로 설명한다.
+
+TCA는 SwiftUI에 적용하기 좋은 아키텍...</p>
   </article>
 </div>
 
     
       <div class="archive__item-tags">
+        
+          
+          
+            <a class="posttag tagged" href="/posts/?tag=Architecture">Architecture</a>
+          
         
       </div>
     
@@ -914,7 +1067,7 @@ Reference
     
     <h2 class="archive__item-title no_toc" itemprop="headline">
       
-        <a href="/RxDataSource-RxDataSource-6/" rel="permalink">[RxDataSource] 6. 버튼 액션을 Rx로 연결하기
+        <a href="/RxDataSource-RxDataSource-6/" rel="permalink">[RxDataSource] 6. 버튼 액션을 Rx로 연결하기 with 성능 이슈 해결
 </a>
       
     </h2>
@@ -8018,7 +8171,7 @@ RxSwift를 알기 위해 ReactiveX에 대해 알아야 한다. ReactiveX 혹은 
   </ul>
 </div>
 
-<div class="page__footer-copyright">&copy; 2025 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+<div class="page__footer-copyright">&copy; 2026 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
 
 <script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
       </footer>

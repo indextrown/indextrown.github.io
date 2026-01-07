@@ -1,5 +1,5 @@
 ---
-title: "[RxDataSource] 6. 버튼 액션을 Rx로 연결하기"
+title: "[RxDataSource] 6. 버튼 액션을 Rx로 연결하기 with 성능 이슈 해결"
 tags: 
 - ReactiveX
 - RxDataSource
