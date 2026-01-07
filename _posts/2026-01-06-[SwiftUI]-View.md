@@ -61,7 +61,8 @@ UI 프레임워크로 state가 변경되면 View의 body가 다시 평가되며 
   - macOS → AppKit (NSView)
 
 ## SwiftUI는 뷰를 어떻게 구분하고 업데이트 하는가?
-사전 지식으로 동등성(equality)와 동일성(Identity)가 필요하다.
+사전 지식으로 [동등성(equality)와 동일성(Identity](https://indextrown.github.io/SwiftUI-Equatable-Identifiable/)가 필요하다.
+
 
 ### 사전지식이 필요한 이유
 > UIKit은 클래스 타입이기 때문에 뷰를 할당하므로 얻는 포인터가 그 뷰의 명시적 ID가 될 수 있다.  
