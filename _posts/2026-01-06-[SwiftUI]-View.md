@@ -63,53 +63,6 @@ UI 프레임워크로 state가 변경되면 View의 body가 다시 평가되며 
 ## SwiftUI는 뷰를 어떻게 구분하고 업데이트 하는가?
 사전 지식으로 동등성(equality)와 동일성(Identity)가 필요하다.
 
-### 동등성(Equatable)
-- 두 객체의 전체 상태가 같거나 혹은 정의한 비교 규칙에 따라 값이 같다고 판단되는 것
-- 값 타입(struct, enum)에서 주로 사용
-```swift
-struct Person: Equatable {
-    var name: String
-    var age: Int
-}
-let user1 = Person(name: "홍길동", age: 25)
-let user2 = Person(name: "홍길동", age: 25)
-user1 == user2  // true
-```
-- Equtable로 비교하면 이 둘은 같게 된다
-- 이렇게 상태만을 비교하면 이 둘은 같다고 볼 수 있다
-
-### 동일성(Identity)
-- 내부 상태가 달라도 같은 대상을 식별하는가
-```swift
-struct Person: Equatable {
-    var name: String
-    var age: Int
-    var state: String
-}
-let user1 = Person(name: "홍길동", age: 25, state: "기분 좋음")
-let user2 = Person(name: "홍길동", age: 25, state: "기분 나쁨")
-user1 == user2 // false
-```
-- 이름도 같고 나이도 같기 때문에 같은 사람이라고 생각할 수 있다
-- 하지만 Equatable로 비교하면 상태가 다르기 때문에 다르다고 나온다
-- 만약 이 둘을 동일한 사람으로 생각하려면 같은 사람으로 식별할 무언가가 필요하다
-- 주민등록번호같은 유일한 식별자가 필요하다
-
-### Identifiable 탄생
-```swift
-struct Peron: Equatable, Identifiable {
-    var id: String
-    var name: String
-    var age: Int
-    var state: String
-}
-let user1 = Person(id: "고유식별자1", name: "홍길동", age: 25, state: "기분 좋음")
-let user2 = Person(id: "고유식별자1", name: "홍길동", age: 25, state: "기분 좋음")
-user1.id == user2.id  // true
-```
-- 이렇게 되면 두 사람 모두 같은 사람이라고 판단할 수 있다
-- 이런 경우 이 둘의 identity(동일성)이 같다고 할 수 있다
-
 ### 사전지식이 필요한 이유
 > UIKit은 클래스 타입이기 때문에 뷰를 할당하므로 얻는 포인터가 그 뷰의 명시적 ID가 될 수 있다.  
 SwiftUI는 값 타입이기 때문에 이런 값을 지속적으로 사용할 수 없다.
