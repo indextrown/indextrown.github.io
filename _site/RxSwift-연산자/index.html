@@ -1,0 +1,1088 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>[RxSwift] 연산자 - DongHyeon Kim’s Blog</title>
+<meta name="description" content="CombineLatest  let a = PublishSubject&lt;Int&gt;() let b = PublishSubject&lt;String&gt;() Observable.combineLatest(a, b)  // 결과 a: 1          (b가 아직 없음 → 출력 없음) b: &quot;A&quot;        → (1, &quot;A&quot;) 출력 시작  a: 2          → (2, &quot;A&quot;) b: &quot;B&quot;        → (2, &quot;B&quot;)      개념: 여려 Observable 중 하나라도 새로운 값이 나오면 각각의 최신값을 묶어서 방출한다.   조건: 시작하려면 모든 Observable이 최소 1번은 방출해야한다.   CombineLatest 예시  // 로그인 버튼 활성화 Observable.combineLatest(idText, passwordText)     .map { !$0.isEmpty &amp;&amp; !$1.isEmpty }      입력값이 바뀔 때마다 다시 계산해야 할 때 사용한다     withLatestFrom  let a = PublishSubject&lt;Int&gt;() let b = PublishSubject&lt;String&gt;() a.withLatestFrom(b)  // 결과 b: &quot;A&quot; b: &quot;B&quot;        (아무 일 없음)  a: 1          → &quot;B&quot; a: 2          → &quot;B&quot;      개념: a가 emit할 때만 b의 최신값을 가져와서 방출한다   조건:            b는 최소 1번은 값이 있어야 한다.       a가 emit할 때만 실행된다.       b가 emit해도 아무 일 없다.           withLatestFrom 예시  buttonTap     .withLatestFrom(textFieldText)      버튼을 눌렀을 때만 텍스트 값 필요할 때 적합하다     에러 처리     개념: Rx에서 에러가 발생하면 스트림은 종료된다.   에러를 어떻게 다루는지에 따라 여러 방법이 있다.   에러 예시1  // catch + empty(에러 무시) input.reload     .withUnretained(self)     .flatMapLatest { owner, _ in         owner.groupUsecase.loadAndFetchGroup()             .catch { _ in .empty() }     }     .disposed(by: disposeBag)      에러 발생하더라도 아무 값도 방출하지 않는다   스트림 유지된다   UI는 에러를 모른다   실패해도 조용히 무시할 경우 또는 재시도 트리거가 있을 경우 사용한다   디버깅이 어렵다   에러 예시2  input.reload     .withUnretained(self)     .flatMapLatest { owner, _ in         owner.groupUsecase.loadAndFetchGroup()             .catchAndReturn(HCGroup.empty)             // 위아래 같음             .catch { _ in               .just(HCGroup.empty)           }           .disposed(by: disposeBag)     }      에러발생시 기본값을 방출한다   스트림 유지된다   UI는 계속 동작한다   에러 예시3  // vm let errorRelay = PublishRelay&lt;Error&gt;()  input.reload     .withUnretained(self)     .flatMapLatest { owner, _ in         owner.groupUsecase.loadAndFetchGroup()             .do(onError: { owner.errorRelay.accept($0) })             .catchAndReturn(HCGroup.empty)     }     .disposed(by: disposeBag)  // vc viewModel.errorRelay     .emit(onNext: { error in         // Alert 또는 Toast 표시     })     .disposed(by: disposeBag)      데이터 스트림은 유지   에러는 따로 UI로 전달   Alert, Toast 표시 가능   에러 예시4  input.reload     .flatMapLatest { [weak self] _ in         self?.groupUsecase.loadAndFetchGroup()             .asDriver(onErrorDriveWith: .empty())         ?? .empty()     }     .disposed(by: disposeBag)      UI 바인딩이면 아예 Driver로 변환하는 것이 안전하다.   Main Thread 보장   error 방출하지 않음   share된다(중복 subscribe 방지)   materialize  // Event&lt;Element&gt; 타입 종류 .next(Element) .error(Error) .completed  // 이 스트림은 HCGroup이 아니라 Event&lt;HCGroup&gt;을 방출한다. input.reload     .withUnretained(self)     .flatMapLatest { owner, _ in         owner.groupUsecase.loadAndFetchGroup()             .materialize()     }     .share()     .disposed(by: disposeBag)  let success = result     .compactMap { $0.element }  let error = result     .compactMap { $0.error }      에러와 완료 이벤트를 값(Event)으로 바꿔서 방출하는 연산자.   원래 Rx는 .next, .error, .completed 3가지 이벤트가 있으나 .error 발생 시 스트림이 종료된다. materialize를 쓰면 에러를 종료시키지 않고 값처럼 다룰 수 있다.   장점            스트림이 종료되지 않고 성공과 실패를 동시에 처리 가능하다       에러와 데이터를 분리 가능하다       MVVM에서 매우 깔끔한 구조 가능           예시  let result = input.reload     .flatMapLatest { [weak self] _ in         self?.groupUsecase.loadAndFetchGroup()             .materialize()         ?? .empty()     }     .share()  result     .compactMap { $0.element }     .bind(to: postsRelay)     .disposed(by: disposeBag)  result     .compactMap { $0.error }     .bind(to: errorRelay)     .disposed(by: disposeBag)   share  // replay: 0 → 이전 값 저장 안 함 // whileConnected → 구독자가 있을 때만 유지 share() = .share(replay: 0, scope: .whileConnected)  // 최근 값 1개 저장 // 늦게 구독해도 마지막 값 받음 .share(replay: 1)  let request = api.loadData() request.subscribe() request.subscribe() // 네트워크 요청이 2번 실행됨  let request = api.loadData()     .share() request.subscribe() request.subscribe() // 네트워크 요청 1번만 실행되고 두 구독자가 공유       개념: 하나의 Observable 실행 결과를 여러 subscriber가 공유하도록 만드는 연산자   설명: Rx는 기본적으로 Cold Observable이기 때문에 두번 subscribe하면 네트워크 요청이 2번 실행된다.   share(replay:)는 구독자가 1명 이상 존재하는 동안 처음 실행된 결과를 재사용한다   모든 구독자가 사라지면 다음 구독 시 다시 실행된다.   share 예시1  let request = api.load()     .share(replay: 1)  request.subscribe()  // A request.subscribe()  // B request.subscribe()  // C // 네트워크 1번 요청된다. // 그 결과를 A, B, C가 같이 나누어 쓴다.  모두 dispose된 뒤 다시 구독 let disposable1 = request.subscribe() disposable1.dispose()   // 구독자 0명 됨 request.subscribe() // 네트워크 1번 다시 실행된다   map  Observable.of(1, 2, 3)     .map { $0 * 10 }  Observable.of(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;)   .map { Int($0) }      들어온 값을 다른 값으로 변환하는 연산자   compactMap  Observable.of(&quot;1&quot;, &quot;2&quot;, &quot;three&quot;, &quot;4&quot;)     .compactMap { Int($0) } // 1, 2, 4      swift의 compactMap과 동일   nil 제거하고 값만 망출   예시  let result: Observable&lt;Event&lt;String&gt;&gt; = buttonTap     .flatMapLatest { _ in         apiCall()               // Observable&lt;String&gt;             .materialize()      // → Observable&lt;Event&lt;String&gt;&gt;     }     .share()  func apiCall() -&gt; Observable&lt;String&gt; {     let success = Bool.random()      if success {         return Observable.just(&quot;Success Data&quot;)     } else {         return Observable.error(NSError(domain: &quot;Network&quot;, code: -1))     } }  // 성공 값만 가져오기 result     .compactMap { $0.element }  // 에러만 가져오기 result     .compactMap { $0.error }   flatMap  Observable.of(1, 2, 3)     .flatMap { value in         Observable.just(value * 10)     } // 10 20 30  buttonTap     .flatMap { _ in         api.loadData()   // 네트워크 요청     } // 버튼 3번 누르면 네트워크 요청 3개 동시 실행됨 -&gt; 의도에 따라 flatMapLatest, flatMapFirst 사용가능      개념: 각 이벤트를 새로운 Observable로 바꾼뒤 모두 동시에 merge해서 방출   들어온 이벤트마다 새로운 비동기 작업을 만들고 그 결과를 전부 흘려보낸다.   flatMapFirst  A 시작 B 발생 → 무시 C 발생 → 무시 A 완료      개념: 작업이 진행 중이면 새로운 이벤트는 무시   중복 요청 방지, 버튼 연타 방지, 한번만 처리하는 작업   장점: 동시 실행 방지   단점: 후속 이벤트가 사라짐   flatMapLatest  A 시작 B 발생 → A 취소 C 발생 → B 취소 → C만 실행됨      개념: 새로운 이벤트가 오면 이전 작업을 취소하고 최신 작업만 유지한다   검색 자동완성, 텍스트 입력 API, 최신 결과만 의미 있는 경우   장점: 불필요한 네트워크 낭비 방지   단점: 중간 작업 취소됨   concatMap  A 시작 B 대기 C 대기  A 완료 B 실행 B 완료 C 실행      개념: 이벤트를 순서대로 큐에 쌓아 처리   삭제, 서버 상태 변경, 순서가 중요한 요청   장점: 안정적, 작업 누락 없음, 서버 상태 불일치 방지   단점: 느릴 수 있음">
+
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[RxSwift] 연산자">
+<meta property="og:url" content="http://localhost:4000/RxSwift-%EC%97%B0%EC%82%B0%EC%9E%90/">
+
+
+  <meta property="og:description" content="CombineLatest  let a = PublishSubject&lt;Int&gt;() let b = PublishSubject&lt;String&gt;() Observable.combineLatest(a, b)  // 결과 a: 1          (b가 아직 없음 → 출력 없음) b: &quot;A&quot;        → (1, &quot;A&quot;) 출력 시작  a: 2          → (2, &quot;A&quot;) b: &quot;B&quot;        → (2, &quot;B&quot;)      개념: 여려 Observable 중 하나라도 새로운 값이 나오면 각각의 최신값을 묶어서 방출한다.   조건: 시작하려면 모든 Observable이 최소 1번은 방출해야한다.   CombineLatest 예시  // 로그인 버튼 활성화 Observable.combineLatest(idText, passwordText)     .map { !$0.isEmpty &amp;&amp; !$1.isEmpty }      입력값이 바뀔 때마다 다시 계산해야 할 때 사용한다     withLatestFrom  let a = PublishSubject&lt;Int&gt;() let b = PublishSubject&lt;String&gt;() a.withLatestFrom(b)  // 결과 b: &quot;A&quot; b: &quot;B&quot;        (아무 일 없음)  a: 1          → &quot;B&quot; a: 2          → &quot;B&quot;      개념: a가 emit할 때만 b의 최신값을 가져와서 방출한다   조건:            b는 최소 1번은 값이 있어야 한다.       a가 emit할 때만 실행된다.       b가 emit해도 아무 일 없다.           withLatestFrom 예시  buttonTap     .withLatestFrom(textFieldText)      버튼을 눌렀을 때만 텍스트 값 필요할 때 적합하다     에러 처리     개념: Rx에서 에러가 발생하면 스트림은 종료된다.   에러를 어떻게 다루는지에 따라 여러 방법이 있다.   에러 예시1  // catch + empty(에러 무시) input.reload     .withUnretained(self)     .flatMapLatest { owner, _ in         owner.groupUsecase.loadAndFetchGroup()             .catch { _ in .empty() }     }     .disposed(by: disposeBag)      에러 발생하더라도 아무 값도 방출하지 않는다   스트림 유지된다   UI는 에러를 모른다   실패해도 조용히 무시할 경우 또는 재시도 트리거가 있을 경우 사용한다   디버깅이 어렵다   에러 예시2  input.reload     .withUnretained(self)     .flatMapLatest { owner, _ in         owner.groupUsecase.loadAndFetchGroup()             .catchAndReturn(HCGroup.empty)             // 위아래 같음             .catch { _ in               .just(HCGroup.empty)           }           .disposed(by: disposeBag)     }      에러발생시 기본값을 방출한다   스트림 유지된다   UI는 계속 동작한다   에러 예시3  // vm let errorRelay = PublishRelay&lt;Error&gt;()  input.reload     .withUnretained(self)     .flatMapLatest { owner, _ in         owner.groupUsecase.loadAndFetchGroup()             .do(onError: { owner.errorRelay.accept($0) })             .catchAndReturn(HCGroup.empty)     }     .disposed(by: disposeBag)  // vc viewModel.errorRelay     .emit(onNext: { error in         // Alert 또는 Toast 표시     })     .disposed(by: disposeBag)      데이터 스트림은 유지   에러는 따로 UI로 전달   Alert, Toast 표시 가능   에러 예시4  input.reload     .flatMapLatest { [weak self] _ in         self?.groupUsecase.loadAndFetchGroup()             .asDriver(onErrorDriveWith: .empty())         ?? .empty()     }     .disposed(by: disposeBag)      UI 바인딩이면 아예 Driver로 변환하는 것이 안전하다.   Main Thread 보장   error 방출하지 않음   share된다(중복 subscribe 방지)   materialize  // Event&lt;Element&gt; 타입 종류 .next(Element) .error(Error) .completed  // 이 스트림은 HCGroup이 아니라 Event&lt;HCGroup&gt;을 방출한다. input.reload     .withUnretained(self)     .flatMapLatest { owner, _ in         owner.groupUsecase.loadAndFetchGroup()             .materialize()     }     .share()     .disposed(by: disposeBag)  let success = result     .compactMap { $0.element }  let error = result     .compactMap { $0.error }      에러와 완료 이벤트를 값(Event)으로 바꿔서 방출하는 연산자.   원래 Rx는 .next, .error, .completed 3가지 이벤트가 있으나 .error 발생 시 스트림이 종료된다. materialize를 쓰면 에러를 종료시키지 않고 값처럼 다룰 수 있다.   장점            스트림이 종료되지 않고 성공과 실패를 동시에 처리 가능하다       에러와 데이터를 분리 가능하다       MVVM에서 매우 깔끔한 구조 가능           예시  let result = input.reload     .flatMapLatest { [weak self] _ in         self?.groupUsecase.loadAndFetchGroup()             .materialize()         ?? .empty()     }     .share()  result     .compactMap { $0.element }     .bind(to: postsRelay)     .disposed(by: disposeBag)  result     .compactMap { $0.error }     .bind(to: errorRelay)     .disposed(by: disposeBag)   share  // replay: 0 → 이전 값 저장 안 함 // whileConnected → 구독자가 있을 때만 유지 share() = .share(replay: 0, scope: .whileConnected)  // 최근 값 1개 저장 // 늦게 구독해도 마지막 값 받음 .share(replay: 1)  let request = api.loadData() request.subscribe() request.subscribe() // 네트워크 요청이 2번 실행됨  let request = api.loadData()     .share() request.subscribe() request.subscribe() // 네트워크 요청 1번만 실행되고 두 구독자가 공유       개념: 하나의 Observable 실행 결과를 여러 subscriber가 공유하도록 만드는 연산자   설명: Rx는 기본적으로 Cold Observable이기 때문에 두번 subscribe하면 네트워크 요청이 2번 실행된다.   share(replay:)는 구독자가 1명 이상 존재하는 동안 처음 실행된 결과를 재사용한다   모든 구독자가 사라지면 다음 구독 시 다시 실행된다.   share 예시1  let request = api.load()     .share(replay: 1)  request.subscribe()  // A request.subscribe()  // B request.subscribe()  // C // 네트워크 1번 요청된다. // 그 결과를 A, B, C가 같이 나누어 쓴다.  모두 dispose된 뒤 다시 구독 let disposable1 = request.subscribe() disposable1.dispose()   // 구독자 0명 됨 request.subscribe() // 네트워크 1번 다시 실행된다   map  Observable.of(1, 2, 3)     .map { $0 * 10 }  Observable.of(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;)   .map { Int($0) }      들어온 값을 다른 값으로 변환하는 연산자   compactMap  Observable.of(&quot;1&quot;, &quot;2&quot;, &quot;three&quot;, &quot;4&quot;)     .compactMap { Int($0) } // 1, 2, 4      swift의 compactMap과 동일   nil 제거하고 값만 망출   예시  let result: Observable&lt;Event&lt;String&gt;&gt; = buttonTap     .flatMapLatest { _ in         apiCall()               // Observable&lt;String&gt;             .materialize()      // → Observable&lt;Event&lt;String&gt;&gt;     }     .share()  func apiCall() -&gt; Observable&lt;String&gt; {     let success = Bool.random()      if success {         return Observable.just(&quot;Success Data&quot;)     } else {         return Observable.error(NSError(domain: &quot;Network&quot;, code: -1))     } }  // 성공 값만 가져오기 result     .compactMap { $0.element }  // 에러만 가져오기 result     .compactMap { $0.error }   flatMap  Observable.of(1, 2, 3)     .flatMap { value in         Observable.just(value * 10)     } // 10 20 30  buttonTap     .flatMap { _ in         api.loadData()   // 네트워크 요청     } // 버튼 3번 누르면 네트워크 요청 3개 동시 실행됨 -&gt; 의도에 따라 flatMapLatest, flatMapFirst 사용가능      개념: 각 이벤트를 새로운 Observable로 바꾼뒤 모두 동시에 merge해서 방출   들어온 이벤트마다 새로운 비동기 작업을 만들고 그 결과를 전부 흘려보낸다.   flatMapFirst  A 시작 B 발생 → 무시 C 발생 → 무시 A 완료      개념: 작업이 진행 중이면 새로운 이벤트는 무시   중복 요청 방지, 버튼 연타 방지, 한번만 처리하는 작업   장점: 동시 실행 방지   단점: 후속 이벤트가 사라짐   flatMapLatest  A 시작 B 발생 → A 취소 C 발생 → B 취소 → C만 실행됨      개념: 새로운 이벤트가 오면 이전 작업을 취소하고 최신 작업만 유지한다   검색 자동완성, 텍스트 입력 API, 최신 결과만 의미 있는 경우   장점: 불필요한 네트워크 낭비 방지   단점: 중간 작업 취소됨   concatMap  A 시작 B 대기 C 대기  A 완료 B 실행 B 완료 C 실행      개념: 이벤트를 순서대로 큐에 쌓아 처리   삭제, 서버 상태 변경, 순서가 중요한 요청   장점: 안정적, 작업 누락 없음, 서버 상태 불일치 방지   단점: 느릴 수 있음">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2026-02-25T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/RxSwift-%EC%97%B0%EC%82%B0%EC%9E%90/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <script src="https://code.iconify.design/1/1.0.4/iconify.min.js">   </script>
+<label class="switch_label">
+<input class='toggle-checkbox' type='checkbox'></input>
+<div class='toggle-slot'>
+    <div class='sun-icon-wrapper'>
+    <div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+    </div>
+    <div class='toggle-button'></div>
+    <div class='moon-icon-wrapper'>
+    <div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+    </div>
+</div>
+</label>
+  
+
+  
+<style>
+
+.toggle-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.toggle-slot {
+  position: relative;
+  height: 35px; /* Adjusted height for PC */
+  width: 70px; /* Adjusted width for PC */
+  border: 5px solid #e4e7ec;
+  border-radius: 35px; /* Adjusted border-radius for PC */
+  background-color: white;
+  /* box-shadow: 0px 10px 25px #e4e7ec; */
+  transition: background-color 250ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-slot {
+    height: 25px; /* Adjusted height for mobile */
+    width: 50px; /* Adjusted width for mobile */
+    border-radius: 25px; /* Adjusted border-radius for mobile */
+    border: 3px solid #e4e7ec;
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: #374151;
+}
+
+.toggle-button {
+  transform: translate(35px, 4px); /* Adjusted position for PC */
+  position: absolute;
+  height: 17.5px; /* Adjusted height for PC */
+  width: 17.5px; /* Adjusted width for PC */
+  border-radius: 50%;
+  background-color: #ffeccf;
+  box-shadow: inset 0px 0px 0px 3.5px #ffbb52; /* Adjusted box-shadow for PC */
+  transition: background-color 250ms, border-color 250ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-button {
+    transform: translate(27px, 3.5px); /* Adjusted position for mobile */
+    height: 12.5px; /* Adjusted height for mobile */
+    width: 12.5px; /* Adjusted width for mobile */
+    box-shadow: inset 0px 0px 0px 2.5px #ffbb52; /* Adjusted box-shadow for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  box-shadow: inset 0px 0px 0px 3.5px white; /* Adjusted box-shadow for PC */
+  transform: translate(7px, 4px); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+    box-shadow: inset 0px 0px 0px 2.5px white; /* Adjusted box-shadow for mobile */
+    transform: translate(4px, 3.5px); /* Adjusted position for mobile */
+  }
+}
+
+.sun-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 1;
+  transform: translate(5px, 1px) rotate(15deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .sun-icon,
+  .sun-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(5px, 3px) rotate(15deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  transform: translate(0px, 1px) rotate(0deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+    transform: translate(2px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.moon-icon {
+  position: absolute;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: 10%;
+  height: 18px; /* Adjusted height for PC */
+  width: 18px; /* Adjusted width for PC */
+  opacity: 0;
+  transform: translate(30px, 1px) rotate(0deg); /* Adjusted position for PC */
+  transform-origin: 50% 50%;
+  transition: opacity 150ms, transform 500ms;
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .moon-icon,
+  .moon-icon-wrapper {
+    height: 11px; /* Adjusted height for mobile */
+    width: 11px; /* Adjusted width for mobile */
+    transform: translate(25px, 2.5px) rotate(0deg); /* Adjusted position for mobile */
+  }
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  transform: translate(35px, 1px) rotate(-15deg); /* Adjusted position for PC */
+}
+
+@media (max-width: 767px) {
+  /* Styles for screens less than 768px wide (mobile) */
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(28px, 2.5px) rotate(-15deg); /* Adjusted position for mobile */
+  }
+}
+
+
+</style>
+
+<script>
+var checkbox = document.querySelector('.toggle-checkbox');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+</script>
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li><li class="masthead__menu-item">
+              <a href="/projects/">Projects</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[RxSwift] 연산자">
+    <meta itemprop="description" content="CombineLatestlet a = PublishSubject&lt;Int&gt;()let b = PublishSubject&lt;String&gt;()Observable.combineLatest(a, b)// 결과a: 1          (b가 아직 없음 → 출력 없음)b: &quot;A&quot;        → (1, &quot;A&quot;) 출력 시작a: 2          → (2, &quot;A&quot;)b: &quot;B&quot;        → (2, &quot;B&quot;)  개념: 여려 Observable 중 하나라도 새로운 값이 나오면 각각의 최신값을 묶어서 방출한다.  조건: 시작하려면 모든 Observable이 최소 1번은 방출해야한다.CombineLatest 예시// 로그인 버튼 활성화Observable.combineLatest(idText, passwordText)    .map { !$0.isEmpty &amp;&amp; !$1.isEmpty }  입력값이 바뀔 때마다 다시 계산해야 할 때 사용한다withLatestFromlet a = PublishSubject&lt;Int&gt;()let b = PublishSubject&lt;String&gt;()a.withLatestFrom(b)// 결과b: &quot;A&quot;b: &quot;B&quot;        (아무 일 없음)a: 1          → &quot;B&quot;a: 2          → &quot;B&quot;  개념: a가 emit할 때만 b의 최신값을 가져와서 방출한다  조건:          b는 최소 1번은 값이 있어야 한다.      a가 emit할 때만 실행된다.      b가 emit해도 아무 일 없다.      withLatestFrom 예시buttonTap    .withLatestFrom(textFieldText)  버튼을 눌렀을 때만 텍스트 값 필요할 때 적합하다에러 처리  개념: Rx에서 에러가 발생하면 스트림은 종료된다.  에러를 어떻게 다루는지에 따라 여러 방법이 있다.에러 예시1// catch + empty(에러 무시)input.reload    .withUnretained(self)    .flatMapLatest { owner, _ in        owner.groupUsecase.loadAndFetchGroup()            .catch { _ in .empty() }    }    .disposed(by: disposeBag)  에러 발생하더라도 아무 값도 방출하지 않는다  스트림 유지된다  UI는 에러를 모른다  실패해도 조용히 무시할 경우 또는 재시도 트리거가 있을 경우 사용한다  디버깅이 어렵다에러 예시2input.reload    .withUnretained(self)    .flatMapLatest { owner, _ in        owner.groupUsecase.loadAndFetchGroup()            .catchAndReturn(HCGroup.empty)            // 위아래 같음            .catch { _ in              .just(HCGroup.empty)          }          .disposed(by: disposeBag)    }  에러발생시 기본값을 방출한다  스트림 유지된다  UI는 계속 동작한다에러 예시3// vmlet errorRelay = PublishRelay&lt;Error&gt;()input.reload    .withUnretained(self)    .flatMapLatest { owner, _ in        owner.groupUsecase.loadAndFetchGroup()            .do(onError: { owner.errorRelay.accept($0) })            .catchAndReturn(HCGroup.empty)    }    .disposed(by: disposeBag)// vcviewModel.errorRelay    .emit(onNext: { error in        // Alert 또는 Toast 표시    })    .disposed(by: disposeBag)  데이터 스트림은 유지  에러는 따로 UI로 전달  Alert, Toast 표시 가능에러 예시4input.reload    .flatMapLatest { [weak self] _ in        self?.groupUsecase.loadAndFetchGroup()            .asDriver(onErrorDriveWith: .empty())        ?? .empty()    }    .disposed(by: disposeBag)  UI 바인딩이면 아예 Driver로 변환하는 것이 안전하다.  Main Thread 보장  error 방출하지 않음  share된다(중복 subscribe 방지)materialize// Event&lt;Element&gt; 타입 종류.next(Element).error(Error).completed// 이 스트림은 HCGroup이 아니라 Event&lt;HCGroup&gt;을 방출한다.input.reload    .withUnretained(self)    .flatMapLatest { owner, _ in        owner.groupUsecase.loadAndFetchGroup()            .materialize()    }    .share()    .disposed(by: disposeBag)let success = result    .compactMap { $0.element }let error = result    .compactMap { $0.error }  에러와 완료 이벤트를 값(Event)으로 바꿔서 방출하는 연산자.  원래 Rx는 .next, .error, .completed 3가지 이벤트가 있으나 .error 발생 시 스트림이 종료된다.materialize를 쓰면 에러를 종료시키지 않고 값처럼 다룰 수 있다.  장점          스트림이 종료되지 않고 성공과 실패를 동시에 처리 가능하다      에러와 데이터를 분리 가능하다      MVVM에서 매우 깔끔한 구조 가능      예시let result = input.reload    .flatMapLatest { [weak self] _ in        self?.groupUsecase.loadAndFetchGroup()            .materialize()        ?? .empty()    }    .share()result    .compactMap { $0.element }    .bind(to: postsRelay)    .disposed(by: disposeBag)result    .compactMap { $0.error }    .bind(to: errorRelay)    .disposed(by: disposeBag)share// replay: 0 → 이전 값 저장 안 함// whileConnected → 구독자가 있을 때만 유지share() = .share(replay: 0, scope: .whileConnected)// 최근 값 1개 저장// 늦게 구독해도 마지막 값 받음.share(replay: 1)let request = api.loadData()request.subscribe()request.subscribe()// 네트워크 요청이 2번 실행됨let request = api.loadData()    .share()request.subscribe()request.subscribe()// 네트워크 요청 1번만 실행되고 두 구독자가 공유  개념: 하나의 Observable 실행 결과를 여러 subscriber가 공유하도록 만드는 연산자  설명: Rx는 기본적으로 Cold Observable이기 때문에 두번 subscribe하면 네트워크 요청이 2번 실행된다.  share(replay:)는 구독자가 1명 이상 존재하는 동안 처음 실행된 결과를 재사용한다  모든 구독자가 사라지면 다음 구독 시 다시 실행된다.share 예시1let request = api.load()    .share(replay: 1)request.subscribe()  // Arequest.subscribe()  // Brequest.subscribe()  // C// 네트워크 1번 요청된다.// 그 결과를 A, B, C가 같이 나누어 쓴다.모두 dispose된 뒤 다시 구독let disposable1 = request.subscribe()disposable1.dispose()   // 구독자 0명 됨request.subscribe()// 네트워크 1번 다시 실행된다mapObservable.of(1, 2, 3)    .map { $0 * 10 }Observable.of(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;)  .map { Int($0) }  들어온 값을 다른 값으로 변환하는 연산자compactMapObservable.of(&quot;1&quot;, &quot;2&quot;, &quot;three&quot;, &quot;4&quot;)    .compactMap { Int($0) }// 1, 2, 4  swift의 compactMap과 동일  nil 제거하고 값만 망출예시let result: Observable&lt;Event&lt;String&gt;&gt; = buttonTap    .flatMapLatest { _ in        apiCall()               // Observable&lt;String&gt;            .materialize()      // → Observable&lt;Event&lt;String&gt;&gt;    }    .share()func apiCall() -&gt; Observable&lt;String&gt; {    let success = Bool.random()    if success {        return Observable.just(&quot;Success Data&quot;)    } else {        return Observable.error(NSError(domain: &quot;Network&quot;, code: -1))    }}// 성공 값만 가져오기result    .compactMap { $0.element }// 에러만 가져오기result    .compactMap { $0.error }flatMapObservable.of(1, 2, 3)    .flatMap { value in        Observable.just(value * 10)    }// 10 20 30buttonTap    .flatMap { _ in        api.loadData()   // 네트워크 요청    }// 버튼 3번 누르면 네트워크 요청 3개 동시 실행됨 -&gt; 의도에 따라 flatMapLatest, flatMapFirst 사용가능  개념: 각 이벤트를 새로운 Observable로 바꾼뒤 모두 동시에 merge해서 방출  들어온 이벤트마다 새로운 비동기 작업을 만들고 그 결과를 전부 흘려보낸다.flatMapFirstA 시작B 발생 → 무시C 발생 → 무시A 완료  개념: 작업이 진행 중이면 새로운 이벤트는 무시  중복 요청 방지, 버튼 연타 방지, 한번만 처리하는 작업  장점: 동시 실행 방지  단점: 후속 이벤트가 사라짐flatMapLatestA 시작B 발생 → A 취소C 발생 → B 취소→ C만 실행됨  개념: 새로운 이벤트가 오면 이전 작업을 취소하고 최신 작업만 유지한다  검색 자동완성, 텍스트 입력 API, 최신 결과만 의미 있는 경우  장점: 불필요한 네트워크 낭비 방지  단점: 중간 작업 취소됨concatMapA 시작B 대기C 대기A 완료B 실행B 완료C 실행  개념: 이벤트를 순서대로 큐에 쌓아 처리  삭제, 서버 상태 변경, 순서가 중요한 요청  장점: 안정적, 작업 누락 없음, 서버 상태 불일치 방지  단점: 느릴 수 있음">
+    <meta itemprop="datePublished" content="2026-02-25T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/RxSwift-%EC%97%B0%EC%82%B0%EC%9E%90/" class="u-url" itemprop="url">[RxSwift] 연산자
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=RxSwift">RxSwift</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2026-02-25T00:00:00+00:00">February 25, 2026</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+          <aside class="sidebar__right sticky">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-list"></i> 목차</h4></header>
+              <ul class="toc__menu"><li><a href="#combinelatest">CombineLatest</a><ul><li><a href="#combinelatest-예시">CombineLatest 예시</a></li></ul></li><li><a href="#withlatestfrom">withLatestFrom</a><ul><li><a href="#withlatestfrom-예시">withLatestFrom 예시</a></li></ul></li><li><a href="#에러-처리">에러 처리</a><ul><li><a href="#에러-예시1">에러 예시1</a></li><li><a href="#에러-예시2">에러 예시2</a></li><li><a href="#에러-예시3">에러 예시3</a></li><li><a href="#에러-예시4">에러 예시4</a></li></ul></li><li><a href="#materialize">materialize</a><ul><li><a href="#예시">예시</a></li></ul></li><li><a href="#share">share</a><ul><li><a href="#share-예시1">share 예시1</a></li></ul></li><li><a href="#map">map</a></li><li><a href="#compactmap">compactMap</a><ul><li><a href="#예시-1">예시</a></li></ul></li><li><a href="#flatmap">flatMap</a></li><li><a href="#flatmapfirst">flatMapFirst</a></li><li><a href="#flatmaplatest">flatMapLatest</a></li><li><a href="#concatmap">concatMap</a></li></ul>
+
+            </nav>
+          </aside>
+        
+        <!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
+
+<!-- ## CombineLatest
+
+```swift
+let a = PublishSubject<Int>()
+let b = PublishSubject<String>()
+
+// 예시1
+Observable.combineLatest(a, b)
+    .subscribe(onNext: { intValue, stringValue in
+        print(intValue, stringValue)
+    })
+
+// 결과
+a: 1 b: "A"
+→ 출력: 1 A
+
+a: 2
+→ 출력: 2 A   (b의 최신값 유지)
+
+b: "B"
+→ 출력: 2 B
+
+// 예시2: 로그인 버튼 활성화(입력값이 사로 의존적일 때)
+Observable.combineLatest(idText, passwordText)
+    .map { !$0.isEmpty && !$1.isEmpty }
+```
+
+- 개념: 여러 Observable중 하나라도 새로운 값이 나오면 각각의 최신값을 묶어서 방출하는 연산자
+- 조건: 모든 Observable이 최소 1번은 방출해야 동작 시작
+- a
+
+## withLatestFrom
+
+```swift
+buttonTap
+    .withLatestFrom(textFieldText)
+    .subscribe(onNext: { text in
+        print(text)
+    })
+
+// 결과
+textField: "A" textField: "B" (아무 일도 안 일어남)
+buttonTap
+→ 출력: "B"
+```
+
+- 개념: 기존 Observabledl emit할 때만 다른 Observable의 최신값을 가져와서 방출 -->
+
+<h2 id="combinelatest">CombineLatest</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">a</span> <span class="o">=</span> <span class="kt">PublishSubject</span><span class="o">&lt;</span><span class="kt">Int</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="k">let</span> <span class="nv">b</span> <span class="o">=</span> <span class="kt">PublishSubject</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="kt">Observable</span><span class="o">.</span><span class="nf">combineLatest</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+<span class="c1">// 결과</span>
+<span class="nv">a</span><span class="p">:</span> <span class="mi">1</span>          <span class="p">(</span><span class="n">b가</span> <span class="n">아직</span> <span class="n">없음</span> <span class="err">→</span> <span class="n">출력</span> <span class="n">없음</span><span class="p">)</span>
+<span class="nv">b</span><span class="p">:</span> <span class="s">"A"</span>        <span class="err">→</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">"A"</span><span class="p">)</span> <span class="n">출력</span> <span class="n">시작</span>
+
+<span class="nv">a</span><span class="p">:</span> <span class="mi">2</span>          <span class="err">→</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">"A"</span><span class="p">)</span>
+<span class="nv">b</span><span class="p">:</span> <span class="s">"B"</span>        <span class="err">→</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">"B"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>개념: 여려 Observable 중 하나라도 새로운 값이 나오면 각각의 최신값을 묶어서 방출한다.</li>
+  <li>조건: 시작하려면 모든 Observable이 최소 1번은 방출해야한다.</li>
+</ul>
+
+<h3 id="combinelatest-예시">CombineLatest 예시</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 로그인 버튼 활성화</span>
+<span class="kt">Observable</span><span class="o">.</span><span class="nf">combineLatest</span><span class="p">(</span><span class="n">idText</span><span class="p">,</span> <span class="n">passwordText</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">!</span><span class="nv">$0</span><span class="o">.</span><span class="n">isEmpty</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nv">$1</span><span class="o">.</span><span class="n">isEmpty</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>입력값이 바뀔 때마다 다시 계산해야 할 때 사용한다</li>
+</ul>
+
+<hr />
+
+<h2 id="withlatestfrom">withLatestFrom</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">a</span> <span class="o">=</span> <span class="kt">PublishSubject</span><span class="o">&lt;</span><span class="kt">Int</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="k">let</span> <span class="nv">b</span> <span class="o">=</span> <span class="kt">PublishSubject</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="n">a</span><span class="o">.</span><span class="nf">withLatestFrom</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+<span class="c1">// 결과</span>
+<span class="nv">b</span><span class="p">:</span> <span class="s">"A"</span>
+<span class="nv">b</span><span class="p">:</span> <span class="s">"B"</span>        <span class="p">(</span><span class="n">아무</span> <span class="n">일</span> <span class="n">없음</span><span class="p">)</span>
+
+<span class="nv">a</span><span class="p">:</span> <span class="mi">1</span>          <span class="err">→</span> <span class="s">"B"</span>
+<span class="nv">a</span><span class="p">:</span> <span class="mi">2</span>          <span class="err">→</span> <span class="s">"B"</span>
+</code></pre></div></div>
+
+<ul>
+  <li>개념: a가 emit할 때만 b의 최신값을 가져와서 방출한다</li>
+  <li>조건:
+    <ul>
+      <li>b는 최소 1번은 값이 있어야 한다.</li>
+      <li>a가 emit할 때만 실행된다.</li>
+      <li>b가 emit해도 아무 일 없다.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="withlatestfrom-예시">withLatestFrom 예시</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">buttonTap</span>
+    <span class="o">.</span><span class="nf">withLatestFrom</span><span class="p">(</span><span class="n">textFieldText</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>버튼을 눌렀을 때만 텍스트 값 필요할 때 적합하다</li>
+</ul>
+
+<hr />
+
+<h2 id="에러-처리">에러 처리</h2>
+
+<ul>
+  <li>개념: Rx에서 에러가 발생하면 스트림은 종료된다.</li>
+  <li>에러를 어떻게 다루는지에 따라 여러 방법이 있다.</li>
+</ul>
+
+<h3 id="에러-예시1">에러 예시1</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// catch + empty(에러 무시)</span>
+<span class="n">input</span><span class="o">.</span><span class="n">reload</span>
+    <span class="o">.</span><span class="nf">withUnretained</span><span class="p">(</span><span class="k">self</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">flatMapLatest</span> <span class="p">{</span> <span class="n">owner</span><span class="p">,</span> <span class="n">_</span> <span class="k">in</span>
+        <span class="n">owner</span><span class="o">.</span><span class="n">groupUsecase</span><span class="o">.</span><span class="nf">loadAndFetchGroup</span><span class="p">()</span>
+            <span class="o">.</span><span class="k">catch</span> <span class="p">{</span> <span class="n">_</span> <span class="k">in</span> <span class="o">.</span><span class="nf">empty</span><span class="p">()</span> <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>에러 발생하더라도 아무 값도 방출하지 않는다</li>
+  <li>스트림 유지된다</li>
+  <li>UI는 에러를 모른다</li>
+  <li>실패해도 조용히 무시할 경우 또는 재시도 트리거가 있을 경우 사용한다</li>
+  <li>디버깅이 어렵다</li>
+</ul>
+
+<h3 id="에러-예시2">에러 예시2</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">input</span><span class="o">.</span><span class="n">reload</span>
+    <span class="o">.</span><span class="nf">withUnretained</span><span class="p">(</span><span class="k">self</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">flatMapLatest</span> <span class="p">{</span> <span class="n">owner</span><span class="p">,</span> <span class="n">_</span> <span class="k">in</span>
+        <span class="n">owner</span><span class="o">.</span><span class="n">groupUsecase</span><span class="o">.</span><span class="nf">loadAndFetchGroup</span><span class="p">()</span>
+            <span class="o">.</span><span class="nf">catchAndReturn</span><span class="p">(</span><span class="kt">HCGroup</span><span class="o">.</span><span class="n">empty</span><span class="p">)</span>
+            <span class="c1">// 위아래 같음</span>
+            <span class="o">.</span><span class="k">catch</span> <span class="p">{</span> <span class="n">_</span> <span class="k">in</span>
+              <span class="o">.</span><span class="nf">just</span><span class="p">(</span><span class="kt">HCGroup</span><span class="o">.</span><span class="n">empty</span><span class="p">)</span>
+          <span class="p">}</span>
+          <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>에러발생시 기본값을 방출한다</li>
+  <li>스트림 유지된다</li>
+  <li>UI는 계속 동작한다</li>
+</ul>
+
+<h3 id="에러-예시3">에러 예시3</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// vm</span>
+<span class="k">let</span> <span class="nv">errorRelay</span> <span class="o">=</span> <span class="kt">PublishRelay</span><span class="o">&lt;</span><span class="kt">Error</span><span class="o">&gt;</span><span class="p">()</span>
+
+<span class="n">input</span><span class="o">.</span><span class="n">reload</span>
+    <span class="o">.</span><span class="nf">withUnretained</span><span class="p">(</span><span class="k">self</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">flatMapLatest</span> <span class="p">{</span> <span class="n">owner</span><span class="p">,</span> <span class="n">_</span> <span class="k">in</span>
+        <span class="n">owner</span><span class="o">.</span><span class="n">groupUsecase</span><span class="o">.</span><span class="nf">loadAndFetchGroup</span><span class="p">()</span>
+            <span class="o">.</span><span class="nf">do</span><span class="p">(</span><span class="nv">onError</span><span class="p">:</span> <span class="p">{</span> <span class="n">owner</span><span class="o">.</span><span class="n">errorRelay</span><span class="o">.</span><span class="nf">accept</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">})</span>
+            <span class="o">.</span><span class="nf">catchAndReturn</span><span class="p">(</span><span class="kt">HCGroup</span><span class="o">.</span><span class="n">empty</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+
+<span class="c1">// vc</span>
+<span class="n">viewModel</span><span class="o">.</span><span class="n">errorRelay</span>
+    <span class="o">.</span><span class="nf">emit</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{</span> <span class="n">error</span> <span class="k">in</span>
+        <span class="c1">// Alert 또는 Toast 표시</span>
+    <span class="p">})</span>
+    <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>데이터 스트림은 유지</li>
+  <li>에러는 따로 UI로 전달</li>
+  <li>Alert, Toast 표시 가능</li>
+</ul>
+
+<h3 id="에러-예시4">에러 예시4</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">input</span><span class="o">.</span><span class="n">reload</span>
+    <span class="o">.</span><span class="n">flatMapLatest</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">_</span> <span class="k">in</span>
+        <span class="k">self</span><span class="p">?</span><span class="o">.</span><span class="n">groupUsecase</span><span class="o">.</span><span class="nf">loadAndFetchGroup</span><span class="p">()</span>
+            <span class="o">.</span><span class="nf">asDriver</span><span class="p">(</span><span class="nv">onErrorDriveWith</span><span class="p">:</span> <span class="o">.</span><span class="nf">empty</span><span class="p">())</span>
+        <span class="p">??</span> <span class="o">.</span><span class="nf">empty</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>UI 바인딩이면 아예 Driver로 변환하는 것이 안전하다.</li>
+  <li>Main Thread 보장</li>
+  <li>error 방출하지 않음</li>
+  <li>share된다(중복 subscribe 방지)</li>
+</ul>
+
+<h2 id="materialize">materialize</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Event&lt;Element&gt; 타입 종류</span>
+<span class="o">.</span><span class="nf">next</span><span class="p">(</span><span class="kt">Element</span><span class="p">)</span>
+<span class="o">.</span><span class="nf">error</span><span class="p">(</span><span class="kt">Error</span><span class="p">)</span>
+<span class="o">.</span><span class="n">completed</span>
+
+<span class="c1">// 이 스트림은 HCGroup이 아니라 Event&lt;HCGroup&gt;을 방출한다.</span>
+<span class="n">input</span><span class="o">.</span><span class="n">reload</span>
+    <span class="o">.</span><span class="nf">withUnretained</span><span class="p">(</span><span class="k">self</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">flatMapLatest</span> <span class="p">{</span> <span class="n">owner</span><span class="p">,</span> <span class="n">_</span> <span class="k">in</span>
+        <span class="n">owner</span><span class="o">.</span><span class="n">groupUsecase</span><span class="o">.</span><span class="nf">loadAndFetchGroup</span><span class="p">()</span>
+            <span class="o">.</span><span class="nf">materialize</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="o">.</span><span class="nf">share</span><span class="p">()</span>
+    <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+
+<span class="k">let</span> <span class="nv">success</span> <span class="o">=</span> <span class="n">result</span>
+    <span class="o">.</span><span class="n">compactMap</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">element</span> <span class="p">}</span>
+
+<span class="k">let</span> <span class="nv">error</span> <span class="o">=</span> <span class="n">result</span>
+    <span class="o">.</span><span class="n">compactMap</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">error</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>에러와 완료 이벤트를 값(Event)으로 바꿔서 방출하는 연산자.</li>
+  <li>원래 Rx는 .next, .error, .completed 3가지 이벤트가 있으나 .error 발생 시 스트림이 종료된다.<br />
+materialize를 쓰면 에러를 종료시키지 않고 값처럼 다룰 수 있다.</li>
+  <li>장점
+    <ul>
+      <li>스트림이 종료되지 않고 성공과 실패를 동시에 처리 가능하다</li>
+      <li>에러와 데이터를 분리 가능하다</li>
+      <li>MVVM에서 매우 깔끔한 구조 가능</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="예시">예시</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">result</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="n">reload</span>
+    <span class="o">.</span><span class="n">flatMapLatest</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">_</span> <span class="k">in</span>
+        <span class="k">self</span><span class="p">?</span><span class="o">.</span><span class="n">groupUsecase</span><span class="o">.</span><span class="nf">loadAndFetchGroup</span><span class="p">()</span>
+            <span class="o">.</span><span class="nf">materialize</span><span class="p">()</span>
+        <span class="p">??</span> <span class="o">.</span><span class="nf">empty</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="o">.</span><span class="nf">share</span><span class="p">()</span>
+
+<span class="n">result</span>
+    <span class="o">.</span><span class="n">compactMap</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">element</span> <span class="p">}</span>
+    <span class="o">.</span><span class="nf">bind</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="n">postsRelay</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+
+<span class="n">result</span>
+    <span class="o">.</span><span class="n">compactMap</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">error</span> <span class="p">}</span>
+    <span class="o">.</span><span class="nf">bind</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="n">errorRelay</span><span class="p">)</span>
+    <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="share">share</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// replay: 0 → 이전 값 저장 안 함</span>
+<span class="c1">// whileConnected → 구독자가 있을 때만 유지</span>
+<span class="nf">share</span><span class="p">()</span> <span class="o">=</span> <span class="o">.</span><span class="nf">share</span><span class="p">(</span><span class="nv">replay</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">scope</span><span class="p">:</span> <span class="o">.</span><span class="n">whileConnected</span><span class="p">)</span>
+
+<span class="c1">// 최근 값 1개 저장</span>
+<span class="c1">// 늦게 구독해도 마지막 값 받음</span>
+<span class="o">.</span><span class="nf">share</span><span class="p">(</span><span class="nv">replay</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">let</span> <span class="nv">request</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="nf">loadData</span><span class="p">()</span>
+<span class="n">request</span><span class="o">.</span><span class="nf">subscribe</span><span class="p">()</span>
+<span class="n">request</span><span class="o">.</span><span class="nf">subscribe</span><span class="p">()</span>
+<span class="c1">// 네트워크 요청이 2번 실행됨</span>
+
+<span class="k">let</span> <span class="nv">request</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="nf">loadData</span><span class="p">()</span>
+    <span class="o">.</span><span class="nf">share</span><span class="p">()</span>
+<span class="n">request</span><span class="o">.</span><span class="nf">subscribe</span><span class="p">()</span>
+<span class="n">request</span><span class="o">.</span><span class="nf">subscribe</span><span class="p">()</span>
+<span class="c1">// 네트워크 요청 1번만 실행되고 두 구독자가 공유</span>
+
+</code></pre></div></div>
+
+<ul>
+  <li>개념: 하나의 Observable 실행 결과를 여러 subscriber가 공유하도록 만드는 연산자</li>
+  <li>설명: Rx는 기본적으로 Cold Observable이기 때문에 두번 subscribe하면 네트워크 요청이 2번 실행된다.</li>
+  <li>share(replay:)는 구독자가 1명 이상 존재하는 동안 처음 실행된 결과를 재사용한다</li>
+  <li>모든 구독자가 사라지면 다음 구독 시 다시 실행된다.</li>
+</ul>
+
+<h3 id="share-예시1">share 예시1</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">request</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="nf">load</span><span class="p">()</span>
+    <span class="o">.</span><span class="nf">share</span><span class="p">(</span><span class="nv">replay</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">request</span><span class="o">.</span><span class="nf">subscribe</span><span class="p">()</span>  <span class="c1">// A</span>
+<span class="n">request</span><span class="o">.</span><span class="nf">subscribe</span><span class="p">()</span>  <span class="c1">// B</span>
+<span class="n">request</span><span class="o">.</span><span class="nf">subscribe</span><span class="p">()</span>  <span class="c1">// C</span>
+<span class="c1">// 네트워크 1번 요청된다.</span>
+<span class="c1">// 그 결과를 A, B, C가 같이 나누어 쓴다.</span>
+
+<span class="n">모두</span> <span class="n">dispose된</span> <span class="n">뒤</span> <span class="n">다시</span> <span class="n">구독</span>
+<span class="k">let</span> <span class="nv">disposable1</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="nf">subscribe</span><span class="p">()</span>
+<span class="n">disposable1</span><span class="o">.</span><span class="nf">dispose</span><span class="p">()</span>   <span class="c1">// 구독자 0명 됨</span>
+<span class="n">request</span><span class="o">.</span><span class="nf">subscribe</span><span class="p">()</span>
+<span class="c1">// 네트워크 1번 다시 실행된다</span>
+</code></pre></div></div>
+
+<h2 id="map">map</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">Observable</span><span class="o">.</span><span class="nf">of</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="nv">$0</span> <span class="o">*</span> <span class="mi">10</span> <span class="p">}</span>
+
+<span class="kt">Observable</span><span class="o">.</span><span class="nf">of</span><span class="p">(</span><span class="s">"1"</span><span class="p">,</span> <span class="s">"2"</span><span class="p">,</span> <span class="s">"3"</span><span class="p">)</span>
+  <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="kt">Int</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>들어온 값을 다른 값으로 변환하는 연산자</li>
+</ul>
+
+<h2 id="compactmap">compactMap</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">Observable</span><span class="o">.</span><span class="nf">of</span><span class="p">(</span><span class="s">"1"</span><span class="p">,</span> <span class="s">"2"</span><span class="p">,</span> <span class="s">"three"</span><span class="p">,</span> <span class="s">"4"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">compactMap</span> <span class="p">{</span> <span class="kt">Int</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="p">}</span>
+<span class="c1">// 1, 2, 4</span>
+</code></pre></div></div>
+
+<ul>
+  <li>swift의 compactMap과 동일</li>
+  <li>nil 제거하고 값만 망출</li>
+</ul>
+
+<h3 id="예시-1">예시</h3>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">result</span><span class="p">:</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">Event</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;&gt;</span> <span class="o">=</span> <span class="n">buttonTap</span>
+    <span class="o">.</span><span class="n">flatMapLatest</span> <span class="p">{</span> <span class="n">_</span> <span class="k">in</span>
+        <span class="nf">apiCall</span><span class="p">()</span>               <span class="c1">// Observable&lt;String&gt;</span>
+            <span class="o">.</span><span class="nf">materialize</span><span class="p">()</span>      <span class="c1">// → Observable&lt;Event&lt;String&gt;&gt;</span>
+    <span class="p">}</span>
+    <span class="o">.</span><span class="nf">share</span><span class="p">()</span>
+
+<span class="kd">func</span> <span class="nf">apiCall</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Observable</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">success</span> <span class="o">=</span> <span class="kt">Bool</span><span class="o">.</span><span class="nf">random</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">success</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kt">Observable</span><span class="o">.</span><span class="nf">just</span><span class="p">(</span><span class="s">"Success Data"</span><span class="p">)</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kt">Observable</span><span class="o">.</span><span class="nf">error</span><span class="p">(</span><span class="kt">NSError</span><span class="p">(</span><span class="nv">domain</span><span class="p">:</span> <span class="s">"Network"</span><span class="p">,</span> <span class="nv">code</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 성공 값만 가져오기</span>
+<span class="n">result</span>
+    <span class="o">.</span><span class="n">compactMap</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">element</span> <span class="p">}</span>
+
+<span class="c1">// 에러만 가져오기</span>
+<span class="n">result</span>
+    <span class="o">.</span><span class="n">compactMap</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">error</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="flatmap">flatMap</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">Observable</span><span class="o">.</span><span class="nf">of</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">flatMap</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
+        <span class="kt">Observable</span><span class="o">.</span><span class="nf">just</span><span class="p">(</span><span class="n">value</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="c1">// 10 20 30</span>
+
+<span class="n">buttonTap</span>
+    <span class="o">.</span><span class="n">flatMap</span> <span class="p">{</span> <span class="n">_</span> <span class="k">in</span>
+        <span class="n">api</span><span class="o">.</span><span class="nf">loadData</span><span class="p">()</span>   <span class="c1">// 네트워크 요청</span>
+    <span class="p">}</span>
+<span class="c1">// 버튼 3번 누르면 네트워크 요청 3개 동시 실행됨 -&gt; 의도에 따라 flatMapLatest, flatMapFirst 사용가능</span>
+</code></pre></div></div>
+
+<ul>
+  <li>개념: 각 이벤트를 새로운 Observable로 바꾼뒤 모두 동시에 merge해서 방출</li>
+  <li>들어온 이벤트마다 새로운 비동기 작업을 만들고 그 결과를 전부 흘려보낸다.</li>
+</ul>
+
+<h2 id="flatmapfirst">flatMapFirst</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">A</span> <span class="n">시작</span>
+<span class="kt">B</span> <span class="n">발생</span> <span class="err">→</span> <span class="n">무시</span>
+<span class="kt">C</span> <span class="n">발생</span> <span class="err">→</span> <span class="n">무시</span>
+<span class="kt">A</span> <span class="n">완료</span>
+</code></pre></div></div>
+
+<ul>
+  <li>개념: 작업이 진행 중이면 새로운 이벤트는 무시</li>
+  <li>중복 요청 방지, 버튼 연타 방지, 한번만 처리하는 작업</li>
+  <li>장점: 동시 실행 방지</li>
+  <li>단점: 후속 이벤트가 사라짐</li>
+</ul>
+
+<h2 id="flatmaplatest">flatMapLatest</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">A</span> <span class="n">시작</span>
+<span class="kt">B</span> <span class="n">발생</span> <span class="err">→</span> <span class="kt">A</span> <span class="n">취소</span>
+<span class="kt">C</span> <span class="n">발생</span> <span class="err">→</span> <span class="kt">B</span> <span class="n">취소</span>
+<span class="err">→</span> <span class="kt">C만</span> <span class="n">실행됨</span>
+</code></pre></div></div>
+
+<ul>
+  <li>개념: 새로운 이벤트가 오면 이전 작업을 취소하고 최신 작업만 유지한다</li>
+  <li>검색 자동완성, 텍스트 입력 API, 최신 결과만 의미 있는 경우</li>
+  <li>장점: 불필요한 네트워크 낭비 방지</li>
+  <li>단점: 중간 작업 취소됨</li>
+</ul>
+
+<h2 id="concatmap">concatMap</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">A</span> <span class="n">시작</span>
+<span class="kt">B</span> <span class="n">대기</span>
+<span class="kt">C</span> <span class="n">대기</span>
+
+<span class="kt">A</span> <span class="n">완료</span>
+<span class="kt">B</span> <span class="n">실행</span>
+<span class="kt">B</span> <span class="n">완료</span>
+<span class="kt">C</span> <span class="n">실행</span>
+</code></pre></div></div>
+
+<ul>
+  <li>개념: 이벤트를 순서대로 큐에 쌓아 처리</li>
+  <li>삭제, 서버 상태 변경, 순서가 중요한 요청</li>
+  <li>장점: 안정적, 작업 누락 없음, 서버 상태 불일치 방지</li>
+  <li>단점: 느릴 수 있음</li>
+</ul>
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/RxSwift-input-output/" class="pagination--pager" title="RxSwift Input Output
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2026 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>
