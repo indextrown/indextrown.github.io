@@ -171,9 +171,13 @@ blockquote.custom-double-quote {
   color: #374151;                /* gray-700 */
 
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", sans-serif;
-  font-size: 1.00rem;
+  font-size: 0.95rem;
   font-weight: 500;
-  line-height: 1.75;
+  line-height: 1.25;
+}
+// 하단 여백 문제 해결 위해 p 태그의 margin 제거
+blockquote.custom-double-quote p {
+  margin: 0;
 }
 
 /* links */
