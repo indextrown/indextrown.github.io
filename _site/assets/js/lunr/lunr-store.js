@@ -665,6 +665,12 @@ var store = [{
         "url": "/RxSwift-%EC%97%B0%EC%82%B0%EC%9E%90/",
         "teaser": "/assets/logos/background.png"
       },{
+        "title": "[SwiftUI] Diffing, 끝까지 파고들었습니다.",
+        "excerpt":"       “왜 특정 셀 하나 바꿨는데 전체가 다시 그려질까?”  PopPang 서비스에서 특정 화면에서 메모리가 상승하는 문제가 있었습니다.  처음에는 단순히 데이터 양 문제라고 생각했습니다. 하지만 실제 원인은 다른 곳에 있었습니다.  이 글에서는 문제를 어떻게 정의했고, 어떤 기준으로 해결했는지를 공유합니다.       문제     리스트의 특정 셀 상태만 변경   그런데 전체 리스트의 ‘Body’ 다시 호출됨   스크롤 시 버벅임 + 메모리 증가 발생  👉 “SwiftUI가 생각보다 많이 다시 그린다”     의문     SwiftUI는 왜 이렇게 많이 다시 그릴까?   Diffing은 정확히 어떻게 동작할까?   내가 뭘 잘못 쓰고 있는 걸까?  👉 여기서부터 Diffing을 끝까지 파보기 시작했습니다     ⚙️ SwiftUI Diffing의 핵심  SwiftUI는 상태가 바뀌면 이렇게 동작합니다.  // invalidation: 재계산 트리거 [1단계: 업데이트 트리거] 1. 상태 변경 감지 (@State, @ObservedObject 등) 2. 해당 View가 invalidation됨 (body 재계산 필요 표시)  [2단계: 렌더링 &amp; Diffing] 3. 업데이트 사이클에서 body 실행 → 새로운 View 트리 생성 4. 이전 View 트리와 diffing 수행 (하위 View까지 재귀적으로 비교) 5. 변경된 부분만 실제 UI에 반영    ","categories": [],
+        "tags": ["RxSwift"],
+        "url": "/SwiftUI-diff-copy/",
+        "teaser": "/assets/logos/background.png"
+      },{
         "title": "Star Bridge: 생일카페 알리미",
         "excerpt":"소개      서비스 설명: K-pop 팬들을 위한 생일카페 정보를 자동으로 수집하고, 알림으로 제공하는 스케줄 앱   프로젝트 유형: 팀 프로젝트 (졸업작품)   개발 기간: 24.03 ~ 24.12   Github 링크: https://github.com/indextrown/senior-project   기술 스택: SwiftUI, Selenium, AWS EC2, Firebase   기여한 부분     SNS 기반 생일카페 스케줄 자동화 시스템 설계 및 구현   도입 배경  Swift를 배우기 시작하던 시기에 졸업 프로젝트에 합류하게 되어 앱 UI 구현보다는 시스템 개발 파트에 더 집중할 수 있었습니다.    크롤링 → GPT로 데이터 정제 → API 연동으로 백엔드 중심의 구조를 직접 설계하며, 정보를 어떻게 모으고, 걸러내고, 사용자에게 전달할지를 하나의 흐름으로 구현해보는 데 초점을 맞췄습니다.   해결 방법          크롤링 자동화            로그인 및 차단 문제 해결을 위해, 수동 로그인 후 발급한 쿠키를 저장하고 이를 크롤링 시 재사용하여 안정성 확보.           GPT 기반 정보 정제            크롤링된 게시물에서 연예인 이름, 날짜, 장소를 GPT API로 추출.           Google Maps API 장소 검증            GPT가 추출한 장소를 지도 API로 확인, 유효하지 않은 데이터는 자동 제외.           실시간 앱 연동            1~3단계 결과를 AWS EC2 서버에서 30분 주기로 자동화.       정제된 데이터를 MySQL에 저장하고, SwiftUI 앱에서 실시간 조회 가능하게 구성.           성과      2024 한국멀티미디어학회 Best Paper 수상.   SNS 크롤링 → GPT 정제 → 장소 검증 → 앱 연동까지 자동화 파이프라인 완성.   데이터 정확도 98.0%, 알림 98.5% 달성.   Swift 학습 초기였지만, 앱과 서버를 연동하고 데이터 흐름을 설계하며 실질적인 서비스 구축 경험 쌓음.  ","categories": [],
         "tags": ["SwiftUI","Selenium","AWS EC2","Firebase"],
