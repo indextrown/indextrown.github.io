@@ -126,6 +126,26 @@ blockquote {
   }
 }
 
+/* custom markdown: blue > */
+blockquote.custom-double-quote {
+  // margin: 1.5em 0;
+  // padding: 1em 1.2em;
+  // color: #0f2744;
+  // background-color: #eaf4ff;
+  // border-left: 0.35em solid #3b82f6;
+  // border-radius: 8px;
+  margin: 1.25rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid #3b82f6; /* blue-500 */
+  background-color: #f8fafc;     /* gray-50 */
+  color: #374151;                /* gray-700 */
+
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", sans-serif;
+  font-size: 1.00rem;
+  font-weight: 500;
+  line-height: 1.75;
+}
+
 /* links */
 
 a {
