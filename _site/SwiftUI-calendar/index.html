@@ -23,7 +23,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="DongHyeon Kim's Blog">
 <meta property="og:title" content="[SwiftUI] Calendar 구현">
-<meta property="og:url" content="http://localhost:4000/SwiftUI-calendar/">
+<meta property="og:url" content="https://indextrown.github.io/SwiftUI-calendar/">
 
 
   <meta property="og:description" content="SwiftUI에서 제공하는 캘린더  SwiftUI에서 제공하는 DatePicker를 사용하여 간단한 캘린더를 구현할 수 있습니다.            import SwiftUI  struct ProfileView: View {     @State private var selectedDate = Date()          var body: some View {         VStack {             Text(&quot;선택한 날짜: \(selectedDate, formatter: dateFormatter)&quot;)                 .padding()                          DatePicker(                 &quot;Start Date&quot;,                 selection: $selectedDate,                 displayedComponents: [.date]                    // 날짜만 표시 (시간은 제외)             )             .datePickerStyle(GraphicalDatePickerStyle())        // 그래픽 스타일             .environment(\.locale, Locale(identifier: &quot;ko_KR&quot;)) // 한국 로케일 설정                          Spacer()         }     }          // 날짜 형식을 지정하기 위한 Formatter    private var dateFormatter: DateFormatter {        let formatter = DateFormatter()        formatter.dateStyle = .medium        return formatter    } }  #Preview {     ProfileView() }                             위 코드와 이미지를 참고하여 SwiftUI에서 제공하는 DatePicker의 기본적인 사용법을 익혀보세요.">
@@ -45,7 +45,7 @@
   
 
 
-<link rel="canonical" href="http://localhost:4000/SwiftUI-calendar/">
+<link rel="canonical" href="https://indextrown.github.io/SwiftUI-calendar/">
 
 
 
@@ -56,7 +56,7 @@
     
       "@type": "Person",
       "name": "indextrown",
-      "url": "http://localhost:4000/"
+      "url": "https://indextrown.github.io/"
     
   }
 </script>
@@ -465,7 +465,7 @@ checkbox.addEventListener('change', function() {
       
         <header>
           <h1 id="page-title" class="page__title p-name" itemprop="headline">
-            <a href="http://localhost:4000/SwiftUI-calendar/" class="u-url" itemprop="url">[SwiftUI] Calendar 구현
+            <a href="https://indextrown.github.io/SwiftUI-calendar/" class="u-url" itemprop="url">[SwiftUI] Calendar 구현
 </a>
           </h1>
           <footer class="page__meta">
