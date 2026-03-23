@@ -1,26 +1,10 @@
 [
     
         {
-        "title"    : "",
-        "category" : "",
-        "tags"     : "",
-        "url"      : "/Makefile/",
-        "date"     : "2026-03-22 00:00:00 +0000"
-        } ,
-    
-        {
         "title"    : "[SwiftUI] Lifecycle",
         "category" : "",
         "tags"     : "RxSwift",
         "url"      : "/SwiftUI-lifecycle/",
-        "date"     : "2026-03-21 00:00:00 +0000"
-        } ,
-    
-        {
-        "title"    : "[SwiftUI Save] Diffing, 끝까지 파고들었습니다.",
-        "category" : "",
-        "tags"     : "RxSwift",
-        "url"      : "/SwiftUI-diff_save/",
         "date"     : "2026-03-21 00:00:00 +0000"
         } ,
     
