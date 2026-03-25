@@ -11,7 +11,6 @@ typora-root-url: ../
   
 <!-- <img src="https://github.com/user-attachments/assets/3938e583-0fc4-4620-99b0-bf761e60a1ba" width="60%" align="left"> -->
 
-
 blue > "왜 특정 셀 하나만 바꿨을 뿐인데, 전체가 다시 그려질까?" <br/>
 blue > PopPang 서비스를 개발하던 중, 특정 화면에서 메모리가 계속 증가하는 문제를 발견했습니다.  <br/>
 blue > 단순한 데이터 문제로 보였지만, 실제로는 SwiftUI의 렌더링 구조와 상태 구독 방식에서 발생한 문제였습니다.  <br/>

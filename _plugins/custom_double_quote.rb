@@ -47,3 +47,5 @@ Jekyll::Hooks.register [:posts, :pages, :documents], :pre_render do |doc|
 
   doc.content = Jekyll::CustomDoubleQuote.transform(doc.content)
 end
+
+
