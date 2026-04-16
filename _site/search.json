@@ -1,6 +1,14 @@
 [
     
         {
+        "title"    : "[Swift] 7. 함수",
+        "category" : "",
+        "tags"     : "Swift, Grammer",
+        "url"      : "/Swift-07-func/",
+        "date"     : "2026-04-16 00:00:00 +0000"
+        } ,
+    
+        {
         "title"    : "[SwiftUI] Diffing, 끝까지 파고들었습니다.",
         "category" : "",
         "tags"     : "RxSwift",
@@ -737,14 +745,6 @@
         } ,
     
         {
-        "title"    : "[Swift] 7. 메모리",
-        "category" : "",
-        "tags"     : "Swift, Grammer",
-        "url"      : "/Swift-Memory/",
-        "date"     : "2025-02-10 00:00:00 +0000"
-        } ,
-    
-        {
         "title"    : "[Swift] 6. 반복문",
         "category" : "",
         "tags"     : "Swift, Grammer",
@@ -789,6 +789,14 @@
         "category" : "",
         "tags"     : "Swift, Grammer",
         "url"      : "/Swift-01-%E1%84%87%E1%85%A7%E1%86%AB%E1%84%89%E1%85%AE%E1%84%8B%E1%85%AA-%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%AE-%E1%84%80%E1%85%B3%E1%84%85%E1%85%B5%E1%84%80%E1%85%A9-%E1%84%90%E1%85%A1%E1%84%8B%E1%85%B5%E1%86%B8/",
+        "date"     : "2025-02-10 00:00:00 +0000"
+        } ,
+    
+        {
+        "title"    : "[Swift] 0. 메모리",
+        "category" : "",
+        "tags"     : "Swift, Grammer",
+        "url"      : "/Swift-00-Memory/",
         "date"     : "2025-02-10 00:00:00 +0000"
         } ,
     

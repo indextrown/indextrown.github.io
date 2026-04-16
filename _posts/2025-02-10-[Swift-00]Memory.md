@@ -1,5 +1,5 @@
 ---
-title: "[Swift] 7. 메모리"
+title: "[Swift] 0. 메모리"
 tags: 
 - Swift
 - Grammer
