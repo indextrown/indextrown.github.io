@@ -9,8 +9,8 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>[Swift] 7. 함수 - DongHyeon Kim’s Blog</title>
-<meta name="description" content="함수    특정 작업을 수행하는 독립적인 코드 덩어리다.   함수가 하는 일을 식별하는 이름을 지정하며, 필요할 때 이 이름을 호출하여 작업을 수행한다.   함수 키워드 // num1, num2: Argument Label(파라미터를 외부에서 볼 때, 함수 호출 시 사용하려는 이름) // a, b: parameter // _(Argumant Label 생략하고 싶을 때) : 와일드카드 패턴 func plusFunc(num1 a: Int, num2: b: Int) -&gt; Int {  }  // Int...: 가변 파라미터(Variadic Parameters)로 정해지지 않은 여러개의 파라미터를 받을 때 // num: Int = 5: 기본값 설정 func plusFunc(numbers: Int..., num: Int = 5) -&gt; Int {  }   함수 오버로딩 func do(value: Int) {} func do(value: Double) {} func do(value: String) {}     swift는 1) 함수 이름, 2) 파라미터수/타입, 3) Argument Label, 4) 리턴타입을 모두 포함해서 함수를 식별하는 Overloading을 지원한다.   하나의 함수 이름에 여러개의 함수를 대응 시킬 수 있다.   inout var first = 10 var second = 20  func swap(_ a: inout Int, _ b: inout Int) {     // 2. 함수 내부에서 복사된 값을 변경     let temp = a     a = b     b = temp }  // 1. copy-in: first, second의 값이 함수 내부로 복사됨 swap(&amp;first, &amp;second)  // 3. copy-out: 함수 내부에서 변경된 값이 다시 first, second에 반영됨 print(&quot;firstInt is now \(first), and secondInt is now \(second)&quot;)     함수의 파라미터는 기본적으로 값처럼 전달되며, 함수 내부에서는 상수처럼 취급되기 때문에 직접 변경할 수 없다.   inout은 함수 내부에서 외부 변수의 값을 변경할 수 있도록 해주는 키워드이다. 호출할 때는 &amp;를 사용해 해당 변수를 전달한다.   inout은 참조 전달과 완전히 같은 개념은 아니다. 즉, 단순히 변수의 주소를 직접 넘겨서 수정하는 방식으로만 이해하면 정확하지 않다.   Swift의 inout은 개념적으로 copy-in copy-out 방식으로 이해할 수 있다.   즉, 함수 호출 시 원래 값을 함수 내부로 복사해 오고(copy-in), 함수 내부에서 값을 변경한 뒤, 함수가 끝날 때 변경된 값을 다시 원래 변수에 반영한다(copy-out).   단, 실제 실행 시에는 성능 최적화를 통해 복사가 생략되고 참조처럼 동작할 수 있지만, 개념적으로는 항상 copy-in copy-out으로 이해하는 것이 안전하다.   Reference    https://docs.swift.org/swift-book/ReferenceManual/Declarations.html#ID545   https://jud00.tistory.com/entry/오늘의-Swift-지식-In-Out이란-무엇일까   https://velog.io/@juseojo/TIL-Swift의-inout-파라미터-정말-참조를-전달할까-Copy-In-Copy-Out-파헤치기   https://hyunsikwon.github.io/swift/Swift-Inout-01/">
+<!-- begin _includes/seo.html --><title>[Swift] 10. 열거형 - DongHyeon Kim’s Blog</title>
+<meta name="description" content="커스텀 타입    Swift에서는 개발자가 직접 만들 수 있는 사용자 정의 타입이 있다   enum, class, struct로 구현 가능하다.   class나 struct는 데이터를 묶어서 사용할 목적이다.   열거형 enum Weekday {     case monday     case tuesday     case wednesday     case thursday     case friday     case saturday     case sunday }  // .monday: 인스턴스를 생성한다 = data를 만들어서 메모리에 저장한다. var today: Weekday = .monday     타입 자체를 한정된 사례(case) 안에서 정의할 수 있는 타입이다.   미리 정의해둔 타입의 케이스에서 벗어날 수 없으므로 코드 가독성과 안정성이 높아진다.   열거형의 원시값(Raw Values) // 알아서 case별로 0부터 6까지 매칭됨 enum Weekday: Int {     case monday     case tuesday     case wednesday     case thursday     case friday     case saturday     case sunday }  // 알아서 case별로 문자열이 매칭됨 enum Weekday: String {     case monday     case tuesday     case wednesday     case thursday     case friday     case saturday     case sunday }  var today: Weekday? = Weekday(rawValue: 0) // 원시값으로 쉽게 인스턴스 생성 가능 var today: Weekday = Weekday(rawValue: 0)! // monday var num: Int = Weekday.monday.rawValue     // 0   열거형의 연관값(Associated Values) enum Computer {     case cpu(core: Int, ght: Double)     case ram(Int, String)     case hardDisk(gb: Int) }  var chip: Computer = Computer.cpu(core: 6, ghz: 1.4) var chip1: Computer = Computer.ram(16, &quot;DDR4&quot;)     구체적인 정보를 저장하기 위해 사용함(케이스가 카테고리의 역할로 바뀜)   연관값 Switch, 조건문 enum Computer {     case cpu(core: Int, ght: Double)     case ram(Int, String)     case hardDisk(gb: Int) }  let chip = Computer.cpu(core: 8) // switch switch chip { case .cpu(core: 8):     print(&quot;cpu 8코어&quot;) case .cpu(core: let c):     print(&quot;cpu: \(c)&quot;) case .ram(_):     print(&quot;RAM&quot;) case let .hardDisk(gb: g):     print(&quot;하드: \(g)gb): }  // 조건문(특정 케이스만 다룰수 있다) if case let .ram(ram) = chil {     print(&quot;ram: \(ram)&quot;) }  for case .cpu(core: let c) in chiplists {     print(&quot;cpu칩: \(c)코어&quot;) }">
 
 
   <meta name="author" content="Dong Hyeon">
@@ -22,11 +22,11 @@
 <meta property="og:type" content="article">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="DongHyeon Kim's Blog">
-<meta property="og:title" content="[Swift] 7. 함수">
-<meta property="og:url" content="http://localhost:4000/Swift-07-func/">
+<meta property="og:title" content="[Swift] 10. 열거형">
+<meta property="og:url" content="http://localhost:4000/Swift-10-enumeration/">
 
 
-  <meta property="og:description" content="함수    특정 작업을 수행하는 독립적인 코드 덩어리다.   함수가 하는 일을 식별하는 이름을 지정하며, 필요할 때 이 이름을 호출하여 작업을 수행한다.   함수 키워드 // num1, num2: Argument Label(파라미터를 외부에서 볼 때, 함수 호출 시 사용하려는 이름) // a, b: parameter // _(Argumant Label 생략하고 싶을 때) : 와일드카드 패턴 func plusFunc(num1 a: Int, num2: b: Int) -&gt; Int {  }  // Int...: 가변 파라미터(Variadic Parameters)로 정해지지 않은 여러개의 파라미터를 받을 때 // num: Int = 5: 기본값 설정 func plusFunc(numbers: Int..., num: Int = 5) -&gt; Int {  }   함수 오버로딩 func do(value: Int) {} func do(value: Double) {} func do(value: String) {}     swift는 1) 함수 이름, 2) 파라미터수/타입, 3) Argument Label, 4) 리턴타입을 모두 포함해서 함수를 식별하는 Overloading을 지원한다.   하나의 함수 이름에 여러개의 함수를 대응 시킬 수 있다.   inout var first = 10 var second = 20  func swap(_ a: inout Int, _ b: inout Int) {     // 2. 함수 내부에서 복사된 값을 변경     let temp = a     a = b     b = temp }  // 1. copy-in: first, second의 값이 함수 내부로 복사됨 swap(&amp;first, &amp;second)  // 3. copy-out: 함수 내부에서 변경된 값이 다시 first, second에 반영됨 print(&quot;firstInt is now \(first), and secondInt is now \(second)&quot;)     함수의 파라미터는 기본적으로 값처럼 전달되며, 함수 내부에서는 상수처럼 취급되기 때문에 직접 변경할 수 없다.   inout은 함수 내부에서 외부 변수의 값을 변경할 수 있도록 해주는 키워드이다. 호출할 때는 &amp;를 사용해 해당 변수를 전달한다.   inout은 참조 전달과 완전히 같은 개념은 아니다. 즉, 단순히 변수의 주소를 직접 넘겨서 수정하는 방식으로만 이해하면 정확하지 않다.   Swift의 inout은 개념적으로 copy-in copy-out 방식으로 이해할 수 있다.   즉, 함수 호출 시 원래 값을 함수 내부로 복사해 오고(copy-in), 함수 내부에서 값을 변경한 뒤, 함수가 끝날 때 변경된 값을 다시 원래 변수에 반영한다(copy-out).   단, 실제 실행 시에는 성능 최적화를 통해 복사가 생략되고 참조처럼 동작할 수 있지만, 개념적으로는 항상 copy-in copy-out으로 이해하는 것이 안전하다.   Reference    https://docs.swift.org/swift-book/ReferenceManual/Declarations.html#ID545   https://jud00.tistory.com/entry/오늘의-Swift-지식-In-Out이란-무엇일까   https://velog.io/@juseojo/TIL-Swift의-inout-파라미터-정말-참조를-전달할까-Copy-In-Copy-Out-파헤치기   https://hyunsikwon.github.io/swift/Swift-Inout-01/">
+  <meta property="og:description" content="커스텀 타입    Swift에서는 개발자가 직접 만들 수 있는 사용자 정의 타입이 있다   enum, class, struct로 구현 가능하다.   class나 struct는 데이터를 묶어서 사용할 목적이다.   열거형 enum Weekday {     case monday     case tuesday     case wednesday     case thursday     case friday     case saturday     case sunday }  // .monday: 인스턴스를 생성한다 = data를 만들어서 메모리에 저장한다. var today: Weekday = .monday     타입 자체를 한정된 사례(case) 안에서 정의할 수 있는 타입이다.   미리 정의해둔 타입의 케이스에서 벗어날 수 없으므로 코드 가독성과 안정성이 높아진다.   열거형의 원시값(Raw Values) // 알아서 case별로 0부터 6까지 매칭됨 enum Weekday: Int {     case monday     case tuesday     case wednesday     case thursday     case friday     case saturday     case sunday }  // 알아서 case별로 문자열이 매칭됨 enum Weekday: String {     case monday     case tuesday     case wednesday     case thursday     case friday     case saturday     case sunday }  var today: Weekday? = Weekday(rawValue: 0) // 원시값으로 쉽게 인스턴스 생성 가능 var today: Weekday = Weekday(rawValue: 0)! // monday var num: Int = Weekday.monday.rawValue     // 0   열거형의 연관값(Associated Values) enum Computer {     case cpu(core: Int, ght: Double)     case ram(Int, String)     case hardDisk(gb: Int) }  var chip: Computer = Computer.cpu(core: 6, ghz: 1.4) var chip1: Computer = Computer.ram(16, &quot;DDR4&quot;)     구체적인 정보를 저장하기 위해 사용함(케이스가 카테고리의 역할로 바뀜)   연관값 Switch, 조건문 enum Computer {     case cpu(core: Int, ght: Double)     case ram(Int, String)     case hardDisk(gb: Int) }  let chip = Computer.cpu(core: 8) // switch switch chip { case .cpu(core: 8):     print(&quot;cpu 8코어&quot;) case .cpu(core: let c):     print(&quot;cpu: \(c)&quot;) case .ram(_):     print(&quot;RAM&quot;) case let .hardDisk(gb: g):     print(&quot;하드: \(g)gb): }  // 조건문(특정 케이스만 다룰수 있다) if case let .ram(ram) = chil {     print(&quot;ram: \(ram)&quot;) }  for case .cpu(core: let c) in chiplists {     print(&quot;cpu칩: \(c)코어&quot;) }">
 
 
 
@@ -45,7 +45,7 @@
   
 
 
-<link rel="canonical" href="http://localhost:4000/Swift-07-func/">
+<link rel="canonical" href="http://localhost:4000/Swift-10-enumeration/">
 
 
 
@@ -456,8 +456,8 @@ checkbox.addEventListener('change', function() {
 
 
   <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="[Swift] 7. 함수">
-    <meta itemprop="description" content="함수  특정 작업을 수행하는 독립적인 코드 덩어리다.  함수가 하는 일을 식별하는 이름을 지정하며, 필요할 때 이 이름을 호출하여 작업을 수행한다.함수 키워드// num1, num2: Argument Label(파라미터를 외부에서 볼 때, 함수 호출 시 사용하려는 이름)// a, b: parameter// _(Argumant Label 생략하고 싶을 때) : 와일드카드 패턴func plusFunc(num1 a: Int, num2: b: Int) -&gt; Int {}// Int...: 가변 파라미터(Variadic Parameters)로 정해지지 않은 여러개의 파라미터를 받을 때// num: Int = 5: 기본값 설정func plusFunc(numbers: Int..., num: Int = 5) -&gt; Int {}함수 오버로딩func do(value: Int) {}func do(value: Double) {}func do(value: String) {}  swift는 1) 함수 이름, 2) 파라미터수/타입, 3) Argument Label, 4) 리턴타입을 모두 포함해서 함수를 식별하는 Overloading을 지원한다.  하나의 함수 이름에 여러개의 함수를 대응 시킬 수 있다.inoutvar first = 10var second = 20func swap(_ a: inout Int, _ b: inout Int) {    // 2. 함수 내부에서 복사된 값을 변경    let temp = a    a = b    b = temp}// 1. copy-in: first, second의 값이 함수 내부로 복사됨swap(&amp;first, &amp;second)// 3. copy-out: 함수 내부에서 변경된 값이 다시 first, second에 반영됨print(&quot;firstInt is now \(first), and secondInt is now \(second)&quot;)  함수의 파라미터는 기본적으로 값처럼 전달되며, 함수 내부에서는 상수처럼 취급되기 때문에 직접 변경할 수 없다.  inout은 함수 내부에서 외부 변수의 값을 변경할 수 있도록 해주는 키워드이다. 호출할 때는 &amp;를 사용해 해당 변수를 전달한다.  inout은 참조 전달과 완전히 같은 개념은 아니다. 즉, 단순히 변수의 주소를 직접 넘겨서 수정하는 방식으로만 이해하면 정확하지 않다.  Swift의 inout은 개념적으로 copy-in copy-out 방식으로 이해할 수 있다.  즉, 함수 호출 시 원래 값을 함수 내부로 복사해 오고(copy-in), 함수 내부에서 값을 변경한 뒤, 함수가 끝날 때 변경된 값을 다시 원래 변수에 반영한다(copy-out).  단, 실제 실행 시에는 성능 최적화를 통해 복사가 생략되고 참조처럼 동작할 수 있지만, 개념적으로는 항상 copy-in copy-out으로 이해하는 것이 안전하다.Reference  https://docs.swift.org/swift-book/ReferenceManual/Declarations.html#ID545  https://jud00.tistory.com/entry/오늘의-Swift-지식-In-Out이란-무엇일까  https://velog.io/@juseojo/TIL-Swift의-inout-파라미터-정말-참조를-전달할까-Copy-In-Copy-Out-파헤치기  https://hyunsikwon.github.io/swift/Swift-Inout-01/">
+    <meta itemprop="headline" content="[Swift] 10. 열거형">
+    <meta itemprop="description" content="커스텀 타입  Swift에서는 개발자가 직접 만들 수 있는 사용자 정의 타입이 있다  enum, class, struct로 구현 가능하다.  class나 struct는 데이터를 묶어서 사용할 목적이다.열거형enum Weekday {    case monday    case tuesday    case wednesday    case thursday    case friday    case saturday    case sunday}// .monday: 인스턴스를 생성한다 = data를 만들어서 메모리에 저장한다.var today: Weekday = .monday  타입 자체를 한정된 사례(case) 안에서 정의할 수 있는 타입이다.  미리 정의해둔 타입의 케이스에서 벗어날 수 없으므로 코드 가독성과 안정성이 높아진다.열거형의 원시값(Raw Values)// 알아서 case별로 0부터 6까지 매칭됨enum Weekday: Int {    case monday    case tuesday    case wednesday    case thursday    case friday    case saturday    case sunday}// 알아서 case별로 문자열이 매칭됨enum Weekday: String {    case monday    case tuesday    case wednesday    case thursday    case friday    case saturday    case sunday}var today: Weekday? = Weekday(rawValue: 0) // 원시값으로 쉽게 인스턴스 생성 가능var today: Weekday = Weekday(rawValue: 0)! // mondayvar num: Int = Weekday.monday.rawValue     // 0열거형의 연관값(Associated Values)enum Computer {    case cpu(core: Int, ght: Double)    case ram(Int, String)    case hardDisk(gb: Int)}var chip: Computer = Computer.cpu(core: 6, ghz: 1.4)var chip1: Computer = Computer.ram(16, &quot;DDR4&quot;)  구체적인 정보를 저장하기 위해 사용함(케이스가 카테고리의 역할로 바뀜)연관값 Switch, 조건문enum Computer {    case cpu(core: Int, ght: Double)    case ram(Int, String)    case hardDisk(gb: Int)}let chip = Computer.cpu(core: 8)// switchswitch chip {case .cpu(core: 8):    print(&quot;cpu 8코어&quot;)case .cpu(core: let c):    print(&quot;cpu: \(c)&quot;)case .ram(_):    print(&quot;RAM&quot;)case let .hardDisk(gb: g):    print(&quot;하드: \(g)gb):}// 조건문(특정 케이스만 다룰수 있다)if case let .ram(ram) = chil {    print(&quot;ram: \(ram)&quot;)}for case .cpu(core: let c) in chiplists {    print(&quot;cpu칩: \(c)코어&quot;)}">
     <meta itemprop="datePublished" content="2026-04-16T00:00:00+00:00">
     
 
@@ -465,7 +465,7 @@ checkbox.addEventListener('change', function() {
       
         <header>
           <h1 id="page-title" class="page__title p-name" itemprop="headline">
-            <a href="http://localhost:4000/Swift-07-func/" class="u-url" itemprop="url">[Swift] 7. 함수
+            <a href="http://localhost:4000/Swift-10-enumeration/" class="u-url" itemprop="url">[Swift] 10. 열거형
 </a>
           </h1>
           <footer class="page__meta">
@@ -504,70 +504,103 @@ checkbox.addEventListener('change', function() {
 
       <section class="page__content e-content" itemprop="text">
         
-        <h2 id="함수">함수</h2>
+        <h2 id="커스텀-타입">커스텀 타입</h2>
 <ul>
-  <li>특정 작업을 수행하는 독립적인 코드 덩어리다.</li>
-  <li>함수가 하는 일을 식별하는 이름을 지정하며, 필요할 때 이 이름을 호출하여 작업을 수행한다.</li>
+  <li>Swift에서는 개발자가 직접 만들 수 있는 <code class="language-plaintext highlighter-rouge">사용자 정의 타입이 있다</code></li>
+  <li>enum, class, struct로 구현 가능하다.</li>
+  <li>class나 struct는 데이터를 묶어서 사용할 목적이다.</li>
 </ul>
 
-<h2 id="함수-키워드">함수 키워드</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// num1, num2: Argument Label(파라미터를 외부에서 볼 때, 함수 호출 시 사용하려는 이름)</span>
-<span class="c1">// a, b: parameter</span>
-<span class="c1">// _(Argumant Label 생략하고 싶을 때) : 와일드카드 패턴</span>
-<span class="kd">func</span> <span class="nf">plusFunc</span><span class="p">(</span><span class="n">num1</span> <span class="nv">a</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="nv">num2</span><span class="p">:</span> <span class="nv">b</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
-
+<h2 id="열거형">열거형</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">Weekday</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">monday</span>
+    <span class="k">case</span> <span class="n">tuesday</span>
+    <span class="k">case</span> <span class="n">wednesday</span>
+    <span class="k">case</span> <span class="n">thursday</span>
+    <span class="k">case</span> <span class="n">friday</span>
+    <span class="k">case</span> <span class="n">saturday</span>
+    <span class="k">case</span> <span class="n">sunday</span>
 <span class="p">}</span>
 
-<span class="c1">// Int...: 가변 파라미터(Variadic Parameters)로 정해지지 않은 여러개의 파라미터를 받을 때</span>
-<span class="c1">// num: Int = 5: 기본값 설정</span>
-<span class="kd">func</span> <span class="nf">plusFunc</span><span class="p">(</span><span class="nv">numbers</span><span class="p">:</span> <span class="kt">Int</span><span class="o">...</span><span class="p">,</span> <span class="nv">num</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
-
-<span class="p">}</span>
-</code></pre></div></div>
-
-<h2 id="함수-오버로딩">함수 오버로딩</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">do</span><span class="p">(</span><span class="nv">value</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="p">{}</span>
-<span class="kd">func</span> <span class="nf">do</span><span class="p">(</span><span class="nv">value</span><span class="p">:</span> <span class="kt">Double</span><span class="p">)</span> <span class="p">{}</span>
-<span class="kd">func</span> <span class="nf">do</span><span class="p">(</span><span class="nv">value</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="p">{}</span>
+<span class="c1">// .monday: 인스턴스를 생성한다 = data를 만들어서 메모리에 저장한다.</span>
+<span class="k">var</span> <span class="nv">today</span><span class="p">:</span> <span class="kt">Weekday</span> <span class="o">=</span> <span class="o">.</span><span class="n">monday</span>
 </code></pre></div></div>
 <ul>
-  <li>swift는 1) 함수 이름, 2) 파라미터수/타입, 3) Argument Label, 4) 리턴타입을 모두 포함해서 함수를 식별하는 Overloading을 지원한다.</li>
-  <li>하나의 함수 이름에 여러개의 함수를 대응 시킬 수 있다.</li>
+  <li>타입 자체를 한정된 사례(case) 안에서 정의할 수 있는 타입이다.</li>
+  <li>미리 정의해둔 타입의 케이스에서 벗어날 수 없으므로 코드 가독성과 안정성이 높아진다.</li>
 </ul>
 
-<h2 id="inout">inout</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="nv">first</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="k">var</span> <span class="nv">second</span> <span class="o">=</span> <span class="mi">20</span>
-
-<span class="kd">func</span> <span class="nf">swap</span><span class="p">(</span><span class="n">_</span> <span class="nv">a</span><span class="p">:</span> <span class="k">inout</span> <span class="kt">Int</span><span class="p">,</span> <span class="n">_</span> <span class="nv">b</span><span class="p">:</span> <span class="k">inout</span> <span class="kt">Int</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// 2. 함수 내부에서 복사된 값을 변경</span>
-    <span class="k">let</span> <span class="nv">temp</span> <span class="o">=</span> <span class="n">a</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">b</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="n">temp</span>
+<h2 id="열거형의-원시값raw-values">열거형의 원시값(Raw Values)</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 알아서 case별로 0부터 6까지 매칭됨</span>
+<span class="kd">enum</span> <span class="kt">Weekday</span><span class="p">:</span> <span class="kt">Int</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">monday</span>
+    <span class="k">case</span> <span class="n">tuesday</span>
+    <span class="k">case</span> <span class="n">wednesday</span>
+    <span class="k">case</span> <span class="n">thursday</span>
+    <span class="k">case</span> <span class="n">friday</span>
+    <span class="k">case</span> <span class="n">saturday</span>
+    <span class="k">case</span> <span class="n">sunday</span>
 <span class="p">}</span>
 
-<span class="c1">// 1. copy-in: first, second의 값이 함수 내부로 복사됨</span>
-<span class="nf">swap</span><span class="p">(</span><span class="o">&amp;</span><span class="n">first</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">second</span><span class="p">)</span>
+<span class="c1">// 알아서 case별로 문자열이 매칭됨</span>
+<span class="kd">enum</span> <span class="kt">Weekday</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">monday</span>
+    <span class="k">case</span> <span class="n">tuesday</span>
+    <span class="k">case</span> <span class="n">wednesday</span>
+    <span class="k">case</span> <span class="n">thursday</span>
+    <span class="k">case</span> <span class="n">friday</span>
+    <span class="k">case</span> <span class="n">saturday</span>
+    <span class="k">case</span> <span class="n">sunday</span>
+<span class="p">}</span>
 
-<span class="c1">// 3. copy-out: 함수 내부에서 변경된 값이 다시 first, second에 반영됨</span>
-<span class="nf">print</span><span class="p">(</span><span class="s">"firstInt is now </span><span class="se">\(</span><span class="n">first</span><span class="se">)</span><span class="s">, and secondInt is now </span><span class="se">\(</span><span class="n">second</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+<span class="k">var</span> <span class="nv">today</span><span class="p">:</span> <span class="kt">Weekday</span><span class="p">?</span> <span class="o">=</span> <span class="kt">Weekday</span><span class="p">(</span><span class="nv">rawValue</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">// 원시값으로 쉽게 인스턴스 생성 가능</span>
+<span class="k">var</span> <span class="nv">today</span><span class="p">:</span> <span class="kt">Weekday</span> <span class="o">=</span> <span class="kt">Weekday</span><span class="p">(</span><span class="nv">rawValue</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span><span class="o">!</span> <span class="c1">// monday</span>
+<span class="k">var</span> <span class="nv">num</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="kt">Weekday</span><span class="o">.</span><span class="n">monday</span><span class="o">.</span><span class="n">rawValue</span>     <span class="c1">// 0</span>
+</code></pre></div></div>
+
+<h2 id="열거형의-연관값associated-values">열거형의 연관값(Associated Values)</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">Computer</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="nv">ght</span><span class="p">:</span> <span class="kt">Double</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">ram</span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">String</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">hardDisk</span><span class="p">(</span><span class="nv">gb</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">var</span> <span class="nv">chip</span><span class="p">:</span> <span class="kt">Computer</span> <span class="o">=</span> <span class="kt">Computer</span><span class="o">.</span><span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="nv">ghz</span><span class="p">:</span> <span class="mf">1.4</span><span class="p">)</span>
+<span class="k">var</span> <span class="nv">chip1</span><span class="p">:</span> <span class="kt">Computer</span> <span class="o">=</span> <span class="kt">Computer</span><span class="o">.</span><span class="nf">ram</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="s">"DDR4"</span><span class="p">)</span>
 </code></pre></div></div>
 <ul>
-  <li>함수의 파라미터는 기본적으로 값처럼 전달되며, 함수 내부에서는 상수처럼 취급되기 때문에 직접 변경할 수 없다.</li>
-  <li>inout은 함수 내부에서 외부 변수의 값을 변경할 수 있도록 해주는 키워드이다. 호출할 때는 &amp;를 사용해 해당 변수를 전달한다.</li>
-  <li>inout은 참조 전달과 완전히 같은 개념은 아니다. 즉, 단순히 변수의 주소를 직접 넘겨서 수정하는 방식으로만 이해하면 정확하지 않다.</li>
-  <li>Swift의 inout은 개념적으로 copy-in copy-out 방식으로 이해할 수 있다.</li>
-  <li>즉, 함수 호출 시 원래 값을 함수 내부로 복사해 오고(copy-in), 함수 내부에서 값을 변경한 뒤, 함수가 끝날 때 변경된 값을 다시 원래 변수에 반영한다(copy-out).</li>
-  <li>단, 실제 실행 시에는 성능 최적화를 통해 복사가 생략되고 참조처럼 동작할 수 있지만, 개념적으로는 항상 copy-in copy-out으로 이해하는 것이 안전하다.</li>
+  <li>구체적인 정보를 저장하기 위해 사용함(케이스가 카테고리의 역할로 바뀜)</li>
 </ul>
 
-<h2 id="reference">Reference</h2>
-<ul>
-  <li>https://docs.swift.org/swift-book/ReferenceManual/Declarations.html#ID545</li>
-  <li>https://jud00.tistory.com/entry/오늘의-Swift-지식-In-Out이란-무엇일까</li>
-  <li>https://velog.io/@juseojo/TIL-Swift의-inout-파라미터-정말-참조를-전달할까-Copy-In-Copy-Out-파헤치기</li>
-  <li>https://hyunsikwon.github.io/swift/Swift-Inout-01/</li>
-</ul>
+<h2 id="연관값-switch-조건문">연관값 Switch, 조건문</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">Computer</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="nv">ght</span><span class="p">:</span> <span class="kt">Double</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">ram</span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">String</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">hardDisk</span><span class="p">(</span><span class="nv">gb</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">let</span> <span class="nv">chip</span> <span class="o">=</span> <span class="kt">Computer</span><span class="o">.</span><span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="mi">8</span><span class="p">)</span>
+<span class="c1">// switch</span>
+<span class="k">switch</span> <span class="n">chip</span> <span class="p">{</span>
+<span class="k">case</span> <span class="o">.</span><span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="mi">8</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"cpu 8코어"</span><span class="p">)</span>
+<span class="k">case</span> <span class="o">.</span><span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="k">let</span> <span class="nv">c</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"cpu: </span><span class="se">\(</span><span class="n">c</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+<span class="k">case</span> <span class="o">.</span><span class="nf">ram</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"RAM"</span><span class="p">)</span>
+<span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">hardDisk</span><span class="p">(</span><span class="nv">gb</span><span class="p">:</span> <span class="n">g</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"하드: </span><span class="se">\(</span><span class="n">g</span><span class="se">)</span><span class="s">gb):
+}
+
+// 조건문(특정 케이스만 다룰수 있다)
+if case let .ram(ram) = chil {
+    print("</span><span class="nv">ram</span><span class="p">:</span> <span class="p">\(</span><span class="n">ram</span><span class="p">)</span><span class="s">")
+}
+
+for case .cpu(core: let c) in chiplists {
+    print("</span><span class="nv">cpu칩</span><span class="p">:</span> <span class="p">\(</span><span class="n">c</span><span class="p">)</span><span class="n">코어</span><span class="s">")
+}
+</span></code></pre></div></div>
 
         
       </section>
@@ -577,11 +610,11 @@ checkbox.addEventListener('change', function() {
       
   <nav class="pagination">
     
-      <a href="/SwiftUI-diff/" class="pagination--pager" title="[SwiftUI] Diffing, 끝까지 파고들었습니다.
+      <a href="/Swift-09-collection/" class="pagination--pager" title="[Swift] 9. 컬렉션
 ">Previous</a>
     
     
-      <a href="/Swift-08-optional/" class="pagination--pager" title="[Swift] 8. 옵셔널
+      <a href="/Swift-11-class/" class="pagination--pager" title="[Swift] 11. 클래스와 구조체
 ">Next</a>
     
   </nav>

@@ -1,7 +1,7 @@
 ---
 title: "[SwiftUI] Diffing, 끝까지 파고들었습니다."
 tags:
-  - RxSwift
+  - Swift
 header:
   teaser:
 typora-root-url: ../
@@ -275,7 +275,7 @@ struct CellView: View, Equatable {
 
 
 
-## Reference
+<!-- ## Reference
 - https://lzufs.tistory.com/2
 - https://kka7.tistory.com/670
 - https://green1229.tistory.com/563
@@ -284,7 +284,7 @@ struct CellView: View, Equatable {
 - https://medium.com/@mini-min/swiftui-ios-17-부터-새로워진-swiftui의-observation-상태-관리-이해하기-observable-bindable-cab86b79bad3
 - https://lzufs.tistory.com/2
 
-
+ -->
 
 
 

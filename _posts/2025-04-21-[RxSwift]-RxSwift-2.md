@@ -47,23 +47,20 @@ nicknameTextField.rx.text = nickname
 ---
 
 ## Observable
-> 
+
 ```swift
-public class Observable<Element> : ObservableType
+public class Observable<Element>: ObservableType {}
 ```
-- 관찰 가능한 데이터 흐름(stream)을 표현하는 타입이다.
+
+- 관찰 가능한 데이터 흐름(시간에 따라 발생하는 이벤트 시퀀스 == stream)을 표현하는 타입이다.
 - 시간의 흐름에 따라 발생하는 값들의 시퀀스(시간 순서대로 발생하는 값들의 나열)를 생성하고 전달하는 대상이다.
-- RxSwift에서는 모든 비동기 이벤트를 Observable이라는 형태로 감싸서 다룬다.
+- RxSwift에서는 비동기 이벤트를 어떤 관찰 가능한 타입으로 만든다   
+== `비동기 이벤트를 제네릭 타입의 Observable이란 클래스의 인스턴스로 만든다는 것이다`
 
-=> 다시 말해 Observable은 버튼이 눌리는 순간처럼 비동기 이벤트가 발생했을 때 그 이벤트가 발생했음을 알리기 위해 항목(item)을 방출(item)한다.
-
-<!-- 관찰이 가능한 흐름으로 비동기 이벤트의 시퀀스를 생성할 수 있는 대상이다. -->
-
-<!-- 비동기 이벤트를 관찰 가능한 형태로 만든다는 의미는 "비동기 이벤트를 제네릭 타입의 Observable 인스턴스를 만든다는 의미"이다. 쉽게 말하자면 Reactive Programming에서는 데이터의 흐름이 변경되었을 때 전파하는 데 중점을 둔 프로그램이다. -->
+다시 말해 Observable은 버튼이 눌리는 순간처럼 비동기 이벤트가 발생했을 때 그 이벤트가 발생했음을 알리기 위해 항목(item)을 방출(emit)한다.
 
 
-
-## 예시)  
+## Example 1
 > 버튼 클릭을 나타내는 UIButton의 tap 이벤트는 언제 발생할지 알 수 없는 비동기 이벤트이므로 RxSwift에서 Observable 형태로 표현한다.
 버튼이 눌러서 비동기 이벤트가 발생하면 Observable에서 item이 방출되어 데이터 흐름이 변경됨을 알린다.
 
@@ -78,6 +75,68 @@ button.rx.tap // Observable<Void>
 **Observable(button.rx.tap)**: 버튼 클릭 이벤트를 관찰 가능한 흐름으로 표현한 것
 **버튼 클릭**: 비동기 이벤트 발생(데이터의 흐름이 변경) -> 이미 존재하는 Observable에서 item을 방출(emit)
 **item**: Void(버튼을 눌렸다는 사실을 알리는 신호)
+
+## Example 2
+```swift
+sodeulButton
+    .rx
+    .tap
+    .subscribe(onNext: {
+        print("Observable이 항목을 방출 했다!")
+    },
+    onError: { error in
+        print("에러가 발생 했다!")
+    },
+    onCompleted: {
+        print("해당 이벤트가 끝났다!")
+    })
+    .disposed(by: disposedBag)
+```
+- tap 이벤트 발생 시 subscribe(onNext:...)를 통해 "구독"을 해서 해당 Observable이 방출하는 항목에 대해 받을 수 있다.
+- 이 메서드의 파라미터로 아래 3가지를 각각 넘겨줄 수 있다.
+  - onNext(항목이 방출 됐을 때, 즉 버튼이 눌렸을 때 실행시킬 클로저)
+  - onError(에러가 발생 했을 때 실행시킬 클로저)
+  - onCompleted(이벤트가 종료됐을 때 실행시킬 클로저)
+
+## subscribe 메서드를 사용하면 메서드 내부에서 Observer를 자체적으로 생성한다.
+```swift
+// 자체적으로 AnnonymousObserver라는 것을 생성해서 해당 Observable에 subscribe를 해준다.
+let observer = AnnonymousObserver<Element> { ... }
+return Disposables.create(
+    self.asObservable().subscribe(observer),
+    disposable
+)
+```
+- subscribe(onNext:...) 메서드를 사용할 경우, 메서드 내부에서 옵저버를 자체적으로 생성해서 
+  우리가 직접 Observer를 생성하지 않고 파라미터로 클로저만 넘겨줘도 Observable을 구독하여 방출하는 항목을 받을 수 있게 된다.
+
+## butto.rx.tap까지만 하면 Observable 타입이 아니라 ControlEvent<Void>이다.
+```swift
+public extension Reactive where Base: UIButton {
+    /// Reactive wrapper for `TouchUpInside` control event.
+    var tap: ControlEvent<Void> {
+        controlEvent(.touchUpInside)
+    }
+}
+```
+
+```swift
+public struct ControlEvent<PropertyType>: ControlEventType {
+    public typealias Element = PropertyType
+
+    let events: Observable<PropertyType>
+
+    /// Initializes control event with a observable sequence that represents events.
+    ///
+    /// - parameter events: Observable sequence that represents events.
+    /// - returns: Control event created with a observable sequence of events.
+    public init<Ev: ObservableType>(events: Ev) where Ev.Element == Element {
+        self.events = events.subscribe(on: ConcurrentMainScheduler.instance)
+    }
+}
+```
+- ControlEvent 구조체 안에 events란 프로퍼티로 Observable이 존재하고 UIButton의 rx.tap이란 연산 프로퍼티를 통해 ControlEvent init함수가 불려질 때 .touchUpInside 이벤트에 대한 Observable이 생성되어 이 events 프로퍼티에 들어가게 된 것이다.
+- 장리하자면 ControlEvent<Void> 인스턴스 안에 events란 프로퍼티가 있고 이 events란 프로퍼티가 바로 우리가 버튼 클릭 이벤트를 받고 싶을 때 구독해야 할 Observable 이라는 것이다.
 
 ---
 
