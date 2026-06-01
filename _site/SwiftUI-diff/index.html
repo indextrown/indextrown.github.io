@@ -9,8 +9,8 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>[SwiftUI] Diffing, 끝까지 파고들었습니다. - DongHyeon Kim’s Blog</title>
-<meta name="description" content="blue &gt; “왜 특정 셀 하나만 바꿨을 뿐인데, 전체가 다시 그려질까?”  blue &gt; PopPang 서비스를 개발하던 중, 특정 화면에서 메모리가 계속 증가하는 문제를 발견했습니다.   blue &gt; 단순한 데이터 문제로 보였지만, 실제로는 SwiftUI의 렌더링 구조와 상태 구독 방식에서 발생한 문제였습니다.   blue &gt; 이 글에서는 문제를 어떤 기준으로 원인을 좁혀갔으며, 불필요한 렌더링을 줄이기 위한 어떤 개선을 했는지 정리했습니다.   문제: 셀 하나만 변경되도 모든 셀이 다시 그려진다     리스트의 특정 셀 좋아요룰 눌렀는데 전체 리스트의가 다시 렌더링됨   스크롤 시 버벅임 + 메모리 증가 발생     의문    SwiftUI는 왜 이렇게 많이 다시 그릴까?   Diffing은 정확히 어떻게 동작할까?   내가 뭘 잘못 쓰고 있는 걸까? 👉 여기서부터 Diffing을 끝까지 파보기 시작했습니다     SwiftUI View LifeCycle                    SwiftUI View LifeCycle 흐름       SwiftUI View 라이프사이클은 세 단계로 나뉘어집니다.  Appearing    initialize(초기화) 시점에 View는 State에 연결되지 않고 뷰 계층 구조만 미리 구축.   초기화 이후 View와 State 연결   body가 처음으로 호출되어 View Tree 생성   View 계층을 반영하여 UI 렌더링 실행   onAppear() 호출   Updating    사용자 액션이나 관찰중인 publisher에서 데이터가 방출되면 상태 변화가 발생   해당 상태를 보유한 View의 body가 먼저 호출되어 새로운 View 트리를 생성   이전 View트리와 새로운 View트리를 비교(diffing)  3-1. 만약 Equatable 채택 시 개발자가 정의한 ==를 통해 동일성 비교 가능   3-2. 동일한 경우 하위 View body 호출이 스킵될 수 있음 🔴   변경된 View만 invalidate(무효화) 처리   invalidate된 View들을중심으로 새로운 View 계층을 업데이트하고 렌더링을 다시 수행   Disappearing    View가 계층에서 완전히 제거된 후 onDisappear() 메서드가 호출됨   상위 뷰에서 하위 뷰 순서로 호출됨     SwiftUI View Diffing SwiftUI 성능 핵심은 Updating 단계의 Diffing 입니다. SwiftUI의 Diffing 방식은 공식적으로 완전히 공개되어 있지 않지만 알 수 있는 것은    SwiftUI는 모든 View를 매번 렌더링 하지 않는다   이전 상태와 현재 상태를 비교하여 변경된 부분만 렌더링 한다 이 특성을 활용하면 -&gt; View에 Equatable을 채택시켜 Diffing(비교) 과정을 개발자 레펠에서 관리할 수 있습니다.   SwiftUI Diffing 파고들기(참고) var body: some View {       VStack {           Text(&quot;Hello&quot;)           Image(systemName: &quot;star&quot;)           Button(&quot;Tap&quot;) { … }       } }     View Tree(선언적 트리)            개발자가 작성한 선언적 구조       실제 UI가 아니라 값(value)       매번 body가 호출될 때 새 View Tree가 생성됨           Render Tree(실제 렌더링 구조)            화면에 표시되는 실제 UI 계층       UIKit의 UIView, Core Animation Layer, CoreGraphics 등을 포함하는 실제 렌더링 가능한 객체들의 구조           View Graph(내부 상태 관리 구조)            State / Environment / Layout 정보 관리       View Tree와 Render Tree를 연결하는 역할           핵심    View Turee는 매번 생성되지만 Render Tree는 Diffing을 통해 부분적으로 갱신     Body 재계산 규칙: 언제 invalidate 되는가? Invalidation은 특정 View를 “무효화”하여, 다음 업데이트 사이클에서 body를 다시 계산하도록 표시하는 과정입니다. SwiftUI에서 Invalidation는 “상태가 바뀐 View와 그 하위”만 영향을 받습니다. 다음 중 하나라도 변경되면 body가 다시 계산됩니다. 1) @State 값 변경 2) @Binding 값 변경 3) @StateObject가 참조하는 ObservableObject에서 @Published 값 변경 4) Environment 값 변경 5) 부모 View의 body가 재계산되면서 이 View의 body도 재계산되는 경우 6) .id(), .animation(), .task(id:) 등 identity/behavior modifier가 변경    blue &gt; 중요한 점은 body 재계산 != 리렌더링 ❗  blue &gt; body 재계산 -&gt; 새로운 View Tree 생성 -&gt; Diffing -&gt; Render Tree 업데이트   blue &gt; 만약 Diffing에서 같다로 판단되면 UI는 다시 그려지지 않습니다.    Body Recompute와 Render Update의 차이 var body: some View {     Text(&quot;Hello&quot;) }  부모에서 State가 바뀌어 이 뷰의 body가 10번 재계산되더라도   Text(“Hello”)는 항상 같은 값이므로 Render Tree는 변화 없음으로 판단됩니다.    SwiftUI 내장 비교 알고리즘 // SwiftUI 내부 diffing 로직 (의사코드) func shouldUpdateView&lt;V: View&gt;(_ oldView: V, _ newView: V) -&gt; Bool {     // 1. Equatable 타입이면 == 연산자 사용     if V.self is Equatable.Type {         return oldView != newView     }          // 2. 값 타입(struct)이면 재귀적으로 프로퍼티 비교     if V.self is ValueType {         return compareProperties(oldView, newView)     }          // 3. 참조 타입(class)이면 참조 동일성 비교     if V.self is ReferenceType {         return oldView !== newView     }          // 4. 클로저는 비교 불가능 - 항상 다르다고 가정     if containsClosures(V.self) {         return true     } }  // 예시 struct CellView: View, Equatable {     static func == (lhs: CellView, rhs: CellView) -&gt; Bool {         lhs.item == rhs.item     } }  SwiftUI는 상태 변경 시 invalidation된 View부터 body를 재계산하여 새로운 View Tree를 생성합니다.   이후 이전 View Tree와 새로운 View Tree를 비교(diffing)하여 실제 UI 업데이트 여부를 결정합니다.  이때 Diffing 기준은 기본적으로 SwiftUI의 내장 비교 알고리즘에 따라 결정되며,   Equatable을 채택한 경우에는 가장 먼저 == 연산자를 통해 비교가 수행됩니다.  즉, Equatable을 채택하지 않은 경우에는 View를 구성하는 프로퍼티들을 기반으로 구조 비교가 수행되지만,   Equatable을 채택하면 개발자가 정의한 비교 기준이 우선 적용됩니다.  따라서 상위 View(리스트)의 body는 호출되더라도,   자식 View(CellView)는 Equatable 비교 결과가 동일하면 body 호출 자체가 생략됩니다.  기존 팝팡 예시 // MARK: - Cell (ViewModel 참조) struct CellView: View {          let item: Item     @ObservedObject var vm: ListViewModel   // ⭐️ 모든 셀이 같은 vm 구독          var body: some View {         print(&quot;🔥 body 호출: \(item.id)&quot;)                  return HStack {             Text(item.name)                          Spacer()                          Button {                 vm.toggleLike(id: item.id)   // ⭐️ ViewModel 메서드 호출             } label: {                 Image(systemName: item.isLiked ? &quot;heart.fill&quot; : &quot;heart&quot;)                     .foregroundColor(item.isLiked ? .red : .gray)             }         }         .padding()         .background(Color.gray.opacity(0.1))     } }     문제: 모든 셀이 동일한 @ObservableObject를 구독하면서 단일 상태 변경에도 objectWillChange가 전체 View invalidation을 유발하여 리스트 전체가 다시 렌더링되는 문제가 발생   원인: @ObservableObject는 상태 변경 시 diffing 결과와 관계없이 구독 중인 모든 View의 body를 재호출하며, 이로 인해 Identifiable / Equatable 기반의 렌더링 최적화가 무력화됨   즉 @ObservableObject를 Cell에서 직접 구독하면 diffing 최적화가 동작하지 않는다   해결 // MARK: - Cell (ViewModel 참조) struct CellView: View, Equatable {     static func == (lhs: CellView, rhs: CellView) -&gt; Bool {         return lhs.item == rhs.item     }               let item: Item     let action: () -&gt; Void          var body: some View {         print(&quot;🔥 body 호출: \(item.id)&quot;)                  return HStack {             Text(item.name)                          Spacer()                          Button {                 action()             } label: {                 Image(systemName: item.isLiked ? &quot;heart.fill&quot; : &quot;heart&quot;)                     .foregroundColor(item.isLiked ? .red : .gray)             }         }         .padding()         .background(Color.gray.opacity(0.1))     } }     Cell에서 @ObservedObject를 제거하고 값 타입 데이터만 전달받도록 구조를 변경   사용자 액션은 closure로 상위 View에 위임하여 ViewModel 접근을 분리   Cell에 Equatavle을 적용하고 closure는 비교에서 제외하여 diffing 기준을 분리   Reference    https://lzufs.tistory.com/2   https://kka7.tistory.com/670   https://green1229.tistory.com/563   https://green1229.tistory.com/589   https://eunjin3786.tistory.com/559   https://medium.com/@mini-min/swiftui-ios-17-부터-새로워진-swiftui의-observation-상태-관리-이해하기-observable-bindable-cab86b79bad3   https://lzufs.tistory.com/2">
+<!-- begin _includes/seo.html --><title>[SwiftUI] Demystify SwiftUI - DongHyeon Kim’s Blog</title>
+<meta name="description" content="SwiftUI가 코드를 볼 때 무엇을 보는가?    Identity(정체성) - SwiftUI가 앱의 여러 업데이트에서 동일 요소로 보거나 별개 요소로 보는 방법   Lifetime(수명) - SwiftUI가 시간이 지남에 따라 View와 Data 존재를 추적하는 방법   Dependencies(의존성) - SwiftUI가 인터페이스를 업데이트해야 하는 시기와 이유를 이해하는 방법   Identity(정체성) - SwiftUI가 앱의 여러 업데이트에서 동일 요소로 보거나 별개 요소로 보는 방법  사진에서 두 강아지가 다른 강아지인지 혹은 두 장의 같은 강아지인지 알 수 없다. 정보가 충분하지 않아 사실을 말할 수 없기 때문이다. 이 질문을 SwiftUI는 Identity(정체성) 이라고 부른다.   다른 예시로, 아이콘이 서로 완전히 독립 객체인지 알 수 없다. 완전히 다른 객체일 수도 있고 단지 위치만 다르고 다른 색을 가진 동일한 객체일수도 있다. 이러한 구분을 “한 상태에서 다른 상태로 전환하는 방식”을 변경하기 때문에 중요한 부분이다. 만약 서로 같은 객체라면 현 위치에서 다른 위치로 이동하는 동일한 뷰이기 때문에 전환 중에 객체가 아래로 내려가야 한다. 따라서 서로 다른 상태에 걸쳐 뷰를 연결하는 것이 중요하다. 이것이 SwiftUI가 뷰 사이를 전달하는 방법을 이해하는 방식이기 때문이다. 이게 View Identity 핵심 가치다.  SwiftUI는 두 가지 다른 유형의 Identity에 초점을 두고 있다.    Explicit of Identity(명시적 정체성): 맞춤형 또는 데이터 기반 식별자를 사용한다.   Structural Identity(구조적 정체성): 뷰 계층 구조에서의 유형과 위치에 따라 뷰를 구별한다.    사물을 식별하기 위해 보통 이름을 부여할 수 있다. 하지만 두 사물이 똑같이 생기고 같은 계열일 가능성이 높을 수 있어서 이름으로는 고유성이 부족할 수 있다. 이름이나 식별자를 할당하는 것은 Explicit of Identity(명시적 정체성) 의 한 형태이다. 이는 강력하고 유연하지만 누군가 어딘가에서 이름을 추적해야 한다.   이미 익숙할 수 있는 Explicit of Identity의 한 형태는 UIKit 및 AppKit 전체에서 사용되는 포인터 Identity다. SwiftUI에서는 포인터 Identity를 사용하지 않고 UIView와 NSView에서 사용한다. UIView와 NSView는 클래스이므로 메모리 할당에 필요한 고유한 포인터를 가진다. 포인터는 Explicit of Identity의 자연스러운 원천이라고 한다. 포인터를 사용해 개별 뷰를 참조할 수 있으며 두 뷰가 동일한 포인터를 공유하는 경우 실제로 동일한 뷰임을 보장할 수 있다.   하지만 SwiftUI View는 일반적으로 클래스 대신 구조체로 표현하는 값 타입이기 때문에 SwiftUI는 포인터를 사용하지 않는다. 가장 중요한 점은 값 타입은 SwiftUI가 해당 View에 대한 지속적인 Identity로 사용할 수 있는 정식 참조가 없다는 것이다.   여기서 사용된 id는 Explicit of Identity의 한 형태이다. 각 강아지의 인식표 Identity는 View를 명시적으로 식별하는 데 사용된다. 강아지 컬렉션이 변경되면 SwiftUI는 해당 Id를 사용해 무엇이 변경되는지 이해하고 목록 내에서 올바른 애니메이션을 생성할 수 있다.   또 다른 예제인데 여기서는 ScrollViewReader를 사용해 하단 버튼을 사용하여 뷰 상단으로 이동한다.  .id() Modifier는 사용자 정의 식별자를 사용해 뷰를 명시적으로 식별하는 방법을 제공한다.  현재 페이지 상단의 헤더 뷰에 식별자를 추가한 것이다.  구조적 정체성 등장 추가로 해당 식별자를 뷰 프록시의 scrollTo(_:) 메서드에 전달해 SwiftUI에게 특정 뷰로 이동하도록 지시할 수 있다.  이 장점은 모든 뷰를 명시적으로 식별할 필요가 없고 헤더와 같이 코드의 다른 곳에서 참조해야 하는 뷰만 식별할 수 있다는 것이다.  ScrollViewreader, ScrollView, 텍스트 및 버튼에는 명시적인 식별자가 필요하지 않는다. 그러나 정체성이 명시적이지 않다고 해서 이러한 뷰가 전혀 정체성이 없다는 것을 의미하지는 않는다. 명시적이지 않더라도 모든 View는 Identity가 있기 때문이다. → 여기서 구조적 정체성이 등장">
 
 
   <meta name="author" content="Dong Hyeon">
@@ -22,11 +22,11 @@
 <meta property="og:type" content="article">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="DongHyeon Kim's Blog">
-<meta property="og:title" content="[SwiftUI] Diffing, 끝까지 파고들었습니다.">
+<meta property="og:title" content="[SwiftUI] Demystify SwiftUI">
 <meta property="og:url" content="http://localhost:4000/SwiftUI-diff/">
 
 
-  <meta property="og:description" content="blue &gt; “왜 특정 셀 하나만 바꿨을 뿐인데, 전체가 다시 그려질까?”  blue &gt; PopPang 서비스를 개발하던 중, 특정 화면에서 메모리가 계속 증가하는 문제를 발견했습니다.   blue &gt; 단순한 데이터 문제로 보였지만, 실제로는 SwiftUI의 렌더링 구조와 상태 구독 방식에서 발생한 문제였습니다.   blue &gt; 이 글에서는 문제를 어떤 기준으로 원인을 좁혀갔으며, 불필요한 렌더링을 줄이기 위한 어떤 개선을 했는지 정리했습니다.   문제: 셀 하나만 변경되도 모든 셀이 다시 그려진다     리스트의 특정 셀 좋아요룰 눌렀는데 전체 리스트의가 다시 렌더링됨   스크롤 시 버벅임 + 메모리 증가 발생     의문    SwiftUI는 왜 이렇게 많이 다시 그릴까?   Diffing은 정확히 어떻게 동작할까?   내가 뭘 잘못 쓰고 있는 걸까? 👉 여기서부터 Diffing을 끝까지 파보기 시작했습니다     SwiftUI View LifeCycle                    SwiftUI View LifeCycle 흐름       SwiftUI View 라이프사이클은 세 단계로 나뉘어집니다.  Appearing    initialize(초기화) 시점에 View는 State에 연결되지 않고 뷰 계층 구조만 미리 구축.   초기화 이후 View와 State 연결   body가 처음으로 호출되어 View Tree 생성   View 계층을 반영하여 UI 렌더링 실행   onAppear() 호출   Updating    사용자 액션이나 관찰중인 publisher에서 데이터가 방출되면 상태 변화가 발생   해당 상태를 보유한 View의 body가 먼저 호출되어 새로운 View 트리를 생성   이전 View트리와 새로운 View트리를 비교(diffing)  3-1. 만약 Equatable 채택 시 개발자가 정의한 ==를 통해 동일성 비교 가능   3-2. 동일한 경우 하위 View body 호출이 스킵될 수 있음 🔴   변경된 View만 invalidate(무효화) 처리   invalidate된 View들을중심으로 새로운 View 계층을 업데이트하고 렌더링을 다시 수행   Disappearing    View가 계층에서 완전히 제거된 후 onDisappear() 메서드가 호출됨   상위 뷰에서 하위 뷰 순서로 호출됨     SwiftUI View Diffing SwiftUI 성능 핵심은 Updating 단계의 Diffing 입니다. SwiftUI의 Diffing 방식은 공식적으로 완전히 공개되어 있지 않지만 알 수 있는 것은    SwiftUI는 모든 View를 매번 렌더링 하지 않는다   이전 상태와 현재 상태를 비교하여 변경된 부분만 렌더링 한다 이 특성을 활용하면 -&gt; View에 Equatable을 채택시켜 Diffing(비교) 과정을 개발자 레펠에서 관리할 수 있습니다.   SwiftUI Diffing 파고들기(참고) var body: some View {       VStack {           Text(&quot;Hello&quot;)           Image(systemName: &quot;star&quot;)           Button(&quot;Tap&quot;) { … }       } }     View Tree(선언적 트리)            개발자가 작성한 선언적 구조       실제 UI가 아니라 값(value)       매번 body가 호출될 때 새 View Tree가 생성됨           Render Tree(실제 렌더링 구조)            화면에 표시되는 실제 UI 계층       UIKit의 UIView, Core Animation Layer, CoreGraphics 등을 포함하는 실제 렌더링 가능한 객체들의 구조           View Graph(내부 상태 관리 구조)            State / Environment / Layout 정보 관리       View Tree와 Render Tree를 연결하는 역할           핵심    View Turee는 매번 생성되지만 Render Tree는 Diffing을 통해 부분적으로 갱신     Body 재계산 규칙: 언제 invalidate 되는가? Invalidation은 특정 View를 “무효화”하여, 다음 업데이트 사이클에서 body를 다시 계산하도록 표시하는 과정입니다. SwiftUI에서 Invalidation는 “상태가 바뀐 View와 그 하위”만 영향을 받습니다. 다음 중 하나라도 변경되면 body가 다시 계산됩니다. 1) @State 값 변경 2) @Binding 값 변경 3) @StateObject가 참조하는 ObservableObject에서 @Published 값 변경 4) Environment 값 변경 5) 부모 View의 body가 재계산되면서 이 View의 body도 재계산되는 경우 6) .id(), .animation(), .task(id:) 등 identity/behavior modifier가 변경    blue &gt; 중요한 점은 body 재계산 != 리렌더링 ❗  blue &gt; body 재계산 -&gt; 새로운 View Tree 생성 -&gt; Diffing -&gt; Render Tree 업데이트   blue &gt; 만약 Diffing에서 같다로 판단되면 UI는 다시 그려지지 않습니다.    Body Recompute와 Render Update의 차이 var body: some View {     Text(&quot;Hello&quot;) }  부모에서 State가 바뀌어 이 뷰의 body가 10번 재계산되더라도   Text(“Hello”)는 항상 같은 값이므로 Render Tree는 변화 없음으로 판단됩니다.    SwiftUI 내장 비교 알고리즘 // SwiftUI 내부 diffing 로직 (의사코드) func shouldUpdateView&lt;V: View&gt;(_ oldView: V, _ newView: V) -&gt; Bool {     // 1. Equatable 타입이면 == 연산자 사용     if V.self is Equatable.Type {         return oldView != newView     }          // 2. 값 타입(struct)이면 재귀적으로 프로퍼티 비교     if V.self is ValueType {         return compareProperties(oldView, newView)     }          // 3. 참조 타입(class)이면 참조 동일성 비교     if V.self is ReferenceType {         return oldView !== newView     }          // 4. 클로저는 비교 불가능 - 항상 다르다고 가정     if containsClosures(V.self) {         return true     } }  // 예시 struct CellView: View, Equatable {     static func == (lhs: CellView, rhs: CellView) -&gt; Bool {         lhs.item == rhs.item     } }  SwiftUI는 상태 변경 시 invalidation된 View부터 body를 재계산하여 새로운 View Tree를 생성합니다.   이후 이전 View Tree와 새로운 View Tree를 비교(diffing)하여 실제 UI 업데이트 여부를 결정합니다.  이때 Diffing 기준은 기본적으로 SwiftUI의 내장 비교 알고리즘에 따라 결정되며,   Equatable을 채택한 경우에는 가장 먼저 == 연산자를 통해 비교가 수행됩니다.  즉, Equatable을 채택하지 않은 경우에는 View를 구성하는 프로퍼티들을 기반으로 구조 비교가 수행되지만,   Equatable을 채택하면 개발자가 정의한 비교 기준이 우선 적용됩니다.  따라서 상위 View(리스트)의 body는 호출되더라도,   자식 View(CellView)는 Equatable 비교 결과가 동일하면 body 호출 자체가 생략됩니다.  기존 팝팡 예시 // MARK: - Cell (ViewModel 참조) struct CellView: View {          let item: Item     @ObservedObject var vm: ListViewModel   // ⭐️ 모든 셀이 같은 vm 구독          var body: some View {         print(&quot;🔥 body 호출: \(item.id)&quot;)                  return HStack {             Text(item.name)                          Spacer()                          Button {                 vm.toggleLike(id: item.id)   // ⭐️ ViewModel 메서드 호출             } label: {                 Image(systemName: item.isLiked ? &quot;heart.fill&quot; : &quot;heart&quot;)                     .foregroundColor(item.isLiked ? .red : .gray)             }         }         .padding()         .background(Color.gray.opacity(0.1))     } }     문제: 모든 셀이 동일한 @ObservableObject를 구독하면서 단일 상태 변경에도 objectWillChange가 전체 View invalidation을 유발하여 리스트 전체가 다시 렌더링되는 문제가 발생   원인: @ObservableObject는 상태 변경 시 diffing 결과와 관계없이 구독 중인 모든 View의 body를 재호출하며, 이로 인해 Identifiable / Equatable 기반의 렌더링 최적화가 무력화됨   즉 @ObservableObject를 Cell에서 직접 구독하면 diffing 최적화가 동작하지 않는다   해결 // MARK: - Cell (ViewModel 참조) struct CellView: View, Equatable {     static func == (lhs: CellView, rhs: CellView) -&gt; Bool {         return lhs.item == rhs.item     }               let item: Item     let action: () -&gt; Void          var body: some View {         print(&quot;🔥 body 호출: \(item.id)&quot;)                  return HStack {             Text(item.name)                          Spacer()                          Button {                 action()             } label: {                 Image(systemName: item.isLiked ? &quot;heart.fill&quot; : &quot;heart&quot;)                     .foregroundColor(item.isLiked ? .red : .gray)             }         }         .padding()         .background(Color.gray.opacity(0.1))     } }     Cell에서 @ObservedObject를 제거하고 값 타입 데이터만 전달받도록 구조를 변경   사용자 액션은 closure로 상위 View에 위임하여 ViewModel 접근을 분리   Cell에 Equatavle을 적용하고 closure는 비교에서 제외하여 diffing 기준을 분리   Reference    https://lzufs.tistory.com/2   https://kka7.tistory.com/670   https://green1229.tistory.com/563   https://green1229.tistory.com/589   https://eunjin3786.tistory.com/559   https://medium.com/@mini-min/swiftui-ios-17-부터-새로워진-swiftui의-observation-상태-관리-이해하기-observable-bindable-cab86b79bad3   https://lzufs.tistory.com/2">
+  <meta property="og:description" content="SwiftUI가 코드를 볼 때 무엇을 보는가?    Identity(정체성) - SwiftUI가 앱의 여러 업데이트에서 동일 요소로 보거나 별개 요소로 보는 방법   Lifetime(수명) - SwiftUI가 시간이 지남에 따라 View와 Data 존재를 추적하는 방법   Dependencies(의존성) - SwiftUI가 인터페이스를 업데이트해야 하는 시기와 이유를 이해하는 방법   Identity(정체성) - SwiftUI가 앱의 여러 업데이트에서 동일 요소로 보거나 별개 요소로 보는 방법  사진에서 두 강아지가 다른 강아지인지 혹은 두 장의 같은 강아지인지 알 수 없다. 정보가 충분하지 않아 사실을 말할 수 없기 때문이다. 이 질문을 SwiftUI는 Identity(정체성) 이라고 부른다.   다른 예시로, 아이콘이 서로 완전히 독립 객체인지 알 수 없다. 완전히 다른 객체일 수도 있고 단지 위치만 다르고 다른 색을 가진 동일한 객체일수도 있다. 이러한 구분을 “한 상태에서 다른 상태로 전환하는 방식”을 변경하기 때문에 중요한 부분이다. 만약 서로 같은 객체라면 현 위치에서 다른 위치로 이동하는 동일한 뷰이기 때문에 전환 중에 객체가 아래로 내려가야 한다. 따라서 서로 다른 상태에 걸쳐 뷰를 연결하는 것이 중요하다. 이것이 SwiftUI가 뷰 사이를 전달하는 방법을 이해하는 방식이기 때문이다. 이게 View Identity 핵심 가치다.  SwiftUI는 두 가지 다른 유형의 Identity에 초점을 두고 있다.    Explicit of Identity(명시적 정체성): 맞춤형 또는 데이터 기반 식별자를 사용한다.   Structural Identity(구조적 정체성): 뷰 계층 구조에서의 유형과 위치에 따라 뷰를 구별한다.    사물을 식별하기 위해 보통 이름을 부여할 수 있다. 하지만 두 사물이 똑같이 생기고 같은 계열일 가능성이 높을 수 있어서 이름으로는 고유성이 부족할 수 있다. 이름이나 식별자를 할당하는 것은 Explicit of Identity(명시적 정체성) 의 한 형태이다. 이는 강력하고 유연하지만 누군가 어딘가에서 이름을 추적해야 한다.   이미 익숙할 수 있는 Explicit of Identity의 한 형태는 UIKit 및 AppKit 전체에서 사용되는 포인터 Identity다. SwiftUI에서는 포인터 Identity를 사용하지 않고 UIView와 NSView에서 사용한다. UIView와 NSView는 클래스이므로 메모리 할당에 필요한 고유한 포인터를 가진다. 포인터는 Explicit of Identity의 자연스러운 원천이라고 한다. 포인터를 사용해 개별 뷰를 참조할 수 있으며 두 뷰가 동일한 포인터를 공유하는 경우 실제로 동일한 뷰임을 보장할 수 있다.   하지만 SwiftUI View는 일반적으로 클래스 대신 구조체로 표현하는 값 타입이기 때문에 SwiftUI는 포인터를 사용하지 않는다. 가장 중요한 점은 값 타입은 SwiftUI가 해당 View에 대한 지속적인 Identity로 사용할 수 있는 정식 참조가 없다는 것이다.   여기서 사용된 id는 Explicit of Identity의 한 형태이다. 각 강아지의 인식표 Identity는 View를 명시적으로 식별하는 데 사용된다. 강아지 컬렉션이 변경되면 SwiftUI는 해당 Id를 사용해 무엇이 변경되는지 이해하고 목록 내에서 올바른 애니메이션을 생성할 수 있다.   또 다른 예제인데 여기서는 ScrollViewReader를 사용해 하단 버튼을 사용하여 뷰 상단으로 이동한다.  .id() Modifier는 사용자 정의 식별자를 사용해 뷰를 명시적으로 식별하는 방법을 제공한다.  현재 페이지 상단의 헤더 뷰에 식별자를 추가한 것이다.  구조적 정체성 등장 추가로 해당 식별자를 뷰 프록시의 scrollTo(_:) 메서드에 전달해 SwiftUI에게 특정 뷰로 이동하도록 지시할 수 있다.  이 장점은 모든 뷰를 명시적으로 식별할 필요가 없고 헤더와 같이 코드의 다른 곳에서 참조해야 하는 뷰만 식별할 수 있다는 것이다.  ScrollViewreader, ScrollView, 텍스트 및 버튼에는 명시적인 식별자가 필요하지 않는다. 그러나 정체성이 명시적이지 않다고 해서 이러한 뷰가 전혀 정체성이 없다는 것을 의미하지는 않는다. 명시적이지 않더라도 모든 View는 Identity가 있기 때문이다. → 여기서 구조적 정체성이 등장">
 
 
 
@@ -34,7 +34,7 @@
 
 
 
-  <meta property="article:published_time" content="2026-03-21T00:00:00+00:00">
+  <meta property="article:published_time" content="2026-06-01T00:00:00+00:00">
 
 
 
@@ -456,16 +456,16 @@ checkbox.addEventListener('change', function() {
 
 
   <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="[SwiftUI] Diffing, 끝까지 파고들었습니다.">
-    <meta itemprop="description" content="blue &gt; “왜 특정 셀 하나만 바꿨을 뿐인데, 전체가 다시 그려질까?” blue &gt; PopPang 서비스를 개발하던 중, 특정 화면에서 메모리가 계속 증가하는 문제를 발견했습니다.  blue &gt; 단순한 데이터 문제로 보였지만, 실제로는 SwiftUI의 렌더링 구조와 상태 구독 방식에서 발생한 문제였습니다.  blue &gt; 이 글에서는 문제를 어떤 기준으로 원인을 좁혀갔으며, 불필요한 렌더링을 줄이기 위한 어떤 개선을 했는지 정리했습니다. 문제: 셀 하나만 변경되도 모든 셀이 다시 그려진다  리스트의 특정 셀 좋아요룰 눌렀는데 전체 리스트의가 다시 렌더링됨  스크롤 시 버벅임 + 메모리 증가 발생의문  SwiftUI는 왜 이렇게 많이 다시 그릴까?  Diffing은 정확히 어떻게 동작할까?  내가 뭘 잘못 쓰고 있는 걸까?👉 여기서부터 Diffing을 끝까지 파보기 시작했습니다SwiftUI View LifeCycle                SwiftUI View LifeCycle 흐름    SwiftUI View 라이프사이클은 세 단계로 나뉘어집니다.Appearing  initialize(초기화) 시점에 View는 State에 연결되지 않고 뷰 계층 구조만 미리 구축.  초기화 이후 View와 State 연결  body가 처음으로 호출되어 View Tree 생성  View 계층을 반영하여 UI 렌더링 실행  onAppear() 호출Updating  사용자 액션이나 관찰중인 publisher에서 데이터가 방출되면 상태 변화가 발생  해당 상태를 보유한 View의 body가 먼저 호출되어 새로운 View 트리를 생성  이전 View트리와 새로운 View트리를 비교(diffing) 3-1. 만약 Equatable 채택 시 개발자가 정의한 ==를 통해 동일성 비교 가능  3-2. 동일한 경우 하위 View body 호출이 스킵될 수 있음 🔴  변경된 View만 invalidate(무효화) 처리  invalidate된 View들을중심으로 새로운 View 계층을 업데이트하고 렌더링을 다시 수행Disappearing  View가 계층에서 완전히 제거된 후 onDisappear() 메서드가 호출됨  상위 뷰에서 하위 뷰 순서로 호출됨SwiftUI View DiffingSwiftUI 성능 핵심은 Updating 단계의 Diffing 입니다.SwiftUI의 Diffing 방식은 공식적으로 완전히 공개되어 있지 않지만 알 수 있는 것은  SwiftUI는 모든 View를 매번 렌더링 하지 않는다  이전 상태와 현재 상태를 비교하여 변경된 부분만 렌더링 한다이 특성을 활용하면-&gt; View에 Equatable을 채택시켜 Diffing(비교) 과정을 개발자 레펠에서 관리할 수 있습니다.SwiftUI Diffing 파고들기(참고)var body: some View {      VStack {          Text(&quot;Hello&quot;)          Image(systemName: &quot;star&quot;)          Button(&quot;Tap&quot;) { … }      }}  View Tree(선언적 트리)          개발자가 작성한 선언적 구조      실제 UI가 아니라 값(value)      매번 body가 호출될 때 새 View Tree가 생성됨        Render Tree(실제 렌더링 구조)          화면에 표시되는 실제 UI 계층      UIKit의 UIView, Core Animation Layer, CoreGraphics 등을 포함하는 실제 렌더링 가능한 객체들의 구조        View Graph(내부 상태 관리 구조)          State / Environment / Layout 정보 관리      View Tree와 Render Tree를 연결하는 역할      핵심  View Turee는 매번 생성되지만 Render Tree는 Diffing을 통해 부분적으로 갱신Body 재계산 규칙: 언제 invalidate 되는가?Invalidation은 특정 View를 “무효화”하여, 다음 업데이트 사이클에서 body를 다시 계산하도록 표시하는 과정입니다. SwiftUI에서 Invalidation는 “상태가 바뀐 View와 그 하위”만 영향을 받습니다.다음 중 하나라도 변경되면 body가 다시 계산됩니다.1) @State 값 변경2) @Binding 값 변경3) @StateObject가 참조하는 ObservableObject에서 @Published 값 변경4) Environment 값 변경5) 부모 View의 body가 재계산되면서 이 View의 body도 재계산되는 경우6) .id(), .animation(), .task(id:) 등 identity/behavior modifier가 변경 blue &gt; 중요한 점은 body 재계산 != 리렌더링 ❗ blue &gt; body 재계산 -&gt; 새로운 View Tree 생성 -&gt; Diffing -&gt; Render Tree 업데이트  blue &gt; 만약 Diffing에서 같다로 판단되면 UI는 다시 그려지지 않습니다.Body Recompute와 Render Update의 차이var body: some View {    Text(&quot;Hello&quot;)}부모에서 State가 바뀌어 이 뷰의 body가 10번 재계산되더라도  Text(“Hello”)는 항상 같은 값이므로 Render Tree는 변화 없음으로 판단됩니다.SwiftUI 내장 비교 알고리즘// SwiftUI 내부 diffing 로직 (의사코드)func shouldUpdateView&lt;V: View&gt;(_ oldView: V, _ newView: V) -&gt; Bool {    // 1. Equatable 타입이면 == 연산자 사용    if V.self is Equatable.Type {        return oldView != newView    }        // 2. 값 타입(struct)이면 재귀적으로 프로퍼티 비교    if V.self is ValueType {        return compareProperties(oldView, newView)    }        // 3. 참조 타입(class)이면 참조 동일성 비교    if V.self is ReferenceType {        return oldView !== newView    }        // 4. 클로저는 비교 불가능 - 항상 다르다고 가정    if containsClosures(V.self) {        return true    }}// 예시struct CellView: View, Equatable {    static func == (lhs: CellView, rhs: CellView) -&gt; Bool {        lhs.item == rhs.item    }}SwiftUI는 상태 변경 시 invalidation된 View부터 body를 재계산하여 새로운 View Tree를 생성합니다.  이후 이전 View Tree와 새로운 View Tree를 비교(diffing)하여 실제 UI 업데이트 여부를 결정합니다.이때 Diffing 기준은 기본적으로 SwiftUI의 내장 비교 알고리즘에 따라 결정되며,  Equatable을 채택한 경우에는 가장 먼저 == 연산자를 통해 비교가 수행됩니다.즉, Equatable을 채택하지 않은 경우에는 View를 구성하는 프로퍼티들을 기반으로 구조 비교가 수행되지만,  Equatable을 채택하면 개발자가 정의한 비교 기준이 우선 적용됩니다.따라서 상위 View(리스트)의 body는 호출되더라도,  자식 View(CellView)는 Equatable 비교 결과가 동일하면 body 호출 자체가 생략됩니다.기존 팝팡 예시// MARK: - Cell (ViewModel 참조)struct CellView: View {        let item: Item    @ObservedObject var vm: ListViewModel   // ⭐️ 모든 셀이 같은 vm 구독        var body: some View {        print(&quot;🔥 body 호출: \(item.id)&quot;)                return HStack {            Text(item.name)                        Spacer()                        Button {                vm.toggleLike(id: item.id)   // ⭐️ ViewModel 메서드 호출            } label: {                Image(systemName: item.isLiked ? &quot;heart.fill&quot; : &quot;heart&quot;)                    .foregroundColor(item.isLiked ? .red : .gray)            }        }        .padding()        .background(Color.gray.opacity(0.1))    }}  문제: 모든 셀이 동일한 @ObservableObject를 구독하면서 단일 상태 변경에도 objectWillChange가 전체 View invalidation을 유발하여 리스트 전체가 다시 렌더링되는 문제가 발생  원인: @ObservableObject는 상태 변경 시 diffing 결과와 관계없이 구독 중인 모든 View의 body를 재호출하며, 이로 인해 Identifiable / Equatable 기반의 렌더링 최적화가 무력화됨  즉 @ObservableObject를 Cell에서 직접 구독하면 diffing 최적화가 동작하지 않는다해결// MARK: - Cell (ViewModel 참조)struct CellView: View, Equatable {    static func == (lhs: CellView, rhs: CellView) -&gt; Bool {        return lhs.item == rhs.item    }            let item: Item    let action: () -&gt; Void        var body: some View {        print(&quot;🔥 body 호출: \(item.id)&quot;)                return HStack {            Text(item.name)                        Spacer()                        Button {                action()            } label: {                Image(systemName: item.isLiked ? &quot;heart.fill&quot; : &quot;heart&quot;)                    .foregroundColor(item.isLiked ? .red : .gray)            }        }        .padding()        .background(Color.gray.opacity(0.1))    }}  Cell에서 @ObservedObject를 제거하고 값 타입 데이터만 전달받도록 구조를 변경  사용자 액션은 closure로 상위 View에 위임하여 ViewModel 접근을 분리  Cell에 Equatavle을 적용하고 closure는 비교에서 제외하여 diffing 기준을 분리Reference  https://lzufs.tistory.com/2  https://kka7.tistory.com/670  https://green1229.tistory.com/563  https://green1229.tistory.com/589  https://eunjin3786.tistory.com/559  https://medium.com/@mini-min/swiftui-ios-17-부터-새로워진-swiftui의-observation-상태-관리-이해하기-observable-bindable-cab86b79bad3  https://lzufs.tistory.com/2">
-    <meta itemprop="datePublished" content="2026-03-21T00:00:00+00:00">
+    <meta itemprop="headline" content="[SwiftUI] Demystify SwiftUI">
+    <meta itemprop="description" content="SwiftUI가 코드를 볼 때 무엇을 보는가?  Identity(정체성) - SwiftUI가 앱의 여러 업데이트에서 동일 요소로 보거나 별개 요소로 보는 방법  Lifetime(수명) - SwiftUI가 시간이 지남에 따라 View와 Data 존재를 추적하는 방법  Dependencies(의존성) - SwiftUI가 인터페이스를 업데이트해야 하는 시기와 이유를 이해하는 방법Identity(정체성) - SwiftUI가 앱의 여러 업데이트에서 동일 요소로 보거나 별개 요소로 보는 방법사진에서 두 강아지가 다른 강아지인지 혹은 두 장의 같은 강아지인지 알 수 없다.정보가 충분하지 않아 사실을 말할 수 없기 때문이다. 이 질문을 SwiftUI는 Identity(정체성) 이라고 부른다.다른 예시로, 아이콘이 서로 완전히 독립 객체인지 알 수 없다.완전히 다른 객체일 수도 있고 단지 위치만 다르고 다른 색을 가진 동일한 객체일수도 있다.이러한 구분을 “한 상태에서 다른 상태로 전환하는 방식”을 변경하기 때문에 중요한 부분이다.만약 서로 같은 객체라면 현 위치에서 다른 위치로 이동하는 동일한 뷰이기 때문에 전환 중에 객체가 아래로 내려가야 한다.따라서 서로 다른 상태에 걸쳐 뷰를 연결하는 것이 중요하다. 이것이 SwiftUI가 뷰 사이를 전달하는 방법을 이해하는 방식이기 때문이다. 이게 View Identity 핵심 가치다.SwiftUI는 두 가지 다른 유형의 Identity에 초점을 두고 있다.  Explicit of Identity(명시적 정체성): 맞춤형 또는 데이터 기반 식별자를 사용한다.  Structural Identity(구조적 정체성): 뷰 계층 구조에서의 유형과 위치에 따라 뷰를 구별한다.사물을 식별하기 위해 보통 이름을 부여할 수 있다.하지만 두 사물이 똑같이 생기고 같은 계열일 가능성이 높을 수 있어서 이름으로는 고유성이 부족할 수 있다.이름이나 식별자를 할당하는 것은 Explicit of Identity(명시적 정체성) 의 한 형태이다.이는 강력하고 유연하지만 누군가 어딘가에서 이름을 추적해야 한다.이미 익숙할 수 있는 Explicit of Identity의 한 형태는 UIKit 및 AppKit 전체에서 사용되는 포인터 Identity다.SwiftUI에서는 포인터 Identity를 사용하지 않고 UIView와 NSView에서 사용한다.UIView와 NSView는 클래스이므로 메모리 할당에 필요한 고유한 포인터를 가진다. 포인터는 Explicit of Identity의 자연스러운 원천이라고 한다.포인터를 사용해 개별 뷰를 참조할 수 있으며 두 뷰가 동일한 포인터를 공유하는 경우 실제로 동일한 뷰임을 보장할 수 있다.하지만 SwiftUI View는 일반적으로 클래스 대신 구조체로 표현하는 값 타입이기 때문에 SwiftUI는 포인터를 사용하지 않는다.가장 중요한 점은 값 타입은 SwiftUI가 해당 View에 대한 지속적인 Identity로 사용할 수 있는 정식 참조가 없다는 것이다.여기서 사용된 id는 Explicit of Identity의 한 형태이다.각 강아지의 인식표 Identity는 View를 명시적으로 식별하는 데 사용된다.강아지 컬렉션이 변경되면 SwiftUI는 해당 Id를 사용해 무엇이 변경되는지 이해하고 목록 내에서 올바른 애니메이션을 생성할 수 있다.또 다른 예제인데 여기서는 ScrollViewReader를 사용해 하단 버튼을 사용하여 뷰 상단으로 이동한다. .id() Modifier는 사용자 정의 식별자를 사용해 뷰를 명시적으로 식별하는 방법을 제공한다. 현재 페이지 상단의 헤더 뷰에 식별자를 추가한 것이다.구조적 정체성 등장추가로 해당 식별자를 뷰 프록시의 scrollTo(_:) 메서드에 전달해 SwiftUI에게 특정 뷰로 이동하도록 지시할 수 있다. 이 장점은 모든 뷰를 명시적으로 식별할 필요가 없고 헤더와 같이 코드의 다른 곳에서 참조해야 하는 뷰만 식별할 수 있다는 것이다. ScrollViewreader, ScrollView, 텍스트 및 버튼에는 명시적인 식별자가 필요하지 않는다.그러나 정체성이 명시적이지 않다고 해서 이러한 뷰가 전혀 정체성이 없다는 것을 의미하지는 않는다.명시적이지 않더라도 모든 View는 Identity가 있기 때문이다. → 여기서 구조적 정체성이 등장">
+    <meta itemprop="datePublished" content="2026-06-01T00:00:00+00:00">
     
 
     <div class="page__inner-wrap">
       
         <header>
           <h1 id="page-title" class="page__title p-name" itemprop="headline">
-            <a href="http://localhost:4000/SwiftUI-diff/" class="u-url" itemprop="url">[SwiftUI] Diffing, 끝까지 파고들었습니다.
+            <a href="http://localhost:4000/SwiftUI-diff/" class="u-url" itemprop="url">[SwiftUI] Demystify SwiftUI
 </a>
           </h1>
           <footer class="page__meta">
@@ -491,7 +491,7 @@ checkbox.addEventListener('change', function() {
 <!--  -->
             
 
-  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2026-03-21T00:00:00+00:00">March 21, 2026</time></p>
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2026-06-01T00:00:00+00:00">June 1, 2026</time></p>
 
           </footer>
         </header>
@@ -503,335 +503,63 @@ checkbox.addEventListener('change', function() {
 
 <!-- <img src="https://github.com/user-attachments/assets/3938e583-0fc4-4620-99b0-bf761e60a1ba" width="60%" align="left"> -->
 
-<blockquote class="custom-double-quote">
-  <p>“왜 특정 셀 하나만 바꿨을 뿐인데, 전체가 다시 그려질까?” <br />
-PopPang 서비스를 개발하던 중, 특정 화면에서 메모리가 계속 증가하는 문제를 발견했습니다.  <br />
-단순한 데이터 문제로 보였지만, 실제로는 SwiftUI의 렌더링 구조와 상태 구독 방식에서 발생한 문제였습니다.  <br />
-이 글에서는 문제를 어떤 기준으로 원인을 좁혀갔으며, 불필요한 렌더링을 줄이기 위한 어떤 개선을 했는지 정리했습니다. <br /></p>
-</blockquote>
-
-<h2 id="문제-셀-하나만-변경되도-모든-셀이-다시-그려진다">문제: 셀 하나만 변경되도 모든 셀이 다시 그려진다</h2>
-<p><img src="https://github.com/user-attachments/assets/3938e583-0fc4-4620-99b0-bf761e60a1ba" width="80%" /></p>
+<h4 id="swiftui가-코드를-볼-때-무엇을-보는가">SwiftUI가 코드를 볼 때 무엇을 보는가?</h4>
 <ul>
-  <li>리스트의 특정 셀 좋아요룰 눌렀는데 전체 리스트의가 다시 렌더링됨</li>
-  <li>스크롤 시 버벅임 + 메모리 증가 발생</li>
+  <li>Identity(정체성) - SwiftUI가 앱의 여러 업데이트에서 동일 요소로 보거나 별개 요소로 보는 방법</li>
+  <li>Lifetime(수명) - SwiftUI가 시간이 지남에 따라 View와 Data 존재를 추적하는 방법</li>
+  <li>Dependencies(의존성) - SwiftUI가 인터페이스를 업데이트해야 하는 시기와 이유를 이해하는 방법</li>
 </ul>
 
-<hr />
+<h4 id="identity정체성---swiftui가-앱의-여러-업데이트에서-동일-요소로-보거나-별개-요소로-보는-방법">Identity(정체성) - SwiftUI가 앱의 여러 업데이트에서 동일 요소로 보거나 별개 요소로 보는 방법</h4>
+<p><img src="/assets/img/2026-06-01-[SwiftUI] diff/image-20260601150619822.png" alt="image-20260601150619822" /><br />
+사진에서 두 강아지가 다른 강아지인지 혹은 두 장의 같은 강아지인지 알 수 없다.<br />
+정보가 충분하지 않아 사실을 말할 수 없기 때문이다. 이 질문을 SwiftUI는 Identity(정체성) 이라고 부른다.</p>
 
-<h2 id="의문">의문</h2>
+<p><img src="/assets/img/2026-06-01-[SwiftUI] diff/image-20260601150933679.png" alt="image-20260601150933679" /><br />
+다른 예시로, 아이콘이 서로 완전히 독립 객체인지 알 수 없다.<br />
+완전히 다른 객체일 수도 있고 단지 위치만 다르고 다른 색을 가진 동일한 객체일수도 있다.<br />
+이러한 구분을 “한 상태에서 다른 상태로 전환하는 방식”을 변경하기 때문에 중요한 부분이다.<br />
+만약 서로 같은 객체라면 현 위치에서 다른 위치로 이동하는 동일한 뷰이기 때문에 전환 중에 객체가 아래로 내려가야 한다.<br />
+따라서 서로 다른 상태에 걸쳐 뷰를 연결하는 것이 중요하다. 이것이 SwiftUI가 뷰 사이를 전달하는 방법을 이해하는 방식이기 때문이다. 이게 View Identity 핵심 가치다.</p>
+
+<h4 id="swiftui는-두-가지-다른-유형의-identity에-초점을-두고-있다">SwiftUI는 두 가지 다른 유형의 Identity에 초점을 두고 있다.</h4>
 <ul>
-  <li>SwiftUI는 왜 이렇게 많이 다시 그릴까?</li>
-  <li>Diffing은 정확히 어떻게 동작할까?</li>
-  <li>내가 뭘 잘못 쓰고 있는 걸까?<br />
-👉 여기서부터 <strong>Diffing을 끝까지 파보기 시작했습니다</strong></li>
+  <li>Explicit of Identity(명시적 정체성): 맞춤형 또는 데이터 기반 식별자를 사용한다.</li>
+  <li>Structural Identity(구조적 정체성): 뷰 계층 구조에서의 유형과 위치에 따라 뷰를 구별한다.</li>
 </ul>
 
-<hr />
+<p><img src="/assets/img/2026-06-01-[SwiftUI] diff/image-20260601151352773.png" alt="image-20260601151352773" /><br />
+사물을 식별하기 위해 보통 이름을 부여할 수 있다.<br />
+하지만 두 사물이 똑같이 생기고 같은 계열일 가능성이 높을 수 있어서 이름으로는 고유성이 부족할 수 있다.<br />
+이름이나 식별자를 할당하는 것은 Explicit of Identity(명시적 정체성) 의 한 형태이다.<br />
+이는 강력하고 유연하지만 누군가 어딘가에서 이름을 추적해야 한다.</p>
 
-<h2 id="swiftui-view-lifecycle">SwiftUI View LifeCycle</h2>
-<div style="text-align: center;">
-    <img src="/assets/img/2026-03-21-%5BSwiftUI%5D%20lifecycle/img.png" width="100%" />
-    <p style="text-align: center; font-size: 14px; color: gray; margin-top: 8px;">
-        SwiftUI View LifeCycle 흐름
-    </p>
-</div>
-<p>SwiftUI View 라이프사이클은 세 단계로 나뉘어집니다.</p>
+<p><img src="/assets/img/2026-06-01-[SwiftUI] diff/image-20260601151759888.png" alt="image-20260601151759888" /><br />
+이미 익숙할 수 있는 Explicit of Identity의 한 형태는 UIKit 및 AppKit 전체에서 사용되는 포인터 Identity다.<br />
+SwiftUI에서는 포인터 Identity를 사용하지 않고 UIView와 NSView에서 사용한다.<br />
+UIView와 NSView는 클래스이므로 메모리 할당에 필요한 고유한 포인터를 가진다. 포인터는 Explicit of Identity의 자연스러운 원천이라고 한다.<br />
+포인터를 사용해 개별 뷰를 참조할 수 있으며 두 뷰가 동일한 포인터를 공유하는 경우 실제로 동일한 뷰임을 보장할 수 있다.</p>
 
-<h3 id="appearing">Appearing</h3>
-<ol>
-  <li>initialize(초기화) 시점에 View는 State에 연결되지 않고 뷰 계층 구조만 미리 구축.</li>
-  <li>초기화 이후 View와 State 연결</li>
-  <li>body가 처음으로 호출되어 View Tree 생성</li>
-  <li>View 계층을 반영하여 UI 렌더링 실행</li>
-  <li>onAppear() 호출</li>
-</ol>
+<p><img src="/assets/img/2026-06-01-[SwiftUI] diff/image-20260601151819505.png" alt="image-20260601151819505" /><br />
+하지만 SwiftUI View는 일반적으로 클래스 대신 구조체로 표현하는 값 타입이기 때문에 SwiftUI는 포인터를 사용하지 않는다.<br />
+가장 중요한 점은 값 타입은 SwiftUI가 해당 View에 대한 지속적인 Identity로 사용할 수 있는 정식 참조가 없다는 것이다.</p>
 
-<h3 id="updating">Updating</h3>
-<ol>
-  <li>사용자 액션이나 관찰중인 publisher에서 데이터가 방출되면 상태 변화가 발생</li>
-  <li>해당 상태를 보유한 View의 body가 먼저 호출되어 새로운 View 트리를 생성</li>
-  <li>이전 View트리와 새로운 View트리를 비교(diffing)<br />
- 3-1. 만약 Equatable 채택 시 개발자가 정의한 <code class="language-plaintext highlighter-rouge">==</code>를 통해 동일성 비교 가능 <br />
- 3-2. 동일한 경우 하위 View body 호출이 스킵될 수 있음 🔴</li>
-  <li>변경된 View만 invalidate(무효화) 처리</li>
-  <li>invalidate된 View들을중심으로 새로운 View 계층을 업데이트하고 렌더링을 다시 수행</li>
-</ol>
+<p><img src="/assets/img/2026-06-01-[SwiftUI] diff/image-20260601152414474.png" alt="image-20260601152414474" /><br />
+여기서 사용된 id는 Explicit of Identity의 한 형태이다.<br />
+각 강아지의 인식표 Identity는 View를 명시적으로 식별하는 데 사용된다.<br />
+강아지 컬렉션이 변경되면 SwiftUI는 해당 Id를 사용해 무엇이 변경되는지 이해하고 목록 내에서 올바른 애니메이션을 생성할 수 있다.</p>
 
-<h3 id="disappearing">Disappearing</h3>
-<ol>
-  <li>View가 계층에서 완전히 제거된 후 onDisappear() 메서드가 호출됨</li>
-  <li>상위 뷰에서 하위 뷰 순서로 호출됨</li>
-</ol>
+<p><img src="/assets/img/2026-06-01-[SwiftUI] diff/image-20260601152720076.png" alt="image-20260601152720076" /><br />
+또 다른 예제인데 여기서는 ScrollViewReader를 사용해 하단 버튼을 사용하여 뷰 상단으로 이동한다. <br />
+.id() Modifier는 사용자 정의 식별자를 사용해 뷰를 명시적으로 식별하는 방법을 제공한다. <br />
+현재 페이지 상단의 헤더 뷰에 식별자를 추가한 것이다.</p>
 
-<hr />
-
-<h2 id="swiftui-view-diffing">SwiftUI View Diffing</h2>
-<p>SwiftUI 성능 핵심은 Updating 단계의 Diffing 입니다.<br />
-SwiftUI의 Diffing 방식은 공식적으로 완전히 공개되어 있지 않지만 알 수 있는 것은</p>
-<ul>
-  <li>SwiftUI는 모든 View를 매번 렌더링 하지 않는다</li>
-  <li>이전 상태와 현재 상태를 비교하여 변경된 부분만 렌더링 한다<br />
-이 특성을 활용하면<br />
--&gt; View에 Equatable을 채택시켜 Diffing(비교) 과정을 개발자 레펠에서 관리할 수 있습니다.</li>
-</ul>
-
-<h2 id="swiftui-diffing-파고들기참고">SwiftUI Diffing 파고들기(참고)</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="nv">body</span><span class="p">:</span> <span class="kd">some</span> <span class="kt">View</span> <span class="p">{</span>
-      <span class="kt">VStack</span> <span class="p">{</span>
-          <span class="kt">Text</span><span class="p">(</span><span class="s">"Hello"</span><span class="p">)</span>
-          <span class="kt">Image</span><span class="p">(</span><span class="nv">systemName</span><span class="p">:</span> <span class="s">"star"</span><span class="p">)</span>
-          <span class="kt">Button</span><span class="p">(</span><span class="s">"Tap"</span><span class="p">)</span> <span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
-      <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-<ol>
-  <li>View Tree(선언적 트리)
-    <ul>
-      <li>개발자가 작성한 선언적 구조</li>
-      <li>실제 UI가 아니라 값(value)</li>
-      <li>매번 body가 호출될 때 새 View Tree가 생성됨</li>
-    </ul>
-  </li>
-  <li>Render Tree(실제 렌더링 구조)
-    <ul>
-      <li>화면에 표시되는 실제 UI 계층</li>
-      <li>UIKit의 UIView, Core Animation Layer, CoreGraphics 등을 포함하는 실제 렌더링 가능한 객체들의 구조</li>
-    </ul>
-  </li>
-  <li>View Graph(내부 상태 관리 구조)
-    <ul>
-      <li>State / Environment / Layout 정보 관리</li>
-      <li>View Tree와 Render Tree를 연결하는 역할</li>
-    </ul>
-  </li>
-</ol>
-
-<h3 id="핵심">핵심</h3>
-<ul>
-  <li>View Turee는 매번 생성되지만 Render Tree는 Diffing을 통해 부분적으로 갱신</li>
-</ul>
-
-<hr />
-
-<h2 id="body-재계산-규칙-언제-invalidate-되는가">Body 재계산 규칙: 언제 invalidate 되는가?</h2>
-<p>Invalidation은 특정 View를 “무효화”하여, 다음 업데이트 사이클에서 body를 다시 계산하도록 표시하는 과정입니다. SwiftUI에서 Invalidation는 “상태가 바뀐 View와 그 하위”만 영향을 받습니다.<br />
-다음 중 하나라도 변경되면 body가 다시 계산됩니다.</p>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">1</span><span class="p">)</span><span class="err"> </span><span class="kd">@State</span> <span class="n">값</span> <span class="n">변경</span>
-<span class="mi">2</span><span class="p">)</span><span class="err"> </span><span class="kd">@Binding</span> <span class="n">값</span> <span class="n">변경</span>
-<span class="mi">3</span><span class="p">)</span><span class="err"> </span><span class="kd">@StateObject가</span> <span class="n">참조하는</span> <span class="kt">ObservableObject에서</span> <span class="kd">@Published</span> <span class="n">값</span> <span class="n">변경</span>
-<span class="mi">4</span><span class="p">)</span><span class="err"> </span><span class="kt">Environment</span> <span class="n">값</span> <span class="n">변경</span>
-<span class="mi">5</span><span class="p">)</span> <span class="n">부모</span> <span class="kt">View의</span> <span class="n">body가</span> <span class="n">재계산되면서</span> <span class="n">이</span> <span class="kt">View의</span> <span class="n">body도</span> <span class="n">재계산되는</span> <span class="n">경우</span>
-<span class="mi">6</span><span class="p">)</span><span class="err"> </span><span class="o">.</span><span class="nf">id</span><span class="p">(),</span><span class="err"> </span><span class="o">.</span><span class="nf">animation</span><span class="p">(),</span><span class="err"> </span><span class="o">.</span><span class="nf">task</span><span class="p">(</span><span class="nv">id</span><span class="p">:)</span><span class="err"> </span><span class="n">등</span> <span class="n">identity</span><span class="o">/</span><span class="n">behavior</span> <span class="n">modifier가</span> <span class="n">변경</span><span class="err"> </span>
-</code></pre></div></div>
-
-<blockquote class="custom-double-quote">
-  <p>중요한 점은 body 재계산 != 리렌더링 ❗ <br />
-body 재계산 -&gt; 새로운 View Tree 생성 -&gt; Diffing -&gt; Render Tree 업데이트  <br />
-만약 Diffing에서 <strong>같다</strong>로 판단되면 UI는 다시 그려지지 않습니다.</p>
-</blockquote>
-
-<hr />
-
-<h2 id="body-recompute와-render-update의-차이">Body Recompute와 Render Update의 차이</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="nv">body</span><span class="p">:</span> <span class="kd">some</span> <span class="kt">View</span> <span class="p">{</span>
-    <span class="kt">Text</span><span class="p">(</span><span class="s">"Hello"</span><span class="p">)</span>
-<span class="p">}</span>
-</code></pre></div></div>
-<p>부모에서 State가 바뀌어 이 뷰의 body가 10번 재계산되더라도  <br />
-Text(“Hello”)는 항상 같은 값이므로 Render Tree는 변화 없음으로 판단됩니다.</p>
-
-<!-- ## Invalidation 범위
-하지만
-- 어떤 경우에는 부모 -> 자식 전체가 재계산되고
-- 어떤 경우에는 자식 뷰만 재계산됩니다.
-
-## Invalidation 핵심 규칙
-**@State는 해당 view struct에서만 invalidation을 일으킨다**
-**@ObservedObject가 변경됨녀 그 객체를 구독하고 있는 모든 View가 invalidation된다**
-**@StateObject는 View 재생성에도 살아남지만 invalidation 전파는 @ObservableObject 기반이다**
-- 정리하자면 작은 뷰에 @ObservedObject를 넣는 것은 위험합니다.
-- 큰 뷰는 상태를 최대한 분리해 invalidation을 최소화해야 합니다.
-
-**@State**
-- View struct 하나만 invalidation
-- 가장 안전하고 가벼움
-
-**@Binding**
-- 부모 State 변경 시 자식도 invalidation
-- 지나친 중첩은 body 경쟁을 유발
-
-**@ObservedObject**
-- @Published 변경 시 연결된 모든 View 트리가 invalidation
-- 성능 문제의 주범이 되는 경우가 많음
-    > 셀에서 사용하면 전체 셀이 다시 계산됨 ⚠️
-
-**@StateObject**
-- ObservableObject의 생명주기는 유지
-- invalidation은 @ObservedObject와 동일
-- “큰 변경”이 있는 객체는 자식뷰로 분리하는 것이 맞다
-
-## 리플렉션 기반 프로퍼티 비교
-<div align="center">
-SwiftUI는 뷰의 저장 프로퍼티들을 리플렉션으로 비교합니다.
-</div> -->
-
-<p><strong>SwiftUI 내장 비교 알고리즘</strong></p>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// SwiftUI 내부 diffing 로직 (의사코드)</span>
-<span class="kd">func</span> <span class="n">shouldUpdateView</span><span class="o">&lt;</span><span class="kt">V</span><span class="p">:</span> <span class="kt">View</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">oldView</span><span class="p">:</span> <span class="kt">V</span><span class="p">,</span> <span class="n">_</span> <span class="nv">newView</span><span class="p">:</span> <span class="kt">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
-    <span class="c1">// 1. Equatable 타입이면 == 연산자 사용</span>
-    <span class="k">if</span> <span class="kt">V</span><span class="o">.</span><span class="k">self</span> <span class="k">is</span> <span class="kt">Equatable</span><span class="o">.</span><span class="k">Type</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">oldView</span> <span class="o">!=</span> <span class="n">newView</span>
-    <span class="p">}</span>
-    
-    <span class="c1">// 2. 값 타입(struct)이면 재귀적으로 프로퍼티 비교</span>
-    <span class="k">if</span> <span class="kt">V</span><span class="o">.</span><span class="k">self</span> <span class="k">is</span> <span class="kt">ValueType</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="nf">compareProperties</span><span class="p">(</span><span class="n">oldView</span><span class="p">,</span> <span class="n">newView</span><span class="p">)</span>
-    <span class="p">}</span>
-    
-    <span class="c1">// 3. 참조 타입(class)이면 참조 동일성 비교</span>
-    <span class="k">if</span> <span class="kt">V</span><span class="o">.</span><span class="k">self</span> <span class="k">is</span> <span class="kt">ReferenceType</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">oldView</span> <span class="o">!==</span> <span class="n">newView</span>
-    <span class="p">}</span>
-    
-    <span class="c1">// 4. 클로저는 비교 불가능 - 항상 다르다고 가정</span>
-    <span class="k">if</span> <span class="nf">containsClosures</span><span class="p">(</span><span class="kt">V</span><span class="o">.</span><span class="k">self</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="kc">true</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 예시</span>
-<span class="kd">struct</span> <span class="kt">CellView</span><span class="p">:</span> <span class="kt">View</span><span class="p">,</span> <span class="kt">Equatable</span> <span class="p">{</span>
-    <span class="kd">static</span> <span class="kd">func</span> <span class="o">==</span> <span class="p">(</span><span class="nv">lhs</span><span class="p">:</span> <span class="kt">CellView</span><span class="p">,</span> <span class="nv">rhs</span><span class="p">:</span> <span class="kt">CellView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
-        <span class="n">lhs</span><span class="o">.</span><span class="n">item</span> <span class="o">==</span> <span class="n">rhs</span><span class="o">.</span><span class="n">item</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-<p>SwiftUI는 상태 변경 시 invalidation된 View부터 body를 재계산하여 새로운 View Tree를 생성합니다.  <br />
-이후 이전 View Tree와 새로운 View Tree를 비교(diffing)하여 실제 UI 업데이트 여부를 결정합니다.</p>
-
-<p>이때 Diffing 기준은 기본적으로 SwiftUI의 내장 비교 알고리즘에 따라 결정되며,  <br />
-Equatable을 채택한 경우에는 가장 먼저 == 연산자를 통해 비교가 수행됩니다.</p>
-
-<p>즉, Equatable을 채택하지 않은 경우에는 View를 구성하는 프로퍼티들을 기반으로 구조 비교가 수행되지만,  <br />
-Equatable을 채택하면 개발자가 정의한 비교 기준이 우선 적용됩니다.</p>
-
-<p>따라서 상위 View(리스트)의 body는 호출되더라도,  <br />
-자식 View(CellView)는 Equatable 비교 결과가 동일하면 body 호출 자체가 생략됩니다.</p>
-
-<h2 id="기존-팝팡-예시">기존 팝팡 예시</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// MARK: - Cell (ViewModel 참조)</span>
-<span class="kd">struct</span> <span class="kt">CellView</span><span class="p">:</span> <span class="kt">View</span> <span class="p">{</span>
-    
-    <span class="k">let</span> <span class="nv">item</span><span class="p">:</span> <span class="kt">Item</span>
-    <span class="kd">@ObservedObject</span> <span class="k">var</span> <span class="nv">vm</span><span class="p">:</span> <span class="kt">ListViewModel</span>   <span class="c1">// ⭐️ 모든 셀이 같은 vm 구독</span>
-    
-    <span class="k">var</span> <span class="nv">body</span><span class="p">:</span> <span class="kd">some</span> <span class="kt">View</span> <span class="p">{</span>
-        <span class="nf">print</span><span class="p">(</span><span class="s">"🔥 body 호출: </span><span class="se">\(</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
-        
-        <span class="k">return</span> <span class="kt">HStack</span> <span class="p">{</span>
-            <span class="kt">Text</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            
-            <span class="kt">Spacer</span><span class="p">()</span>
-            
-            <span class="kt">Button</span> <span class="p">{</span>
-                <span class="n">vm</span><span class="o">.</span><span class="nf">toggleLike</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>   <span class="c1">// ⭐️ ViewModel 메서드 호출</span>
-            <span class="p">}</span> <span class="nv">label</span><span class="p">:</span> <span class="p">{</span>
-                <span class="kt">Image</span><span class="p">(</span><span class="nv">systemName</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">isLiked</span> <span class="p">?</span> <span class="s">"heart.fill"</span> <span class="p">:</span> <span class="s">"heart"</span><span class="p">)</span>
-                    <span class="o">.</span><span class="nf">foregroundColor</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">isLiked</span> <span class="p">?</span> <span class="o">.</span><span class="nv">red</span> <span class="p">:</span> <span class="o">.</span><span class="n">gray</span><span class="p">)</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-        <span class="o">.</span><span class="nf">padding</span><span class="p">()</span>
-        <span class="o">.</span><span class="nf">background</span><span class="p">(</span><span class="kt">Color</span><span class="o">.</span><span class="n">gray</span><span class="o">.</span><span class="nf">opacity</span><span class="p">(</span><span class="mf">0.1</span><span class="p">))</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-<ul>
-  <li>문제: 모든 셀이 동일한 @ObservableObject를 구독하면서 단일 상태 변경에도 objectWillChange가 전체 View invalidation을 유발하여 리스트 전체가 다시 렌더링되는 문제가 발생</li>
-  <li>원인: @ObservableObject는 상태 변경 시 diffing 결과와 관계없이 구독 중인 모든 View의 body를 재호출하며, 이로 인해 Identifiable / Equatable 기반의 렌더링 최적화가 무력화됨</li>
-  <li>즉 @ObservableObject를 Cell에서 직접 구독하면 diffing 최적화가 동작하지 않는다</li>
-</ul>
-
-<h2 id="해결">해결</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// MARK: - Cell (ViewModel 참조)</span>
-<span class="kd">struct</span> <span class="kt">CellView</span><span class="p">:</span> <span class="kt">View</span><span class="p">,</span> <span class="kt">Equatable</span> <span class="p">{</span>
-    <span class="kd">static</span> <span class="kd">func</span> <span class="o">==</span> <span class="p">(</span><span class="nv">lhs</span><span class="p">:</span> <span class="kt">CellView</span><span class="p">,</span> <span class="nv">rhs</span><span class="p">:</span> <span class="kt">CellView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">lhs</span><span class="o">.</span><span class="n">item</span> <span class="o">==</span> <span class="n">rhs</span><span class="o">.</span><span class="n">item</span>
-    <span class="p">}</span>
-    
-    
-    <span class="k">let</span> <span class="nv">item</span><span class="p">:</span> <span class="kt">Item</span>
-    <span class="k">let</span> <span class="nv">action</span><span class="p">:</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Void</span>
-    
-    <span class="k">var</span> <span class="nv">body</span><span class="p">:</span> <span class="kd">some</span> <span class="kt">View</span> <span class="p">{</span>
-        <span class="nf">print</span><span class="p">(</span><span class="s">"🔥 body 호출: </span><span class="se">\(</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
-        
-        <span class="k">return</span> <span class="kt">HStack</span> <span class="p">{</span>
-            <span class="kt">Text</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            
-            <span class="kt">Spacer</span><span class="p">()</span>
-            
-            <span class="kt">Button</span> <span class="p">{</span>
-                <span class="nf">action</span><span class="p">()</span>
-            <span class="p">}</span> <span class="nv">label</span><span class="p">:</span> <span class="p">{</span>
-                <span class="kt">Image</span><span class="p">(</span><span class="nv">systemName</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">isLiked</span> <span class="p">?</span> <span class="s">"heart.fill"</span> <span class="p">:</span> <span class="s">"heart"</span><span class="p">)</span>
-                    <span class="o">.</span><span class="nf">foregroundColor</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">isLiked</span> <span class="p">?</span> <span class="o">.</span><span class="nv">red</span> <span class="p">:</span> <span class="o">.</span><span class="n">gray</span><span class="p">)</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-        <span class="o">.</span><span class="nf">padding</span><span class="p">()</span>
-        <span class="o">.</span><span class="nf">background</span><span class="p">(</span><span class="kt">Color</span><span class="o">.</span><span class="n">gray</span><span class="o">.</span><span class="nf">opacity</span><span class="p">(</span><span class="mf">0.1</span><span class="p">))</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-<ul>
-  <li>Cell에서 @ObservedObject를 제거하고 값 타입 데이터만 전달받도록 구조를 변경</li>
-  <li>사용자 액션은 closure로 상위 View에 위임하여 ViewModel 접근을 분리</li>
-  <li>Cell에 Equatavle을 적용하고 closure는 비교에서 제외하여 diffing 기준을 분리</li>
-</ul>
-
-<h2 id="reference">Reference</h2>
-<ul>
-  <li>https://lzufs.tistory.com/2</li>
-  <li>https://kka7.tistory.com/670</li>
-  <li>https://green1229.tistory.com/563</li>
-  <li>https://green1229.tistory.com/589</li>
-  <li>https://eunjin3786.tistory.com/559</li>
-  <li>https://medium.com/@mini-min/swiftui-ios-17-부터-새로워진-swiftui의-observation-상태-관리-이해하기-observable-bindable-cab86b79bad3</li>
-  <li>https://lzufs.tistory.com/2</li>
-</ul>
-
-<!-- ## SwiftUI View 성능
-View 생명주기를 살펴보면 **Updating Phase의 Diffing 단계**가 가장 중요합니다.
-SwiftUI Diffing은 공식적으로 상세한 구현이 공개되어 있지 않지만 우리가 알 수 있는 것은 SwiftUI 모든 뷰를 매번 다시 렌더링 하지 않는다는 것입니다. 내부적으로 이전 View 트리와 새로운 View 트리를 비교하여 **변경된 부분만 다시 렌더링**하여 만약 새 값이 이전 값과 동일한 경우 **업데이트를 방지할 수 있습니다.**
-변경된 값이 같으면 뷰가 제렌더링되지 않게 하기 위해 **View Equatable을 채택시키면 Diffing(비교) 과정을 개발자가 관리할 수 있습니다** -->
-
-<!-- 
-## ⚙️ SwiftUI Diffing의 핵심
-SwiftUI는 상태가 바뀌면 이렇게 동작합니다.
-```swift
-// invalidation: 재계산 트리거
-[1단계: 업데이트 트리거]
-1. 상태 변경 감지 (@State, @ObservedObject 등)
-2. 해당 View가 invalidation됨 (body 재계산 필요 표시)
-
-[2단계: 렌더링 & Diffing]
-3. 업데이트 사이클에서 body 실행 → 새로운 View 트리 생성
-4. 이전 View 트리와 diffing 수행 (하위 View까지 재귀적으로 비교)
-5. 변경된 부분만 실제 UI에 반영
-``` -->
-
-<!-- ## 고민했던 문제
-SwiftUI를 사용하면서 이런 경험을 한번 쯤 하게 됩니다.  
-1. List 스크롤 시 왜 버벅거리지?
-2. 특정 셀의 상태만 변경되도 왜 전체 화면이 다시 그려지지?
-3. ForEach에서 id: \.self를 쓰면 안된다는데 정확히 이유가 뭐지?
-4. 에어비엔비는 15% 렌더링 성능 개선을 어떻개 했을까?
-
-## SwiftUI가 화면을 그리는 기본 메커니즘
-> SwiftUI는 선언형 UI 프레임워크로 상태가 변경될 때마다 새로운 뷰 트리를 생성하고 이전 뷰 트리와 두 단계로 diffing하여 필요한 부분만 실제 UI에 반영합니다.
-```swift
-// 상태
-``` -->
+<h4 id="구조적-정체성-등장">구조적 정체성 등장</h4>
+<p>추가로 해당 식별자를 뷰 프록시의 scrollTo(_:) 메서드에 전달해 SwiftUI에게 특정 뷰로 이동하도록 지시할 수 있다. <br />
+이 장점은 모든 뷰를 명시적으로 식별할 필요가 없고 헤더와 같이 코드의 다른 곳에서 참조해야 하는 뷰만 식별할 수 있다는 것이다. <br />
+ScrollViewreader, ScrollView, 텍스트 및 버튼에는 명시적인 식별자가 필요하지 않는다.<br />
+그러나 정체성이 명시적이지 않다고 해서 이러한 뷰가 전혀 정체성이 없다는 것을 의미하지는 않는다.<br />
+명시적이지 않더라도 모든 View는 Identity가 있기 때문이다. → 여기서 구조적 정체성이 등장</p>
 
         
       </section>
@@ -841,12 +569,11 @@ SwiftUI를 사용하면서 이런 경험을 한번 쯤 하게 됩니다.
       
   <nav class="pagination">
     
-      <a href="/RxSwift-%EC%97%B0%EC%82%B0%EC%9E%90/" class="pagination--pager" title="[RxSwift] 연산자
+      <a href="/Makefile/" class="pagination--pager" title="
 ">Previous</a>
     
     
-      <a href="/Swift-07-func/" class="pagination--pager" title="[Swift] 7. 함수
-">Next</a>
+      <a href="#" class="pagination--pager disabled">Next</a>
     
   </nav>
 

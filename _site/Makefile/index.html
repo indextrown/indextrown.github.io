@@ -9,8 +9,8 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>[UIKit] UICollectionView 정복하기 - DongHyeon Kim’s Blog</title>
-<meta name="description" content="UICollectionView @MainActor class UICollectionView     정렬된 데이터 항목 모음을 관리하고 사용자 정의 가능한 레이아웃을 사용하여 표시하는 객체이다.   DataSource    컬렉션뷰는 컬렉션뷰의 속성에 저장된 데이터 소스 객체에서 데이터를 가져온다.            데이터 소스에는 컬렉션뷰의 데이터와 사용자 인터페이스 업데이트를 간단하고 효율적으로 관리하는 데 필요한 동적을 제공한다.       프로토콜을 채택하여 사용자 지정 데이터소스 객체를 만들수도 있다.           UICollectionViewDataSource   UICollectionViewDiffableDataSource   Item    item은 표시하려는 가장 작은 데이터 단위이다.   collectionView의 데이터는 개별 item으로 구분되고, 이러한 iteme들은 그룹화하여 표시할 수 있다.   collectionView는 datasource가 구성하고 제공하는 클래스의 인스턴스인 셀을 사용하여 화면에 item을 표시한다.   UICollectionViewCell   Supplementary View    collectionView는 셀 외에도 다른 유형의 뷰를 사용하여 데이터를 표시할 수 있다. 이러한 보조 뷰는 섹션 헤더 밑 푸터가 될 수 있다.   Supplementary View는 선택사항이고 collectionView의 layout 객체에서 정으된다.   UICollectionViewDiffableDataSource    컬렉션뷰의 메서드를 사용해 항목의 시각적 표현이 데이터 소스 개체의 순서와 일치하도록 할 수 있다.   컬렉션에서 데이터를 추가, 삭제 또는 재배열할 때마다 컬렉션 뷰의 메서드를 사용하여 해당 셀을 삽입, 삭제, 재배열한다.   Layout    Layout객체는 CollectionView에서 콘텐츠의 시각적 배치를 정의한다.   클래스의 하위 클래스인 레이아웃 객체는 컬렉션 뷰 내의 모든 셀과 보조 뷰의 구성 위치를 정의한다.   레이아웃 객체는 위치를 정의하지만 실제로 해당 정보를 해당 뷰에 적용하지는 않는다.   UICollectionViewLayout   Cell &amp; Supplementary Views    collectionView의 datasource는 item에 대한 콘텐츠와 해당 콘텐츠를 표시하는 데 사용되는 뷰를 모두 제공한다.   컬렉션 뷰가 처음 로드 시 데이터소스에 표시되는 각 항목에 대한 뷰를 제공하도록 요청한다. 컬렉션 뷰는 데이터 소스가 재사용을 위해 표시한 뷰 객체의 큐 또는 목록을 유지한다.   코드에서 명시적으로 새 뷰를 가져오는 것이 아니라 항상 큐에서 뷰를 가져온다.">
+<!-- begin _includes/seo.html --><title>  DongHyeon Kim’s Blog</title>
+<meta name="description" content="">
 
 
   <meta name="author" content="Dong Hyeon">
@@ -22,30 +22,30 @@
 <meta property="og:type" content="article">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="DongHyeon Kim's Blog">
-<meta property="og:title" content="[UIKit] UICollectionView 정복하기">
-<meta property="og:url" content="http://localhost:4000/UIKit-UICollectionView/">
+<meta property="og:title" content="DongHyeon Kim’s Blog">
+<meta property="og:url" content="http://localhost:4000/Makefile/">
 
 
-  <meta property="og:description" content="UICollectionView @MainActor class UICollectionView     정렬된 데이터 항목 모음을 관리하고 사용자 정의 가능한 레이아웃을 사용하여 표시하는 객체이다.   DataSource    컬렉션뷰는 컬렉션뷰의 속성에 저장된 데이터 소스 객체에서 데이터를 가져온다.            데이터 소스에는 컬렉션뷰의 데이터와 사용자 인터페이스 업데이트를 간단하고 효율적으로 관리하는 데 필요한 동적을 제공한다.       프로토콜을 채택하여 사용자 지정 데이터소스 객체를 만들수도 있다.           UICollectionViewDataSource   UICollectionViewDiffableDataSource   Item    item은 표시하려는 가장 작은 데이터 단위이다.   collectionView의 데이터는 개별 item으로 구분되고, 이러한 iteme들은 그룹화하여 표시할 수 있다.   collectionView는 datasource가 구성하고 제공하는 클래스의 인스턴스인 셀을 사용하여 화면에 item을 표시한다.   UICollectionViewCell   Supplementary View    collectionView는 셀 외에도 다른 유형의 뷰를 사용하여 데이터를 표시할 수 있다. 이러한 보조 뷰는 섹션 헤더 밑 푸터가 될 수 있다.   Supplementary View는 선택사항이고 collectionView의 layout 객체에서 정으된다.   UICollectionViewDiffableDataSource    컬렉션뷰의 메서드를 사용해 항목의 시각적 표현이 데이터 소스 개체의 순서와 일치하도록 할 수 있다.   컬렉션에서 데이터를 추가, 삭제 또는 재배열할 때마다 컬렉션 뷰의 메서드를 사용하여 해당 셀을 삽입, 삭제, 재배열한다.   Layout    Layout객체는 CollectionView에서 콘텐츠의 시각적 배치를 정의한다.   클래스의 하위 클래스인 레이아웃 객체는 컬렉션 뷰 내의 모든 셀과 보조 뷰의 구성 위치를 정의한다.   레이아웃 객체는 위치를 정의하지만 실제로 해당 정보를 해당 뷰에 적용하지는 않는다.   UICollectionViewLayout   Cell &amp; Supplementary Views    collectionView의 datasource는 item에 대한 콘텐츠와 해당 콘텐츠를 표시하는 데 사용되는 뷰를 모두 제공한다.   컬렉션 뷰가 처음 로드 시 데이터소스에 표시되는 각 항목에 대한 뷰를 제공하도록 요청한다. 컬렉션 뷰는 데이터 소스가 재사용을 위해 표시한 뷰 객체의 큐 또는 목록을 유지한다.   코드에서 명시적으로 새 뷰를 가져오는 것이 아니라 항상 큐에서 뷰를 가져온다.">
-
-
-
-
-
-
-
-  <meta property="article:published_time" content="2026-04-19T00:00:00+00:00">
+  <meta property="og:description" content="">
 
 
 
 
 
-  
+
+
+  <meta property="article:published_time" content="2026-04-29T00:00:00+00:00">
+
+
+
+
 
   
 
+  
 
-<link rel="canonical" href="http://localhost:4000/UIKit-UICollectionView/">
+
+<link rel="canonical" href="http://localhost:4000/Makefile/">
 
 
 
@@ -456,42 +456,25 @@ checkbox.addEventListener('change', function() {
 
 
   <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="[UIKit] UICollectionView 정복하기">
-    <meta itemprop="description" content="UICollectionView@MainActorclass UICollectionView  정렬된 데이터 항목 모음을 관리하고 사용자 정의 가능한 레이아웃을 사용하여 표시하는 객체이다.DataSource  컬렉션뷰는 컬렉션뷰의 속성에 저장된 데이터 소스 객체에서 데이터를 가져온다.          데이터 소스에는 컬렉션뷰의 데이터와 사용자 인터페이스 업데이트를 간단하고 효율적으로 관리하는 데 필요한 동적을 제공한다.      프로토콜을 채택하여 사용자 지정 데이터소스 객체를 만들수도 있다.        UICollectionViewDataSource  UICollectionViewDiffableDataSourceItem  item은 표시하려는 가장 작은 데이터 단위이다.  collectionView의 데이터는 개별 item으로 구분되고, 이러한 iteme들은 그룹화하여 표시할 수 있다.  collectionView는 datasource가 구성하고 제공하는 클래스의 인스턴스인 셀을 사용하여 화면에 item을 표시한다.  UICollectionViewCellSupplementary View  collectionView는 셀 외에도 다른 유형의 뷰를 사용하여 데이터를 표시할 수 있다. 이러한 보조 뷰는 섹션 헤더 밑 푸터가 될 수 있다.  Supplementary View는 선택사항이고 collectionView의 layout 객체에서 정으된다.UICollectionViewDiffableDataSource  컬렉션뷰의 메서드를 사용해 항목의 시각적 표현이 데이터 소스 개체의 순서와 일치하도록 할 수 있다.  컬렉션에서 데이터를 추가, 삭제 또는 재배열할 때마다 컬렉션 뷰의 메서드를 사용하여 해당 셀을 삽입, 삭제, 재배열한다.Layout  Layout객체는 CollectionView에서 콘텐츠의 시각적 배치를 정의한다.  클래스의 하위 클래스인 레이아웃 객체는 컬렉션 뷰 내의 모든 셀과 보조 뷰의 구성 위치를 정의한다.  레이아웃 객체는 위치를 정의하지만 실제로 해당 정보를 해당 뷰에 적용하지는 않는다.  UICollectionViewLayoutCell &amp; Supplementary Views  collectionView의 datasource는 item에 대한 콘텐츠와 해당 콘텐츠를 표시하는 데 사용되는 뷰를 모두 제공한다.  컬렉션 뷰가 처음 로드 시 데이터소스에 표시되는 각 항목에 대한 뷰를 제공하도록 요청한다. 컬렉션 뷰는 데이터 소스가 재사용을 위해 표시한 뷰 객체의 큐 또는 목록을 유지한다.  코드에서 명시적으로 새 뷰를 가져오는 것이 아니라 항상 큐에서 뷰를 가져온다.">
-    <meta itemprop="datePublished" content="2026-04-19T00:00:00+00:00">
+    <meta itemprop="headline" content="">
+    <meta itemprop="description" content="">
+    <meta itemprop="datePublished" content="2026-04-29T00:00:00+00:00">
     
 
     <div class="page__inner-wrap">
       
         <header>
           <h1 id="page-title" class="page__title p-name" itemprop="headline">
-            <a href="http://localhost:4000/UIKit-UICollectionView/" class="u-url" itemprop="url">[UIKit] UICollectionView 정복하기
+            <a href="http://localhost:4000/Makefile/" class="u-url" itemprop="url">
 </a>
           </h1>
           <footer class="page__meta">
             
-  
-
-
-
-  <p class="page__taxonomy">
-    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
-    <span class="archive__item-tags">
-    
-    
-    
-      <a class="posttag tagged" href="/posts/?tag=UIKit">UIKit</a>
-    
-    
-    </span>  
-  </p>
-
-
 
 <!--  -->
             
 
-  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2026-04-19T00:00:00+00:00">April 19, 2026</time></p>
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2026-04-29T00:00:00+00:00">April 29, 2026</time></p>
 
           </footer>
         </header>
@@ -499,60 +482,7 @@ checkbox.addEventListener('change', function() {
 
       <section class="page__content e-content" itemprop="text">
         
-        <h2 id="uicollectionview">UICollectionView</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">@MainActor</span>
-<span class="kd">class</span> <span class="kt">UICollectionView</span>
-</code></pre></div></div>
-<ul>
-  <li>정렬된 데이터 항목 모음을 관리하고 사용자 정의 가능한 레이아웃을 사용하여 표시하는 객체이다.</li>
-</ul>
-
-<h2 id="datasource">DataSource</h2>
-<ul>
-  <li>컬렉션뷰는 컬렉션뷰의 속성에 저장된 데이터 소스 객체에서 데이터를 가져온다.
-    <ul>
-      <li>데이터 소스에는 컬렉션뷰의 데이터와 사용자 인터페이스 업데이트를 간단하고 효율적으로 관리하는 데 필요한 동적을 제공한다.</li>
-      <li>프로토콜을 채택하여 사용자 지정 데이터소스 객체를 만들수도 있다.</li>
-    </ul>
-  </li>
-  <li><a href="https://developer.apple.com/documentation/uikit/uicollectionviewdatasource">UICollectionViewDataSource</a></li>
-  <li><a href="https://developer.apple.com/documentation/uikit/uicollectionviewdiffabledatasource-9tqpa">UICollectionViewDiffableDataSource</a></li>
-</ul>
-
-<h2 id="item">Item</h2>
-<ul>
-  <li>item은 표시하려는 가장 작은 데이터 단위이다.</li>
-  <li>collectionView의 데이터는 개별 item으로 구분되고, 이러한 iteme들은 그룹화하여 표시할 수 있다.</li>
-  <li>collectionView는 datasource가 구성하고 제공하는 클래스의 인스턴스인 셀을 사용하여 화면에 item을 표시한다.</li>
-  <li><a href="https://developer.apple.com/documentation/uikit/uicollectionviewcell">UICollectionViewCell</a></li>
-</ul>
-
-<h2 id="supplementary-view">Supplementary View</h2>
-<ul>
-  <li>collectionView는 셀 외에도 다른 유형의 뷰를 사용하여 데이터를 표시할 수 있다. 이러한 보조 뷰는 섹션 헤더 밑 푸터가 될 수 있다.</li>
-  <li>Supplementary View는 선택사항이고 collectionView의 layout 객체에서 정으된다.</li>
-</ul>
-
-<h2 id="uicollectionviewdiffabledatasource">UICollectionViewDiffableDataSource</h2>
-<ul>
-  <li>컬렉션뷰의 메서드를 사용해 항목의 시각적 표현이 데이터 소스 개체의 순서와 일치하도록 할 수 있다.</li>
-  <li>컬렉션에서 데이터를 추가, 삭제 또는 재배열할 때마다 컬렉션 뷰의 메서드를 사용하여 해당 셀을 삽입, 삭제, 재배열한다.</li>
-</ul>
-
-<h2 id="layout">Layout</h2>
-<ul>
-  <li>Layout객체는 CollectionView에서 콘텐츠의 시각적 배치를 정의한다.</li>
-  <li>클래스의 하위 클래스인 레이아웃 객체는 컬렉션 뷰 내의 모든 셀과 보조 뷰의 구성 위치를 정의한다.</li>
-  <li>레이아웃 객체는 위치를 정의하지만 실제로 해당 정보를 해당 뷰에 적용하지는 않는다.</li>
-  <li><a href="https://developer.apple.com/documentation/uikit/uicollectionviewlayout">UICollectionViewLayout</a></li>
-</ul>
-
-<h2 id="cell--supplementary-views">Cell &amp; Supplementary Views</h2>
-<ul>
-  <li>collectionView의 datasource는 item에 대한 콘텐츠와 해당 콘텐츠를 표시하는 데 사용되는 뷰를 모두 제공한다.</li>
-  <li>컬렉션 뷰가 처음 로드 시 데이터소스에 표시되는 각 항목에 대한 뷰를 제공하도록 요청한다. 컬렉션 뷰는 데이터 소스가 재사용을 위해 표시한 뷰 객체의 큐 또는 목록을 유지한다.</li>
-  <li>코드에서 명시적으로 새 뷰를 가져오는 것이 아니라 항상 큐에서 뷰를 가져온다.</li>
-</ul>
+        <!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
 
         
       </section>
@@ -562,11 +492,11 @@ checkbox.addEventListener('change', function() {
       
   <nav class="pagination">
     
-      <a href="/ReactorKit-ReactorKit1/" class="pagination--pager" title="[ReactorKit] 개념
+      <a href="/UIKit-UICollectionView/" class="pagination--pager" title="[UIKit] UICollectionView 정복하기
 ">Previous</a>
     
     
-      <a href="/Makefile/" class="pagination--pager" title="
+      <a href="/SwiftUI-diff/" class="pagination--pager" title="[SwiftUI] Demystify SwiftUI
 ">Next</a>
     
   </nav>
