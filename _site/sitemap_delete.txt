@@ -4,25 +4,9 @@
         xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     
     <url>
-        <loc>http://localhost:4000/SwiftUI-diff/</loc>
+        <loc>http://localhost:4000/swiftui-demystify-swiftui/</loc>
         
         <lastmod>2026-06-01T00:00:00+00:00</lastmod>
-        
-
-        
-        <changefreq>weekly</changefreq>
-        
-
-        
-        <priority>0.5</priority>
-        
-
-    </url>
-    
-    <url>
-        <loc>http://localhost:4000/Makefile/</loc>
-        
-        <lastmod>2026-04-29T00:00:00+00:00</lastmod>
         
 
         

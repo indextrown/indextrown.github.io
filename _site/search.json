@@ -1,19 +1,11 @@
 [
     
         {
-        "title"    : "[SwiftUI] Demystify SwiftUI",
+        "title"    : "[WWDC] Demystify SwiftUI - SwiftUI가 코드를 보는법",
         "category" : "",
-        "tags"     : "Swift",
-        "url"      : "/SwiftUI-diff/",
+        "tags"     : "Swift, WWDC",
+        "url"      : "/swiftui-demystify-swiftui/",
         "date"     : "2026-06-01 00:00:00 +0000"
-        } ,
-    
-        {
-        "title"    : "",
-        "category" : "",
-        "tags"     : "",
-        "url"      : "/Makefile/",
-        "date"     : "2026-04-29 00:00:00 +0000"
         } ,
     
         {

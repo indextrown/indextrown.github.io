@@ -7,3 +7,31 @@ search: false
 
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
 @import "minimal-mistakes"; // main partials
+
+.page__content p > img + br {
+  display: none;
+}
+
+.page__content p > img {
+  margin-bottom: 0;
+}
+
+.page__content .image-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin: 1rem 0;
+}
+
+.page__content .image-row img {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 600px) {
+  .page__content .image-row {
+    flex-direction: column;
+  }
+}
