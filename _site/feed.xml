@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2026-06-01T07:36:36+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[WWDC] Demystify SwiftUI - SwiftUI가 코드를 보는법</title><link href="http://localhost:4000/swiftui-demystify-swiftui/" rel="alternate" type="text/html" title="[WWDC] Demystify SwiftUI - SwiftUI가 코드를 보는법" /><published>2026-06-01T00:00:00+00:00</published><updated>2026-06-01T00:00:00+00:00</updated><id>http://localhost:4000/%5BSwiftUI%5D%20Demystify%20SwiftUI</id><content type="html" xml:base="http://localhost:4000/swiftui-demystify-swiftui/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2026-06-01T08:49:58+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html">[WWDC] Demystify SwiftUI - SwiftUI가 코드를 보는법</title><link href="http://localhost:4000/swiftui-demystify-swiftui/" rel="alternate" type="text/html" title="[WWDC] Demystify SwiftUI - SwiftUI가 코드를 보는법" /><published>2026-06-01T00:00:00+00:00</published><updated>2026-06-01T00:00:00+00:00</updated><id>http://localhost:4000/%5BSwiftUI%5D%20Demystify%20SwiftUI</id><content type="html" xml:base="http://localhost:4000/swiftui-demystify-swiftui/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
 
 <!-- <img src="https://github.com/user-attachments/assets/3938e583-0fc4-4620-99b0-bf761e60a1ba" width="60%" align="left"> -->
 
@@ -154,46 +154,116 @@ SwiftUI의 if문의 각 분기가 고유한 id를 가진 다른 뷰를 나타낸
   <li>AnyView는 컴파일러에서 정적 유형 정보를 숨기기 때문에 유용한 진단 오류 및 경고가 코드에 표시되지 않는 경우가 있다.</li>
   <li>필요하지 않을 때 AnyView를 사용하면 성능이 저하될 수 있다.(16:11)</li>
   <li>가능하다면 코드 주변에 AnyView를 전달하는 대신 제네릭을 사용해 정적 유형 정보를 보존해라.</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Swift" /><category term="WWDC" /><summary type="html"><![CDATA[SwiftUI가 코드를 볼 때 무엇을 보는가? Identity(정체성) - SwiftUI가 앱의 여러 업데이트에서 동일 요소로 보거나 별개 요소로 보는 방법 Lifetime(수명) - SwiftUI가 시간이 지남에 따라 View와 Data 존재를 추적하는 방법 Dependencies(의존성) - SwiftUI가 인터페이스를 업데이트해야 하는 시기와 이유를 이해하는 방법 Identity(정체성) - SwiftUI가 앱의 여러 업데이트에서 동일 요소로 보거나 별개 요소로 보는 방법 사진에서 두 강아지가 다른 강아지인지 혹은 두 장의 같은 강아지인지 알 수 없다. 정보가 충분하지 않아 사실을 말할 수 없기 때문이다. 이 질문을 SwiftUI는 Identity(정체성) 이라고 부른다. 다른 예시로, 아이콘이 서로 완전히 독립 객체인지 알 수 없다. 완전히 다른 객체일 수도 있고 단지 위치만 다르고 다른 색을 가진 동일한 객체일수도 있다. 이러한 구분을 “한 상태에서 다른 상태로 전환하는 방식”을 변경하기 때문에 중요한 부분이다. 만약 서로 같은 객체라면 현 위치에서 다른 위치로 이동하는 동일한 뷰이기 때문에 전환 중에 객체가 아래로 내려가야 한다. 따라서 서로 다른 상태에 걸쳐 뷰를 연결하는 것이 중요하다. 이것이 SwiftUI가 뷰 사이를 전달하는 방법을 이해하는 방식이기 때문이다. 이게 View Identity 핵심 가치다. SwiftUI는 두 가지 다른 유형의 Identity에 초점을 두고 있다. Explicit of Identity(명시적 정체성): 맞춤형 또는 데이터 기반 식별자를 사용한다. Structural Identity(구조적 정체성): 뷰 계층 구조에서의 유형과 위치에 따라 뷰를 구별한다. Explicit of Identity(명시적 정체성) 사물을 식별하기 위해 보통 이름을 부여할 수 있다. 하지만 두 사물이 똑같이 생기고 같은 계열일 가능성이 높을 수 있어서 이름으로는 고유성이 부족할 수 있다. 이름이나 식별자를 할당하는 것은 Explicit of Identity(명시적 정체성) 의 한 형태이다. 이는 강력하고 유연하지만 누군가 어딘가에서 이름을 추적해야 한다. 이미 익숙할 수 있는 Explicit of Identity의 한 형태는 UIKit 및 AppKit 전체에서 사용되는 포인터 Identity다. SwiftUI에서는 포인터 Identity를 사용하지 않고 UIView와 NSView에서 사용한다. UIView와 NSView는 클래스이므로 메모리 할당에 필요한 고유한 포인터를 가진다. 포인터는 Explicit of Identity의 자연스러운 원천이라고 한다. 포인터를 사용해 개별 뷰를 참조할 수 있으며 두 뷰가 동일한 포인터를 공유하는 경우 실제로 동일한 뷰임을 보장할 수 있다. 하지만 SwiftUI View는 일반적으로 클래스 대신 구조체로 표현하는 값 타입이기 때문에 SwiftUI는 포인터를 사용하지 않는다. 가장 중요한 점은 값 타입은 SwiftUI가 해당 View에 대한 지속적인 Identity로 사용할 수 있는 정식 참조가 없다는 것이다. 여기서 사용된 id는 Explicit of Identity의 한 형태이다. 각 강아지의 인식표 Identity는 View를 명시적으로 식별하는 데 사용된다. 강아지 컬렉션이 변경되면 SwiftUI는 해당 Id를 사용해 무엇이 변경되는지 이해하고 목록 내에서 올바른 애니메이션을 생성할 수 있다. 또 다른 예제인데 여기서는 ScrollViewReader를 사용해 하단 버튼을 사용하여 뷰 상단으로 이동한다. .id() Modifier는 사용자 정의 식별자를 사용해 뷰를 명시적으로 식별하는 방법을 제공한다. 현재 페이지 상단의 헤더 뷰에 식별자를 추가한 것이다. 추가로 해당 식별자를 뷰 프록시의 scrollTo(_:) 메서드에 전달해 SwiftUI에게 특정 뷰로 이동하도록 지시할 수 있다. 이 장점은 모든 뷰를 명시적으로 식별할 필요가 없고 헤더와 같이 코드의 다른 곳에서 참조해야 하는 뷰만 식별할 수 있다는 것이다. ScrollViewreader, ScrollView, 텍스트 및 버튼에는 명시적인 식별자가 필요하지 않는다. 그러나 정체성이 명시적이지 않다고 해서 이러한 뷰가 전혀 정체성이 없다는 것을 의미하지는 않는다. 명시적이지 않더라도 모든 View는 Identity가 있기 때문이다. → 여기서 구조적 정체성이 등장 Structural Identity(구조적 정체성) SwiftUI는 뷰 계층 구조를 사용하여 뷰에 대한 암시적 ID를 생성하므로 사용자가 직접 ID를 생성할 필요가 없다. 비슷한 두 마리의 강아지가 있지만 이름은 모르지만 각각을 식별해야 한다고 가정해보자. 움직이지 않음을 보장할 수 있다면 “왼쪽에 있는 개”, “오른쪽에 있는 개”와 같이 위치에 따라 식별할 수 있다. SwiftUI는 이런 객체를 구별하기 위해 상대적인 배열을 사용한다고 한다 이것이 Structural Identity이다. SwiftUI는 API 전체에서 Structural Identity를 활용한다. 전형적인 예시로 View 코드 내에서 if 문과 기타 조건부 논리를 사용하는 경우다. 조건문의 구조는 각 뷰를 식별하는 명확한 방법을 제공한다. 첫 번째 뷰는 조선이 true일때만 표시되고 두번째 뷰는 false일때만 표시된다. 하지만 이 경우 SwiftUI가 볼때 이 뷰가 현재 위치에 유지되고 위치가 바뀌지 않음을 정적으로 보장할 경우에만 작동한다. SwiftUI는 뷰 계층 구조의 type structure를 살펴봄으로써 이를 수행한다. SwiftUI가 View를 볼 때 generic type을 본다. 이 경우 if문은 참 거짓 콘텐츠에 대해 ConditionalContent View 뷰로 변환된다. 이러한 번역은 Swift의 result builder 타입의 ViewBuilder에 의해 제공된다. View 프로토콜은 속성의 논리 문에서 단일 일반 뷰를 구성하는 ViewBuilder의 body 속성을 암시적으로 래핑한다. body 속성의 some View 반환 유형은 이 정적 복합 유형을 나타내는 자리 표시자로서, 코드를 복잡하게 만들지 않도록 숨겨준다. 이 generic type을 사용해 SwiftUI는 실제 View가 항상 AdoptionDirectory이고 False뷰가 항상 DogList임을 보장하여 암시적으로 안정적인 Id가 할당될 수 있게 한다. some view “정확한 타입 이름은 숨길게 하지만 내부적으로는 항상 하나의 구체 타입을 반환해야 해” @ViewBuilder가 if else를 _ConditionalContent&lt;TrueView, FalseView&gt;라는 하나의 View 타입으로 감싸주기 때문에 some View가 성립한다. 전략 1: SwiftUI에서 조건 분기마다 고유한 id를 가진다 앞서 살펴본 코드이다. 상단 코드에는 각 조건 분기에 대해 서로 다른 뷰를 정의하는 if문이 있다. SwiftUI의 if문의 각 분기가 고유한 id를 가진 다른 뷰를 나타낸다는 것을 이해하기 때문에 이로 인해 뷰가 전환된다. 전략 2: Identity를 유지하고 유연한 전환을 제공(Apple 권장) 또는 동일한 뷰에 대해 레이아웃과 색상만 변경하는 단일 뷰를 가질 수도 있다. 다른 상태로 전환되면 뷰는 다음 위치로 부드럽게 미끄러진다. 이는 일관된 id로 단일 뷰를 수정하기 때문이다. 이 두 전략 모두 작동할 수 있자만 Apple는 두 번째 접근 방식을 권장한다. 기본적으로 Identity를 유지하고 유연한 전환을 제공하도록 노력해라고 권장한다. 이유는 뷰의 라이프사이클과 상태를 보존하는 데 도움이 된다고 한다. AnyView 앞서 우리는 AdoptionDirectory와 DogList 사이를 전환하기 위해 이 if문을 작성했었다. SwiftUI가 이 코드를 보면 오른쪽에 제네릭 타입 구조가 보인다. 이 코드는 개의 품종을 나타내는 뷰를 얻기 위한 헬퍼 함수다. 함수의 각 조건부 분기는 서로 다른 종류의 View를 반환하므로 Swift에서는 전체 함수에 대해 단일 반환 유형이 필요하므로 이를 모두 AnyView에 래핑한다. 불행이도 이는 SwiftUI가 내 코드의 조건부 구조를 볼 수 없다는 의미이기도 하다. 대신 AnyView를 함수의 반환 유형으로 간주한다. 이는 AnyView가 유형 삭제 래퍼 유형(type-erasing wrapper type) 라고 불리기 때문이다. 즉 generic signature에서 래핑하는 뷰 유형을 숨긴다. 그러나 더 중요한 것은 이 코드가 사람이 읽기에도 어렵다는 것이다. 이 오류를 피하려면 View프로토콜이 암시적으로 ViewBuilder를 래핑하기 때문에 뷰의 body 속성은 특별하다는 점을 기억해야 한다. 이는 속성의 논리를 단일 일반 뷰 구조로 변환해줄 수 있다. 이제 AnyView가 제거되어 코드의 가독성이 늘어났다. 그리고 결과 타입 시그니처를 보면 조건부 콘텐츠 트리를 사용해 함수의 조건부 논리를 정확히 복제하여 해당 구성 요소의 ID를 제공한다. 참고로 조건문의 synatic sugar인 switch를 사용해도 동일한 view’s type signature(뷰의 유형 서명)이 정확히 유지된다. AnyView정리 코드에서 유형 정보를 삭제할 수 있다. view builder를 활용해 불필요한 AnyView를 제거할 수 있다. AnyView는 컴파일러에서 정적 유형 정보를 숨기기 때문에 유용한 진단 오류 및 경고가 코드에 표시되지 않는 경우가 있다. 필요하지 않을 때 AnyView를 사용하면 성능이 저하될 수 있다.(16:11) 가능하다면 코드 주변에 AnyView를 전달하는 대신 제네릭을 사용해 정적 유형 정보를 보존해라.]]></summary></entry><entry><title type="html">[ReactorKit] 개념</title><link href="http://localhost:4000/ReactorKit-ReactorKit1/" rel="alternate" type="text/html" title="[ReactorKit] 개념" /><published>2026-04-19T00:00:00+00:00</published><updated>2026-04-19T00:00:00+00:00</updated><id>http://localhost:4000/%5BReactorKit%5D-ReactorKit1</id><content type="html" xml:base="http://localhost:4000/ReactorKit-ReactorKit1/"><![CDATA[<h2 id="reactorkit">ReactorKit</h2>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Swift" /><category term="WWDC" /><summary type="html"><![CDATA[SwiftUI가 코드를 볼 때 무엇을 보는가? Identity(정체성) - SwiftUI가 앱의 여러 업데이트에서 동일 요소로 보거나 별개 요소로 보는 방법 Lifetime(수명) - SwiftUI가 시간이 지남에 따라 View와 Data 존재를 추적하는 방법 Dependencies(의존성) - SwiftUI가 인터페이스를 업데이트해야 하는 시기와 이유를 이해하는 방법 Identity(정체성) - SwiftUI가 앱의 여러 업데이트에서 동일 요소로 보거나 별개 요소로 보는 방법 사진에서 두 강아지가 다른 강아지인지 혹은 두 장의 같은 강아지인지 알 수 없다. 정보가 충분하지 않아 사실을 말할 수 없기 때문이다. 이 질문을 SwiftUI는 Identity(정체성) 이라고 부른다. 다른 예시로, 아이콘이 서로 완전히 독립 객체인지 알 수 없다. 완전히 다른 객체일 수도 있고 단지 위치만 다르고 다른 색을 가진 동일한 객체일수도 있다. 이러한 구분을 “한 상태에서 다른 상태로 전환하는 방식”을 변경하기 때문에 중요한 부분이다. 만약 서로 같은 객체라면 현 위치에서 다른 위치로 이동하는 동일한 뷰이기 때문에 전환 중에 객체가 아래로 내려가야 한다. 따라서 서로 다른 상태에 걸쳐 뷰를 연결하는 것이 중요하다. 이것이 SwiftUI가 뷰 사이를 전달하는 방법을 이해하는 방식이기 때문이다. 이게 View Identity 핵심 가치다. SwiftUI는 두 가지 다른 유형의 Identity에 초점을 두고 있다. Explicit of Identity(명시적 정체성): 맞춤형 또는 데이터 기반 식별자를 사용한다. Structural Identity(구조적 정체성): 뷰 계층 구조에서의 유형과 위치에 따라 뷰를 구별한다. Explicit of Identity(명시적 정체성) 사물을 식별하기 위해 보통 이름을 부여할 수 있다. 하지만 두 사물이 똑같이 생기고 같은 계열일 가능성이 높을 수 있어서 이름으로는 고유성이 부족할 수 있다. 이름이나 식별자를 할당하는 것은 Explicit of Identity(명시적 정체성) 의 한 형태이다. 이는 강력하고 유연하지만 누군가 어딘가에서 이름을 추적해야 한다. 이미 익숙할 수 있는 Explicit of Identity의 한 형태는 UIKit 및 AppKit 전체에서 사용되는 포인터 Identity다. SwiftUI에서는 포인터 Identity를 사용하지 않고 UIView와 NSView에서 사용한다. UIView와 NSView는 클래스이므로 메모리 할당에 필요한 고유한 포인터를 가진다. 포인터는 Explicit of Identity의 자연스러운 원천이라고 한다. 포인터를 사용해 개별 뷰를 참조할 수 있으며 두 뷰가 동일한 포인터를 공유하는 경우 실제로 동일한 뷰임을 보장할 수 있다. 하지만 SwiftUI View는 일반적으로 클래스 대신 구조체로 표현하는 값 타입이기 때문에 SwiftUI는 포인터를 사용하지 않는다. 가장 중요한 점은 값 타입은 SwiftUI가 해당 View에 대한 지속적인 Identity로 사용할 수 있는 정식 참조가 없다는 것이다. 여기서 사용된 id는 Explicit of Identity의 한 형태이다. 각 강아지의 인식표 Identity는 View를 명시적으로 식별하는 데 사용된다. 강아지 컬렉션이 변경되면 SwiftUI는 해당 Id를 사용해 무엇이 변경되는지 이해하고 목록 내에서 올바른 애니메이션을 생성할 수 있다. 또 다른 예제인데 여기서는 ScrollViewReader를 사용해 하단 버튼을 사용하여 뷰 상단으로 이동한다. .id() Modifier는 사용자 정의 식별자를 사용해 뷰를 명시적으로 식별하는 방법을 제공한다. 현재 페이지 상단의 헤더 뷰에 식별자를 추가한 것이다. 추가로 해당 식별자를 뷰 프록시의 scrollTo(_:) 메서드에 전달해 SwiftUI에게 특정 뷰로 이동하도록 지시할 수 있다. 이 장점은 모든 뷰를 명시적으로 식별할 필요가 없고 헤더와 같이 코드의 다른 곳에서 참조해야 하는 뷰만 식별할 수 있다는 것이다. ScrollViewreader, ScrollView, 텍스트 및 버튼에는 명시적인 식별자가 필요하지 않는다. 그러나 정체성이 명시적이지 않다고 해서 이러한 뷰가 전혀 정체성이 없다는 것을 의미하지는 않는다. 명시적이지 않더라도 모든 View는 Identity가 있기 때문이다. → 여기서 구조적 정체성이 등장 Structural Identity(구조적 정체성) SwiftUI는 뷰 계층 구조를 사용하여 뷰에 대한 암시적 ID를 생성하므로 사용자가 직접 ID를 생성할 필요가 없다. 비슷한 두 마리의 강아지가 있지만 이름은 모르지만 각각을 식별해야 한다고 가정해보자. 움직이지 않음을 보장할 수 있다면 “왼쪽에 있는 개”, “오른쪽에 있는 개”와 같이 위치에 따라 식별할 수 있다. SwiftUI는 이런 객체를 구별하기 위해 상대적인 배열을 사용한다고 한다 이것이 Structural Identity이다. SwiftUI는 API 전체에서 Structural Identity를 활용한다. 전형적인 예시로 View 코드 내에서 if 문과 기타 조건부 논리를 사용하는 경우다. 조건문의 구조는 각 뷰를 식별하는 명확한 방법을 제공한다. 첫 번째 뷰는 조선이 true일때만 표시되고 두번째 뷰는 false일때만 표시된다. 하지만 이 경우 SwiftUI가 볼때 이 뷰가 현재 위치에 유지되고 위치가 바뀌지 않음을 정적으로 보장할 경우에만 작동한다. SwiftUI는 뷰 계층 구조의 type structure를 살펴봄으로써 이를 수행한다. SwiftUI가 View를 볼 때 generic type을 본다. 이 경우 if문은 참 거짓 콘텐츠에 대해 ConditionalContent View 뷰로 변환된다. 이러한 번역은 Swift의 result builder 타입의 ViewBuilder에 의해 제공된다. View 프로토콜은 속성의 논리 문에서 단일 일반 뷰를 구성하는 ViewBuilder의 body 속성을 암시적으로 래핑한다. body 속성의 some View 반환 유형은 이 정적 복합 유형을 나타내는 자리 표시자로서, 코드를 복잡하게 만들지 않도록 숨겨준다. 이 generic type을 사용해 SwiftUI는 실제 View가 항상 AdoptionDirectory이고 False뷰가 항상 DogList임을 보장하여 암시적으로 안정적인 Id가 할당될 수 있게 한다. some view “정확한 타입 이름은 숨길게 하지만 내부적으로는 항상 하나의 구체 타입을 반환해야 해” @ViewBuilder가 if else를 _ConditionalContent&lt;TrueView, FalseView&gt;라는 하나의 View 타입으로 감싸주기 때문에 some View가 성립한다. 전략 1: SwiftUI에서 조건 분기마다 고유한 id를 가진다 앞서 살펴본 코드이다. 상단 코드에는 각 조건 분기에 대해 서로 다른 뷰를 정의하는 if문이 있다. SwiftUI의 if문의 각 분기가 고유한 id를 가진 다른 뷰를 나타낸다는 것을 이해하기 때문에 이로 인해 뷰가 전환된다. 전략 2: Identity를 유지하고 유연한 전환을 제공(Apple 권장) 또는 동일한 뷰에 대해 레이아웃과 색상만 변경하는 단일 뷰를 가질 수도 있다. 다른 상태로 전환되면 뷰는 다음 위치로 부드럽게 미끄러진다. 이는 일관된 id로 단일 뷰를 수정하기 때문이다. 이 두 전략 모두 작동할 수 있자만 Apple는 두 번째 접근 방식을 권장한다. 기본적으로 Identity를 유지하고 유연한 전환을 제공하도록 노력해라고 권장한다. 이유는 뷰의 라이프사이클과 상태를 보존하는 데 도움이 된다고 한다. AnyView 앞서 우리는 AdoptionDirectory와 DogList 사이를 전환하기 위해 이 if문을 작성했었다. SwiftUI가 이 코드를 보면 오른쪽에 제네릭 타입 구조가 보인다. 이 코드는 개의 품종을 나타내는 뷰를 얻기 위한 헬퍼 함수다. 함수의 각 조건부 분기는 서로 다른 종류의 View를 반환하므로 Swift에서는 전체 함수에 대해 단일 반환 유형이 필요하므로 이를 모두 AnyView에 래핑한다. 불행이도 이는 SwiftUI가 내 코드의 조건부 구조를 볼 수 없다는 의미이기도 하다. 대신 AnyView를 함수의 반환 유형으로 간주한다. 이는 AnyView가 유형 삭제 래퍼 유형(type-erasing wrapper type) 라고 불리기 때문이다. 즉 generic signature에서 래핑하는 뷰 유형을 숨긴다. 그러나 더 중요한 것은 이 코드가 사람이 읽기에도 어렵다는 것이다. 이 오류를 피하려면 View프로토콜이 암시적으로 ViewBuilder를 래핑하기 때문에 뷰의 body 속성은 특별하다는 점을 기억해야 한다. 이는 속성의 논리를 단일 일반 뷰 구조로 변환해줄 수 있다. 이제 AnyView가 제거되어 코드의 가독성이 늘어났다. 그리고 결과 타입 시그니처를 보면 조건부 콘텐츠 트리를 사용해 함수의 조건부 논리를 정확히 복제하여 해당 구성 요소의 ID를 제공한다. 참고로 조건문의 synatic sugar인 switch를 사용해도 동일한 view’s type signature(뷰의 유형 서명)이 정확히 유지된다. AnyView정리 코드에서 유형 정보를 삭제할 수 있다. view builder를 활용해 불필요한 AnyView를 제거할 수 있다. AnyView는 컴파일러에서 정적 유형 정보를 숨기기 때문에 유용한 진단 오류 및 경고가 코드에 표시되지 않는 경우가 있다. 필요하지 않을 때 AnyView를 사용하면 성능이 저하될 수 있다.(16:11) 가능하다면 코드 주변에 AnyView를 전달하는 대신 제네릭을 사용해 정적 유형 정보를 보존해라.]]></summary></entry><entry><title type="html">[SwiftUI] Diffing, 끝까지 파고들었습니다2.</title><link href="http://localhost:4000/SwiftUI-diff2/" rel="alternate" type="text/html" title="[SwiftUI] Diffing, 끝까지 파고들었습니다2." /><published>2026-06-01T00:00:00+00:00</published><updated>2026-06-01T00:00:00+00:00</updated><id>http://localhost:4000/%5BSwiftUI%5D%20diff2</id><content type="html" xml:base="http://localhost:4000/SwiftUI-diff2/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
+
+<!-- <img src="https://github.com/user-attachments/assets/3938e583-0fc4-4620-99b0-bf761e60a1ba" width="60%" align="left"> -->
+
+<h2 id="identity">Identity</h2>
+<p><a href="https://developer.apple.com/videos/play/wwdc2021/10022/">WWDC21 - Demystify SwiftUI</a> 에서 Identity를 두 경우로 나누어서 설명한다.</p>
 <ul>
-  <li>Flux와 반응형 프로그래밍을 결합한 개념이다.</li>
-  <li>Rx의 개념인 Observable과 함께 사용하여 비동기적으로 데이터를 처리하고, UI와의 상호 작용을 쉽게 관리할 수 있는 구조를 만든다.</li>
-  <li>MVVM 모델의 ViewModel 역할을 하며 비즈니스 로직을 처리하고 View와 상호 작용하는 방법을 제공한다.</li>
-  <li>UI관련 코드와 비즈니스 로직을 분리하고, 코드의 재사용성이 높아진다.</li>
+  <li>explicit identity (명시적 정체성)</li>
+  <li>structual identity (구조적 정체성)</li>
 </ul>
 
-<h2 id="핵심-장점">핵심 장점</h2>
+<p>각각 간략히 말하자면</p>
 <ul>
-  <li>사용법이 간단하다.</li>
-  <li>특정 부분에만 적용할 수 있다.</li>
-  <li>테스트하기 쉽다. (Reactor와 View에 대해 의존성이 없기 때문)</li>
-  <li>유지보수하기 쉽다. (상태값 관리 용이)</li>
-  <li>코드가 간결해진다. (ViewController에 있는 로직을 분리해서)</li>
+  <li>explicit identity는 사용자 정의 또는 데이터 기반 identity를 사용하는 것이고</li>
+  <li>structual identity은 View hierachy에서 타입 및 위치에 따라 뷰를 구분하는 것이다.</li>
 </ul>
 
-<p><img src="/assets/img/2026-04-19-%5BReactorKit%5D-ReactorKit1/flow1.webp" alt="flow1" /></p>
+<p><strong>참고</strong>: 애플은 View의 프로퍼티를 뷰의 종속성(dependencies)이라고 지칭한다.</p>
+
+<h2 id="0-body-재호출-디버깅을-위한-랜덤-배경색-부여-헬퍼-메서드">0. body 재호출 디버깅을 위한 랜덤 배경색 부여 헬퍼 메서드</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">extension</span> <span class="kt">ShapeStyle</span> <span class="k">where</span> <span class="k">Self</span> <span class="o">==</span> <span class="kt">Color</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="k">var</span> <span class="nv">random</span><span class="p">:</span> <span class="kt">Color</span> <span class="p">{</span>
+        <span class="kt">Color</span><span class="p">(</span>
+            <span class="nv">red</span><span class="p">:</span> <span class="o">.</span><span class="nf">random</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="mi">0</span><span class="o">...</span><span class="mi">1</span><span class="p">),</span>
+            <span class="nv">green</span><span class="p">:</span> <span class="o">.</span><span class="nf">random</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="mi">0</span><span class="o">...</span><span class="mi">1</span><span class="p">),</span>
+            <span class="nv">blue</span><span class="p">:</span> <span class="o">.</span><span class="nf">random</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="mi">0</span><span class="o">...</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">View</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">randomColorStyle</span><span class="p">(</span>
+        <span class="nv">cornerRadius</span><span class="p">:</span> <span class="kt">CGFloat</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="nv">padding</span><span class="p">:</span> <span class="kt">CGFloat</span> <span class="o">=</span> <span class="mi">12</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kd">some</span> <span class="kt">View</span> <span class="p">{</span>
+        <span class="k">self</span>
+            <span class="o">.</span><span class="nf">padding</span><span class="p">(</span><span class="n">padding</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">background</span> <span class="p">{</span>
+                <span class="kt">RoundedRectangle</span><span class="p">(</span><span class="nv">cornerRadius</span><span class="p">:</span> <span class="n">cornerRadius</span><span class="p">,</span> <span class="nv">style</span><span class="p">:</span> <span class="o">.</span><span class="n">continuous</span><span class="p">)</span>
+                    <span class="o">.</span><span class="nf">fill</span><span class="p">(</span><span class="kt">Color</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="nf">opacity</span><span class="p">(</span><span class="mf">0.35</span><span class="p">))</span>
+                    <span class="o">.</span><span class="n">overlay</span> <span class="p">{</span>
+                        <span class="kt">RoundedRectangle</span><span class="p">(</span><span class="nv">cornerRadius</span><span class="p">:</span> <span class="n">cornerRadius</span><span class="p">,</span> <span class="nv">style</span><span class="p">:</span> <span class="o">.</span><span class="n">continuous</span><span class="p">)</span>
+                            <span class="o">.</span><span class="nf">fill</span><span class="p">(</span><span class="o">.</span><span class="n">ultraThinMaterial</span><span class="p">)</span>
+                    <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="o">.</span><span class="n">overlay</span> <span class="p">{</span>
+                <span class="kt">RoundedRectangle</span><span class="p">(</span><span class="nv">cornerRadius</span><span class="p">:</span> <span class="n">cornerRadius</span><span class="p">,</span> <span class="nv">style</span><span class="p">:</span> <span class="o">.</span><span class="n">continuous</span><span class="p">)</span>
+                    <span class="o">.</span><span class="nf">stroke</span><span class="p">(</span><span class="kt">Color</span><span class="o">.</span><span class="n">white</span><span class="o">.</span><span class="nf">opacity</span><span class="p">(</span><span class="mf">0.35</span><span class="p">),</span> <span class="nv">lineWidth</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="o">.</span><span class="nf">shadow</span><span class="p">(</span><span class="nv">color</span><span class="p">:</span> <span class="o">.</span><span class="n">black</span><span class="o">.</span><span class="nf">opacity</span><span class="p">(</span><span class="mf">0.12</span><span class="p">),</span> <span class="nv">radius</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="nv">y</span><span class="p">:</span> <span class="mi">6</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="1-view의-dependency가-bool타입일-때">1. View의 Dependency가 Bool타입일 때</h2>
+<div class="code-media-row">
+
+  <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">struct</span> <span class="kt">SampleDiffView</span><span class="p">:</span> <span class="kt">View</span> <span class="p">{</span>
+    <span class="kd">@State</span> <span class="kd">private</span> <span class="k">var</span> <span class="nv">isOn</span> <span class="o">=</span> <span class="kc">true</span>
+    <span class="k">var</span> <span class="nv">body</span><span class="p">:</span> <span class="kd">some</span> <span class="kt">View</span> <span class="p">{</span>
+        <span class="kt">VStack</span><span class="p">(</span><span class="nv">spacing</span><span class="p">:</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kt">Text</span><span class="p">(</span><span class="s">"Hello World"</span><span class="p">)</span>
+                <span class="o">.</span><span class="nf">frame</span><span class="p">(</span><span class="nv">maxWidth</span><span class="p">:</span> <span class="o">.</span><span class="n">infinity</span><span class="p">)</span>
+                <span class="o">.</span><span class="nf">randomColorStyle</span><span class="p">()</span>
+
+            <span class="kt">Text</span><span class="p">(</span><span class="n">isOn</span> <span class="p">?</span> <span class="s">"On"</span> <span class="p">:</span> <span class="s">"Off"</span><span class="p">)</span>
+                <span class="o">.</span><span class="nf">frame</span><span class="p">(</span><span class="nv">maxWidth</span><span class="p">:</span> <span class="o">.</span><span class="n">infinity</span><span class="p">)</span>
+                <span class="o">.</span><span class="nf">randomColorStyle</span><span class="p">()</span>
+            
+            <span class="kt">Button</span> <span class="p">{</span>
+                <span class="n">isOn</span><span class="o">.</span><span class="nf">toggle</span><span class="p">()</span>
+            <span class="p">}</span> <span class="nv">label</span><span class="p">:</span> <span class="p">{</span>
+                <span class="kt">Text</span><span class="p">(</span><span class="s">"버튼"</span><span class="p">)</span>
+                    <span class="o">.</span><span class="nf">frame</span><span class="p">(</span><span class="nv">maxWidth</span><span class="p">:</span> <span class="o">.</span><span class="n">infinity</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="o">.</span><span class="nf">randomColorStyle</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="o">.</span><span class="nf">padding</span><span class="p">(</span><span class="mi">24</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>  </div>
+
+  <p><img src="/assets/img/2026-06-01-%5BSwiftUI%5D%20diff2/Simulator%20Screen%20Recording%20-%20iPhone%2017%20Pro%20Max%20-%202026-06-01%20at%2017.26.13.gif" alt="Simulator Screen Recording - iPhone 17 Pro Max - 2026-06-01 at 17.26.13" /></p>
+
+</div>
+<p>이 예제에서는 SampleDiffView.body 안에서 isOn을 읽고 있다.<br />
+따라서 버튼을 눌러 isOn이 변경되면 SampleDiffView의 body가 다시 평가된다.<br />
+이때 VStack 내부의 subview들이 모두 같은 identity를 갖는 것은 아니다.<br />
+<br /></p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">VStack</span><span class="p">(</span><span class="nv">spacing</span><span class="p">:</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">Text</span><span class="p">(</span><span class="s">"Hello World"</span><span class="p">)</span>        <span class="c1">// child 0</span>
+    <span class="kt">Text</span><span class="p">(</span><span class="n">isOn</span> <span class="p">?</span> <span class="s">"On"</span> <span class="p">:</span> <span class="s">"Off"</span><span class="p">)</span>  <span class="c1">// child 1</span>
+    <span class="kt">Button</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>             <span class="c1">// child 2</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p><em>Text(“Hello World”)</em>, Text(isOn ? “On” : “Off”), Button은 VStack 안에서 서로 다른 위치를 가지므로 각각 다른 structural identity를 가진다. 또한 두 번째 Text는 isOn 값에 따라 on/off를 보여주지만, 뷰의 위치와 타입은 그대로 유지된다. 즉, “On” 상태의 두 번째 Text와 “Off” 상태의 두 번째 Text는 같은 structural identity를 유지한다. 바뀌는 것은 identity가 아니라 Text의 입력 값이다.</p>
+
+<p>그런데 화면에서는 isOn과 직접 관련 없어 보이는 Text(“Hello World”)의 배경색도 함께 바뀐다. 이는 Text(“Hello World”)가 같은 identity를 가져서가 아니라, SampleDiffView.body가 다시 평가되면서 .randomColorStyle() 내부의 Color.random도 다시 실행되기 때문이다.</p>
+
+<p>정리하면 다음과 같다.</p>
 <ul>
-  <li>사용자의 Action은 Reactor로, Reactor에서 방출된 State는 Observable 스트림을 통해 전달된다.</li>
-  <li>View는 Action만 방출할 수 있으며, Reactor는 State만 망출할 수 있다.</li>
-  <li>단방향적 흐름으로 View와 비즈니스 로직을 분리할 수 있으며 모듈 간 결합도가 낮게 개발할 수 있다.</li>
+  <li>isOn 변경으로 SampleDiffView.body가 다시 평가된다.</li>
+  <li>VStack 내부의 각 subview는 서로 다른 structural identity를 가진다.</li>
+  <li>두 번째 Text는 “On”과 “Off” 사이에서 같은 structural identity를 유지한다.</li>
+  <li>Text(“Hello World”)의 배경색이 바뀌는 이유는 identity 때문이 아니라, body 재평가 과정에서 랜덤 색상이 다시 생성되기 때문이다.</li>
 </ul>
 
-<p><img src="/assets/img/2026-04-19-%5BReactorKit%5D-ReactorKit1/flow2.webp" alt="flow2" /></p>
-<ul>
-  <li>View: Reactor로 받는 State를 통해 UI를 보여주는 역할과 사용자 인터렉션을 추상화하여 Reactor로 전달하는 역할을 수행한다.</li>
-  <li>Reactor: View로부터 Action Stream을 전달 받아 내부에서 mutate()와 reduce() 과정을 거쳐서 State Stream으로 바꾸어 다시 View로 전달해주는 역할을 한다. 이를 적용하기 위해 Reactor 프로토콜을 적용해야 하며, 그 내부에는 사용자 인터렉션을 의미하는 Action과 State매개체인 Mutation, View가 가질 상태를 의미하는 State를 반드시 정의해야 한다. 또한 State의 초기값을 설정하기 위해 inititlState가 필요하다.
-    <ul>
-      <li>mutate(action:) -&gt; Observable<Mutation>: Action 스트림을 Mutation 스트림으로 변환, 변환된 Mutation스트림을 reduce함수로 전달한다.</Mutation></li>
-      <li>reduce(state:mutation:) -&gt; State: 이전 State와 Mutation을 활용하여 새로운 State를 반환한다. 이 State를 View에서 구독하고 있었다면 State 변경됨에 따라 UI가 업데이트 된다.</li>
-    </ul>
-  </li>
-</ul>
-
-<h2 id="reference">Reference</h2>
-<ul>
-  <li>https://ios-development.tistory.com/782</li>
-  <li>https://oliveyoung.tech/2023-05-20/OliveYoung-iOS-ReactorKit/</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="ReactorKit" /><summary type="html"><![CDATA[ReactorKit Flux와 반응형 프로그래밍을 결합한 개념이다. Rx의 개념인 Observable과 함께 사용하여 비동기적으로 데이터를 처리하고, UI와의 상호 작용을 쉽게 관리할 수 있는 구조를 만든다. MVVM 모델의 ViewModel 역할을 하며 비즈니스 로직을 처리하고 View와 상호 작용하는 방법을 제공한다. UI관련 코드와 비즈니스 로직을 분리하고, 코드의 재사용성이 높아진다. 핵심 장점 사용법이 간단하다. 특정 부분에만 적용할 수 있다. 테스트하기 쉽다. (Reactor와 View에 대해 의존성이 없기 때문) 유지보수하기 쉽다. (상태값 관리 용이) 코드가 간결해진다. (ViewController에 있는 로직을 분리해서) 사용자의 Action은 Reactor로, Reactor에서 방출된 State는 Observable 스트림을 통해 전달된다. View는 Action만 방출할 수 있으며, Reactor는 State만 망출할 수 있다. 단방향적 흐름으로 View와 비즈니스 로직을 분리할 수 있으며 모듈 간 결합도가 낮게 개발할 수 있다. View: Reactor로 받는 State를 통해 UI를 보여주는 역할과 사용자 인터렉션을 추상화하여 Reactor로 전달하는 역할을 수행한다. Reactor: View로부터 Action Stream을 전달 받아 내부에서 mutate()와 reduce() 과정을 거쳐서 State Stream으로 바꾸어 다시 View로 전달해주는 역할을 한다. 이를 적용하기 위해 Reactor 프로토콜을 적용해야 하며, 그 내부에는 사용자 인터렉션을 의미하는 Action과 State매개체인 Mutation, View가 가질 상태를 의미하는 State를 반드시 정의해야 한다. 또한 State의 초기값을 설정하기 위해 inititlState가 필요하다. mutate(action:) -&gt; Observable: Action 스트림을 Mutation 스트림으로 변환, 변환된 Mutation스트림을 reduce함수로 전달한다. reduce(state:mutation:) -&gt; State: 이전 State와 Mutation을 활용하여 새로운 State를 반환한다. 이 State를 View에서 구독하고 있었다면 State 변경됨에 따라 UI가 업데이트 된다. Reference https://ios-development.tistory.com/782 https://oliveyoung.tech/2023-05-20/OliveYoung-iOS-ReactorKit/]]></summary></entry><entry><title type="html">[UIKit] UICollectionView 정복하기</title><link href="http://localhost:4000/UIKit-UICollectionView/" rel="alternate" type="text/html" title="[UIKit] UICollectionView 정복하기" /><published>2026-04-19T00:00:00+00:00</published><updated>2026-04-19T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-UICollectionView</id><content type="html" xml:base="http://localhost:4000/UIKit-UICollectionView/"><![CDATA[<h2 id="uicollectionview">UICollectionView</h2>
+<p>따라서 이 예제는 “state가 바뀌면 모든 subview가 같은 identity라서 다시 그려진다”를 보여주는 예제가 아니다.<br />
+오히려 “state 변경으로 body가 다시 평가되고, 그 과정에서 body 내부의 표현식도 다시 실행된다”는 것을 보여주는 예제에 가깝다.</p>]]></content><author><name>Dong Hyeon</name></author><category term="Swift" /><summary type="html"><![CDATA[Identity WWDC21 - Demystify SwiftUI 에서 Identity를 두 경우로 나누어서 설명한다. explicit identity (명시적 정체성) structual identity (구조적 정체성) 각각 간략히 말하자면 explicit identity는 사용자 정의 또는 데이터 기반 identity를 사용하는 것이고 structual identity은 View hierachy에서 타입 및 위치에 따라 뷰를 구분하는 것이다. 참고: 애플은 View의 프로퍼티를 뷰의 종속성(dependencies)이라고 지칭한다. 0. body 재호출 디버깅을 위한 랜덤 배경색 부여 헬퍼 메서드 public extension ShapeStyle where Self == Color { static var random: Color { Color( red: .random(in: 0...1), green: .random(in: 0...1), blue: .random(in: 0...1) ) } } extension View { func randomColorStyle( cornerRadius: CGFloat = 16, padding: CGFloat = 12 ) -&gt; some View { self .padding(padding) .background { RoundedRectangle(cornerRadius: cornerRadius, style: .continuous) .fill(Color.random.opacity(0.35)) .overlay { RoundedRectangle(cornerRadius: cornerRadius, style: .continuous) .fill(.ultraThinMaterial) } } .overlay { RoundedRectangle(cornerRadius: cornerRadius, style: .continuous) .stroke(Color.white.opacity(0.35), lineWidth: 1) } .shadow(color: .black.opacity(0.12), radius: 12, y: 6) } } 1. View의 Dependency가 Bool타입일 때 struct SampleDiffView: View { @State private var isOn = true var body: some View { VStack(spacing: 20) { Text("Hello World") .frame(maxWidth: .infinity) .randomColorStyle() Text(isOn ? "On" : "Off") .frame(maxWidth: .infinity) .randomColorStyle() Button { isOn.toggle() } label: { Text("버튼") .frame(maxWidth: .infinity) } .randomColorStyle() } .padding(24) } } 이 예제에서는 SampleDiffView.body 안에서 isOn을 읽고 있다. 따라서 버튼을 눌러 isOn이 변경되면 SampleDiffView의 body가 다시 평가된다. 이때 VStack 내부의 subview들이 모두 같은 identity를 갖는 것은 아니다. VStack(spacing: 20) { Text("Hello World") // child 0 Text(isOn ? "On" : "Off") // child 1 Button { ... } // child 2 } Text(“Hello World”), Text(isOn ? “On” : “Off”), Button은 VStack 안에서 서로 다른 위치를 가지므로 각각 다른 structural identity를 가진다. 또한 두 번째 Text는 isOn 값에 따라 on/off를 보여주지만, 뷰의 위치와 타입은 그대로 유지된다. 즉, “On” 상태의 두 번째 Text와 “Off” 상태의 두 번째 Text는 같은 structural identity를 유지한다. 바뀌는 것은 identity가 아니라 Text의 입력 값이다. 그런데 화면에서는 isOn과 직접 관련 없어 보이는 Text(“Hello World”)의 배경색도 함께 바뀐다. 이는 Text(“Hello World”)가 같은 identity를 가져서가 아니라, SampleDiffView.body가 다시 평가되면서 .randomColorStyle() 내부의 Color.random도 다시 실행되기 때문이다. 정리하면 다음과 같다. isOn 변경으로 SampleDiffView.body가 다시 평가된다. VStack 내부의 각 subview는 서로 다른 structural identity를 가진다. 두 번째 Text는 “On”과 “Off” 사이에서 같은 structural identity를 유지한다. Text(“Hello World”)의 배경색이 바뀌는 이유는 identity 때문이 아니라, body 재평가 과정에서 랜덤 색상이 다시 생성되기 때문이다. 따라서 이 예제는 “state가 바뀌면 모든 subview가 같은 identity라서 다시 그려진다”를 보여주는 예제가 아니다. 오히려 “state 변경으로 body가 다시 평가되고, 그 과정에서 body 내부의 표현식도 다시 실행된다”는 것을 보여주는 예제에 가깝다.]]></summary></entry><entry><title type="html">[UIKit] UICollectionView 정복하기</title><link href="http://localhost:4000/UIKit-UICollectionView/" rel="alternate" type="text/html" title="[UIKit] UICollectionView 정복하기" /><published>2026-04-19T00:00:00+00:00</published><updated>2026-04-19T00:00:00+00:00</updated><id>http://localhost:4000/%5BUIKit%5D-UICollectionView</id><content type="html" xml:base="http://localhost:4000/UIKit-UICollectionView/"><![CDATA[<h2 id="uicollectionview">UICollectionView</h2>
 <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">@MainActor</span>
 <span class="kd">class</span> <span class="kt">UICollectionView</span>
 </code></pre></div></div>
@@ -246,7 +316,46 @@ SwiftUI의 if문의 각 분기가 고유한 id를 가진 다른 뷰를 나타낸
   <li>collectionView의 datasource는 item에 대한 콘텐츠와 해당 콘텐츠를 표시하는 데 사용되는 뷰를 모두 제공한다.</li>
   <li>컬렉션 뷰가 처음 로드 시 데이터소스에 표시되는 각 항목에 대한 뷰를 제공하도록 요청한다. 컬렉션 뷰는 데이터 소스가 재사용을 위해 표시한 뷰 객체의 큐 또는 목록을 유지한다.</li>
   <li>코드에서 명시적으로 새 뷰를 가져오는 것이 아니라 항상 큐에서 뷰를 가져온다.</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><summary type="html"><![CDATA[UICollectionView @MainActor class UICollectionView 정렬된 데이터 항목 모음을 관리하고 사용자 정의 가능한 레이아웃을 사용하여 표시하는 객체이다. DataSource 컬렉션뷰는 컬렉션뷰의 속성에 저장된 데이터 소스 객체에서 데이터를 가져온다. 데이터 소스에는 컬렉션뷰의 데이터와 사용자 인터페이스 업데이트를 간단하고 효율적으로 관리하는 데 필요한 동적을 제공한다. 프로토콜을 채택하여 사용자 지정 데이터소스 객체를 만들수도 있다. UICollectionViewDataSource UICollectionViewDiffableDataSource Item item은 표시하려는 가장 작은 데이터 단위이다. collectionView의 데이터는 개별 item으로 구분되고, 이러한 iteme들은 그룹화하여 표시할 수 있다. collectionView는 datasource가 구성하고 제공하는 클래스의 인스턴스인 셀을 사용하여 화면에 item을 표시한다. UICollectionViewCell Supplementary View collectionView는 셀 외에도 다른 유형의 뷰를 사용하여 데이터를 표시할 수 있다. 이러한 보조 뷰는 섹션 헤더 밑 푸터가 될 수 있다. Supplementary View는 선택사항이고 collectionView의 layout 객체에서 정으된다. UICollectionViewDiffableDataSource 컬렉션뷰의 메서드를 사용해 항목의 시각적 표현이 데이터 소스 개체의 순서와 일치하도록 할 수 있다. 컬렉션에서 데이터를 추가, 삭제 또는 재배열할 때마다 컬렉션 뷰의 메서드를 사용하여 해당 셀을 삽입, 삭제, 재배열한다. Layout Layout객체는 CollectionView에서 콘텐츠의 시각적 배치를 정의한다. 클래스의 하위 클래스인 레이아웃 객체는 컬렉션 뷰 내의 모든 셀과 보조 뷰의 구성 위치를 정의한다. 레이아웃 객체는 위치를 정의하지만 실제로 해당 정보를 해당 뷰에 적용하지는 않는다. UICollectionViewLayout Cell &amp; Supplementary Views collectionView의 datasource는 item에 대한 콘텐츠와 해당 콘텐츠를 표시하는 데 사용되는 뷰를 모두 제공한다. 컬렉션 뷰가 처음 로드 시 데이터소스에 표시되는 각 항목에 대한 뷰를 제공하도록 요청한다. 컬렉션 뷰는 데이터 소스가 재사용을 위해 표시한 뷰 객체의 큐 또는 목록을 유지한다. 코드에서 명시적으로 새 뷰를 가져오는 것이 아니라 항상 큐에서 뷰를 가져온다.]]></summary></entry><entry><title type="html">[RxSwift]</title><link href="http://localhost:4000/RxLab-rx1/" rel="alternate" type="text/html" title="[RxSwift]" /><published>2026-04-17T00:00:00+00:00</published><updated>2026-04-17T00:00:00+00:00</updated><id>http://localhost:4000/%5BRxLab%5D-rx1</id><content type="html" xml:base="http://localhost:4000/RxLab-rx1/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="UIKit" /><summary type="html"><![CDATA[UICollectionView @MainActor class UICollectionView 정렬된 데이터 항목 모음을 관리하고 사용자 정의 가능한 레이아웃을 사용하여 표시하는 객체이다. DataSource 컬렉션뷰는 컬렉션뷰의 속성에 저장된 데이터 소스 객체에서 데이터를 가져온다. 데이터 소스에는 컬렉션뷰의 데이터와 사용자 인터페이스 업데이트를 간단하고 효율적으로 관리하는 데 필요한 동적을 제공한다. 프로토콜을 채택하여 사용자 지정 데이터소스 객체를 만들수도 있다. UICollectionViewDataSource UICollectionViewDiffableDataSource Item item은 표시하려는 가장 작은 데이터 단위이다. collectionView의 데이터는 개별 item으로 구분되고, 이러한 iteme들은 그룹화하여 표시할 수 있다. collectionView는 datasource가 구성하고 제공하는 클래스의 인스턴스인 셀을 사용하여 화면에 item을 표시한다. UICollectionViewCell Supplementary View collectionView는 셀 외에도 다른 유형의 뷰를 사용하여 데이터를 표시할 수 있다. 이러한 보조 뷰는 섹션 헤더 밑 푸터가 될 수 있다. Supplementary View는 선택사항이고 collectionView의 layout 객체에서 정으된다. UICollectionViewDiffableDataSource 컬렉션뷰의 메서드를 사용해 항목의 시각적 표현이 데이터 소스 개체의 순서와 일치하도록 할 수 있다. 컬렉션에서 데이터를 추가, 삭제 또는 재배열할 때마다 컬렉션 뷰의 메서드를 사용하여 해당 셀을 삽입, 삭제, 재배열한다. Layout Layout객체는 CollectionView에서 콘텐츠의 시각적 배치를 정의한다. 클래스의 하위 클래스인 레이아웃 객체는 컬렉션 뷰 내의 모든 셀과 보조 뷰의 구성 위치를 정의한다. 레이아웃 객체는 위치를 정의하지만 실제로 해당 정보를 해당 뷰에 적용하지는 않는다. UICollectionViewLayout Cell &amp; Supplementary Views collectionView의 datasource는 item에 대한 콘텐츠와 해당 콘텐츠를 표시하는 데 사용되는 뷰를 모두 제공한다. 컬렉션 뷰가 처음 로드 시 데이터소스에 표시되는 각 항목에 대한 뷰를 제공하도록 요청한다. 컬렉션 뷰는 데이터 소스가 재사용을 위해 표시한 뷰 객체의 큐 또는 목록을 유지한다. 코드에서 명시적으로 새 뷰를 가져오는 것이 아니라 항상 큐에서 뷰를 가져온다.]]></summary></entry><entry><title type="html">[ReactorKit] 개념</title><link href="http://localhost:4000/ReactorKit-ReactorKit1/" rel="alternate" type="text/html" title="[ReactorKit] 개념" /><published>2026-04-19T00:00:00+00:00</published><updated>2026-04-19T00:00:00+00:00</updated><id>http://localhost:4000/%5BReactorKit%5D-ReactorKit1</id><content type="html" xml:base="http://localhost:4000/ReactorKit-ReactorKit1/"><![CDATA[<h2 id="reactorkit">ReactorKit</h2>
+<ul>
+  <li>Flux와 반응형 프로그래밍을 결합한 개념이다.</li>
+  <li>Rx의 개념인 Observable과 함께 사용하여 비동기적으로 데이터를 처리하고, UI와의 상호 작용을 쉽게 관리할 수 있는 구조를 만든다.</li>
+  <li>MVVM 모델의 ViewModel 역할을 하며 비즈니스 로직을 처리하고 View와 상호 작용하는 방법을 제공한다.</li>
+  <li>UI관련 코드와 비즈니스 로직을 분리하고, 코드의 재사용성이 높아진다.</li>
+</ul>
+
+<h2 id="핵심-장점">핵심 장점</h2>
+<ul>
+  <li>사용법이 간단하다.</li>
+  <li>특정 부분에만 적용할 수 있다.</li>
+  <li>테스트하기 쉽다. (Reactor와 View에 대해 의존성이 없기 때문)</li>
+  <li>유지보수하기 쉽다. (상태값 관리 용이)</li>
+  <li>코드가 간결해진다. (ViewController에 있는 로직을 분리해서)</li>
+</ul>
+
+<p><img src="/assets/img/2026-04-19-%5BReactorKit%5D-ReactorKit1/flow1.webp" alt="flow1" /></p>
+<ul>
+  <li>사용자의 Action은 Reactor로, Reactor에서 방출된 State는 Observable 스트림을 통해 전달된다.</li>
+  <li>View는 Action만 방출할 수 있으며, Reactor는 State만 망출할 수 있다.</li>
+  <li>단방향적 흐름으로 View와 비즈니스 로직을 분리할 수 있으며 모듈 간 결합도가 낮게 개발할 수 있다.</li>
+</ul>
+
+<p><img src="/assets/img/2026-04-19-%5BReactorKit%5D-ReactorKit1/flow2.webp" alt="flow2" /></p>
+<ul>
+  <li>View: Reactor로 받는 State를 통해 UI를 보여주는 역할과 사용자 인터렉션을 추상화하여 Reactor로 전달하는 역할을 수행한다.</li>
+  <li>Reactor: View로부터 Action Stream을 전달 받아 내부에서 mutate()와 reduce() 과정을 거쳐서 State Stream으로 바꾸어 다시 View로 전달해주는 역할을 한다. 이를 적용하기 위해 Reactor 프로토콜을 적용해야 하며, 그 내부에는 사용자 인터렉션을 의미하는 Action과 State매개체인 Mutation, View가 가질 상태를 의미하는 State를 반드시 정의해야 한다. 또한 State의 초기값을 설정하기 위해 inititlState가 필요하다.
+    <ul>
+      <li>mutate(action:) -&gt; Observable<Mutation>: Action 스트림을 Mutation 스트림으로 변환, 변환된 Mutation스트림을 reduce함수로 전달한다.</Mutation></li>
+      <li>reduce(state:mutation:) -&gt; State: 이전 State와 Mutation을 활용하여 새로운 State를 반환한다. 이 State를 View에서 구독하고 있었다면 State 변경됨에 따라 UI가 업데이트 된다.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="reference">Reference</h2>
+<ul>
+  <li>https://ios-development.tistory.com/782</li>
+  <li>https://oliveyoung.tech/2023-05-20/OliveYoung-iOS-ReactorKit/</li>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="ReactorKit" /><summary type="html"><![CDATA[ReactorKit Flux와 반응형 프로그래밍을 결합한 개념이다. Rx의 개념인 Observable과 함께 사용하여 비동기적으로 데이터를 처리하고, UI와의 상호 작용을 쉽게 관리할 수 있는 구조를 만든다. MVVM 모델의 ViewModel 역할을 하며 비즈니스 로직을 처리하고 View와 상호 작용하는 방법을 제공한다. UI관련 코드와 비즈니스 로직을 분리하고, 코드의 재사용성이 높아진다. 핵심 장점 사용법이 간단하다. 특정 부분에만 적용할 수 있다. 테스트하기 쉽다. (Reactor와 View에 대해 의존성이 없기 때문) 유지보수하기 쉽다. (상태값 관리 용이) 코드가 간결해진다. (ViewController에 있는 로직을 분리해서) 사용자의 Action은 Reactor로, Reactor에서 방출된 State는 Observable 스트림을 통해 전달된다. View는 Action만 방출할 수 있으며, Reactor는 State만 망출할 수 있다. 단방향적 흐름으로 View와 비즈니스 로직을 분리할 수 있으며 모듈 간 결합도가 낮게 개발할 수 있다. View: Reactor로 받는 State를 통해 UI를 보여주는 역할과 사용자 인터렉션을 추상화하여 Reactor로 전달하는 역할을 수행한다. Reactor: View로부터 Action Stream을 전달 받아 내부에서 mutate()와 reduce() 과정을 거쳐서 State Stream으로 바꾸어 다시 View로 전달해주는 역할을 한다. 이를 적용하기 위해 Reactor 프로토콜을 적용해야 하며, 그 내부에는 사용자 인터렉션을 의미하는 Action과 State매개체인 Mutation, View가 가질 상태를 의미하는 State를 반드시 정의해야 한다. 또한 State의 초기값을 설정하기 위해 inititlState가 필요하다. mutate(action:) -&gt; Observable: Action 스트림을 Mutation 스트림으로 변환, 변환된 Mutation스트림을 reduce함수로 전달한다. reduce(state:mutation:) -&gt; State: 이전 State와 Mutation을 활용하여 새로운 State를 반환한다. 이 State를 View에서 구독하고 있었다면 State 변경됨에 따라 UI가 업데이트 된다. Reference https://ios-development.tistory.com/782 https://oliveyoung.tech/2023-05-20/OliveYoung-iOS-ReactorKit/]]></summary></entry><entry><title type="html">[RxSwift]</title><link href="http://localhost:4000/RxLab-rx1/" rel="alternate" type="text/html" title="[RxSwift]" /><published>2026-04-17T00:00:00+00:00</published><updated>2026-04-17T00:00:00+00:00</updated><id>http://localhost:4000/%5BRxLab%5D-rx1</id><content type="html" xml:base="http://localhost:4000/RxLab-rx1/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
 
 <h2 id="비동기-이벤트-예시">비동기 이벤트 예시</h2>
 <ul>
@@ -616,100 +725,4 @@ SwiftUI의 if문의 각 분기가 고유한 id를 가진 다른 뷰를 나타낸
   <li>https://jud00.tistory.com/entry/오늘의-Swift-지식-In-Out이란-무엇일까</li>
   <li>https://velog.io/@juseojo/TIL-Swift의-inout-파라미터-정말-참조를-전달할까-Copy-In-Copy-Out-파헤치기</li>
   <li>https://hyunsikwon.github.io/swift/Swift-Inout-01/</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Swift" /><category term="Grammer" /><summary type="html"><![CDATA[함수 특정 작업을 수행하는 독립적인 코드 덩어리다. 함수가 하는 일을 식별하는 이름을 지정하며, 필요할 때 이 이름을 호출하여 작업을 수행한다. 함수 키워드 // num1, num2: Argument Label(파라미터를 외부에서 볼 때, 함수 호출 시 사용하려는 이름) // a, b: parameter // _(Argumant Label 생략하고 싶을 때) : 와일드카드 패턴 func plusFunc(num1 a: Int, num2: b: Int) -&gt; Int { } // Int...: 가변 파라미터(Variadic Parameters)로 정해지지 않은 여러개의 파라미터를 받을 때 // num: Int = 5: 기본값 설정 func plusFunc(numbers: Int..., num: Int = 5) -&gt; Int { } 함수 오버로딩 func do(value: Int) {} func do(value: Double) {} func do(value: String) {} swift는 1) 함수 이름, 2) 파라미터수/타입, 3) Argument Label, 4) 리턴타입을 모두 포함해서 함수를 식별하는 Overloading을 지원한다. 하나의 함수 이름에 여러개의 함수를 대응 시킬 수 있다. inout var first = 10 var second = 20 func swap(_ a: inout Int, _ b: inout Int) { // 2. 함수 내부에서 복사된 값을 변경 let temp = a a = b b = temp } // 1. copy-in: first, second의 값이 함수 내부로 복사됨 swap(&amp;first, &amp;second) // 3. copy-out: 함수 내부에서 변경된 값이 다시 first, second에 반영됨 print("firstInt is now \(first), and secondInt is now \(second)") 함수의 파라미터는 기본적으로 값처럼 전달되며, 함수 내부에서는 상수처럼 취급되기 때문에 직접 변경할 수 없다. inout은 함수 내부에서 외부 변수의 값을 변경할 수 있도록 해주는 키워드이다. 호출할 때는 &amp;를 사용해 해당 변수를 전달한다. inout은 참조 전달과 완전히 같은 개념은 아니다. 즉, 단순히 변수의 주소를 직접 넘겨서 수정하는 방식으로만 이해하면 정확하지 않다. Swift의 inout은 개념적으로 copy-in copy-out 방식으로 이해할 수 있다. 즉, 함수 호출 시 원래 값을 함수 내부로 복사해 오고(copy-in), 함수 내부에서 값을 변경한 뒤, 함수가 끝날 때 변경된 값을 다시 원래 변수에 반영한다(copy-out). 단, 실제 실행 시에는 성능 최적화를 통해 복사가 생략되고 참조처럼 동작할 수 있지만, 개념적으로는 항상 copy-in copy-out으로 이해하는 것이 안전하다. Reference https://docs.swift.org/swift-book/ReferenceManual/Declarations.html#ID545 https://jud00.tistory.com/entry/오늘의-Swift-지식-In-Out이란-무엇일까 https://velog.io/@juseojo/TIL-Swift의-inout-파라미터-정말-참조를-전달할까-Copy-In-Copy-Out-파헤치기 https://hyunsikwon.github.io/swift/Swift-Inout-01/]]></summary></entry><entry><title type="html">[Swift] 10. 열거형</title><link href="http://localhost:4000/Swift-10-enumeration/" rel="alternate" type="text/html" title="[Swift] 10. 열거형" /><published>2026-04-16T00:00:00+00:00</published><updated>2026-04-16T00:00:00+00:00</updated><id>http://localhost:4000/%5BSwift-10%5D-enumeration</id><content type="html" xml:base="http://localhost:4000/Swift-10-enumeration/"><![CDATA[<h2 id="커스텀-타입">커스텀 타입</h2>
-<ul>
-  <li>Swift에서는 개발자가 직접 만들 수 있는 <code class="language-plaintext highlighter-rouge">사용자 정의 타입이 있다</code></li>
-  <li>enum, class, struct로 구현 가능하다.</li>
-  <li>class나 struct는 데이터를 묶어서 사용할 목적이다.</li>
-</ul>
-
-<h2 id="열거형">열거형</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">Weekday</span> <span class="p">{</span>
-    <span class="k">case</span> <span class="n">monday</span>
-    <span class="k">case</span> <span class="n">tuesday</span>
-    <span class="k">case</span> <span class="n">wednesday</span>
-    <span class="k">case</span> <span class="n">thursday</span>
-    <span class="k">case</span> <span class="n">friday</span>
-    <span class="k">case</span> <span class="n">saturday</span>
-    <span class="k">case</span> <span class="n">sunday</span>
-<span class="p">}</span>
-
-<span class="c1">// .monday: 인스턴스를 생성한다 = data를 만들어서 메모리에 저장한다.</span>
-<span class="k">var</span> <span class="nv">today</span><span class="p">:</span> <span class="kt">Weekday</span> <span class="o">=</span> <span class="o">.</span><span class="n">monday</span>
-</code></pre></div></div>
-<ul>
-  <li>타입 자체를 한정된 사례(case) 안에서 정의할 수 있는 타입이다.</li>
-  <li>미리 정의해둔 타입의 케이스에서 벗어날 수 없으므로 코드 가독성과 안정성이 높아진다.</li>
-</ul>
-
-<h2 id="열거형의-원시값raw-values">열거형의 원시값(Raw Values)</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 알아서 case별로 0부터 6까지 매칭됨</span>
-<span class="kd">enum</span> <span class="kt">Weekday</span><span class="p">:</span> <span class="kt">Int</span> <span class="p">{</span>
-    <span class="k">case</span> <span class="n">monday</span>
-    <span class="k">case</span> <span class="n">tuesday</span>
-    <span class="k">case</span> <span class="n">wednesday</span>
-    <span class="k">case</span> <span class="n">thursday</span>
-    <span class="k">case</span> <span class="n">friday</span>
-    <span class="k">case</span> <span class="n">saturday</span>
-    <span class="k">case</span> <span class="n">sunday</span>
-<span class="p">}</span>
-
-<span class="c1">// 알아서 case별로 문자열이 매칭됨</span>
-<span class="kd">enum</span> <span class="kt">Weekday</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span>
-    <span class="k">case</span> <span class="n">monday</span>
-    <span class="k">case</span> <span class="n">tuesday</span>
-    <span class="k">case</span> <span class="n">wednesday</span>
-    <span class="k">case</span> <span class="n">thursday</span>
-    <span class="k">case</span> <span class="n">friday</span>
-    <span class="k">case</span> <span class="n">saturday</span>
-    <span class="k">case</span> <span class="n">sunday</span>
-<span class="p">}</span>
-
-<span class="k">var</span> <span class="nv">today</span><span class="p">:</span> <span class="kt">Weekday</span><span class="p">?</span> <span class="o">=</span> <span class="kt">Weekday</span><span class="p">(</span><span class="nv">rawValue</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">// 원시값으로 쉽게 인스턴스 생성 가능</span>
-<span class="k">var</span> <span class="nv">today</span><span class="p">:</span> <span class="kt">Weekday</span> <span class="o">=</span> <span class="kt">Weekday</span><span class="p">(</span><span class="nv">rawValue</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span><span class="o">!</span> <span class="c1">// monday</span>
-<span class="k">var</span> <span class="nv">num</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="kt">Weekday</span><span class="o">.</span><span class="n">monday</span><span class="o">.</span><span class="n">rawValue</span>     <span class="c1">// 0</span>
-</code></pre></div></div>
-
-<h2 id="열거형의-연관값associated-values">열거형의 연관값(Associated Values)</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">Computer</span> <span class="p">{</span>
-    <span class="k">case</span> <span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="nv">ght</span><span class="p">:</span> <span class="kt">Double</span><span class="p">)</span>
-    <span class="k">case</span> <span class="nf">ram</span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">String</span><span class="p">)</span>
-    <span class="k">case</span> <span class="nf">hardDisk</span><span class="p">(</span><span class="nv">gb</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="k">var</span> <span class="nv">chip</span><span class="p">:</span> <span class="kt">Computer</span> <span class="o">=</span> <span class="kt">Computer</span><span class="o">.</span><span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="nv">ghz</span><span class="p">:</span> <span class="mf">1.4</span><span class="p">)</span>
-<span class="k">var</span> <span class="nv">chip1</span><span class="p">:</span> <span class="kt">Computer</span> <span class="o">=</span> <span class="kt">Computer</span><span class="o">.</span><span class="nf">ram</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="s">"DDR4"</span><span class="p">)</span>
-</code></pre></div></div>
-<ul>
-  <li>구체적인 정보를 저장하기 위해 사용함(케이스가 카테고리의 역할로 바뀜)</li>
-</ul>
-
-<h2 id="연관값-switch-조건문">연관값 Switch, 조건문</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">Computer</span> <span class="p">{</span>
-    <span class="k">case</span> <span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="nv">ght</span><span class="p">:</span> <span class="kt">Double</span><span class="p">)</span>
-    <span class="k">case</span> <span class="nf">ram</span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">String</span><span class="p">)</span>
-    <span class="k">case</span> <span class="nf">hardDisk</span><span class="p">(</span><span class="nv">gb</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="k">let</span> <span class="nv">chip</span> <span class="o">=</span> <span class="kt">Computer</span><span class="o">.</span><span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="mi">8</span><span class="p">)</span>
-<span class="c1">// switch</span>
-<span class="k">switch</span> <span class="n">chip</span> <span class="p">{</span>
-<span class="k">case</span> <span class="o">.</span><span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="mi">8</span><span class="p">):</span>
-    <span class="nf">print</span><span class="p">(</span><span class="s">"cpu 8코어"</span><span class="p">)</span>
-<span class="k">case</span> <span class="o">.</span><span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="k">let</span> <span class="nv">c</span><span class="p">):</span>
-    <span class="nf">print</span><span class="p">(</span><span class="s">"cpu: </span><span class="se">\(</span><span class="n">c</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
-<span class="k">case</span> <span class="o">.</span><span class="nf">ram</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
-    <span class="nf">print</span><span class="p">(</span><span class="s">"RAM"</span><span class="p">)</span>
-<span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">hardDisk</span><span class="p">(</span><span class="nv">gb</span><span class="p">:</span> <span class="n">g</span><span class="p">):</span>
-    <span class="nf">print</span><span class="p">(</span><span class="s">"하드: </span><span class="se">\(</span><span class="n">g</span><span class="se">)</span><span class="s">gb):
-}
-
-// 조건문(특정 케이스만 다룰수 있다)
-if case let .ram(ram) = chil {
-    print("</span><span class="nv">ram</span><span class="p">:</span> <span class="p">\(</span><span class="n">ram</span><span class="p">)</span><span class="s">")
-}
-
-for case .cpu(core: let c) in chiplists {
-    print("</span><span class="nv">cpu칩</span><span class="p">:</span> <span class="p">\(</span><span class="n">c</span><span class="p">)</span><span class="n">코어</span><span class="s">")
-}
-</span></code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Swift" /><category term="Grammer" /><summary type="html"><![CDATA[커스텀 타입 Swift에서는 개발자가 직접 만들 수 있는 사용자 정의 타입이 있다 enum, class, struct로 구현 가능하다. class나 struct는 데이터를 묶어서 사용할 목적이다. 열거형 enum Weekday { case monday case tuesday case wednesday case thursday case friday case saturday case sunday } // .monday: 인스턴스를 생성한다 = data를 만들어서 메모리에 저장한다. var today: Weekday = .monday 타입 자체를 한정된 사례(case) 안에서 정의할 수 있는 타입이다. 미리 정의해둔 타입의 케이스에서 벗어날 수 없으므로 코드 가독성과 안정성이 높아진다. 열거형의 원시값(Raw Values) // 알아서 case별로 0부터 6까지 매칭됨 enum Weekday: Int { case monday case tuesday case wednesday case thursday case friday case saturday case sunday } // 알아서 case별로 문자열이 매칭됨 enum Weekday: String { case monday case tuesday case wednesday case thursday case friday case saturday case sunday } var today: Weekday? = Weekday(rawValue: 0) // 원시값으로 쉽게 인스턴스 생성 가능 var today: Weekday = Weekday(rawValue: 0)! // monday var num: Int = Weekday.monday.rawValue // 0 열거형의 연관값(Associated Values) enum Computer { case cpu(core: Int, ght: Double) case ram(Int, String) case hardDisk(gb: Int) } var chip: Computer = Computer.cpu(core: 6, ghz: 1.4) var chip1: Computer = Computer.ram(16, "DDR4") 구체적인 정보를 저장하기 위해 사용함(케이스가 카테고리의 역할로 바뀜) 연관값 Switch, 조건문 enum Computer { case cpu(core: Int, ght: Double) case ram(Int, String) case hardDisk(gb: Int) } let chip = Computer.cpu(core: 8) // switch switch chip { case .cpu(core: 8): print("cpu 8코어") case .cpu(core: let c): print("cpu: \(c)") case .ram(_): print("RAM") case let .hardDisk(gb: g): print("하드: \(g)gb): } // 조건문(특정 케이스만 다룰수 있다) if case let .ram(ram) = chil { print("ram: \(ram)") } for case .cpu(core: let c) in chiplists { print("cpu칩: \(c)코어") }]]></summary></entry></feed>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Swift" /><category term="Grammer" /><summary type="html"><![CDATA[함수 특정 작업을 수행하는 독립적인 코드 덩어리다. 함수가 하는 일을 식별하는 이름을 지정하며, 필요할 때 이 이름을 호출하여 작업을 수행한다. 함수 키워드 // num1, num2: Argument Label(파라미터를 외부에서 볼 때, 함수 호출 시 사용하려는 이름) // a, b: parameter // _(Argumant Label 생략하고 싶을 때) : 와일드카드 패턴 func plusFunc(num1 a: Int, num2: b: Int) -&gt; Int { } // Int...: 가변 파라미터(Variadic Parameters)로 정해지지 않은 여러개의 파라미터를 받을 때 // num: Int = 5: 기본값 설정 func plusFunc(numbers: Int..., num: Int = 5) -&gt; Int { } 함수 오버로딩 func do(value: Int) {} func do(value: Double) {} func do(value: String) {} swift는 1) 함수 이름, 2) 파라미터수/타입, 3) Argument Label, 4) 리턴타입을 모두 포함해서 함수를 식별하는 Overloading을 지원한다. 하나의 함수 이름에 여러개의 함수를 대응 시킬 수 있다. inout var first = 10 var second = 20 func swap(_ a: inout Int, _ b: inout Int) { // 2. 함수 내부에서 복사된 값을 변경 let temp = a a = b b = temp } // 1. copy-in: first, second의 값이 함수 내부로 복사됨 swap(&amp;first, &amp;second) // 3. copy-out: 함수 내부에서 변경된 값이 다시 first, second에 반영됨 print("firstInt is now \(first), and secondInt is now \(second)") 함수의 파라미터는 기본적으로 값처럼 전달되며, 함수 내부에서는 상수처럼 취급되기 때문에 직접 변경할 수 없다. inout은 함수 내부에서 외부 변수의 값을 변경할 수 있도록 해주는 키워드이다. 호출할 때는 &amp;를 사용해 해당 변수를 전달한다. inout은 참조 전달과 완전히 같은 개념은 아니다. 즉, 단순히 변수의 주소를 직접 넘겨서 수정하는 방식으로만 이해하면 정확하지 않다. Swift의 inout은 개념적으로 copy-in copy-out 방식으로 이해할 수 있다. 즉, 함수 호출 시 원래 값을 함수 내부로 복사해 오고(copy-in), 함수 내부에서 값을 변경한 뒤, 함수가 끝날 때 변경된 값을 다시 원래 변수에 반영한다(copy-out). 단, 실제 실행 시에는 성능 최적화를 통해 복사가 생략되고 참조처럼 동작할 수 있지만, 개념적으로는 항상 copy-in copy-out으로 이해하는 것이 안전하다. Reference https://docs.swift.org/swift-book/ReferenceManual/Declarations.html#ID545 https://jud00.tistory.com/entry/오늘의-Swift-지식-In-Out이란-무엇일까 https://velog.io/@juseojo/TIL-Swift의-inout-파라미터-정말-참조를-전달할까-Copy-In-Copy-Out-파헤치기 https://hyunsikwon.github.io/swift/Swift-Inout-01/]]></summary></entry></feed>

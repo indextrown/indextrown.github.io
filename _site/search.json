@@ -1,6 +1,14 @@
 [
     
         {
+        "title"    : "[SwiftUI] Diffing, 끝까지 파고들었습니다2.",
+        "category" : "",
+        "tags"     : "Swift",
+        "url"      : "/SwiftUI-diff2/",
+        "date"     : "2026-06-01 00:00:00 +0000"
+        } ,
+    
+        {
         "title"    : "[WWDC] Demystify SwiftUI - SwiftUI가 코드를 보는법",
         "category" : "",
         "tags"     : "Swift, WWDC",
