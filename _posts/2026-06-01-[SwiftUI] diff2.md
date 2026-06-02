@@ -162,4 +162,4 @@ struct ExtractSubView: View {
 #### 부연 설명
 SwiftUI 입장에서는 ExtractSubView 안에서 @State 같은 dependency 값이 변하지 않았고, 이 예시에서는 애초에 그런 dependency를 가지고 있지도 않기 때문에 ExtractSubView.body를 다시 평가할 필요가 없다.
 참고로 어떤 View의 body가 다시 평가되면, 그 이후 diffing 단계에서 SwiftUI는 identity 변화를 확인해 이전 View를 재사용할지 새 View로 취급할지 판단하고, 실제 화면 업데이트가 필요한 범위를 결정한다.
-핵심은 렌더링 단계가 가장 무겁지만, 위와 같은 구조에서는 개발자가 body 재평가 지점부터 줄일 수 있다는 것이다.
+`핵심은 렌더링 단계가 가장 무겁지만, 위와 같은 구조에서는 개발자가 body 재평가 범위를 직접 줄여 불필요한 렌더링으로 이어지는 일을 막을 수 있다는 것이다.`
