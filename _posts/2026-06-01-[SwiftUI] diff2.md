@@ -163,3 +163,57 @@ struct ExtractSubView: View {
 SwiftUI 입장에서는 ExtractSubView 안에서 @State 같은 dependency 값이 변하지 않았고, 이 예시에서는 애초에 그런 dependency를 가지고 있지도 않기 때문에 ExtractSubView.body를 다시 평가할 필요가 없다.
 참고로 어떤 View의 body가 다시 평가되면, 그 이후 diffing 단계에서 SwiftUI는 identity 변화를 확인해 이전 View를 재사용할지 새 View로 취급할지 판단하고, 실제 화면 업데이트가 필요한 범위를 결정한다.
 `핵심은 렌더링 단계가 가장 무겁지만, 위와 같은 구조에서는 개발자가 body 재평가 범위를 직접 줄여 불필요한 렌더링으로 이어지는 일을 막을 수 있다는 것이다.`
+
+## 3. .id()로 View의 identity가 바뀌면 SubView도 다시 평가된다.
+<div class="code-media-row" markdown="1">
+```swift
+struct SampleDiffView: View {
+    @State private var isOn = true
+    var body: some View {
+        VStack(spacing: 20) {
+            ExtractSubView().id(UUID()) // id
+            
+            Text(isOn ? "On" : "Off")
+                .frame(maxWidth: .infinity)
+                .randomColorStyle()
+            
+            Button {
+                isOn.toggle()
+            } label: {
+                Text("버튼")
+                    .frame(maxWidth: .infinity)
+            }
+            .randomColorStyle()
+        }
+        .padding(24)
+    }
+}
+
+struct ExtractSubView: View {
+    var body: some View {
+        Text("Hello World")
+            .frame(maxWidth: .infinity)
+            .randomColorStyle()
+    }
+}
+```
+
+![Simulator Screen Recording - iPhone 17 Pro Max - 2026-06-01 at 17.26.13](/assets/img/2026-06-01-[SwiftUI] diff2/Simulator Screen Recording - iPhone 17 Pro Max - 2026-06-01 at 17.26.13.gif)
+</div>
+[공식문서](https://developer.apple.com/documentation/swiftui/view/id(_:)/) 에서 id가 변경되면 View의 Identity 가 변경된다고 한다.
+버튼을 누르면 SampleDiffView의 @State인 isOn이 변경되므로 SampleDiffView.body가 다시 평가된다.
+이때 ExtractSubView().id(UUID())도 다시 만들어지는데, UUID()는 매번 새로운 값을 만들기 때문에 ExtractSubView의 명시적 identity도 매번 달라진다.
+
+즉 2번 예시에서는 ExtractSubView가 같은 위치에 같은 타입으로 유지되어 재사용될 수 있었지만, 3번 예시에서는 .id(UUID()) 때문에 SwiftUI가 이전 ExtractSubView와 현재 ExtractSubView를 같은 View로 보지 않는다. 그래서 ExtractSubView.body도 다시 평가되고, 실제 렌더링도 새로 일어나는 것처럼 보인다.
+
+Self._printChanges()를 찍어보면 다음처럼 나올 수 있다.
+
+```swift
+SampleDiffView: @self, @identity, _isOn changed. // 뷰 초기화
+SampleDiffView: _isOn changed.                   // 버튼 클릭
+SampleDiffView: _isOn changed.                   // 버튼 클릭
+```
+
+여기서 _isOn changed는 @State 값인 isOn이 변경되어 SampleDiffView.body가 다시 평가됐다는 의미이다.
+@self는 SampleDiffView라는 View 값 자체가 새로 만들어졌다는 의미이고, @identity는 SwiftUI가 SampleDiffView의 identity 변화를 감지했거나 identity 기준으로 View를 다시 연결했다는 의미로 볼 수 있다.
+첫 출력은 SampleDiffView가 처음 구성되거나 identity 변화가 함께 감지된 상황이고, 이후 출력은 identity는 유지된 채 _isOn 변경만으로 SampleDiffView.body가 다시 평가된 상황이다.
