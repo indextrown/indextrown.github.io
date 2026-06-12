@@ -1,6 +1,14 @@
 [
     
         {
+        "title"    : "",
+        "category" : "",
+        "tags"     : "",
+        "url"      : "/Makefile/",
+        "date"     : "2026-06-12 00:00:00 +0000"
+        } ,
+    
+        {
         "title"    : "[SwiftUI] Diffing, 끝까지 파고들었습니다2.",
         "category" : "",
         "tags"     : "Swift",

@@ -76,6 +76,10 @@ search: false
   margin: 1rem 0;
 }
 
+.page__content .code-media-row--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .page__content h2 + .code-media-row {
   margin-top: 0.3rem;
 }
@@ -124,5 +128,246 @@ search: false
 
   .page__content .code-media-row {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .page__content .code-media-row--3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.greedy-nav .theme-toggle {
+  position: relative;
+  display: flex;
+  flex: 0 0 auto;
+  width: 58px;
+  height: 28px;
+  margin: 0 0.75rem 0 0;
+  cursor: pointer;
+  border: 2px solid rgb(122, 186, 239);
+  border-radius: 999px;
+  background: #fff;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.greedy-nav .theme-toggle:hover {
+  background: rgb(209, 240, 255);
+}
+
+.greedy-nav .theme-toggle__checkbox {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.greedy-nav .theme-toggle__button {
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: rgb(122, 186, 239);
+  transform: translateY(-50%);
+  transition: left 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.greedy-nav .theme-toggle__checkbox:checked + .theme-toggle {
+  border-color: rgb(0, 113, 205);
+  background: rgb(0, 113, 205);
+}
+
+.greedy-nav .theme-toggle__checkbox:checked + .theme-toggle:hover {
+  background: rgb(72, 172, 255);
+}
+
+.greedy-nav .theme-toggle__checkbox:checked + .theme-toggle .theme-toggle__button {
+  left: 32px;
+  background: #fff;
+  box-shadow: 1px 2px 3px #00000020;
+}
+
+.greedy-nav .theme-toggle__checkbox:focus-visible + .theme-toggle {
+  outline: 2px solid #3182f6;
+  outline-offset: 3px;
+}
+
+.page__content .notion-toggle-list {
+  margin: 0.85rem 0;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.page__content .notion-toggle-list > summary,
+.page__content .notion-toggle-list__summary {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  min-width: 0;
+  padding: 0.7rem 0.85rem;
+  cursor: pointer;
+  list-style: none;
+  color: #1f2937;
+  font-weight: 700;
+  line-height: 1.5;
+  transition: background-color 0.18s ease;
+}
+
+.page__content .notion-toggle-list > summary:hover,
+.page__content .notion-toggle-list__summary:hover {
+  background: #f8fafc;
+}
+
+.page__content .notion-toggle-list > summary:focus-visible,
+.page__content .notion-toggle-list__summary:focus-visible {
+  outline: 2px solid #3182f6;
+  outline-offset: -2px;
+}
+
+.page__content .notion-toggle-list > summary::-webkit-details-marker,
+.page__content .notion-toggle-list__summary::-webkit-details-marker {
+  display: none;
+}
+
+.page__content .notion-toggle-list > summary::marker,
+.page__content .notion-toggle-list__summary::marker {
+  content: "";
+}
+
+.page__content .notion-toggle-list > summary::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 0.48rem;
+  height: 0.48rem;
+  margin-top: 0.47rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transform-origin: 55% 55%;
+  transition: transform 0.18s ease;
+}
+
+.page__content .notion-toggle-list[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+.page__content .notion-toggle-list__icon {
+  flex: 0 0 auto;
+  width: 0.48rem;
+  height: 0.48rem;
+  margin-top: 0.47rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transform-origin: 55% 55%;
+  transition: transform 0.18s ease;
+}
+
+.page__content .notion-toggle-list[open] > .notion-toggle-list__summary .notion-toggle-list__icon {
+  transform: rotate(45deg);
+}
+
+.page__content .notion-toggle-list > summary,
+.page__content .notion-toggle-list__title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.page__content .notion-toggle-list > :not(summary),
+.page__content .notion-toggle-list__content {
+  min-width: 0;
+  padding: 0 0.85rem 0.8rem 1.88rem;
+  color: #374151;
+  overflow-wrap: anywhere;
+}
+
+.page__content .notion-toggle-list > :not(summary) > :first-child,
+.page__content .notion-toggle-list__content > :first-child {
+  margin-top: 0;
+}
+
+.page__content .notion-toggle-list > :not(summary) > :last-child,
+.page__content .notion-toggle-list__content > :last-child {
+  margin-bottom: 0;
+}
+
+.page__content .notion-toggle-list pre,
+.page__content .notion-toggle-list__content pre {
+  overflow-x: auto;
+}
+
+.page__content .notion-toggle-list > div.highlighter-rouge,
+.page__content .notion-toggle-list > figure.highlight {
+  margin: 0 0.85rem 0.85rem;
+  padding: 0;
+}
+
+.page__content .notion-toggle-list__content .notion-toggle-list {
+  margin: 0.65rem 0;
+  background: #fbfdff;
+}
+
+.dark .page__content .notion-toggle-list {
+  border-color: #2f3a4a;
+  background: #111827;
+}
+
+.dark .page__content .notion-toggle-list > summary,
+.dark .page__content .notion-toggle-list__summary {
+  color: #e5e7eb;
+}
+
+.dark .page__content .notion-toggle-list > summary:hover,
+.dark .page__content .notion-toggle-list__summary:hover {
+  background: #172033;
+}
+
+.dark .page__content .notion-toggle-list > :not(summary),
+.dark .page__content .notion-toggle-list__content {
+  color: #d1d5db;
+}
+
+.dark .page__content .notion-toggle-list__content .notion-toggle-list {
+  background: #0f172a;
+}
+
+@media (max-width: 600px) {
+  .greedy-nav .theme-toggle {
+    width: 42px;
+    height: 22px;
+    margin-right: 0.45rem;
+  }
+
+  .greedy-nav .theme-toggle__button {
+    left: 2px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .greedy-nav .theme-toggle__checkbox:checked + .theme-toggle .theme-toggle__button {
+    left: 22px;
+  }
+
+  .page__content .notion-toggle-list {
+    margin: 0.75rem 0;
+  }
+
+  .page__content .notion-toggle-list > summary,
+  .page__content .notion-toggle-list__summary {
+    padding: 0.65rem 0.7rem;
+  }
+
+  .page__content .notion-toggle-list > :not(summary),
+  .page__content .notion-toggle-list__content {
+    padding: 0 0.7rem 0.7rem 1.68rem;
+  }
+
+  .page__content .notion-toggle-list > div.highlighter-rouge,
+  .page__content .notion-toggle-list > figure.highlight {
+    margin: 0 0.7rem 0.7rem;
   }
 }
