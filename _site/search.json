@@ -9,10 +9,10 @@
         } ,
     
         {
-        "title"    : "[SwiftUI] Diffing, 끝까지 파고들었습니다2.",
+        "title"    : "[SwiftUI] Diffing, 끝까지 파고들었습니다.",
         "category" : "",
         "tags"     : "Swift",
-        "url"      : "/SwiftUI-diff2/",
+        "url"      : "/SwiftUI-diff/",
         "date"     : "2026-06-01 00:00:00 +0000"
         } ,
     
@@ -97,10 +97,10 @@
         } ,
     
         {
-        "title"    : "[SwiftUI] Diffing, 끝까지 파고들었습니다.",
+        "title"    : "[SwiftUI] Diffing, 끝까지 파고들었습니다(초안).",
         "category" : "",
         "tags"     : "Swift",
-        "url"      : "/SwiftUI-diff/",
+        "url"      : "/SwiftUI-diff-legacy/",
         "date"     : "2026-03-21 00:00:00 +0000"
         } ,
     

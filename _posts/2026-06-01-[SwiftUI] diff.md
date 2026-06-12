@@ -1,5 +1,5 @@
 ---
-title: "[SwiftUI] Diffing, 끝까지 파고들었습니다2."
+title: "[SwiftUI] Diffing, 끝까지 파고들었습니다."
 tags:
   - Swift
 header:
@@ -884,7 +884,289 @@ ObservableMacroSubButton은 model을 가지고 있지만, body 안에서 model.i
 정리하면, @ObservedObject는 objectWillChange를 통해 객체 단위로 변경을 알리는 반면, @Observable은 body에서 실제로 접근한 프로퍼티를 기준으로 더 세밀하게 body 호출 범위를 줄일 수 있다.
 
 
+## 10. 예제로 정리한 SwiftUI Diffing 이론
+
+앞의 예제들을 기준으로 SwiftUI의 업데이트 흐름을 다시 정리해보자.
+
+SwiftUI의 내부 구현은 공식적으로 모두 공개되어 있지 않다. 그래서 "항상 정확히 이 순서로만 동작한다"라고 단정하기보다는, 실제로 관찰할 수 있는 현상을 바탕으로 업데이트 과정을 이해하는 것이 좋다.
+
+다만 상태 종류마다 "어떤 View가 다시 계산 대상으로 잡히는가"는 다르다. 그래서 하나의 흐름으로만 쓰면 오해가 생길 수 있다.
+
+```text
+// @State 값 변경
+@State 변경
+-> @State를 소유한 View의 body가 다시 호출될 수 있음
+-> 그 body 안에서 자식 View 값들이 다시 만들어짐
+-> 자식 View가 변경된 값을 body에서 읽거나, 입력값/identity가 달라졌다면 해당 자식 body가 다시 호출될 수 있음
+-> 새로 계산된 View 값들을 기존 View Graph의 identity/dependency 정보와 맞춰 보며 업데이트 필요 여부를 판단
+-> 필요한 부분만 실제 화면에 반영
+
+// @ObservedObject / @StateObject의 @Published 값 변경
+@Published 변경
+-> objectWillChange 발생
+-> 해당 객체를 관찰하는 View들이 업데이트 대상으로 잡힘
+-> 해당 View들의 body가 다시 호출될 수 있음
+-> 새로 계산된 View 값들을 기존 View Graph의 identity/dependency 정보와 맞춰 보며 업데이트 필요 여부를 판단
+-> 필요한 부분만 실제 화면에 반영
+
+// @Observable 프로퍼티 변경
+@Observable 프로퍼티 변경
+-> body에서 해당 프로퍼티를 실제로 읽은 View를 중심으로 업데이트 대상이 잡힘
+-> 해당 View들의 body가 다시 호출될 수 있음
+-> 새로 계산된 View 값들을 기존 View Graph의 identity/dependency 정보와 맞춰 보며 업데이트 필요 여부를 판단
+-> 필요한 부분만 실제 화면에 반영
+```
+
+여기서 가장 중요한 점은 body 호출과 실제 렌더링이 같지 않다는 것이다.
+
+body가 다시 호출된다는 사실 자체가 곧 성능 문제를 의미하지는 않는다. body가 다시 호출되면 SwiftUI는 새로운 View 값을 만든다. 그 다음 SwiftUI는 새로 만들어진 View 값들을 기존 View Graph의 identity, dependency, 저장 프로퍼티 정보와 맞춰 보며 실제 업데이트가 필요한지 판단한다. 이 판단 과정, 즉 diffing/reconciliation은 개발자가 세부 구현을 직접 제어할 수 없는 블랙박스에 가깝다.
+
+하지만 개발자가 간접적으로 통제할 수 있는 지점은 있다. 바로 어떤 자식 View의 body가 다시 호출될 필요가 없도록 구조를 나누는 것이다. 자식 body 호출이 줄어들면, 그 자식이 만들어내는 하위 View Tree도 다시 계산되지 않을 수 있고, 결과적으로 그 이후 단계인 diffing 대상 범위도 줄어들 수 있다. 이것이 SwiftUI 렌더링 최적화에서 View 분리, dependency 분리, identity 안정화가 의미를 가지는 이유다.
+
+즉, 목표는 "body 호출을 무조건 없애는 것"이 아니다. 변경된 상태와 직접 관련 없는 자식 View의 body 호출을 줄여서, 불필요한 View Tree 재계산과 그 뒤의 diffing 후보를 사전에 줄이는 것이다.
+
+또 하나 중요한 점은 부모 body가 다시 호출되었다고 해서 모든 자식 View의 body가 반드시 다시 호출되는 것은 아니라는 점이다. 부모 body 안에서 자식 View 값은 다시 만들어질 수 있지만, SwiftUI는 dependency, identity, diffing 결과를 바탕으로 실제로 어떤 자식 body를 다시 계산할지 결정한다.
+
+@State 변경 이후 자식 View의 body가 다시 호출되는 대표적인 경우는 다음과 같다.
+
+1. 자식 View가 변경된 값을 body에서 직접 읽는 경우
+2. 자식 View에 전달되는 입력값이 바뀌고, 그 값이 화면 결과에 영향을 주는 경우
+3. .id(...)나 ForEach id가 바뀌어 자식 View의 identity가 달라지는 경우
+4. if/switch 분기나 View 계층 변화로 자식 View의 Structural Identity가 달라지는 경우
+5. 자식 View가 자체적으로 @State, @ObservedObject, @Environment 같은 dependency 변경을 감지한 경우
+
+반대로 자식 View가 변경된 값을 body에서 읽지 않고, identity와 비교 기준도 그대로라면 부모 body가 다시 호출되어도 자식 body는 다시 호출되지 않을 수 있다. 4번 예제에서 ExtractSubButton이 @Binding을 가지고 있어도 body가 다시 호출되지 않았던 이유가 여기에 가깝다.
+
+### View Tree, Render Tree, View Graph
+
+SwiftUI를 이해할 때는 세 가지를 나눠서 생각하면 편하다.
+
+View Tree는 body 호출 결과로 만들어지는 선언적 View 값이다. Text, VStack, Button 같은 값들이 모여 "화면이 이렇게 생겼으면 좋겠다"는 설명을 만든다. SwiftUI의 View는 대부분 값 타입이므로, body가 호출될 때마다 새로운 View 값이 만들어질 수 있다.
+
+View Graph는 SwiftUI가 identity, state, dependency, layout을 연결하기 위해 유지하고 갱신하는 내부 관리 구조에 가깝다. @State가 어떤 View identity에 붙어 유지되는지, 어떤 body가 어떤 상태를 읽었는지 같은 정보는 단순한 View 값만으로 설명하기 어렵다.
+
+Render Tree는 실제 화면에 가까운 구조다. UIKit/AppKit View, Layer, 렌더링 가능한 객체들을 떠올리면 된다. body 호출마다 통째로 새로 만드는 것이 아니라, diffing/reconciliation 결과에 따라 필요한 부분만 생성되거나 갱신된다.
+
+상태 변경 이후 업데이트 흐름에서 각 구조가 어느 시점에 관여하는지 정리하면 다음과 같다.
+
+1. 업데이트 트리거 시점: @State 변경, objectWillChange, @Observable 접근 추적 등을 바탕으로 어떤 View의 body를 다시 계산할지 후보가 잡힌다.
+2. body 호출 시점: View Tree에 해당하는 선언적 View 값들이 새로 만들어질 수 있다.
+3. diffing/reconciliation 시점: 새로 만들어진 View 값들을 기존 View Graph의 identity/state/dependency 정보와 맞춰 보며 실제 화면 반영이 필요한지 판단한다.
+4. render 반영 시점: diffing/reconciliation 결과 실제 변화가 필요하다고 판단된 부분만 Render Tree에 반영된다.
+
+여기서 invalidation이라는 단어는 문맥에 따라 다르게 들릴 수 있다. objectWillChange처럼 body 재계산을 유발하는 변경 알림을 가리킬 때도 있고, diffing 이후 실제 화면 갱신이 필요한 대상으로 판정되는 의미로 쓰일 때도 있다. 그래서 이 글에서는 혼동을 줄이기 위해 "업데이트 트리거", "body 재계산", "화면 반영 대상 결정"으로 나눠서 본다.
+
+이를 초기 표시와 상태 변경 이후 업데이트 흐름에 대입하면 다음과 같다.
+
+```text
+초기 표시 단계
+1. View 인스턴스 초기화
+2. body 호출
+3. body 결과로 선언적 View 값들이 만들어짐
+4. SwiftUI가 이 View 값들을 기존/새 View Graph에 연결
+5. layout, drawing, platform view/layer 반영을 거쳐 Render Tree가 생성 또는 갱신
+
+상태 변경 이후 업데이트 단계
+1. @State, objectWillChange, @Observable 접근 추적 등에 의해 body 재계산 후보가 잡힘
+2. 대상 View의 body가 다시 호출됨
+3. 새로운 선언적 View 값들이 만들어짐
+4. SwiftUI가 새 View 값들을 기존 View Graph의 identity/state/dependency 정보와 맞춰 보며 화면 반영 여부를 판단함
+5. 실제 변화가 필요한 부분만 Render Tree에 반영
+```
+
+정리하면, View Tree에 해당하는 선언적 View 값들은 자주 다시 만들어질 수 있지만 Render Tree는 매번 통째로 새로 만들어지지 않는다. SwiftUI는 새로 계산된 View 값들을 기존 View Graph와 연결해 보고, identity와 입력값 변화에 따라 실제 화면에 필요한 변경만 반영하려고 한다.
+
+### 업데이트 대상으로 잡히는 기준
+
+body는 View가 의존하는 값이 바뀌었을 때 다시 호출될 수 있다. 여기서 의존한다는 말은 단순히 프로퍼티를 가지고 있다는 뜻이 아니라, body를 계산하는 과정에서 그 값이 실제로 읽혔는지와 관련이 깊다.
+
+@State 예제에서는 @State를 소유한 View의 body가 다시 호출됐다. @Binding 예제에서는 Binding을 전달받았더라도 body 안에서 값을 읽지 않는 버튼 View는 다시 호출되지 않았다. 이 차이가 중요하다.
+
+```swift
+Text(isOn ? "On" : "Off") // body가 isOn을 읽는다.
+
+Button {
+    isOn.toggle()          // action 시점에만 isOn을 사용한다.
+} label: {
+    Text("버튼")
+}
+```
+
+첫 번째 코드는 body가 isOn을 읽고 화면 결과를 만든다. 그래서 isOn이 바뀌면 body 결과도 달라질 수 있다.
+
+두 번째 코드는 isOn을 버튼 action 안에서만 사용한다. action은 body가 화면을 구성하는 시점이 아니라, 사용자가 버튼을 누르는 이벤트 시점에 실행된다. 따라서 이 버튼의 화면 결과는 현재 isOn 값에 직접 의존하지 않는다.
+
+### @ObservedObject와 @Observable의 차이
+
+@ObservedObject는 프로퍼티 단위가 아니라 객체 단위 변경 알림에 가깝다. ObservableObject 안의 @Published 값이 바뀌면 objectWillChange가 발생하고, 그 객체를 관찰하는 View들은 변경 알림을 받는다.
+
+그래서 어떤 View가 viewModel.isOn을 화면에 직접 표시하지 않더라도, 같은 viewModel을 @ObservedObject로 관찰하고 있다면 body가 다시 호출될 수 있다.
+
+반면 @Observable은 body가 실행되는 동안 실제로 접근한 프로퍼티를 추적할 수 있다. title만 읽는 View는 isOn 변경에 반응하지 않을 수 있고, isOn을 읽는 View만 다시 호출될 수 있다.
+
+이 차이는 5번과 9번 예제를 비교하면 선명해진다.
+
+- @ObservedObject: 객체 변경 알림을 구독하는 View 단위로 body 호출 범위가 넓어질 수 있다.
+- @Observable: body에서 실제로 읽은 프로퍼티 기준으로 body 호출 범위가 더 좁아질 수 있다.
+
+### Identity는 State를 어디에 붙여둘지 결정한다
+
+SwiftUI에서 identity는 "이전 View와 현재 View를 같은 대상으로 볼 수 있는가"를 판단하는 기준이다.
+
+identity에는 크게 두 가지 관점이 있다.
+
+- Structural Identity: View 계층에서의 타입과 위치를 기준으로 생기는 정체성
+- Explicit Identity: .id(...)나 ForEach의 id처럼 개발자가 명시하는 정체성
+
+ForEach 예제에서 row의 identity가 안정적이면 SwiftUI는 이전 row와 현재 row를 같은 대상으로 연결할 수 있다. 이때 row 내부의 @State도 유지된다.
+
+반대로 .id("\(item.id)-\(tick)")처럼 tick이 바뀔 때마다 identity가 흔들리면 SwiftUI는 이전 row와 현재 row를 같은 대상으로 보기 어렵다. 그러면 row에 붙어 있던 로컬 @State도 새로 만들어질 수 있다.
+
+즉, identity는 단순히 diffing 성능만의 문제가 아니다. @State가 유지되는 위치, View가 재사용되는 범위, 애니메이션 연결 방식에도 영향을 준다.
+
+### Diffing과 Equatable
+
+body가 다시 호출되면 SwiftUI는 새로 만들어진 View 값을 기존 View Graph에 남아 있는 이전 정보와 맞춰 보며 실제 업데이트가 필요한지 판단한다. 이 판단 과정을 흔히 diffing 또는 reconciliation이라고 부른다.
+
+개념적으로는 다음과 같이 이해할 수 있다.
+
+```swift
+// 실제 SwiftUI 구현이 아니라 이해를 위한 의사코드
+func shouldUpdate(oldView: ViewValue, newView: ViewValue) -> Bool {
+    if viewUsesEquatableComparison {
+        return oldView != newView
+    }
+
+    return compareStoredProperties(oldView, newView)
+}
+```
+
+Equatable을 사용하지 않아도 SwiftUI는 단순한 값 변화에 대해 내부적으로 비교를 수행할 수 있다. 그래서 count 같은 값 하나만 넘기는 예제에서는 .equatable()을 붙이지 않아도 하위 View의 body 호출이 줄어드는 것처럼 보일 수 있다.
+
+.equatable()의 의미는 "부모 body 호출을 막는다"가 아니다. 더 정확히는 "이 하위 View를 비교할 때 Equatable 기준을 사용하라"는 힌트에 가깝다.
+
+특히 클로저가 섞이면 이야기가 중요해진다.
+
+```swift
+struct CellView: View, Equatable {
+    let item: Item
+    let action: () -> Void
+
+    static func == (lhs: CellView, rhs: CellView) -> Bool {
+        lhs.item == rhs.item
+    }
+}
+```
+
+클로저는 일반적인 값처럼 Equatable로 비교할 수 없다. 하지만 action 클로저가 화면 결과를 직접 결정하지 않고, item만 화면을 결정한다면 ==에서 item만 비교하도록 기준을 정할 수 있다.
+
+이렇게 하면 부모 body가 다시 호출되면서 action 클로저가 새로 만들어지더라도, item이 같다면 CellView를 같은 View로 볼 수 있다.
+
+### 실전에서 가져갈 기준
+
+이번 예제들을 통해 정리하면 다음 기준이 남는다.
+
+1. body 호출과 실제 렌더링을 분리해서 생각한다.
+2. 상태를 가지고 있다는 사실보다 body에서 실제로 읽는지가 중요하다.
+3. @ObservedObject는 객체 단위 변경 알림이라 body 호출 범위가 넓어질 수 있다.
+4. @Observable은 접근한 프로퍼티 기준으로 더 세밀하게 반응할 수 있다.
+5. ForEach에서는 안정적인 identity가 로컬 State 유지에 중요하다.
+6. .equatable()은 부모 body 호출을 막는 기능이 아니라, 하위 View 비교 기준을 명시하는 도구다.
+7. 클로저를 하위 View에 넘길 때는 화면 결과를 결정하는 값과 이벤트 처리를 위한 값을 분리해서 생각한다.
+
+결국 SwiftUI 성능을 볼 때 핵심은 "무엇이 바뀌었는가"보다 "어떤 View가 그 값을 읽고 있는가", "그 View의 identity는 유지되는가", "이전 View와 현재 View를 같은 결과로 볼 수 있는가"에 가깝다.
 
 
+## 11. 팝팡에서는 어떻게 해결했는가
 
+<img src="https://github.com/user-attachments/assets/3938e583-0fc4-4620-99b0-bf761e60a1ba" width="80%">
 
+팝팡에서는 리스트의 특정 Cell 하나만 변경했는데도 여러 Cell의 body가 다시 호출되는 문제가 있었다.
+
+처음 문제가 된 구조는 Cell이 직접 ViewModel을 관찰하는 형태였다.
+
+```swift
+// MARK: - Cell (ViewModel 참조)
+struct CellView: View {
+    let item: Item
+    @ObservedObject var vm: ListViewModel
+
+    var body: some View {
+        print("body 호출: \(item.id)")
+
+        return HStack {
+            Text(item.name)
+
+            Spacer()
+
+            Button {
+                vm.toggleLike(id: item.id)
+            } label: {
+                Image(systemName: item.isLiked ? "heart.fill" : "heart")
+                    .foregroundColor(item.isLiked ? .red : .gray)
+            }
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+    }
+}
+```
+
+이 구조에서는 여러 Cell이 같은 ListViewModel을 @ObservedObject로 관찰한다. 특정 Cell의 좋아요 상태만 바뀌더라도 ListViewModel.objectWillChange가 발생하고, 같은 객체를 관찰하는 Cell들이 업데이트 대상으로 잡힐 수 있다.
+
+문제의 핵심은 Cell이 화면에 필요한 값인 item만 받는 것이 아니라, 변경 알림을 발생시키는 ViewModel 자체를 직접 구독하고 있었다는 점이다. 이러면 특정 item 하나만 바뀐 상황에서도 여러 Cell의 body가 다시 호출될 수 있고, 그 이후 diffing/reconciliation 후보 범위도 넓어진다.
+
+그래서 Cell에서 @ObservedObject를 제거하고, 화면 결과를 결정하는 값과 사용자 이벤트를 분리했다.
+
+```swift
+// MARK: - Cell (값 타입 데이터 + 액션)
+struct CellView: View, Equatable {
+    let item: Item
+    let action: () -> Void
+
+    static func == (lhs: CellView, rhs: CellView) -> Bool {
+        lhs.item == rhs.item
+    }
+
+    var body: some View {
+        print("body 호출: \(item.id)")
+
+        return HStack {
+            Text(item.name)
+
+            Spacer()
+
+            Button {
+                action()
+            } label: {
+                Image(systemName: item.isLiked ? "heart.fill" : "heart")
+                    .foregroundColor(item.isLiked ? .red : .gray)
+            }
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+    }
+}
+```
+
+변경 후 Cell은 ViewModel을 직접 관찰하지 않는다. Cell은 화면을 그리는 데 필요한 item 값만 받고, 좋아요 버튼을 눌렀을 때 실행할 동작은 action 클로저로 상위 View에 위임한다.
+
+여기서 item은 화면 결과를 결정하는 값이고, action은 이벤트를 처리하기 위한 값이다. action 클로저는 Equatable로 비교할 수 없고, 부모 body가 다시 호출될 때마다 새로 만들어질 수 있다. 하지만 action 자체가 Cell의 현재 화면 결과를 결정하는 값은 아니다.
+
+그래서 Equatable 구현에서는 item만 비교한다.
+
+```swift
+static func == (lhs: CellView, rhs: CellView) -> Bool {
+    lhs.item == rhs.item
+}
+```
+
+이렇게 하면 부모 View의 body가 다시 호출되어 CellView 값이 새로 만들어지더라도, item이 같다면 같은 Cell로 판단할 수 있다. 반대로 좋아요 상태처럼 item의 화면 결과가 달라지는 값이 바뀌면 비교 결과가 달라지고, 해당 Cell은 다시 계산될 수 있다.
+
+정리하면 팝팡에서 적용한 방향은 다음과 같다.
+
+1. Cell에서 @ObservedObject를 제거한다.
+2. Cell에는 화면 결과를 결정하는 값 타입 데이터만 전달한다.
+3. 사용자 액션은 closure로 상위 View에 위임한다.
+4. Cell에 Equatable을 적용하고, closure는 비교 기준에서 제외한다.
+5. 변경과 무관한 Cell의 body 호출과 그 이후 diffing/reconciliation 후보 범위를 줄인다.

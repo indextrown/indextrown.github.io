@@ -1,5 +1,5 @@
 ---
-title: "[SwiftUI] Diffing, 끝까지 파고들었습니다."
+title: "[SwiftUI] Diffing, 끝까지 파고들었습니다(초안)."
 tags:
   - Swift
 header:
