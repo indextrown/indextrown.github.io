@@ -1,0 +1,880 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>[TCA Deep Dive] @CasePathable - DongHyeon Kim’s Blog</title>
+<meta name="description" content="KeyPath blue &gt; Swift의 구조체와 클래슨느 프로퍼티를 참조할 수 있는 KeyPath를 사용할 수 있다. blue &gt; KeyPath는 특정 타입의 프로퍼티 위치를 값처럼 표현하는 기능이다.  struct User {      let id: Int      var name: String  }  \User.id // KeyPath&lt;User, Int&gt;  \User.name // WritableKeyPath&lt;User, String&gt;     KeyPath&lt;Root, Value&gt;는 Root 타입 안에 있는 Value 타입 프로퍼티를 가리킨다.    let user = User(id: 1, name: &quot;Donghyeon&quot;)  let nameKeyPath = \User.name  print(user[keyPath: nameKeyPath]) // Donghyeon     예를 들어 \User.name은 User 안의 name 프로퍼티를 가리키는 값이다.    var user = User(id: 1, name: &quot;Donghyeon&quot;)  user[keyPath: \User.name] = &quot;Kim&quot;  print(user.name) // Kim     var 프로퍼티라면 값을 변경하는 것도 가능하다.    즉, KeyPath를 사용하면 어떤 프로퍼티를 읽거나 수정할지 코드로 직접 고정하지 않고, 프로퍼티 접근 자체를 값처럼 전달할 수 있다. 이 개념은 SwiftUI에서도 자주 사용된다. 예를 들어 Binding, Environment, dynamicMemberLookup 같은 API 내부에서 KeyPath가 자연스럽게 활용된다.   enum에서는 KeyPath를 바로 사용할 수 없다 enum UserAction {      case home(HomeAction)      case settings(SettingsAction)  }  \UserAction.home // 🛑 Key path cannot refer to enum case &#39;home&#39;  enum의 case에는 일반적인 KeyPath를 사용할 수 없다. KeyPath는 기본적으로 구조체나 클래스의 저장 프로퍼티를 가리키는 기능이기 떄문이다. enum의 case는 저장 프로퍼티가 아니다. enum은 case중 하나의 상태를 표현하는 타입이고, associated value는 특정 case일 때만 존재한다.   enum에서는 KeyPath를 바로 사용할 수 없는 이유 enum UserAction {      case home(HomeAction)      case settings(SettingsAction)  }  let action = UserAction.settings(SettingsAction())     home은 항상 존재하는 프로퍼티가 아니다.   let action 상태는 home이라는 값이 존재하지 않는다. 따라서 Swift 기본 KeyPath 시스템은 \UserAction.home처럼 enum case 내부 값을 직접 가리킬 수 없다.    enum에서는 기본적으로 switch로 꺼낸다 enum UserAction {      case home(HomeAction)      case settings(SettingsAction)  }  switch action {      case let .home(homeAction):          print(&quot;home action:&quot;, homeAction)      case let .settings(settingsAction):          print(&quot;settings action:&quot;, settingsAction)  }     Swift에서 enum의 associated value를 다루는 가장 기본적인 방법은 switch 또는 if case를 사용하는 것이다.    if case let .home(homeAction) = action {      print(homeAction) }     특정 case만 보고 싶다면 if case를 사용할 수 있다.    enum Destination {      case home(HomeState)      case settings(SettingsState)  }   var destination = Destination.home(HomeState(title: &quot;Home&quot;))  switch destination {      case var .home(state):          state.title = &quot;New Home&quot;          destination = .home(state)      case .settings:          break  }     값을 수정해야 한다면, enum을 switch로 분해한 뒤 새로운 enum 값으로 다시 만들어줘야 한다.   즉, enum에서는 구조체처름 특정 내부 값을 KeyPath로 바로 수정하는 것이 아니라 현재 case를 확인하고 associated value를 꺼낸 뒤 다시 감싸는 방식으로 처리한다.    정리 \User.name // 가능     구조체와 클래스에서는 KeyPath를 사용해 프로퍼티 접근을 값처럼 다룰 수 있다.     \UserAction.home // 불가능  if case let .home(homeAction) = action {      // homeAction 사용  }     하지만 enum case는 저장 프로퍼티가 아니기 때문에 Swift의 기본 KeyPath로 접근할 수 없다.            그래서 enum의 associated value를 다룰 때는 기본적으로 switch, if case, guard case를 사용한다.           Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티 접근에는 강력하지만, enum case까지 표현하지는 못한다. 그래서 enum을 더 일반적으로 다루고 싶다면 Swift의 기본 KeyPath가 아니라, case를 추출하고 다시 삽입할 수 있는 별도의 추상화가 필요하다.    CasePath  enum UserAction {      case home(HomeAction)      case settings(SettingsAction)  }  \UserAction.home // 🛑 Key path cannot refer to enum case &#39;home&#39;     앞에서 살펴본 것처럼 Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티에는 사용할 수 있지만, enum의 case에는 사용할 수 없다.   하지만 실제 앱을 개발하다 보면 enum의 associated value를 일반화해서 다루고 싶은 경우가 매우 많다.   enum Destination {      case home(HomeState)      case settings(SettingsState)  }     예를 들어 위와 같은 상태가 있다고 가정해 보자.   // 방법 1 if case let .home(state) = destination {      // state 사용  }  // 방법 2 switch destination {      case var .home(state):          state.title = &quot;새 제목&quot;          destination = .home(state)      case .settings:          break  }     Destination이 현재 home인지 확인하고, if case let 나 switch로 수정한 뒤 다시 enum으로 감싸야 한다.   이러한 코드는 한두 번은 괜찮지만 enum을 자주 다루게 되면 반복되는 switch와 패턴 매칭 코드가 계속 등장하게 된다.   CasePath 앞에서 살펴본 것처럼 Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티에는 사용할 수 있지만, enum의 case에는 사용할 수 없다.  enum UserAction {   case home(HomeAction)   case settings(SettingsAction) }  \UserAction.home // 🛑 key path cannot refer to static member &#39;home&#39;     KeyPath가 구조체나 클래스 내부의 프로퍼티를 가리킨다면, CasePath는 enum의 특정 case를 가리킨다.   Point-Free의 swift-case-paths는 이 개념을 Swift에서 사용할 수 있게 해주는 라이브러리다.   공식 설명에서도 CasePath를 “enum case를 위한 key path”라고 설명한다.   CasePath를 활성화하는 방법 import CasePaths   @CasePathable  enum UserAction {      case home(HomeAction)      case settings(SettingsAction)  }  \UserAction.Cases.home // CaseKeyPath&lt;UserAction, HomeAction&gt;  \UserAction.Cases.settings // CaseKeyPath&lt;UserAction, SettingsAction&gt;  // 타입을 추론할 수 있는 상황에서는 더 짧게 쓸 수도 있다. \.home as CaseKeyPath&lt;UserAction, HomeAction&gt;  \.settings as CaseKeyPath&lt;UserAction, SettingsAction&gt;     CasePath를 사용하려면 enum에 @CasePathable 매크로를 붙인다.   그러면 enum의 Cases 네임스페이스를 통해 case path를 만들 수 있다.   CasePath가 할 수 있는 일 // KeyPath는 어떤 값의 프로퍼티를 읽고 수정할 수 있다. user[keyPath: \User.name] = &quot;Blob&quot;  user[keyPath: \.name] // &quot;Blob&quot;  // CasePath는 enum에서 특정 case의 associated value를 꺼내거나 수정할 수 있다. // 현재 enum 값이 원하는 case라면 associated value를 반환하고, 다른 case라면 nil을 반환한다. var userAction = UserAction.home(.onAppear)  userAction[case: \.home] // Optional(HomeAction.onAppear)  userAction[case: \.settings] // nil  // 값을 수정하는 것도 가능하다. // 이 코드는 현재 userAction이 .home case일 때 내부의 HomeAction 값을 수정한다. userAction[case: \.home] = .buttonTapped   Embed: 값을 다시 enum으로 감싸기 CasePath는 enum에서 값을 꺼내는 것뿐만 아니라, associated value를 다시 enum case로 감쌀 수도 있다.  let homeCase = \UserAction.Cases.home  let action = homeCase(.onAppear)  // UserAction.home(.onAppear)  HomeAction.onAppear            ↓ UserAction.home(.onAppear)     이 부분이 일반 KeyPath와 다른 중요한 차이다. KeyPath는 이미 존재하는 구조체나 클래스 안으로 들어가 프로퍼티를 읽고 수정한다. 반면 CasePath는 associated value를 새로운 enum 값으로 만들 수도 있다.   case인지 확인하기 userAction.is(\.home) // true userAction.is(\.settings) // false  // 배열에서도 유용하다. let actions: [UserAction] = [   .home(.onAppear),   .settings(.purchaseButtonTapped),   .home(.buttonTapped) ]  let homeActionsCount = actions.count { $0.is(\.home) } // 2     @CasePathable을 사용하면 특정 enum 값이 원하는 case인지 확인할 수도 있다.   associated value를 제자리에서 수정하기 var result = Result&lt;String, Error&gt;.success(&quot;Blob&quot;)   // 기본 Swift만 사용했다면 switch로 case를 꺼내고, 값을 수정한 뒤, 다시 enum으로 감싸야 한다. switch result {      case var .success(value):          value += &quot;, Jr.&quot;         result = .success(value)      case .failure:          break  }  // modify를 사용하면 이 반복 코드를 줄일 수 있다. result.modify(\.success) {      $0 += &quot;, Jr.&quot;  }  result // .success(&quot;Blob, Jr.&quot;)     CasePath는 특정 case의 associated value를 제자리에서 수정하는 modify도 제공한다.   CasePath도 조합할 수 있다 @CasePathable  enum AppAction {      case user(UserAction)  }   @CasePathable  enum UserAction {      case home(HomeAction)      case settings(SettingsAction)  }     KeyPath를 조합할 수 있듯이 CasePath도 조합할 수 있다.   예를 들어 액션이 중첩되어 있다고 가정해 보자.   // 그러면 AppAction에서 바로 HomeAction까지 들어가는 CasePath를 만들 수 있다. \AppAction.Cases.user.home // CaseKeyPath&lt;AppAction, HomeAction&gt;  // 또는 직접 append할 수도 있다. let appActionToUser = \AppAction.Cases.user let userActionToHome = \UserAction.Cases.home let appActionToHome = appActionToUser.append(path: userActionToHome) // CaseKeyPath&lt;AppAction, HomeAction&gt;     이 덕분에 큰 enum을 작은 enum 단위로 나누고, 필요한 case만 선택해서 다룰 수 있다.   Dynamic Member Lookup과 함께 사용하기 @CasePathable과 @dynamicMemberLookup을 함께 사용하면 enum case를 프로퍼티처럼 접근할 수도 있다.  @CasePathable  @dynamicMemberLookup  enum UserAction {      case home(HomeAction)      case settings(SettingsAction)  } let action: UserAction = .home(.onAppear) action.home // Optional(HomeAction.onAppear) action.settings // nil   let actions: [UserAction] = [      .home(.onAppear),      .settings(.purchaseButtonTapped),      .home(.buttonTapped)  ] actions.compactMap(\.home) // [.onAppear, .buttonTapped]     배열에서도 key path 표현식처럼 사용할 수 있다.   이 문법은 enum을 구조체 프로퍼티처럼 다룰 수 있게 만들어준다.   // @dynamicMemberLookup 없음 let action = UserAction.home(.onAppear) let value = action[case: \.home] // Optional(.onAppear)  // @dynamicMemberLookup 있음 let action = UserAction.home(.onAppear) let value = action.home // Optional(.onAppear)   SwiftUI Binding과 CasePath let user: Binding&lt;User&gt; = ...  let name: Binding&lt;String&gt; = user.name     공식 README에서도 Binding 예시를 통해 CasePath의 필요성을 설명한다.   SwiftUI의 Binding은 WritableKeyPath를 이용해 하위 프로퍼티의 바인딩을 만들 수 있다.   enum Destination {      case home(HomeState)      case settings(SettingsState)  }  let destination: Binding&lt;Destination&gt; = ...  destination.home // 기본 Swift만으로는 불가능     하지만 enum에서는 기본적으로 이런 식의 접근이 불가능하다.   @CasePathable enum Destination {      case home(HomeState)      case settings(SettingsState)  }  destination.home // Binding&lt;HomeState&gt;?  destination.settings // Binding&lt;SettingsState&gt;?     CasePath를 사용하면 enum의 특정 case에 대한 바인딩을 만들 수 있다.">
+
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[TCA Deep Dive] @CasePathable">
+<meta property="og:url" content="http://localhost:4000/TCA-tca1/">
+
+
+  <meta property="og:description" content="KeyPath blue &gt; Swift의 구조체와 클래슨느 프로퍼티를 참조할 수 있는 KeyPath를 사용할 수 있다. blue &gt; KeyPath는 특정 타입의 프로퍼티 위치를 값처럼 표현하는 기능이다.  struct User {      let id: Int      var name: String  }  \User.id // KeyPath&lt;User, Int&gt;  \User.name // WritableKeyPath&lt;User, String&gt;     KeyPath&lt;Root, Value&gt;는 Root 타입 안에 있는 Value 타입 프로퍼티를 가리킨다.    let user = User(id: 1, name: &quot;Donghyeon&quot;)  let nameKeyPath = \User.name  print(user[keyPath: nameKeyPath]) // Donghyeon     예를 들어 \User.name은 User 안의 name 프로퍼티를 가리키는 값이다.    var user = User(id: 1, name: &quot;Donghyeon&quot;)  user[keyPath: \User.name] = &quot;Kim&quot;  print(user.name) // Kim     var 프로퍼티라면 값을 변경하는 것도 가능하다.    즉, KeyPath를 사용하면 어떤 프로퍼티를 읽거나 수정할지 코드로 직접 고정하지 않고, 프로퍼티 접근 자체를 값처럼 전달할 수 있다. 이 개념은 SwiftUI에서도 자주 사용된다. 예를 들어 Binding, Environment, dynamicMemberLookup 같은 API 내부에서 KeyPath가 자연스럽게 활용된다.   enum에서는 KeyPath를 바로 사용할 수 없다 enum UserAction {      case home(HomeAction)      case settings(SettingsAction)  }  \UserAction.home // 🛑 Key path cannot refer to enum case &#39;home&#39;  enum의 case에는 일반적인 KeyPath를 사용할 수 없다. KeyPath는 기본적으로 구조체나 클래스의 저장 프로퍼티를 가리키는 기능이기 떄문이다. enum의 case는 저장 프로퍼티가 아니다. enum은 case중 하나의 상태를 표현하는 타입이고, associated value는 특정 case일 때만 존재한다.   enum에서는 KeyPath를 바로 사용할 수 없는 이유 enum UserAction {      case home(HomeAction)      case settings(SettingsAction)  }  let action = UserAction.settings(SettingsAction())     home은 항상 존재하는 프로퍼티가 아니다.   let action 상태는 home이라는 값이 존재하지 않는다. 따라서 Swift 기본 KeyPath 시스템은 \UserAction.home처럼 enum case 내부 값을 직접 가리킬 수 없다.    enum에서는 기본적으로 switch로 꺼낸다 enum UserAction {      case home(HomeAction)      case settings(SettingsAction)  }  switch action {      case let .home(homeAction):          print(&quot;home action:&quot;, homeAction)      case let .settings(settingsAction):          print(&quot;settings action:&quot;, settingsAction)  }     Swift에서 enum의 associated value를 다루는 가장 기본적인 방법은 switch 또는 if case를 사용하는 것이다.    if case let .home(homeAction) = action {      print(homeAction) }     특정 case만 보고 싶다면 if case를 사용할 수 있다.    enum Destination {      case home(HomeState)      case settings(SettingsState)  }   var destination = Destination.home(HomeState(title: &quot;Home&quot;))  switch destination {      case var .home(state):          state.title = &quot;New Home&quot;          destination = .home(state)      case .settings:          break  }     값을 수정해야 한다면, enum을 switch로 분해한 뒤 새로운 enum 값으로 다시 만들어줘야 한다.   즉, enum에서는 구조체처름 특정 내부 값을 KeyPath로 바로 수정하는 것이 아니라 현재 case를 확인하고 associated value를 꺼낸 뒤 다시 감싸는 방식으로 처리한다.    정리 \User.name // 가능     구조체와 클래스에서는 KeyPath를 사용해 프로퍼티 접근을 값처럼 다룰 수 있다.     \UserAction.home // 불가능  if case let .home(homeAction) = action {      // homeAction 사용  }     하지만 enum case는 저장 프로퍼티가 아니기 때문에 Swift의 기본 KeyPath로 접근할 수 없다.            그래서 enum의 associated value를 다룰 때는 기본적으로 switch, if case, guard case를 사용한다.           Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티 접근에는 강력하지만, enum case까지 표현하지는 못한다. 그래서 enum을 더 일반적으로 다루고 싶다면 Swift의 기본 KeyPath가 아니라, case를 추출하고 다시 삽입할 수 있는 별도의 추상화가 필요하다.    CasePath  enum UserAction {      case home(HomeAction)      case settings(SettingsAction)  }  \UserAction.home // 🛑 Key path cannot refer to enum case &#39;home&#39;     앞에서 살펴본 것처럼 Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티에는 사용할 수 있지만, enum의 case에는 사용할 수 없다.   하지만 실제 앱을 개발하다 보면 enum의 associated value를 일반화해서 다루고 싶은 경우가 매우 많다.   enum Destination {      case home(HomeState)      case settings(SettingsState)  }     예를 들어 위와 같은 상태가 있다고 가정해 보자.   // 방법 1 if case let .home(state) = destination {      // state 사용  }  // 방법 2 switch destination {      case var .home(state):          state.title = &quot;새 제목&quot;          destination = .home(state)      case .settings:          break  }     Destination이 현재 home인지 확인하고, if case let 나 switch로 수정한 뒤 다시 enum으로 감싸야 한다.   이러한 코드는 한두 번은 괜찮지만 enum을 자주 다루게 되면 반복되는 switch와 패턴 매칭 코드가 계속 등장하게 된다.   CasePath 앞에서 살펴본 것처럼 Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티에는 사용할 수 있지만, enum의 case에는 사용할 수 없다.  enum UserAction {   case home(HomeAction)   case settings(SettingsAction) }  \UserAction.home // 🛑 key path cannot refer to static member &#39;home&#39;     KeyPath가 구조체나 클래스 내부의 프로퍼티를 가리킨다면, CasePath는 enum의 특정 case를 가리킨다.   Point-Free의 swift-case-paths는 이 개념을 Swift에서 사용할 수 있게 해주는 라이브러리다.   공식 설명에서도 CasePath를 “enum case를 위한 key path”라고 설명한다.   CasePath를 활성화하는 방법 import CasePaths   @CasePathable  enum UserAction {      case home(HomeAction)      case settings(SettingsAction)  }  \UserAction.Cases.home // CaseKeyPath&lt;UserAction, HomeAction&gt;  \UserAction.Cases.settings // CaseKeyPath&lt;UserAction, SettingsAction&gt;  // 타입을 추론할 수 있는 상황에서는 더 짧게 쓸 수도 있다. \.home as CaseKeyPath&lt;UserAction, HomeAction&gt;  \.settings as CaseKeyPath&lt;UserAction, SettingsAction&gt;     CasePath를 사용하려면 enum에 @CasePathable 매크로를 붙인다.   그러면 enum의 Cases 네임스페이스를 통해 case path를 만들 수 있다.   CasePath가 할 수 있는 일 // KeyPath는 어떤 값의 프로퍼티를 읽고 수정할 수 있다. user[keyPath: \User.name] = &quot;Blob&quot;  user[keyPath: \.name] // &quot;Blob&quot;  // CasePath는 enum에서 특정 case의 associated value를 꺼내거나 수정할 수 있다. // 현재 enum 값이 원하는 case라면 associated value를 반환하고, 다른 case라면 nil을 반환한다. var userAction = UserAction.home(.onAppear)  userAction[case: \.home] // Optional(HomeAction.onAppear)  userAction[case: \.settings] // nil  // 값을 수정하는 것도 가능하다. // 이 코드는 현재 userAction이 .home case일 때 내부의 HomeAction 값을 수정한다. userAction[case: \.home] = .buttonTapped   Embed: 값을 다시 enum으로 감싸기 CasePath는 enum에서 값을 꺼내는 것뿐만 아니라, associated value를 다시 enum case로 감쌀 수도 있다.  let homeCase = \UserAction.Cases.home  let action = homeCase(.onAppear)  // UserAction.home(.onAppear)  HomeAction.onAppear            ↓ UserAction.home(.onAppear)     이 부분이 일반 KeyPath와 다른 중요한 차이다. KeyPath는 이미 존재하는 구조체나 클래스 안으로 들어가 프로퍼티를 읽고 수정한다. 반면 CasePath는 associated value를 새로운 enum 값으로 만들 수도 있다.   case인지 확인하기 userAction.is(\.home) // true userAction.is(\.settings) // false  // 배열에서도 유용하다. let actions: [UserAction] = [   .home(.onAppear),   .settings(.purchaseButtonTapped),   .home(.buttonTapped) ]  let homeActionsCount = actions.count { $0.is(\.home) } // 2     @CasePathable을 사용하면 특정 enum 값이 원하는 case인지 확인할 수도 있다.   associated value를 제자리에서 수정하기 var result = Result&lt;String, Error&gt;.success(&quot;Blob&quot;)   // 기본 Swift만 사용했다면 switch로 case를 꺼내고, 값을 수정한 뒤, 다시 enum으로 감싸야 한다. switch result {      case var .success(value):          value += &quot;, Jr.&quot;         result = .success(value)      case .failure:          break  }  // modify를 사용하면 이 반복 코드를 줄일 수 있다. result.modify(\.success) {      $0 += &quot;, Jr.&quot;  }  result // .success(&quot;Blob, Jr.&quot;)     CasePath는 특정 case의 associated value를 제자리에서 수정하는 modify도 제공한다.   CasePath도 조합할 수 있다 @CasePathable  enum AppAction {      case user(UserAction)  }   @CasePathable  enum UserAction {      case home(HomeAction)      case settings(SettingsAction)  }     KeyPath를 조합할 수 있듯이 CasePath도 조합할 수 있다.   예를 들어 액션이 중첩되어 있다고 가정해 보자.   // 그러면 AppAction에서 바로 HomeAction까지 들어가는 CasePath를 만들 수 있다. \AppAction.Cases.user.home // CaseKeyPath&lt;AppAction, HomeAction&gt;  // 또는 직접 append할 수도 있다. let appActionToUser = \AppAction.Cases.user let userActionToHome = \UserAction.Cases.home let appActionToHome = appActionToUser.append(path: userActionToHome) // CaseKeyPath&lt;AppAction, HomeAction&gt;     이 덕분에 큰 enum을 작은 enum 단위로 나누고, 필요한 case만 선택해서 다룰 수 있다.   Dynamic Member Lookup과 함께 사용하기 @CasePathable과 @dynamicMemberLookup을 함께 사용하면 enum case를 프로퍼티처럼 접근할 수도 있다.  @CasePathable  @dynamicMemberLookup  enum UserAction {      case home(HomeAction)      case settings(SettingsAction)  } let action: UserAction = .home(.onAppear) action.home // Optional(HomeAction.onAppear) action.settings // nil   let actions: [UserAction] = [      .home(.onAppear),      .settings(.purchaseButtonTapped),      .home(.buttonTapped)  ] actions.compactMap(\.home) // [.onAppear, .buttonTapped]     배열에서도 key path 표현식처럼 사용할 수 있다.   이 문법은 enum을 구조체 프로퍼티처럼 다룰 수 있게 만들어준다.   // @dynamicMemberLookup 없음 let action = UserAction.home(.onAppear) let value = action[case: \.home] // Optional(.onAppear)  // @dynamicMemberLookup 있음 let action = UserAction.home(.onAppear) let value = action.home // Optional(.onAppear)   SwiftUI Binding과 CasePath let user: Binding&lt;User&gt; = ...  let name: Binding&lt;String&gt; = user.name     공식 README에서도 Binding 예시를 통해 CasePath의 필요성을 설명한다.   SwiftUI의 Binding은 WritableKeyPath를 이용해 하위 프로퍼티의 바인딩을 만들 수 있다.   enum Destination {      case home(HomeState)      case settings(SettingsState)  }  let destination: Binding&lt;Destination&gt; = ...  destination.home // 기본 Swift만으로는 불가능     하지만 enum에서는 기본적으로 이런 식의 접근이 불가능하다.   @CasePathable enum Destination {      case home(HomeState)      case settings(SettingsState)  }  destination.home // Binding&lt;HomeState&gt;?  destination.settings // Binding&lt;SettingsState&gt;?     CasePath를 사용하면 enum의 특정 case에 대한 바인딩을 만들 수 있다.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2026-06-29T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/TCA-tca1/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <input id="switch" class="theme-toggle__checkbox" name="theme" type="checkbox">
+<label class="switch_label theme-toggle" for="switch" aria-label="Toggle dark mode">
+  <span class="theme-toggle__button onf_btn" aria-hidden="true"></span>
+</label>
+
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li><li class="masthead__menu-item">
+              <a href="/projects/">Projects</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[TCA Deep Dive] @CasePathable">
+    <meta itemprop="description" content="KeyPathblue &gt; Swift의 구조체와 클래슨느 프로퍼티를 참조할 수 있는 KeyPath를 사용할 수 있다.blue &gt; KeyPath는 특정 타입의 프로퍼티 위치를 값처럼 표현하는 기능이다.struct User {     let id: Int     var name: String }\User.id // KeyPath&lt;User, Int&gt; \User.name // WritableKeyPath&lt;User, String&gt;  KeyPath&lt;Root, Value&gt;는 Root 타입 안에 있는 Value 타입 프로퍼티를 가리킨다.let user = User(id: 1, name: &quot;Donghyeon&quot;) let nameKeyPath = \User.name print(user[keyPath: nameKeyPath]) // Donghyeon  예를 들어 \User.name은 User 안의 name 프로퍼티를 가리키는 값이다.var user = User(id: 1, name: &quot;Donghyeon&quot;) user[keyPath: \User.name] = &quot;Kim&quot; print(user.name) // Kim  var 프로퍼티라면 값을 변경하는 것도 가능하다.즉, KeyPath를 사용하면 어떤 프로퍼티를 읽거나 수정할지 코드로 직접 고정하지 않고, 프로퍼티 접근 자체를 값처럼 전달할 수 있다.이 개념은 SwiftUI에서도 자주 사용된다. 예를 들어 Binding, Environment, dynamicMemberLookup 같은 API 내부에서 KeyPath가 자연스럽게 활용된다.enum에서는 KeyPath를 바로 사용할 수 없다enum UserAction {     case home(HomeAction)     case settings(SettingsAction) }\UserAction.home // 🛑 Key path cannot refer to enum case &#39;home&#39;enum의 case에는 일반적인 KeyPath를 사용할 수 없다.KeyPath는 기본적으로 구조체나 클래스의 저장 프로퍼티를 가리키는 기능이기 떄문이다.enum의 case는 저장 프로퍼티가 아니다. enum은 case중 하나의 상태를 표현하는 타입이고, associated value는 특정 case일 때만 존재한다.enum에서는 KeyPath를 바로 사용할 수 없는 이유enum UserAction {     case home(HomeAction)     case settings(SettingsAction) }let action = UserAction.settings(SettingsAction())  home은 항상 존재하는 프로퍼티가 아니다.  let action 상태는 home이라는 값이 존재하지 않는다. 따라서 Swift 기본 KeyPath 시스템은 \UserAction.home처럼 enum case 내부 값을 직접 가리킬 수 없다.enum에서는 기본적으로 switch로 꺼낸다enum UserAction {     case home(HomeAction)     case settings(SettingsAction) }switch action {     case let .home(homeAction):         print(&quot;home action:&quot;, homeAction)     case let .settings(settingsAction):         print(&quot;settings action:&quot;, settingsAction) }  Swift에서 enum의 associated value를 다루는 가장 기본적인 방법은 switch 또는 if case를 사용하는 것이다.if case let .home(homeAction) = action {     print(homeAction)}  특정 case만 보고 싶다면 if case를 사용할 수 있다.enum Destination {     case home(HomeState)     case settings(SettingsState) } var destination = Destination.home(HomeState(title: &quot;Home&quot;)) switch destination {     case var .home(state):         state.title = &quot;New Home&quot;         destination = .home(state)     case .settings:         break }  값을 수정해야 한다면, enum을 switch로 분해한 뒤 새로운 enum 값으로 다시 만들어줘야 한다.  즉, enum에서는 구조체처름 특정 내부 값을 KeyPath로 바로 수정하는 것이 아니라 현재 case를 확인하고 associated value를 꺼낸 뒤 다시 감싸는 방식으로 처리한다.정리\User.name // 가능  구조체와 클래스에서는 KeyPath를 사용해 프로퍼티 접근을 값처럼 다룰 수 있다. \UserAction.home // 불가능if case let .home(homeAction) = action {     // homeAction 사용 }  하지만 enum case는 저장 프로퍼티가 아니기 때문에 Swift의 기본 KeyPath로 접근할 수 없다.          그래서 enum의 associated value를 다룰 때는 기본적으로 switch, if case, guard case를 사용한다.        Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티 접근에는 강력하지만, enum case까지 표현하지는 못한다. 그래서 enum을 더 일반적으로 다루고 싶다면 Swift의 기본 KeyPath가 아니라, case를 추출하고 다시 삽입할 수 있는 별도의 추상화가 필요하다.CasePathenum UserAction {     case home(HomeAction)     case settings(SettingsAction) }\UserAction.home // 🛑 Key path cannot refer to enum case &#39;home&#39;  앞에서 살펴본 것처럼 Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티에는 사용할 수 있지만, enum의 case에는 사용할 수 없다.  하지만 실제 앱을 개발하다 보면 enum의 associated value를 일반화해서 다루고 싶은 경우가 매우 많다.enum Destination {     case home(HomeState)     case settings(SettingsState) }  예를 들어 위와 같은 상태가 있다고 가정해 보자.// 방법 1if case let .home(state) = destination {     // state 사용 }// 방법 2switch destination {     case var .home(state):         state.title = &quot;새 제목&quot;         destination = .home(state)     case .settings:         break }  Destination이 현재 home인지 확인하고, if case let 나 switch로 수정한 뒤 다시 enum으로 감싸야 한다.  이러한 코드는 한두 번은 괜찮지만 enum을 자주 다루게 되면 반복되는 switch와 패턴 매칭 코드가 계속 등장하게 된다.CasePath앞에서 살펴본 것처럼 Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티에는 사용할 수 있지만, enum의 case에는 사용할 수 없다.enum UserAction {  case home(HomeAction)  case settings(SettingsAction)}\UserAction.home// 🛑 key path cannot refer to static member &#39;home&#39;  KeyPath가 구조체나 클래스 내부의 프로퍼티를 가리킨다면, CasePath는 enum의 특정 case를 가리킨다.  Point-Free의 swift-case-paths는 이 개념을 Swift에서 사용할 수 있게 해주는 라이브러리다.  공식 설명에서도 CasePath를 “enum case를 위한 key path”라고 설명한다.CasePath를 활성화하는 방법import CasePaths @CasePathable enum UserAction {     case home(HomeAction)     case settings(SettingsAction) }\UserAction.Cases.home // CaseKeyPath&lt;UserAction, HomeAction&gt; \UserAction.Cases.settings // CaseKeyPath&lt;UserAction, SettingsAction&gt;// 타입을 추론할 수 있는 상황에서는 더 짧게 쓸 수도 있다.\.home as CaseKeyPath&lt;UserAction, HomeAction&gt; \.settings as CaseKeyPath&lt;UserAction, SettingsAction&gt;  CasePath를 사용하려면 enum에 @CasePathable 매크로를 붙인다.  그러면 enum의 Cases 네임스페이스를 통해 case path를 만들 수 있다.CasePath가 할 수 있는 일// KeyPath는 어떤 값의 프로퍼티를 읽고 수정할 수 있다.user[keyPath: \User.name] = &quot;Blob&quot; user[keyPath: \.name] // &quot;Blob&quot;// CasePath는 enum에서 특정 case의 associated value를 꺼내거나 수정할 수 있다.// 현재 enum 값이 원하는 case라면 associated value를 반환하고, 다른 case라면 nil을 반환한다.var userAction = UserAction.home(.onAppear) userAction[case: \.home] // Optional(HomeAction.onAppear) userAction[case: \.settings] // nil// 값을 수정하는 것도 가능하다.// 이 코드는 현재 userAction이 .home case일 때 내부의 HomeAction 값을 수정한다.userAction[case: \.home] = .buttonTappedEmbed: 값을 다시 enum으로 감싸기CasePath는 enum에서 값을 꺼내는 것뿐만 아니라, associated value를 다시 enum case로 감쌀 수도 있다.let homeCase = \UserAction.Cases.home let action = homeCase(.onAppear) // UserAction.home(.onAppear)HomeAction.onAppear           ↓UserAction.home(.onAppear)  이 부분이 일반 KeyPath와 다른 중요한 차이다. KeyPath는 이미 존재하는 구조체나 클래스 안으로 들어가 프로퍼티를 읽고 수정한다. 반면 CasePath는 associated value를 새로운 enum 값으로 만들 수도 있다.case인지 확인하기userAction.is(\.home) // trueuserAction.is(\.settings) // false// 배열에서도 유용하다.let actions: [UserAction] = [  .home(.onAppear),  .settings(.purchaseButtonTapped),  .home(.buttonTapped)]let homeActionsCount = actions.count { $0.is(\.home) } // 2  @CasePathable을 사용하면 특정 enum 값이 원하는 case인지 확인할 수도 있다.associated value를 제자리에서 수정하기var result = Result&lt;String, Error&gt;.success(&quot;Blob&quot;) // 기본 Swift만 사용했다면 switch로 case를 꺼내고, 값을 수정한 뒤, 다시 enum으로 감싸야 한다.switch result {     case var .success(value):         value += &quot;, Jr.&quot;        result = .success(value)     case .failure:         break }// modify를 사용하면 이 반복 코드를 줄일 수 있다.result.modify(\.success) {     $0 += &quot;, Jr.&quot; } result // .success(&quot;Blob, Jr.&quot;)  CasePath는 특정 case의 associated value를 제자리에서 수정하는 modify도 제공한다.CasePath도 조합할 수 있다@CasePathable enum AppAction {     case user(UserAction) } @CasePathable enum UserAction {     case home(HomeAction)     case settings(SettingsAction) }  KeyPath를 조합할 수 있듯이 CasePath도 조합할 수 있다.  예를 들어 액션이 중첩되어 있다고 가정해 보자.// 그러면 AppAction에서 바로 HomeAction까지 들어가는 CasePath를 만들 수 있다.\AppAction.Cases.user.home // CaseKeyPath&lt;AppAction, HomeAction&gt;// 또는 직접 append할 수도 있다.let appActionToUser = \AppAction.Cases.userlet userActionToHome = \UserAction.Cases.homelet appActionToHome = appActionToUser.append(path: userActionToHome) // CaseKeyPath&lt;AppAction, HomeAction&gt;  이 덕분에 큰 enum을 작은 enum 단위로 나누고, 필요한 case만 선택해서 다룰 수 있다.Dynamic Member Lookup과 함께 사용하기@CasePathable과 @dynamicMemberLookup을 함께 사용하면 enum case를 프로퍼티처럼 접근할 수도 있다.@CasePathable @dynamicMemberLookup enum UserAction {     case home(HomeAction)     case settings(SettingsAction) }let action: UserAction = .home(.onAppear)action.home // Optional(HomeAction.onAppear)action.settings // nillet actions: [UserAction] = [     .home(.onAppear),     .settings(.purchaseButtonTapped),     .home(.buttonTapped) ]actions.compactMap(\.home) // [.onAppear, .buttonTapped]  배열에서도 key path 표현식처럼 사용할 수 있다.  이 문법은 enum을 구조체 프로퍼티처럼 다룰 수 있게 만들어준다.// @dynamicMemberLookup 없음let action = UserAction.home(.onAppear)let value = action[case: \.home]// Optional(.onAppear)// @dynamicMemberLookup 있음let action = UserAction.home(.onAppear)let value = action.home// Optional(.onAppear)SwiftUI Binding과 CasePathlet user: Binding&lt;User&gt; = ... let name: Binding&lt;String&gt; = user.name  공식 README에서도 Binding 예시를 통해 CasePath의 필요성을 설명한다.  SwiftUI의 Binding은 WritableKeyPath를 이용해 하위 프로퍼티의 바인딩을 만들 수 있다.enum Destination {     case home(HomeState)     case settings(SettingsState) }let destination: Binding&lt;Destination&gt; = ... destination.home // 기본 Swift만으로는 불가능  하지만 enum에서는 기본적으로 이런 식의 접근이 불가능하다.@CasePathableenum Destination {     case home(HomeState)     case settings(SettingsState) }destination.home // Binding&lt;HomeState&gt;? destination.settings // Binding&lt;SettingsState&gt;?  CasePath를 사용하면 enum의 특정 case에 대한 바인딩을 만들 수 있다.">
+    <meta itemprop="datePublished" content="2026-06-29T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/TCA-tca1/" class="u-url" itemprop="url">[TCA Deep Dive] @CasePathable
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=TCA">TCA</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2026-06-29T00:00:00+00:00">June 29, 2026</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <!-- `Text("Hello World")`, `Text(isOn ? "On" : "Off")`, `Button` -->
+
+<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
+
+<!-- <img src="https://github.com/user-attachments/assets/3938e583-0fc4-4620-99b0-bf761e60a1ba" width="60%" align="left"> -->
+
+<h2 id="keypath">KeyPath</h2>
+<blockquote class="custom-double-quote">
+  <p>Swift의 구조체와 클래슨느 프로퍼티를 참조할 수 있는 KeyPath를 사용할 수 있다.
+KeyPath는 특정 타입의 프로퍼티 위치를 값처럼 표현하는 기능이다.</p>
+</blockquote>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">struct</span> <span class="kt">User</span> <span class="p">{</span> 
+    <span class="k">let</span> <span class="nv">id</span><span class="p">:</span> <span class="kt">Int</span> 
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> 
+<span class="p">}</span>
+
+<span class="p">\</span><span class="kt">User</span><span class="o">.</span><span class="n">id</span> <span class="c1">// KeyPath&lt;User, Int&gt; </span>
+<span class="p">\</span><span class="kt">User</span><span class="o">.</span><span class="n">name</span> <span class="c1">// WritableKeyPath&lt;User, String&gt;</span>
+</code></pre></div></div>
+<ul>
+  <li>KeyPath&lt;Root, Value&gt;는 Root 타입 안에 있는 Value 타입 프로퍼티를 가리킨다.<br />
+<br /><br /><br /></li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">user</span> <span class="o">=</span> <span class="kt">User</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nv">name</span><span class="p">:</span> <span class="s">"Donghyeon"</span><span class="p">)</span> 
+<span class="k">let</span> <span class="nv">nameKeyPath</span> <span class="o">=</span> <span class="p">\</span><span class="kt">User</span><span class="o">.</span><span class="n">name</span> 
+<span class="nf">print</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="nv">keyPath</span><span class="p">:</span> <span class="n">nameKeyPath</span><span class="p">])</span> <span class="c1">// Donghyeon</span>
+</code></pre></div></div>
+<ul>
+  <li>예를 들어 \User.name은 User 안의 name 프로퍼티를 가리키는 값이다.<br />
+<br /><br /><br /></li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="nv">user</span> <span class="o">=</span> <span class="kt">User</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nv">name</span><span class="p">:</span> <span class="s">"Donghyeon"</span><span class="p">)</span> 
+<span class="n">user</span><span class="p">[</span><span class="nv">keyPath</span><span class="p">:</span> <span class="p">\</span><span class="kt">User</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="s">"Kim"</span> 
+<span class="nf">print</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="c1">// Kim</span>
+</code></pre></div></div>
+<ul>
+  <li>var 프로퍼티라면 값을 변경하는 것도 가능하다.<br />
+<br /><br /><br /></li>
+</ul>
+
+<p>즉, KeyPath를 사용하면 어떤 프로퍼티를 읽거나 수정할지 코드로 직접 고정하지 않고, 프로퍼티 접근 자체를 값처럼 전달할 수 있다.<br />
+이 개념은 SwiftUI에서도 자주 사용된다. 예를 들어 Binding, Environment, dynamicMemberLookup 같은 API 내부에서 KeyPath가 자연스럽게 활용된다.<br />
+<br /><br /><br /></p>
+
+<h2 id="enum에서는-keypath를-바로-사용할-수-없다">enum에서는 KeyPath를 바로 사용할 수 없다</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">UserAction</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeAction</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">)</span> 
+<span class="p">}</span>
+
+<span class="p">\</span><span class="kt">UserAction</span><span class="o">.</span><span class="n">home</span> <span class="c1">// 🛑 Key path cannot refer to enum case 'home'</span>
+</code></pre></div></div>
+<p>enum의 case에는 일반적인 KeyPath를 사용할 수 없다.<br />
+KeyPath는 기본적으로 구조체나 클래스의 저장 프로퍼티를 가리키는 기능이기 떄문이다.<br />
+enum의 case는 저장 프로퍼티가 아니다. enum은 case중 하나의 상태를 표현하는 타입이고, associated value는 특정 case일 때만 존재한다.<br />
+<br /><br /><br /></p>
+
+<h2 id="enum에서는-keypath를-바로-사용할-수-없는-이유">enum에서는 KeyPath를 바로 사용할 수 없는 이유</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">UserAction</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeAction</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">)</span> 
+<span class="p">}</span>
+
+<span class="k">let</span> <span class="nv">action</span> <span class="o">=</span> <span class="kt">UserAction</span><span class="o">.</span><span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">())</span>
+</code></pre></div></div>
+<ul>
+  <li>home은 항상 존재하는 프로퍼티가 아니다.</li>
+  <li>let action 상태는 home이라는 값이 존재하지 않는다. 따라서 Swift 기본 KeyPath 시스템은 \UserAction.home처럼 enum case 내부 값을 직접 가리킬 수 없다.<br />
+<br /><br /><br /></li>
+</ul>
+
+<h2 id="enum에서는-기본적으로-switch로-꺼낸다">enum에서는 기본적으로 switch로 꺼낸다</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">UserAction</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeAction</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">)</span> 
+<span class="p">}</span>
+
+<span class="k">switch</span> <span class="n">action</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="n">homeAction</span><span class="p">):</span> 
+        <span class="nf">print</span><span class="p">(</span><span class="s">"home action:"</span><span class="p">,</span> <span class="n">homeAction</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">settings</span><span class="p">(</span><span class="n">settingsAction</span><span class="p">):</span> 
+        <span class="nf">print</span><span class="p">(</span><span class="s">"settings action:"</span><span class="p">,</span> <span class="n">settingsAction</span><span class="p">)</span> 
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>Swift에서 enum의 associated value를 다루는 가장 기본적인 방법은 switch 또는 if case를 사용하는 것이다.<br />
+<br /><br /><br /></li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="n">homeAction</span><span class="p">)</span> <span class="o">=</span> <span class="n">action</span> <span class="p">{</span> 
+    <span class="nf">print</span><span class="p">(</span><span class="n">homeAction</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>특정 case만 보고 싶다면 if case를 사용할 수 있다.<br />
+<br /><br /><br /></li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">Destination</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeState</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsState</span><span class="p">)</span> 
+<span class="p">}</span> 
+
+<span class="k">var</span> <span class="nv">destination</span> <span class="o">=</span> <span class="kt">Destination</span><span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="kt">HomeState</span><span class="p">(</span><span class="nv">title</span><span class="p">:</span> <span class="s">"Home"</span><span class="p">))</span> 
+<span class="k">switch</span> <span class="n">destination</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="kd">var</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="n">state</span><span class="p">):</span> 
+        <span class="n">state</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">"New Home"</span> 
+        <span class="n">destination</span> <span class="o">=</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="o">.</span><span class="nv">settings</span><span class="p">:</span> 
+        <span class="k">break</span> 
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>값을 수정해야 한다면, enum을 switch로 분해한 뒤 새로운 enum 값으로 다시 만들어줘야 한다.</li>
+  <li>즉, enum에서는 구조체처름 특정 내부 값을 KeyPath로 바로 수정하는 것이 아니라 현재 case를 확인하고 associated value를 꺼낸 뒤 다시 감싸는 방식으로 처리한다.<br />
+<br /><br /><br /></li>
+</ul>
+
+<h2 id="정리">정리</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">\</span><span class="kt">User</span><span class="o">.</span><span class="n">name</span> <span class="c1">// 가능</span>
+</code></pre></div></div>
+<ul>
+  <li>구조체와 클래스에서는 KeyPath를 사용해 프로퍼티 접근을 값처럼 다룰 수 있다. <br />
+<br /><br /><br /></li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">\</span><span class="kt">UserAction</span><span class="o">.</span><span class="n">home</span> <span class="c1">// 불가능</span>
+
+<span class="k">if</span> <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="n">homeAction</span><span class="p">)</span> <span class="o">=</span> <span class="n">action</span> <span class="p">{</span> 
+    <span class="c1">// homeAction 사용 </span>
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>하지만 enum case는 저장 프로퍼티가 아니기 때문에 Swift의 기본 KeyPath로 접근할 수 없다.
+    <ul>
+      <li>그래서 enum의 associated value를 다룰 때는 기본적으로 switch, if case, guard case를 사용한다.</li>
+    </ul>
+  </li>
+  <li>Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티 접근에는 강력하지만, enum case까지 표현하지는 못한다. 그래서 enum을 더 일반적으로 다루고 싶다면 Swift의 기본 KeyPath가 아니라, case를 추출하고 다시 삽입할 수 있는 별도의 추상화가 필요하다.<br />
+<br /><br /><br /></li>
+</ul>
+
+<h2 id="casepath">CasePath</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">UserAction</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeAction</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">)</span> 
+<span class="p">}</span>
+
+<span class="p">\</span><span class="kt">UserAction</span><span class="o">.</span><span class="n">home</span> <span class="c1">// 🛑 Key path cannot refer to enum case 'home'</span>
+</code></pre></div></div>
+<ul>
+  <li>앞에서 살펴본 것처럼 Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티에는 사용할 수 있지만, enum의 case에는 사용할 수 없다.</li>
+  <li>하지만 실제 앱을 개발하다 보면 enum의 associated value를 일반화해서 다루고 싶은 경우가 매우 많다.</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">Destination</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeState</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsState</span><span class="p">)</span> 
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>예를 들어 위와 같은 상태가 있다고 가정해 보자.</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 방법 1</span>
+<span class="k">if</span> <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">=</span> <span class="n">destination</span> <span class="p">{</span> 
+    <span class="c1">// state 사용 </span>
+<span class="p">}</span>
+
+<span class="c1">// 방법 2</span>
+<span class="k">switch</span> <span class="n">destination</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="kd">var</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="n">state</span><span class="p">):</span> 
+        <span class="n">state</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">"새 제목"</span> 
+        <span class="n">destination</span> <span class="o">=</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="o">.</span><span class="nv">settings</span><span class="p">:</span> 
+        <span class="k">break</span> 
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>Destination이 현재 home인지 확인하고, if case let 나 switch로 수정한 뒤 다시 enum으로 감싸야 한다.</li>
+  <li>이러한 코드는 한두 번은 괜찮지만 enum을 자주 다루게 되면 반복되는 switch와 패턴 매칭 코드가 계속 등장하게 된다.</li>
+</ul>
+
+<h2 id="casepath-1">CasePath</h2>
+<p>앞에서 살펴본 것처럼 Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티에는 사용할 수 있지만, enum의 case에는 사용할 수 없다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">UserAction</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeAction</span><span class="p">)</span>
+  <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="p">\</span><span class="kt">UserAction</span><span class="o">.</span><span class="n">home</span>
+<span class="c1">// 🛑 key path cannot refer to static member 'home'</span>
+</code></pre></div></div>
+<ul>
+  <li>KeyPath가 구조체나 클래스 내부의 프로퍼티를 가리킨다면, CasePath는 enum의 특정 case를 가리킨다.</li>
+  <li>Point-Free의 swift-case-paths는 이 개념을 Swift에서 사용할 수 있게 해주는 라이브러리다.</li>
+  <li>공식 설명에서도 CasePath를 “enum case를 위한 key path”라고 설명한다.</li>
+</ul>
+
+<h2 id="casepath를-활성화하는-방법">CasePath를 활성화하는 방법</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">CasePaths</span> 
+
+<span class="kd">@CasePathable</span> 
+<span class="kd">enum</span> <span class="kt">UserAction</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeAction</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">)</span> 
+<span class="p">}</span>
+
+<span class="p">\</span><span class="kt">UserAction</span><span class="o">.</span><span class="kt">Cases</span><span class="o">.</span><span class="n">home</span> <span class="c1">// CaseKeyPath&lt;UserAction, HomeAction&gt; </span>
+<span class="p">\</span><span class="kt">UserAction</span><span class="o">.</span><span class="kt">Cases</span><span class="o">.</span><span class="n">settings</span> <span class="c1">// CaseKeyPath&lt;UserAction, SettingsAction&gt;</span>
+
+<span class="c1">// 타입을 추론할 수 있는 상황에서는 더 짧게 쓸 수도 있다.</span>
+<span class="p">\</span><span class="o">.</span><span class="n">home</span> <span class="k">as</span> <span class="kt">CaseKeyPath</span><span class="o">&lt;</span><span class="kt">UserAction</span><span class="p">,</span> <span class="kt">HomeAction</span><span class="o">&gt;</span> 
+<span class="p">\</span><span class="o">.</span><span class="n">settings</span> <span class="k">as</span> <span class="kt">CaseKeyPath</span><span class="o">&lt;</span><span class="kt">UserAction</span><span class="p">,</span> <span class="kt">SettingsAction</span><span class="o">&gt;</span>
+</code></pre></div></div>
+<ul>
+  <li>CasePath를 사용하려면 enum에 @CasePathable 매크로를 붙인다.</li>
+  <li>그러면 enum의 Cases 네임스페이스를 통해 case path를 만들 수 있다.</li>
+</ul>
+
+<h2 id="casepath가-할-수-있는-일">CasePath가 할 수 있는 일</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// KeyPath는 어떤 값의 프로퍼티를 읽고 수정할 수 있다.</span>
+<span class="n">user</span><span class="p">[</span><span class="nv">keyPath</span><span class="p">:</span> <span class="p">\</span><span class="kt">User</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="s">"Blob"</span> 
+<span class="n">user</span><span class="p">[</span><span class="nv">keyPath</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="c1">// "Blob"</span>
+
+<span class="c1">// CasePath는 enum에서 특정 case의 associated value를 꺼내거나 수정할 수 있다.</span>
+<span class="c1">// 현재 enum 값이 원하는 case라면 associated value를 반환하고, 다른 case라면 nil을 반환한다.</span>
+<span class="k">var</span> <span class="nv">userAction</span> <span class="o">=</span> <span class="kt">UserAction</span><span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">onAppear</span><span class="p">)</span> 
+<span class="n">userAction</span><span class="p">[</span><span class="nv">case</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">home</span><span class="p">]</span> <span class="c1">// Optional(HomeAction.onAppear) </span>
+<span class="n">userAction</span><span class="p">[</span><span class="nv">case</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">settings</span><span class="p">]</span> <span class="c1">// nil</span>
+
+<span class="c1">// 값을 수정하는 것도 가능하다.</span>
+<span class="c1">// 이 코드는 현재 userAction이 .home case일 때 내부의 HomeAction 값을 수정한다.</span>
+<span class="n">userAction</span><span class="p">[</span><span class="nv">case</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">home</span><span class="p">]</span> <span class="o">=</span> <span class="o">.</span><span class="n">buttonTapped</span>
+</code></pre></div></div>
+
+<h2 id="embed-값을-다시-enum으로-감싸기">Embed: 값을 다시 enum으로 감싸기</h2>
+<p>CasePath는 enum에서 값을 꺼내는 것뿐만 아니라, associated value를 다시 enum case로 감쌀 수도 있다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">homeCase</span> <span class="o">=</span> <span class="p">\</span><span class="kt">UserAction</span><span class="o">.</span><span class="kt">Cases</span><span class="o">.</span><span class="n">home</span> 
+<span class="k">let</span> <span class="nv">action</span> <span class="o">=</span> <span class="nf">homeCase</span><span class="p">(</span><span class="o">.</span><span class="n">onAppear</span><span class="p">)</span> 
+<span class="c1">// UserAction.home(.onAppear)</span>
+
+<span class="kt">HomeAction</span><span class="o">.</span><span class="n">onAppear</span> 
+          <span class="err">↓</span>
+<span class="kt">UserAction</span><span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">onAppear</span><span class="p">)</span>
+</code></pre></div></div>
+<ul>
+  <li>이 부분이 일반 KeyPath와 다른 중요한 차이다. KeyPath는 이미 존재하는 구조체나 클래스 안으로 들어가 프로퍼티를 읽고 수정한다. 반면 CasePath는 associated value를 새로운 enum 값으로 만들 수도 있다.</li>
+</ul>
+
+<h2 id="case인지-확인하기">case인지 확인하기</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">userAction</span><span class="o">.</span><span class="nf">is</span><span class="p">(\</span><span class="o">.</span><span class="n">home</span><span class="p">)</span> <span class="c1">// true</span>
+<span class="n">userAction</span><span class="o">.</span><span class="nf">is</span><span class="p">(\</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span> <span class="c1">// false</span>
+
+<span class="c1">// 배열에서도 유용하다.</span>
+<span class="k">let</span> <span class="nv">actions</span><span class="p">:</span> <span class="p">[</span><span class="kt">UserAction</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">onAppear</span><span class="p">),</span>
+  <span class="o">.</span><span class="nf">settings</span><span class="p">(</span><span class="o">.</span><span class="n">purchaseButtonTapped</span><span class="p">),</span>
+  <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">buttonTapped</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="k">let</span> <span class="nv">homeActionsCount</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">count</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="nf">is</span><span class="p">(\</span><span class="o">.</span><span class="n">home</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// 2</span>
+</code></pre></div></div>
+<ul>
+  <li>@CasePathable을 사용하면 특정 enum 값이 원하는 case인지 확인할 수도 있다.</li>
+</ul>
+
+<h2 id="associated-value를-제자리에서-수정하기">associated value를 제자리에서 수정하기</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="nv">result</span> <span class="o">=</span> <span class="kt">Result</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;.</span><span class="nf">success</span><span class="p">(</span><span class="s">"Blob"</span><span class="p">)</span> 
+
+<span class="c1">// 기본 Swift만 사용했다면 switch로 case를 꺼내고, 값을 수정한 뒤, 다시 enum으로 감싸야 한다.</span>
+<span class="k">switch</span> <span class="n">result</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="kd">var</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="n">value</span><span class="p">):</span> 
+        <span class="n">value</span> <span class="o">+=</span> <span class="s">", Jr."</span> 
+       <span class="n">result</span> <span class="o">=</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="o">.</span><span class="nv">failure</span><span class="p">:</span> 
+        <span class="k">break</span> 
+<span class="p">}</span>
+
+<span class="c1">// modify를 사용하면 이 반복 코드를 줄일 수 있다.</span>
+<span class="n">result</span><span class="o">.</span><span class="nf">modify</span><span class="p">(\</span><span class="o">.</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span> 
+    <span class="nv">$0</span> <span class="o">+=</span> <span class="s">", Jr."</span> 
+<span class="p">}</span> 
+<span class="n">result</span> <span class="c1">// .success("Blob, Jr.")</span>
+</code></pre></div></div>
+<ul>
+  <li>CasePath는 특정 case의 associated value를 제자리에서 수정하는 modify도 제공한다.</li>
+</ul>
+
+<h2 id="casepath도-조합할-수-있다">CasePath도 조합할 수 있다</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">@CasePathable</span> 
+<span class="kd">enum</span> <span class="kt">AppAction</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">user</span><span class="p">(</span><span class="kt">UserAction</span><span class="p">)</span> 
+<span class="p">}</span> 
+
+<span class="kd">@CasePathable</span> 
+<span class="kd">enum</span> <span class="kt">UserAction</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeAction</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">)</span> 
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>KeyPath를 조합할 수 있듯이 CasePath도 조합할 수 있다.</li>
+  <li>예를 들어 액션이 중첩되어 있다고 가정해 보자.</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 그러면 AppAction에서 바로 HomeAction까지 들어가는 CasePath를 만들 수 있다.</span>
+<span class="p">\</span><span class="kt">AppAction</span><span class="o">.</span><span class="kt">Cases</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">home</span> <span class="c1">// CaseKeyPath&lt;AppAction, HomeAction&gt;</span>
+
+<span class="c1">// 또는 직접 append할 수도 있다.</span>
+<span class="k">let</span> <span class="nv">appActionToUser</span> <span class="o">=</span> <span class="p">\</span><span class="kt">AppAction</span><span class="o">.</span><span class="kt">Cases</span><span class="o">.</span><span class="n">user</span>
+<span class="k">let</span> <span class="nv">userActionToHome</span> <span class="o">=</span> <span class="p">\</span><span class="kt">UserAction</span><span class="o">.</span><span class="kt">Cases</span><span class="o">.</span><span class="n">home</span>
+<span class="k">let</span> <span class="nv">appActionToHome</span> <span class="o">=</span> <span class="n">appActionToUser</span><span class="o">.</span><span class="nf">append</span><span class="p">(</span><span class="nv">path</span><span class="p">:</span> <span class="n">userActionToHome</span><span class="p">)</span> <span class="c1">// CaseKeyPath&lt;AppAction, HomeAction&gt;</span>
+</code></pre></div></div>
+<ul>
+  <li>이 덕분에 큰 enum을 작은 enum 단위로 나누고, 필요한 case만 선택해서 다룰 수 있다.</li>
+</ul>
+
+<h2 id="dynamic-member-lookup과-함께-사용하기">Dynamic Member Lookup과 함께 사용하기</h2>
+<p>@CasePathable과 @dynamicMemberLookup을 함께 사용하면 enum case를 프로퍼티처럼 접근할 수도 있다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">@CasePathable</span> 
+<span class="kd">@dynamicMemberLookup</span> 
+<span class="kd">enum</span> <span class="kt">UserAction</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeAction</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">)</span> 
+<span class="p">}</span>
+<span class="k">let</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">UserAction</span> <span class="o">=</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">onAppear</span><span class="p">)</span>
+<span class="n">action</span><span class="o">.</span><span class="n">home</span> <span class="c1">// Optional(HomeAction.onAppear)</span>
+<span class="n">action</span><span class="o">.</span><span class="n">settings</span> <span class="c1">// nil</span>
+</code></pre></div></div>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">actions</span><span class="p">:</span> <span class="p">[</span><span class="kt">UserAction</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> 
+    <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">onAppear</span><span class="p">),</span> 
+    <span class="o">.</span><span class="nf">settings</span><span class="p">(</span><span class="o">.</span><span class="n">purchaseButtonTapped</span><span class="p">),</span> 
+    <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">buttonTapped</span><span class="p">)</span> 
+<span class="p">]</span>
+<span class="n">actions</span><span class="o">.</span><span class="nf">compactMap</span><span class="p">(\</span><span class="o">.</span><span class="n">home</span><span class="p">)</span> <span class="c1">// [.onAppear, .buttonTapped]</span>
+</code></pre></div></div>
+<ul>
+  <li>배열에서도 key path 표현식처럼 사용할 수 있다.</li>
+  <li>이 문법은 enum을 구조체 프로퍼티처럼 다룰 수 있게 만들어준다.</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// @dynamicMemberLookup 없음</span>
+<span class="k">let</span> <span class="nv">action</span> <span class="o">=</span> <span class="kt">UserAction</span><span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">onAppear</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">value</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="nv">case</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">home</span><span class="p">]</span>
+<span class="c1">// Optional(.onAppear)</span>
+
+<span class="c1">// @dynamicMemberLookup 있음</span>
+<span class="k">let</span> <span class="nv">action</span> <span class="o">=</span> <span class="kt">UserAction</span><span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">onAppear</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">value</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">home</span>
+<span class="c1">// Optional(.onAppear)</span>
+</code></pre></div></div>
+
+<h2 id="swiftui-binding과-casepath">SwiftUI Binding과 CasePath</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">user</span><span class="p">:</span> <span class="kt">Binding</span><span class="o">&lt;</span><span class="kt">User</span><span class="o">&gt;</span> <span class="o">=</span> <span class="o">...</span> 
+<span class="k">let</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">Binding</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span>
+</code></pre></div></div>
+<ul>
+  <li>공식 README에서도 Binding 예시를 통해 CasePath의 필요성을 설명한다.</li>
+  <li>SwiftUI의 Binding은 WritableKeyPath를 이용해 하위 프로퍼티의 바인딩을 만들 수 있다.</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">Destination</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeState</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsState</span><span class="p">)</span> 
+<span class="p">}</span>
+
+<span class="k">let</span> <span class="nv">destination</span><span class="p">:</span> <span class="kt">Binding</span><span class="o">&lt;</span><span class="kt">Destination</span><span class="o">&gt;</span> <span class="o">=</span> <span class="o">...</span> 
+<span class="n">destination</span><span class="o">.</span><span class="n">home</span> <span class="c1">// 기본 Swift만으로는 불가능</span>
+</code></pre></div></div>
+<ul>
+  <li>하지만 enum에서는 기본적으로 이런 식의 접근이 불가능하다.</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">@CasePathable</span>
+<span class="kd">enum</span> <span class="kt">Destination</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeState</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsState</span><span class="p">)</span> 
+<span class="p">}</span>
+
+<span class="n">destination</span><span class="o">.</span><span class="n">home</span> <span class="c1">// Binding&lt;HomeState&gt;? </span>
+<span class="n">destination</span><span class="o">.</span><span class="n">settings</span> <span class="c1">// Binding&lt;SettingsState&gt;?</span>
+</code></pre></div></div>
+<ul>
+  <li>CasePath를 사용하면 enum의 특정 case에 대한 바인딩을 만들 수 있다.</li>
+</ul>
+
+<!-- 
+Swift는 모든 구조체와 클래스 속성에 KeyPath를 부여한다.
+
+```swift
+struct User {
+  let id: Int
+  var name: String
+}
+
+\User.id    // KeyPath<User, Int>
+\User.name  // WritableKeyPath<User, String>
+```
+- 컴파일러가 생성하는 이 코드는 구조체의 일부를 추상적으로 확대하여 검사 및 변경할 수 있고, 변경 사항을 구조체 전체에 반영할 수 있다.
+- SwiftUI의 바인딩 처럼 동적 멤버 조회를 사용하는 많은 최신 Swift API에서 조용히 활용되지만, SwiftUI enviroment나 unsafe mutable pointers 같이 직접적으로 나타나기도 한다.
+
+```swift
+enum UserAction {
+  case home(HomeAction)
+  case settings(SettingsAction)
+}
+
+// 🛑 키 경로가 정적 멤버 'home'을 참조할 수 없습니다.
+\UserAction.home  // 🛑
+```
+- 아쉽지만 열거형 케이스에 대해서는 이러한 접근이 불가능하다.
+- 그래서 열거형의 특정 사례 데이터를 수정할 수 있는 일반적인 코드 작성은 불가능하다. -->
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/SwiftUI-diff/" class="pagination--pager" title="[SwiftUI] Diffing, 끝까지 파고들었습니다.
+">Previous</a>
+    
+    
+      <a href="/Makefile/" class="pagination--pager" title="
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2026 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

@@ -1,4 +1,424 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2026-06-12T07:06:28+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html"></title><link href="http://localhost:4000/Makefile/" rel="alternate" type="text/html" title="" /><published>2026-06-12T00:00:00+00:00</published><updated>2026-06-12T00:00:00+00:00</updated><id>http://localhost:4000/Makefile</id><content type="html" xml:base="http://localhost:4000/Makefile/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->]]></content><author><name>Dong Hyeon</name></author><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">[WWDC] Demystify SwiftUI - SwiftUI가 코드를 보는법</title><link href="http://localhost:4000/swiftui-demystify-swiftui/" rel="alternate" type="text/html" title="[WWDC] Demystify SwiftUI - SwiftUI가 코드를 보는법" /><published>2026-06-01T00:00:00+00:00</published><updated>2026-06-01T00:00:00+00:00</updated><id>http://localhost:4000/%5BSwiftUI%5D%20Demystify%20SwiftUI</id><content type="html" xml:base="http://localhost:4000/swiftui-demystify-swiftui/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2026-06-30T07:38:22+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongHyeon Kim’s Blog</title><subtitle>Swift와 크롤링 기술을 통해 안전한 세상을 만들고 싶습니다.</subtitle><author><name>Dong Hyeon</name></author><entry><title type="html"></title><link href="http://localhost:4000/Makefile/" rel="alternate" type="text/html" title="" /><published>2026-06-30T00:00:00+00:00</published><updated>2026-06-30T00:00:00+00:00</updated><id>http://localhost:4000/Makefile</id><content type="html" xml:base="http://localhost:4000/Makefile/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->]]></content><author><name>Dong Hyeon</name></author><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">[TCA Deep Dive] @CasePathable</title><link href="http://localhost:4000/TCA-tca1/" rel="alternate" type="text/html" title="[TCA Deep Dive] @CasePathable" /><published>2026-06-29T00:00:00+00:00</published><updated>2026-06-29T00:00:00+00:00</updated><id>http://localhost:4000/%5BTCA%5D%20tca1</id><content type="html" xml:base="http://localhost:4000/TCA-tca1/"><![CDATA[<!-- `Text("Hello World")`, `Text(isOn ? "On" : "Off")`, `Button` -->
+
+<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
+
+<!-- <img src="https://github.com/user-attachments/assets/3938e583-0fc4-4620-99b0-bf761e60a1ba" width="60%" align="left"> -->
+
+<h2 id="keypath">KeyPath</h2>
+<blockquote class="custom-double-quote">
+  <p>Swift의 구조체와 클래슨느 프로퍼티를 참조할 수 있는 KeyPath를 사용할 수 있다.
+KeyPath는 특정 타입의 프로퍼티 위치를 값처럼 표현하는 기능이다.</p>
+</blockquote>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">struct</span> <span class="kt">User</span> <span class="p">{</span> 
+    <span class="k">let</span> <span class="nv">id</span><span class="p">:</span> <span class="kt">Int</span> 
+    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> 
+<span class="p">}</span>
+
+<span class="p">\</span><span class="kt">User</span><span class="o">.</span><span class="n">id</span> <span class="c1">// KeyPath&lt;User, Int&gt; </span>
+<span class="p">\</span><span class="kt">User</span><span class="o">.</span><span class="n">name</span> <span class="c1">// WritableKeyPath&lt;User, String&gt;</span>
+</code></pre></div></div>
+<ul>
+  <li>KeyPath&lt;Root, Value&gt;는 Root 타입 안에 있는 Value 타입 프로퍼티를 가리킨다.<br />
+<br /><br /><br /></li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">user</span> <span class="o">=</span> <span class="kt">User</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nv">name</span><span class="p">:</span> <span class="s">"Donghyeon"</span><span class="p">)</span> 
+<span class="k">let</span> <span class="nv">nameKeyPath</span> <span class="o">=</span> <span class="p">\</span><span class="kt">User</span><span class="o">.</span><span class="n">name</span> 
+<span class="nf">print</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="nv">keyPath</span><span class="p">:</span> <span class="n">nameKeyPath</span><span class="p">])</span> <span class="c1">// Donghyeon</span>
+</code></pre></div></div>
+<ul>
+  <li>예를 들어 \User.name은 User 안의 name 프로퍼티를 가리키는 값이다.<br />
+<br /><br /><br /></li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="nv">user</span> <span class="o">=</span> <span class="kt">User</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nv">name</span><span class="p">:</span> <span class="s">"Donghyeon"</span><span class="p">)</span> 
+<span class="n">user</span><span class="p">[</span><span class="nv">keyPath</span><span class="p">:</span> <span class="p">\</span><span class="kt">User</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="s">"Kim"</span> 
+<span class="nf">print</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="c1">// Kim</span>
+</code></pre></div></div>
+<ul>
+  <li>var 프로퍼티라면 값을 변경하는 것도 가능하다.<br />
+<br /><br /><br /></li>
+</ul>
+
+<p>즉, KeyPath를 사용하면 어떤 프로퍼티를 읽거나 수정할지 코드로 직접 고정하지 않고, 프로퍼티 접근 자체를 값처럼 전달할 수 있다.<br />
+이 개념은 SwiftUI에서도 자주 사용된다. 예를 들어 Binding, Environment, dynamicMemberLookup 같은 API 내부에서 KeyPath가 자연스럽게 활용된다.<br />
+<br /><br /><br /></p>
+
+<h2 id="enum에서는-keypath를-바로-사용할-수-없다">enum에서는 KeyPath를 바로 사용할 수 없다</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">UserAction</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeAction</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">)</span> 
+<span class="p">}</span>
+
+<span class="p">\</span><span class="kt">UserAction</span><span class="o">.</span><span class="n">home</span> <span class="c1">// 🛑 Key path cannot refer to enum case 'home'</span>
+</code></pre></div></div>
+<p>enum의 case에는 일반적인 KeyPath를 사용할 수 없다.<br />
+KeyPath는 기본적으로 구조체나 클래스의 저장 프로퍼티를 가리키는 기능이기 떄문이다.<br />
+enum의 case는 저장 프로퍼티가 아니다. enum은 case중 하나의 상태를 표현하는 타입이고, associated value는 특정 case일 때만 존재한다.<br />
+<br /><br /><br /></p>
+
+<h2 id="enum에서는-keypath를-바로-사용할-수-없는-이유">enum에서는 KeyPath를 바로 사용할 수 없는 이유</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">UserAction</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeAction</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">)</span> 
+<span class="p">}</span>
+
+<span class="k">let</span> <span class="nv">action</span> <span class="o">=</span> <span class="kt">UserAction</span><span class="o">.</span><span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">())</span>
+</code></pre></div></div>
+<ul>
+  <li>home은 항상 존재하는 프로퍼티가 아니다.</li>
+  <li>let action 상태는 home이라는 값이 존재하지 않는다. 따라서 Swift 기본 KeyPath 시스템은 \UserAction.home처럼 enum case 내부 값을 직접 가리킬 수 없다.<br />
+<br /><br /><br /></li>
+</ul>
+
+<h2 id="enum에서는-기본적으로-switch로-꺼낸다">enum에서는 기본적으로 switch로 꺼낸다</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">UserAction</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeAction</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">)</span> 
+<span class="p">}</span>
+
+<span class="k">switch</span> <span class="n">action</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="n">homeAction</span><span class="p">):</span> 
+        <span class="nf">print</span><span class="p">(</span><span class="s">"home action:"</span><span class="p">,</span> <span class="n">homeAction</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">settings</span><span class="p">(</span><span class="n">settingsAction</span><span class="p">):</span> 
+        <span class="nf">print</span><span class="p">(</span><span class="s">"settings action:"</span><span class="p">,</span> <span class="n">settingsAction</span><span class="p">)</span> 
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>Swift에서 enum의 associated value를 다루는 가장 기본적인 방법은 switch 또는 if case를 사용하는 것이다.<br />
+<br /><br /><br /></li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="n">homeAction</span><span class="p">)</span> <span class="o">=</span> <span class="n">action</span> <span class="p">{</span> 
+    <span class="nf">print</span><span class="p">(</span><span class="n">homeAction</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>특정 case만 보고 싶다면 if case를 사용할 수 있다.<br />
+<br /><br /><br /></li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">Destination</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeState</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsState</span><span class="p">)</span> 
+<span class="p">}</span> 
+
+<span class="k">var</span> <span class="nv">destination</span> <span class="o">=</span> <span class="kt">Destination</span><span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="kt">HomeState</span><span class="p">(</span><span class="nv">title</span><span class="p">:</span> <span class="s">"Home"</span><span class="p">))</span> 
+<span class="k">switch</span> <span class="n">destination</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="kd">var</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="n">state</span><span class="p">):</span> 
+        <span class="n">state</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">"New Home"</span> 
+        <span class="n">destination</span> <span class="o">=</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="o">.</span><span class="nv">settings</span><span class="p">:</span> 
+        <span class="k">break</span> 
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>값을 수정해야 한다면, enum을 switch로 분해한 뒤 새로운 enum 값으로 다시 만들어줘야 한다.</li>
+  <li>즉, enum에서는 구조체처름 특정 내부 값을 KeyPath로 바로 수정하는 것이 아니라 현재 case를 확인하고 associated value를 꺼낸 뒤 다시 감싸는 방식으로 처리한다.<br />
+<br /><br /><br /></li>
+</ul>
+
+<h2 id="정리">정리</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">\</span><span class="kt">User</span><span class="o">.</span><span class="n">name</span> <span class="c1">// 가능</span>
+</code></pre></div></div>
+<ul>
+  <li>구조체와 클래스에서는 KeyPath를 사용해 프로퍼티 접근을 값처럼 다룰 수 있다. <br />
+<br /><br /><br /></li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">\</span><span class="kt">UserAction</span><span class="o">.</span><span class="n">home</span> <span class="c1">// 불가능</span>
+
+<span class="k">if</span> <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="n">homeAction</span><span class="p">)</span> <span class="o">=</span> <span class="n">action</span> <span class="p">{</span> 
+    <span class="c1">// homeAction 사용 </span>
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>하지만 enum case는 저장 프로퍼티가 아니기 때문에 Swift의 기본 KeyPath로 접근할 수 없다.
+    <ul>
+      <li>그래서 enum의 associated value를 다룰 때는 기본적으로 switch, if case, guard case를 사용한다.</li>
+    </ul>
+  </li>
+  <li>Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티 접근에는 강력하지만, enum case까지 표현하지는 못한다. 그래서 enum을 더 일반적으로 다루고 싶다면 Swift의 기본 KeyPath가 아니라, case를 추출하고 다시 삽입할 수 있는 별도의 추상화가 필요하다.<br />
+<br /><br /><br /></li>
+</ul>
+
+<h2 id="casepath">CasePath</h2>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">UserAction</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeAction</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">)</span> 
+<span class="p">}</span>
+
+<span class="p">\</span><span class="kt">UserAction</span><span class="o">.</span><span class="n">home</span> <span class="c1">// 🛑 Key path cannot refer to enum case 'home'</span>
+</code></pre></div></div>
+<ul>
+  <li>앞에서 살펴본 것처럼 Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티에는 사용할 수 있지만, enum의 case에는 사용할 수 없다.</li>
+  <li>하지만 실제 앱을 개발하다 보면 enum의 associated value를 일반화해서 다루고 싶은 경우가 매우 많다.</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">Destination</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeState</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsState</span><span class="p">)</span> 
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>예를 들어 위와 같은 상태가 있다고 가정해 보자.</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 방법 1</span>
+<span class="k">if</span> <span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">=</span> <span class="n">destination</span> <span class="p">{</span> 
+    <span class="c1">// state 사용 </span>
+<span class="p">}</span>
+
+<span class="c1">// 방법 2</span>
+<span class="k">switch</span> <span class="n">destination</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="kd">var</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="n">state</span><span class="p">):</span> 
+        <span class="n">state</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">"새 제목"</span> 
+        <span class="n">destination</span> <span class="o">=</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="o">.</span><span class="nv">settings</span><span class="p">:</span> 
+        <span class="k">break</span> 
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>Destination이 현재 home인지 확인하고, if case let 나 switch로 수정한 뒤 다시 enum으로 감싸야 한다.</li>
+  <li>이러한 코드는 한두 번은 괜찮지만 enum을 자주 다루게 되면 반복되는 switch와 패턴 매칭 코드가 계속 등장하게 된다.</li>
+</ul>
+
+<h2 id="casepath-1">CasePath</h2>
+<p>앞에서 살펴본 것처럼 Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티에는 사용할 수 있지만, enum의 case에는 사용할 수 없다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">UserAction</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeAction</span><span class="p">)</span>
+  <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="p">\</span><span class="kt">UserAction</span><span class="o">.</span><span class="n">home</span>
+<span class="c1">// 🛑 key path cannot refer to static member 'home'</span>
+</code></pre></div></div>
+<ul>
+  <li>KeyPath가 구조체나 클래스 내부의 프로퍼티를 가리킨다면, CasePath는 enum의 특정 case를 가리킨다.</li>
+  <li>Point-Free의 swift-case-paths는 이 개념을 Swift에서 사용할 수 있게 해주는 라이브러리다.</li>
+  <li>공식 설명에서도 CasePath를 “enum case를 위한 key path”라고 설명한다.</li>
+</ul>
+
+<h2 id="casepath를-활성화하는-방법">CasePath를 활성화하는 방법</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">CasePaths</span> 
+
+<span class="kd">@CasePathable</span> 
+<span class="kd">enum</span> <span class="kt">UserAction</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeAction</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">)</span> 
+<span class="p">}</span>
+
+<span class="p">\</span><span class="kt">UserAction</span><span class="o">.</span><span class="kt">Cases</span><span class="o">.</span><span class="n">home</span> <span class="c1">// CaseKeyPath&lt;UserAction, HomeAction&gt; </span>
+<span class="p">\</span><span class="kt">UserAction</span><span class="o">.</span><span class="kt">Cases</span><span class="o">.</span><span class="n">settings</span> <span class="c1">// CaseKeyPath&lt;UserAction, SettingsAction&gt;</span>
+
+<span class="c1">// 타입을 추론할 수 있는 상황에서는 더 짧게 쓸 수도 있다.</span>
+<span class="p">\</span><span class="o">.</span><span class="n">home</span> <span class="k">as</span> <span class="kt">CaseKeyPath</span><span class="o">&lt;</span><span class="kt">UserAction</span><span class="p">,</span> <span class="kt">HomeAction</span><span class="o">&gt;</span> 
+<span class="p">\</span><span class="o">.</span><span class="n">settings</span> <span class="k">as</span> <span class="kt">CaseKeyPath</span><span class="o">&lt;</span><span class="kt">UserAction</span><span class="p">,</span> <span class="kt">SettingsAction</span><span class="o">&gt;</span>
+</code></pre></div></div>
+<ul>
+  <li>CasePath를 사용하려면 enum에 @CasePathable 매크로를 붙인다.</li>
+  <li>그러면 enum의 Cases 네임스페이스를 통해 case path를 만들 수 있다.</li>
+</ul>
+
+<h2 id="casepath가-할-수-있는-일">CasePath가 할 수 있는 일</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// KeyPath는 어떤 값의 프로퍼티를 읽고 수정할 수 있다.</span>
+<span class="n">user</span><span class="p">[</span><span class="nv">keyPath</span><span class="p">:</span> <span class="p">\</span><span class="kt">User</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="s">"Blob"</span> 
+<span class="n">user</span><span class="p">[</span><span class="nv">keyPath</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="c1">// "Blob"</span>
+
+<span class="c1">// CasePath는 enum에서 특정 case의 associated value를 꺼내거나 수정할 수 있다.</span>
+<span class="c1">// 현재 enum 값이 원하는 case라면 associated value를 반환하고, 다른 case라면 nil을 반환한다.</span>
+<span class="k">var</span> <span class="nv">userAction</span> <span class="o">=</span> <span class="kt">UserAction</span><span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">onAppear</span><span class="p">)</span> 
+<span class="n">userAction</span><span class="p">[</span><span class="nv">case</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">home</span><span class="p">]</span> <span class="c1">// Optional(HomeAction.onAppear) </span>
+<span class="n">userAction</span><span class="p">[</span><span class="nv">case</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">settings</span><span class="p">]</span> <span class="c1">// nil</span>
+
+<span class="c1">// 값을 수정하는 것도 가능하다.</span>
+<span class="c1">// 이 코드는 현재 userAction이 .home case일 때 내부의 HomeAction 값을 수정한다.</span>
+<span class="n">userAction</span><span class="p">[</span><span class="nv">case</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">home</span><span class="p">]</span> <span class="o">=</span> <span class="o">.</span><span class="n">buttonTapped</span>
+</code></pre></div></div>
+
+<h2 id="embed-값을-다시-enum으로-감싸기">Embed: 값을 다시 enum으로 감싸기</h2>
+<p>CasePath는 enum에서 값을 꺼내는 것뿐만 아니라, associated value를 다시 enum case로 감쌀 수도 있다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">homeCase</span> <span class="o">=</span> <span class="p">\</span><span class="kt">UserAction</span><span class="o">.</span><span class="kt">Cases</span><span class="o">.</span><span class="n">home</span> 
+<span class="k">let</span> <span class="nv">action</span> <span class="o">=</span> <span class="nf">homeCase</span><span class="p">(</span><span class="o">.</span><span class="n">onAppear</span><span class="p">)</span> 
+<span class="c1">// UserAction.home(.onAppear)</span>
+
+<span class="kt">HomeAction</span><span class="o">.</span><span class="n">onAppear</span> 
+          <span class="err">↓</span>
+<span class="kt">UserAction</span><span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">onAppear</span><span class="p">)</span>
+</code></pre></div></div>
+<ul>
+  <li>이 부분이 일반 KeyPath와 다른 중요한 차이다. KeyPath는 이미 존재하는 구조체나 클래스 안으로 들어가 프로퍼티를 읽고 수정한다. 반면 CasePath는 associated value를 새로운 enum 값으로 만들 수도 있다.</li>
+</ul>
+
+<h2 id="case인지-확인하기">case인지 확인하기</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">userAction</span><span class="o">.</span><span class="nf">is</span><span class="p">(\</span><span class="o">.</span><span class="n">home</span><span class="p">)</span> <span class="c1">// true</span>
+<span class="n">userAction</span><span class="o">.</span><span class="nf">is</span><span class="p">(\</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span> <span class="c1">// false</span>
+
+<span class="c1">// 배열에서도 유용하다.</span>
+<span class="k">let</span> <span class="nv">actions</span><span class="p">:</span> <span class="p">[</span><span class="kt">UserAction</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">onAppear</span><span class="p">),</span>
+  <span class="o">.</span><span class="nf">settings</span><span class="p">(</span><span class="o">.</span><span class="n">purchaseButtonTapped</span><span class="p">),</span>
+  <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">buttonTapped</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="k">let</span> <span class="nv">homeActionsCount</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">count</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="nf">is</span><span class="p">(\</span><span class="o">.</span><span class="n">home</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// 2</span>
+</code></pre></div></div>
+<ul>
+  <li>@CasePathable을 사용하면 특정 enum 값이 원하는 case인지 확인할 수도 있다.</li>
+</ul>
+
+<h2 id="associated-value를-제자리에서-수정하기">associated value를 제자리에서 수정하기</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="nv">result</span> <span class="o">=</span> <span class="kt">Result</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kt">Error</span><span class="o">&gt;.</span><span class="nf">success</span><span class="p">(</span><span class="s">"Blob"</span><span class="p">)</span> 
+
+<span class="c1">// 기본 Swift만 사용했다면 switch로 case를 꺼내고, 값을 수정한 뒤, 다시 enum으로 감싸야 한다.</span>
+<span class="k">switch</span> <span class="n">result</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="kd">var</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="n">value</span><span class="p">):</span> 
+        <span class="n">value</span> <span class="o">+=</span> <span class="s">", Jr."</span> 
+       <span class="n">result</span> <span class="o">=</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="o">.</span><span class="nv">failure</span><span class="p">:</span> 
+        <span class="k">break</span> 
+<span class="p">}</span>
+
+<span class="c1">// modify를 사용하면 이 반복 코드를 줄일 수 있다.</span>
+<span class="n">result</span><span class="o">.</span><span class="nf">modify</span><span class="p">(\</span><span class="o">.</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span> 
+    <span class="nv">$0</span> <span class="o">+=</span> <span class="s">", Jr."</span> 
+<span class="p">}</span> 
+<span class="n">result</span> <span class="c1">// .success("Blob, Jr.")</span>
+</code></pre></div></div>
+<ul>
+  <li>CasePath는 특정 case의 associated value를 제자리에서 수정하는 modify도 제공한다.</li>
+</ul>
+
+<h2 id="casepath도-조합할-수-있다">CasePath도 조합할 수 있다</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">@CasePathable</span> 
+<span class="kd">enum</span> <span class="kt">AppAction</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">user</span><span class="p">(</span><span class="kt">UserAction</span><span class="p">)</span> 
+<span class="p">}</span> 
+
+<span class="kd">@CasePathable</span> 
+<span class="kd">enum</span> <span class="kt">UserAction</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeAction</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">)</span> 
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>KeyPath를 조합할 수 있듯이 CasePath도 조합할 수 있다.</li>
+  <li>예를 들어 액션이 중첩되어 있다고 가정해 보자.</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 그러면 AppAction에서 바로 HomeAction까지 들어가는 CasePath를 만들 수 있다.</span>
+<span class="p">\</span><span class="kt">AppAction</span><span class="o">.</span><span class="kt">Cases</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">home</span> <span class="c1">// CaseKeyPath&lt;AppAction, HomeAction&gt;</span>
+
+<span class="c1">// 또는 직접 append할 수도 있다.</span>
+<span class="k">let</span> <span class="nv">appActionToUser</span> <span class="o">=</span> <span class="p">\</span><span class="kt">AppAction</span><span class="o">.</span><span class="kt">Cases</span><span class="o">.</span><span class="n">user</span>
+<span class="k">let</span> <span class="nv">userActionToHome</span> <span class="o">=</span> <span class="p">\</span><span class="kt">UserAction</span><span class="o">.</span><span class="kt">Cases</span><span class="o">.</span><span class="n">home</span>
+<span class="k">let</span> <span class="nv">appActionToHome</span> <span class="o">=</span> <span class="n">appActionToUser</span><span class="o">.</span><span class="nf">append</span><span class="p">(</span><span class="nv">path</span><span class="p">:</span> <span class="n">userActionToHome</span><span class="p">)</span> <span class="c1">// CaseKeyPath&lt;AppAction, HomeAction&gt;</span>
+</code></pre></div></div>
+<ul>
+  <li>이 덕분에 큰 enum을 작은 enum 단위로 나누고, 필요한 case만 선택해서 다룰 수 있다.</li>
+</ul>
+
+<h2 id="dynamic-member-lookup과-함께-사용하기">Dynamic Member Lookup과 함께 사용하기</h2>
+<p>@CasePathable과 @dynamicMemberLookup을 함께 사용하면 enum case를 프로퍼티처럼 접근할 수도 있다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">@CasePathable</span> 
+<span class="kd">@dynamicMemberLookup</span> 
+<span class="kd">enum</span> <span class="kt">UserAction</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeAction</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsAction</span><span class="p">)</span> 
+<span class="p">}</span>
+<span class="k">let</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">UserAction</span> <span class="o">=</span> <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">onAppear</span><span class="p">)</span>
+<span class="n">action</span><span class="o">.</span><span class="n">home</span> <span class="c1">// Optional(HomeAction.onAppear)</span>
+<span class="n">action</span><span class="o">.</span><span class="n">settings</span> <span class="c1">// nil</span>
+</code></pre></div></div>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">actions</span><span class="p">:</span> <span class="p">[</span><span class="kt">UserAction</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> 
+    <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">onAppear</span><span class="p">),</span> 
+    <span class="o">.</span><span class="nf">settings</span><span class="p">(</span><span class="o">.</span><span class="n">purchaseButtonTapped</span><span class="p">),</span> 
+    <span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">buttonTapped</span><span class="p">)</span> 
+<span class="p">]</span>
+<span class="n">actions</span><span class="o">.</span><span class="nf">compactMap</span><span class="p">(\</span><span class="o">.</span><span class="n">home</span><span class="p">)</span> <span class="c1">// [.onAppear, .buttonTapped]</span>
+</code></pre></div></div>
+<ul>
+  <li>배열에서도 key path 표현식처럼 사용할 수 있다.</li>
+  <li>이 문법은 enum을 구조체 프로퍼티처럼 다룰 수 있게 만들어준다.</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// @dynamicMemberLookup 없음</span>
+<span class="k">let</span> <span class="nv">action</span> <span class="o">=</span> <span class="kt">UserAction</span><span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">onAppear</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">value</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="nv">case</span><span class="p">:</span> <span class="p">\</span><span class="o">.</span><span class="n">home</span><span class="p">]</span>
+<span class="c1">// Optional(.onAppear)</span>
+
+<span class="c1">// @dynamicMemberLookup 있음</span>
+<span class="k">let</span> <span class="nv">action</span> <span class="o">=</span> <span class="kt">UserAction</span><span class="o">.</span><span class="nf">home</span><span class="p">(</span><span class="o">.</span><span class="n">onAppear</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">value</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">home</span>
+<span class="c1">// Optional(.onAppear)</span>
+</code></pre></div></div>
+
+<h2 id="swiftui-binding과-casepath">SwiftUI Binding과 CasePath</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">user</span><span class="p">:</span> <span class="kt">Binding</span><span class="o">&lt;</span><span class="kt">User</span><span class="o">&gt;</span> <span class="o">=</span> <span class="o">...</span> 
+<span class="k">let</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">Binding</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span>
+</code></pre></div></div>
+<ul>
+  <li>공식 README에서도 Binding 예시를 통해 CasePath의 필요성을 설명한다.</li>
+  <li>SwiftUI의 Binding은 WritableKeyPath를 이용해 하위 프로퍼티의 바인딩을 만들 수 있다.</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">Destination</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeState</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsState</span><span class="p">)</span> 
+<span class="p">}</span>
+
+<span class="k">let</span> <span class="nv">destination</span><span class="p">:</span> <span class="kt">Binding</span><span class="o">&lt;</span><span class="kt">Destination</span><span class="o">&gt;</span> <span class="o">=</span> <span class="o">...</span> 
+<span class="n">destination</span><span class="o">.</span><span class="n">home</span> <span class="c1">// 기본 Swift만으로는 불가능</span>
+</code></pre></div></div>
+<ul>
+  <li>하지만 enum에서는 기본적으로 이런 식의 접근이 불가능하다.</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">@CasePathable</span>
+<span class="kd">enum</span> <span class="kt">Destination</span> <span class="p">{</span> 
+    <span class="k">case</span> <span class="nf">home</span><span class="p">(</span><span class="kt">HomeState</span><span class="p">)</span> 
+    <span class="k">case</span> <span class="nf">settings</span><span class="p">(</span><span class="kt">SettingsState</span><span class="p">)</span> 
+<span class="p">}</span>
+
+<span class="n">destination</span><span class="o">.</span><span class="n">home</span> <span class="c1">// Binding&lt;HomeState&gt;? </span>
+<span class="n">destination</span><span class="o">.</span><span class="n">settings</span> <span class="c1">// Binding&lt;SettingsState&gt;?</span>
+</code></pre></div></div>
+<ul>
+  <li>CasePath를 사용하면 enum의 특정 case에 대한 바인딩을 만들 수 있다.</li>
+</ul>
+
+<!-- 
+Swift는 모든 구조체와 클래스 속성에 KeyPath를 부여한다.
+
+```swift
+struct User {
+  let id: Int
+  var name: String
+}
+
+\User.id    // KeyPath<User, Int>
+\User.name  // WritableKeyPath<User, String>
+```
+- 컴파일러가 생성하는 이 코드는 구조체의 일부를 추상적으로 확대하여 검사 및 변경할 수 있고, 변경 사항을 구조체 전체에 반영할 수 있다.
+- SwiftUI의 바인딩 처럼 동적 멤버 조회를 사용하는 많은 최신 Swift API에서 조용히 활용되지만, SwiftUI enviroment나 unsafe mutable pointers 같이 직접적으로 나타나기도 한다.
+
+```swift
+enum UserAction {
+  case home(HomeAction)
+  case settings(SettingsAction)
+}
+
+// 🛑 키 경로가 정적 멤버 'home'을 참조할 수 없습니다.
+\UserAction.home  // 🛑
+```
+- 아쉽지만 열거형 케이스에 대해서는 이러한 접근이 불가능하다.
+- 그래서 열거형의 특정 사례 데이터를 수정할 수 있는 일반적인 코드 작성은 불가능하다. -->]]></content><author><name>Dong Hyeon</name></author><category term="TCA" /><summary type="html"><![CDATA[KeyPath blue &gt; Swift의 구조체와 클래슨느 프로퍼티를 참조할 수 있는 KeyPath를 사용할 수 있다. blue &gt; KeyPath는 특정 타입의 프로퍼티 위치를 값처럼 표현하는 기능이다. struct User { let id: Int var name: String } \User.id // KeyPath&lt;User, Int&gt; \User.name // WritableKeyPath&lt;User, String&gt; KeyPath&lt;Root, Value&gt;는 Root 타입 안에 있는 Value 타입 프로퍼티를 가리킨다. let user = User(id: 1, name: "Donghyeon") let nameKeyPath = \User.name print(user[keyPath: nameKeyPath]) // Donghyeon 예를 들어 \User.name은 User 안의 name 프로퍼티를 가리키는 값이다. var user = User(id: 1, name: "Donghyeon") user[keyPath: \User.name] = "Kim" print(user.name) // Kim var 프로퍼티라면 값을 변경하는 것도 가능하다. 즉, KeyPath를 사용하면 어떤 프로퍼티를 읽거나 수정할지 코드로 직접 고정하지 않고, 프로퍼티 접근 자체를 값처럼 전달할 수 있다. 이 개념은 SwiftUI에서도 자주 사용된다. 예를 들어 Binding, Environment, dynamicMemberLookup 같은 API 내부에서 KeyPath가 자연스럽게 활용된다. enum에서는 KeyPath를 바로 사용할 수 없다 enum UserAction { case home(HomeAction) case settings(SettingsAction) } \UserAction.home // 🛑 Key path cannot refer to enum case 'home' enum의 case에는 일반적인 KeyPath를 사용할 수 없다. KeyPath는 기본적으로 구조체나 클래스의 저장 프로퍼티를 가리키는 기능이기 떄문이다. enum의 case는 저장 프로퍼티가 아니다. enum은 case중 하나의 상태를 표현하는 타입이고, associated value는 특정 case일 때만 존재한다. enum에서는 KeyPath를 바로 사용할 수 없는 이유 enum UserAction { case home(HomeAction) case settings(SettingsAction) } let action = UserAction.settings(SettingsAction()) home은 항상 존재하는 프로퍼티가 아니다. let action 상태는 home이라는 값이 존재하지 않는다. 따라서 Swift 기본 KeyPath 시스템은 \UserAction.home처럼 enum case 내부 값을 직접 가리킬 수 없다. enum에서는 기본적으로 switch로 꺼낸다 enum UserAction { case home(HomeAction) case settings(SettingsAction) } switch action { case let .home(homeAction): print("home action:", homeAction) case let .settings(settingsAction): print("settings action:", settingsAction) } Swift에서 enum의 associated value를 다루는 가장 기본적인 방법은 switch 또는 if case를 사용하는 것이다. if case let .home(homeAction) = action { print(homeAction) } 특정 case만 보고 싶다면 if case를 사용할 수 있다. enum Destination { case home(HomeState) case settings(SettingsState) } var destination = Destination.home(HomeState(title: "Home")) switch destination { case var .home(state): state.title = "New Home" destination = .home(state) case .settings: break } 값을 수정해야 한다면, enum을 switch로 분해한 뒤 새로운 enum 값으로 다시 만들어줘야 한다. 즉, enum에서는 구조체처름 특정 내부 값을 KeyPath로 바로 수정하는 것이 아니라 현재 case를 확인하고 associated value를 꺼낸 뒤 다시 감싸는 방식으로 처리한다. 정리 \User.name // 가능 구조체와 클래스에서는 KeyPath를 사용해 프로퍼티 접근을 값처럼 다룰 수 있다. \UserAction.home // 불가능 if case let .home(homeAction) = action { // homeAction 사용 } 하지만 enum case는 저장 프로퍼티가 아니기 때문에 Swift의 기본 KeyPath로 접근할 수 없다. 그래서 enum의 associated value를 다룰 때는 기본적으로 switch, if case, guard case를 사용한다. Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티 접근에는 강력하지만, enum case까지 표현하지는 못한다. 그래서 enum을 더 일반적으로 다루고 싶다면 Swift의 기본 KeyPath가 아니라, case를 추출하고 다시 삽입할 수 있는 별도의 추상화가 필요하다. CasePath enum UserAction { case home(HomeAction) case settings(SettingsAction) } \UserAction.home // 🛑 Key path cannot refer to enum case 'home' 앞에서 살펴본 것처럼 Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티에는 사용할 수 있지만, enum의 case에는 사용할 수 없다. 하지만 실제 앱을 개발하다 보면 enum의 associated value를 일반화해서 다루고 싶은 경우가 매우 많다. enum Destination { case home(HomeState) case settings(SettingsState) } 예를 들어 위와 같은 상태가 있다고 가정해 보자. // 방법 1 if case let .home(state) = destination { // state 사용 } // 방법 2 switch destination { case var .home(state): state.title = "새 제목" destination = .home(state) case .settings: break } Destination이 현재 home인지 확인하고, if case let 나 switch로 수정한 뒤 다시 enum으로 감싸야 한다. 이러한 코드는 한두 번은 괜찮지만 enum을 자주 다루게 되면 반복되는 switch와 패턴 매칭 코드가 계속 등장하게 된다. CasePath 앞에서 살펴본 것처럼 Swift의 기본 KeyPath는 구조체와 클래스의 프로퍼티에는 사용할 수 있지만, enum의 case에는 사용할 수 없다. enum UserAction { case home(HomeAction) case settings(SettingsAction) } \UserAction.home // 🛑 key path cannot refer to static member 'home' KeyPath가 구조체나 클래스 내부의 프로퍼티를 가리킨다면, CasePath는 enum의 특정 case를 가리킨다. Point-Free의 swift-case-paths는 이 개념을 Swift에서 사용할 수 있게 해주는 라이브러리다. 공식 설명에서도 CasePath를 “enum case를 위한 key path”라고 설명한다. CasePath를 활성화하는 방법 import CasePaths @CasePathable enum UserAction { case home(HomeAction) case settings(SettingsAction) } \UserAction.Cases.home // CaseKeyPath&lt;UserAction, HomeAction&gt; \UserAction.Cases.settings // CaseKeyPath&lt;UserAction, SettingsAction&gt; // 타입을 추론할 수 있는 상황에서는 더 짧게 쓸 수도 있다. \.home as CaseKeyPath&lt;UserAction, HomeAction&gt; \.settings as CaseKeyPath&lt;UserAction, SettingsAction&gt; CasePath를 사용하려면 enum에 @CasePathable 매크로를 붙인다. 그러면 enum의 Cases 네임스페이스를 통해 case path를 만들 수 있다. CasePath가 할 수 있는 일 // KeyPath는 어떤 값의 프로퍼티를 읽고 수정할 수 있다. user[keyPath: \User.name] = "Blob" user[keyPath: \.name] // "Blob" // CasePath는 enum에서 특정 case의 associated value를 꺼내거나 수정할 수 있다. // 현재 enum 값이 원하는 case라면 associated value를 반환하고, 다른 case라면 nil을 반환한다. var userAction = UserAction.home(.onAppear) userAction[case: \.home] // Optional(HomeAction.onAppear) userAction[case: \.settings] // nil // 값을 수정하는 것도 가능하다. // 이 코드는 현재 userAction이 .home case일 때 내부의 HomeAction 값을 수정한다. userAction[case: \.home] = .buttonTapped Embed: 값을 다시 enum으로 감싸기 CasePath는 enum에서 값을 꺼내는 것뿐만 아니라, associated value를 다시 enum case로 감쌀 수도 있다. let homeCase = \UserAction.Cases.home let action = homeCase(.onAppear) // UserAction.home(.onAppear) HomeAction.onAppear ↓ UserAction.home(.onAppear) 이 부분이 일반 KeyPath와 다른 중요한 차이다. KeyPath는 이미 존재하는 구조체나 클래스 안으로 들어가 프로퍼티를 읽고 수정한다. 반면 CasePath는 associated value를 새로운 enum 값으로 만들 수도 있다. case인지 확인하기 userAction.is(\.home) // true userAction.is(\.settings) // false // 배열에서도 유용하다. let actions: [UserAction] = [ .home(.onAppear), .settings(.purchaseButtonTapped), .home(.buttonTapped) ] let homeActionsCount = actions.count { $0.is(\.home) } // 2 @CasePathable을 사용하면 특정 enum 값이 원하는 case인지 확인할 수도 있다. associated value를 제자리에서 수정하기 var result = Result&lt;String, Error&gt;.success("Blob") // 기본 Swift만 사용했다면 switch로 case를 꺼내고, 값을 수정한 뒤, 다시 enum으로 감싸야 한다. switch result { case var .success(value): value += ", Jr." result = .success(value) case .failure: break } // modify를 사용하면 이 반복 코드를 줄일 수 있다. result.modify(\.success) { $0 += ", Jr." } result // .success("Blob, Jr.") CasePath는 특정 case의 associated value를 제자리에서 수정하는 modify도 제공한다. CasePath도 조합할 수 있다 @CasePathable enum AppAction { case user(UserAction) } @CasePathable enum UserAction { case home(HomeAction) case settings(SettingsAction) } KeyPath를 조합할 수 있듯이 CasePath도 조합할 수 있다. 예를 들어 액션이 중첩되어 있다고 가정해 보자. // 그러면 AppAction에서 바로 HomeAction까지 들어가는 CasePath를 만들 수 있다. \AppAction.Cases.user.home // CaseKeyPath&lt;AppAction, HomeAction&gt; // 또는 직접 append할 수도 있다. let appActionToUser = \AppAction.Cases.user let userActionToHome = \UserAction.Cases.home let appActionToHome = appActionToUser.append(path: userActionToHome) // CaseKeyPath&lt;AppAction, HomeAction&gt; 이 덕분에 큰 enum을 작은 enum 단위로 나누고, 필요한 case만 선택해서 다룰 수 있다. Dynamic Member Lookup과 함께 사용하기 @CasePathable과 @dynamicMemberLookup을 함께 사용하면 enum case를 프로퍼티처럼 접근할 수도 있다. @CasePathable @dynamicMemberLookup enum UserAction { case home(HomeAction) case settings(SettingsAction) } let action: UserAction = .home(.onAppear) action.home // Optional(HomeAction.onAppear) action.settings // nil let actions: [UserAction] = [ .home(.onAppear), .settings(.purchaseButtonTapped), .home(.buttonTapped) ] actions.compactMap(\.home) // [.onAppear, .buttonTapped] 배열에서도 key path 표현식처럼 사용할 수 있다. 이 문법은 enum을 구조체 프로퍼티처럼 다룰 수 있게 만들어준다. // @dynamicMemberLookup 없음 let action = UserAction.home(.onAppear) let value = action[case: \.home] // Optional(.onAppear) // @dynamicMemberLookup 있음 let action = UserAction.home(.onAppear) let value = action.home // Optional(.onAppear) SwiftUI Binding과 CasePath let user: Binding&lt;User&gt; = ... let name: Binding&lt;String&gt; = user.name 공식 README에서도 Binding 예시를 통해 CasePath의 필요성을 설명한다. SwiftUI의 Binding은 WritableKeyPath를 이용해 하위 프로퍼티의 바인딩을 만들 수 있다. enum Destination { case home(HomeState) case settings(SettingsState) } let destination: Binding&lt;Destination&gt; = ... destination.home // 기본 Swift만으로는 불가능 하지만 enum에서는 기본적으로 이런 식의 접근이 불가능하다. @CasePathable enum Destination { case home(HomeState) case settings(SettingsState) } destination.home // Binding&lt;HomeState&gt;? destination.settings // Binding&lt;SettingsState&gt;? CasePath를 사용하면 enum의 특정 case에 대한 바인딩을 만들 수 있다.]]></summary></entry><entry><title type="html">[WWDC] Demystify SwiftUI - SwiftUI가 코드를 보는법</title><link href="http://localhost:4000/swiftui-demystify-swiftui/" rel="alternate" type="text/html" title="[WWDC] Demystify SwiftUI - SwiftUI가 코드를 보는법" /><published>2026-06-01T00:00:00+00:00</published><updated>2026-06-01T00:00:00+00:00</updated><id>http://localhost:4000/%5BSwiftUI%5D%20Demystify%20SwiftUI</id><content type="html" xml:base="http://localhost:4000/swiftui-demystify-swiftui/"><![CDATA[<!-- <img src="/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%BD%EB%A1%9C" alt="이미지" width="30%"> -->
 
 <!-- <img src="https://github.com/user-attachments/assets/3938e583-0fc4-4620-99b0-bf761e60a1ba" width="60%" align="left"> -->
 
@@ -1463,176 +1883,103 @@ ObservableMacroLightView: _model changed.
 <ul>
   <li>https://babbab2.tistory.com/182</li>
   <li>https://babbab2.tistory.com/185</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="RxSwift" /><summary type="html"><![CDATA[비동기 이벤트 예시 버튼의 클릭을 나타내는 UIButton의 Tap 이벤트는 비동기 이벤트로, 데이터의 변화에 대해 관찰이 가능한 형태다. RxSwift에서 이를 Observable 형태로 만들 수 있다. Observable public class Observable&lt;Element&gt;: ObservableType {} 관찰이 가능한 흐름으로, 비동기 이벤트의 시퀀스를 생성할 수 있는 대상을 말한다. 비동기 이벤트를 어떤 관찰 가능한 타입으로 만든다 == 비동기 이벤트를 제네릭 타입의 Observable이란 클래스의 인스턴스로 만든다는 것이다 이벤트가 발생시 이를 알리기 위해 그 이벤트에 대한 항목을 시퀀스로 방출한다 이를 obser가 받는다 Observer Observer는 Observable을 구독한다 Observer는 내가 원하는 비동기 이벤트를 방출하는 Observable을 구독할 경우 그 Observable이 비동기 이벤트가 실행되어 항목(item)이 방출되면 그 항목을 받을 수 있다. Observer가 Observable을 구독할 수 있게 해주는 것이 Subscrive라는 메서드다. Subscribe public func subscribe( onNext: ((Element) -&gt; Void)? = nil, // 구독하려는 Observable이 항목(item)을 방출 시 어떤 작업을 할 것인지 onError: ((Swift.Error) -&gt; Void)? = nil, // 해당 Observable이 오류 발생 시 어떤 작업을 할 것인지 onCompleted: (() -&gt; Void)? = nil, // 더 이상 이벤트 발생하지 않고 종료됐을 때 어떤 작업을 할 것인지 onDisposed: (() -&gt; Void)? = nil ) -&gt; Disposable UIButton 클릭 이벤트 예시(Observable, Observer, Subscribe sodeulButton .rx .tap .subscribe(onNext: { print("Observable이 항목을 방출 했다!") }, onError: { error in print("에러가 발생 했다!") }, onCompleted: { print("해당 이벤트가 끝났다!") }) .disposed(by: disposedBag) tap 이벤트 발생 시 subscribe(onNext:…)를 통해 “구독”을 해서 해당 Observable이 방출하는 항목에 대해 받을 수 있다. 이 메서드의 파라미터로 아래 3가지를 각각 넘겨줄 수 있다. onNext(항목이 방출 됐을 때, 즉 버튼이 눌렸을 때 실행시킬 클로저) onError(에러가 발생 했을 때 실행시킬 클로저) onCompleted(이벤트가 종료됐을 때 실행시킬 클로저) subscribe 메서드를 사용하면 메서드 내부에서 Observer를 자체적으로 생성한다. // 자체적으로 AnnonymousObserver라는 것을 생성해서 해당 Observable에 subscribe를 해준다. let observer = AnnonymousObserver&lt;Element&gt; { ... } return Disposables.create( self.asObservable().subscribe(observer), disposable ) subscribe(onNext:…) 메서드를 사용할 경우, 메서드 내부에서 옵저버를 자체적으로 생성해서 우리가 직접 Observer를 생성하지 않고 파라미터로 클로저만 넘겨줘도 Observable을 구독하여 방출하는 항목을 받을 수 있게 된다. Reference https://babbab2.tistory.com/182 https://babbab2.tistory.com/185]]></summary></entry><entry><title type="html">[Swift] 12. 클래스</title><link href="http://localhost:4000/Swift-12-class/" rel="alternate" type="text/html" title="[Swift] 12. 클래스" /><published>2026-04-17T00:00:00+00:00</published><updated>2026-04-17T00:00:00+00:00</updated><id>http://localhost:4000/%5BSwift-12%5D-class</id><content type="html" xml:base="http://localhost:4000/Swift-12-class/"><![CDATA[<h2 id="클래스">클래스</h2>]]></content><author><name>Dong Hyeon</name></author><category term="Swift" /><category term="Grammer" /><summary type="html"><![CDATA[클래스]]></summary></entry><entry><title type="html">[Swift] 11. 클래스와 구조체</title><link href="http://localhost:4000/Swift-11-class/" rel="alternate" type="text/html" title="[Swift] 11. 클래스와 구조체" /><published>2026-04-16T00:00:00+00:00</published><updated>2026-04-16T00:00:00+00:00</updated><id>http://localhost:4000/%5BSwift-11%5D-class</id><content type="html" xml:base="http://localhost:4000/Swift-11-class/"><![CDATA[<h2 id="클래스구조체">클래스/구조체</h2>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="RxSwift" /><summary type="html"><![CDATA[비동기 이벤트 예시 버튼의 클릭을 나타내는 UIButton의 Tap 이벤트는 비동기 이벤트로, 데이터의 변화에 대해 관찰이 가능한 형태다. RxSwift에서 이를 Observable 형태로 만들 수 있다. Observable public class Observable&lt;Element&gt;: ObservableType {} 관찰이 가능한 흐름으로, 비동기 이벤트의 시퀀스를 생성할 수 있는 대상을 말한다. 비동기 이벤트를 어떤 관찰 가능한 타입으로 만든다 == 비동기 이벤트를 제네릭 타입의 Observable이란 클래스의 인스턴스로 만든다는 것이다 이벤트가 발생시 이를 알리기 위해 그 이벤트에 대한 항목을 시퀀스로 방출한다 이를 obser가 받는다 Observer Observer는 Observable을 구독한다 Observer는 내가 원하는 비동기 이벤트를 방출하는 Observable을 구독할 경우 그 Observable이 비동기 이벤트가 실행되어 항목(item)이 방출되면 그 항목을 받을 수 있다. Observer가 Observable을 구독할 수 있게 해주는 것이 Subscrive라는 메서드다. Subscribe public func subscribe( onNext: ((Element) -&gt; Void)? = nil, // 구독하려는 Observable이 항목(item)을 방출 시 어떤 작업을 할 것인지 onError: ((Swift.Error) -&gt; Void)? = nil, // 해당 Observable이 오류 발생 시 어떤 작업을 할 것인지 onCompleted: (() -&gt; Void)? = nil, // 더 이상 이벤트 발생하지 않고 종료됐을 때 어떤 작업을 할 것인지 onDisposed: (() -&gt; Void)? = nil ) -&gt; Disposable UIButton 클릭 이벤트 예시(Observable, Observer, Subscribe sodeulButton .rx .tap .subscribe(onNext: { print("Observable이 항목을 방출 했다!") }, onError: { error in print("에러가 발생 했다!") }, onCompleted: { print("해당 이벤트가 끝났다!") }) .disposed(by: disposedBag) tap 이벤트 발생 시 subscribe(onNext:…)를 통해 “구독”을 해서 해당 Observable이 방출하는 항목에 대해 받을 수 있다. 이 메서드의 파라미터로 아래 3가지를 각각 넘겨줄 수 있다. onNext(항목이 방출 됐을 때, 즉 버튼이 눌렸을 때 실행시킬 클로저) onError(에러가 발생 했을 때 실행시킬 클로저) onCompleted(이벤트가 종료됐을 때 실행시킬 클로저) subscribe 메서드를 사용하면 메서드 내부에서 Observer를 자체적으로 생성한다. // 자체적으로 AnnonymousObserver라는 것을 생성해서 해당 Observable에 subscribe를 해준다. let observer = AnnonymousObserver&lt;Element&gt; { ... } return Disposables.create( self.asObservable().subscribe(observer), disposable ) subscribe(onNext:…) 메서드를 사용할 경우, 메서드 내부에서 옵저버를 자체적으로 생성해서 우리가 직접 Observer를 생성하지 않고 파라미터로 클로저만 넘겨줘도 Observable을 구독하여 방출하는 항목을 받을 수 있게 된다. Reference https://babbab2.tistory.com/182 https://babbab2.tistory.com/185]]></summary></entry><entry><title type="html">[Swift] 12. 클래스</title><link href="http://localhost:4000/Swift-12-class/" rel="alternate" type="text/html" title="[Swift] 12. 클래스" /><published>2026-04-17T00:00:00+00:00</published><updated>2026-04-17T00:00:00+00:00</updated><id>http://localhost:4000/%5BSwift-12%5D-class</id><content type="html" xml:base="http://localhost:4000/Swift-12-class/"><![CDATA[<h2 id="클래스">클래스</h2>]]></content><author><name>Dong Hyeon</name></author><category term="Swift" /><category term="Grammer" /><summary type="html"><![CDATA[클래스]]></summary></entry><entry><title type="html">[Swift] 10. 열거형</title><link href="http://localhost:4000/Swift-10-enumeration/" rel="alternate" type="text/html" title="[Swift] 10. 열거형" /><published>2026-04-16T00:00:00+00:00</published><updated>2026-04-16T00:00:00+00:00</updated><id>http://localhost:4000/%5BSwift-10%5D-enumeration</id><content type="html" xml:base="http://localhost:4000/Swift-10-enumeration/"><![CDATA[<h2 id="커스텀-타입">커스텀 타입</h2>
 <ul>
-  <li>클래스: 프로퍼티와 메서드로 구성된 참조 타입이다.</li>
-  <li>구조체: 프로퍼티와 메서드로 구성된 값 타입이다.</li>
+  <li>Swift에서는 개발자가 직접 만들 수 있는 <code class="language-plaintext highlighter-rouge">사용자 정의 타입이 있다</code></li>
+  <li>enum, class, struct로 구현 가능하다.</li>
+  <li>class나 struct는 데이터를 묶어서 사용할 목적이다.</li>
 </ul>
 
-<h2 id="예시">예시</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="kt">Dog</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span>
-    
-    <span class="nf">init</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-    <span class="p">}</span>
-    
-    <span class="kd">func</span> <span class="nf">sit</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nf">print</span><span class="p">(</span><span class="s">"</span><span class="se">\(</span><span class="n">name</span><span class="se">)</span><span class="s"> 앉았습니다."</span><span class="p">)</span>
-    <span class="p">}</span>
+<h2 id="열거형">열거형</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">Weekday</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">monday</span>
+    <span class="k">case</span> <span class="n">tuesday</span>
+    <span class="k">case</span> <span class="n">wednesday</span>
+    <span class="k">case</span> <span class="n">thursday</span>
+    <span class="k">case</span> <span class="n">friday</span>
+    <span class="k">case</span> <span class="n">saturday</span>
+    <span class="k">case</span> <span class="n">sunday</span>
 <span class="p">}</span>
 
-<span class="c1">// bori는 Dog 인스턴스를 참조하는 변수이다</span>
-<span class="c1">// 클래스는 참조 타입이므로, 여러 변수가 하나의 인스턴스를 함께 가리킬 수 있다</span>
-<span class="c1">// - bori 변수는 stack 영역에 생긴다</span>
-<span class="c1">// - 실제 Dog() 데이터는 heap 영역에 생긴다</span>
-<span class="c1">// - 즉 heap 영역에 만들어진 메모리 주소를 bori에 담는다</span>
-<span class="k">var</span> <span class="nv">bori</span> <span class="o">=</span> <span class="kt">Dog</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"보리"</span><span class="p">)</span>
+<span class="c1">// .monday: 인스턴스를 생성한다 = data를 만들어서 메모리에 저장한다.</span>
+<span class="k">var</span> <span class="nv">today</span><span class="p">:</span> <span class="kt">Weekday</span> <span class="o">=</span> <span class="o">.</span><span class="n">monday</span>
 </code></pre></div></div>
+<ul>
+  <li>타입 자체를 한정된 사례(case) 안에서 정의할 수 있는 타입이다.</li>
+  <li>미리 정의해둔 타입의 케이스에서 벗어날 수 없으므로 코드 가독성과 안정성이 높아진다.</li>
+</ul>
 
-<h2 id="구조체">구조체</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">struct</span> <span class="kt">Bird</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span>
-
-    <span class="kd">func</span> <span class="nf">fly</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nf">print</span><span class="p">(</span><span class="s">"</span><span class="se">\(</span><span class="n">name</span><span class="se">)</span><span class="s"> 날아갑니다."</span><span class="p">)</span>
-    <span class="p">}</span>
+<h2 id="열거형의-원시값raw-values">열거형의 원시값(Raw Values)</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 알아서 case별로 0부터 6까지 매칭됨</span>
+<span class="kd">enum</span> <span class="kt">Weekday</span><span class="p">:</span> <span class="kt">Int</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">monday</span>
+    <span class="k">case</span> <span class="n">tuesday</span>
+    <span class="k">case</span> <span class="n">wednesday</span>
+    <span class="k">case</span> <span class="n">thursday</span>
+    <span class="k">case</span> <span class="n">friday</span>
+    <span class="k">case</span> <span class="n">saturday</span>
+    <span class="k">case</span> <span class="n">sunday</span>
 <span class="p">}</span>
 
-<span class="c1">// 구조체는 값 타입이므로 변수에 할당하거나 전달할 때 값이 복사된다</span>
-<span class="c1">// 따라서 각각의 변수는 독립적인 데이터를 가진다</span>
-<span class="c1">// - bird 변수는 stack 영역에 저장된다</span>
-<span class="c1">// - 실제 Bird() 데이터는 스택에 저장된다</span>
-<span class="k">var</span> <span class="nv">bird</span> <span class="o">=</span> <span class="kt">Bird</span><span class="p">()</span>
-</code></pre></div></div>
-
-<h2 id="타입-속성type-properties">타입 속성(Type Properties)</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="kt">Circle</span> <span class="p">{</span>
-    <span class="kd">static</span> <span class="k">let</span> <span class="nv">pi</span> <span class="o">=</span> <span class="mf">3.141526</span>
-    <span class="kd">static</span> <span class="k">var</span> <span class="nv">count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1">// 알아서 case별로 문자열이 매칭됨</span>
+<span class="kd">enum</span> <span class="kt">Weekday</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">monday</span>
+    <span class="k">case</span> <span class="n">tuesday</span>
+    <span class="k">case</span> <span class="n">wednesday</span>
+    <span class="k">case</span> <span class="n">thursday</span>
+    <span class="k">case</span> <span class="n">friday</span>
+    <span class="k">case</span> <span class="n">saturday</span>
+    <span class="k">case</span> <span class="n">sunday</span>
 <span class="p">}</span>
+
+<span class="k">var</span> <span class="nv">today</span><span class="p">:</span> <span class="kt">Weekday</span><span class="p">?</span> <span class="o">=</span> <span class="kt">Weekday</span><span class="p">(</span><span class="nv">rawValue</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">// 원시값으로 쉽게 인스턴스 생성 가능</span>
+<span class="k">var</span> <span class="nv">today</span><span class="p">:</span> <span class="kt">Weekday</span> <span class="o">=</span> <span class="kt">Weekday</span><span class="p">(</span><span class="nv">rawValue</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span><span class="o">!</span> <span class="c1">// monday</span>
+<span class="k">var</span> <span class="nv">num</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="kt">Weekday</span><span class="o">.</span><span class="n">monday</span><span class="o">.</span><span class="n">rawValue</span>     <span class="c1">// 0</span>
 </code></pre></div></div>
-<ul>
-  <li>인스턴스에 속한 속성이 아니고 타입 자체에 속한 속성으로 Type.property로 접근해야한다.</li>
-  <li>저장 타입 속성(을 주로 사용)
-    <ul>
-      <li>모든 인스턴스가 동일하게 가져야 하는 보편적인 속성</li>
-      <li>모든 인스턴스가 공유해야하는 성격에 가까운 저장 속성을 의미</li>
-      <li>자체적으로 lazy한 성격을 가지므로 호출 시 메모리 할당(내부적으로 Thread-Safe)</li>
-    </ul>
-  </li>
-  <li>계산 타입 속성
-    <ul>
-      <li>상속 시 재정의 가능(class 키워드 사용 시)</li>
-      <li>메서드이므로 타입에 메모리 공간이 할당되어 있지 않음</li>
-    </ul>
-  </li>
-</ul>
 
-<h2 id="저장-속성stored-properties">저장 속성(Stored Properties)</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">struct</span> <span class="kt">Bird</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">name</span> <span class="o">=</span> <span class="s">"새"</span>
-    <span class="k">var</span> <span class="nv">weight</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-    <span class="kd">func</span> <span class="nf">fly</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nf">print</span><span class="p">(</span><span class="s">"날아갑니다."</span><span class="p">)</span>
-    <span class="p">}</span>
+<h2 id="열거형의-연관값associated-values">열거형의 연관값(Associated Values)</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">Computer</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="nv">ght</span><span class="p">:</span> <span class="kt">Double</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">ram</span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">String</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">hardDisk</span><span class="p">(</span><span class="nv">gb</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span>
 <span class="p">}</span>
+
+<span class="k">var</span> <span class="nv">chip</span><span class="p">:</span> <span class="kt">Computer</span> <span class="o">=</span> <span class="kt">Computer</span><span class="o">.</span><span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="nv">ghz</span><span class="p">:</span> <span class="mf">1.4</span><span class="p">)</span>
+<span class="k">var</span> <span class="nv">chip1</span><span class="p">:</span> <span class="kt">Computer</span> <span class="o">=</span> <span class="kt">Computer</span><span class="o">.</span><span class="nf">ram</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="s">"DDR4"</span><span class="p">)</span>
 </code></pre></div></div>
 <ul>
-  <li>클래스/구조체의 틀에서 찍어낸 각 인스턴스가 가지는 고유의 데이터 저장 공간을 의미한다.</li>
-  <li>var나 let으로 선언 가능하다.</li>
-  <li>객체의 초기화 시 각 저장 속성은 반드시 값을 가져야 한다.</li>
-  <li>기본값을 설정하거나 생성자에서 설정하거나 옵셔널 타입으로 선언하여 nil을 초기값으로 가질 수 있다.</li>
-  <li>메모리 공간을 가진다.</li>
-  <li>참고: 열거형의 경우 메모리 공간이 필요한 저장 속성을 선언할 수 없다.</li>
+  <li>구체적인 정보를 저장하기 위해 사용함(케이스가 카테고리의 역할로 바뀜)</li>
 </ul>
 
-<h2 id="지연-저장-속성lazy-stored-properties">지연 저장 속성(Lazy Stored Properties)</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">lazy</span> <span class="k">var</span> <span class="nv">view</span> <span class="o">=</span> <span class="kt">UIImageView</span><span class="p">()</span>
-</code></pre></div></div>
-<ul>
-  <li>해당 속성이 반드시 처음부터 초기화가 필요하지 않은 경우(메모리 공간을 많이 차지할 여지가 있는) 초기화를 지연시킨다.</li>
-  <li>값에 대한 접근이 있어야 초기화(메모리 공간 생성)</li>
-  <li>lazy var 로만 선언 가능하다(lazy let 불가)</li>
-  <li>생성자에서 초기화하지 않기 때문에 기본값이 필요하다.</li>
-  <li>사용하는 이유
-    <ul>
-      <li>메모리 공간의 낭비를 막기 위해</li>
-      <li>지연 저장 속성으로 선언되는 속성이 다른 저장 속성을 이용해야 할 때</li>
-    </ul>
-  </li>
-</ul>
-
-<h2 id="메서드">메서드</h2>
-<ul>
-  <li>코드 영역에서 어떤거를 실행할 지 명령어의 묶음이다.</li>
-</ul>
-
-<h2 id="메서드-호출-과정">메서드 호출 과정</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="kt">Dog</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span>
-    <span class="k">var</span> <span class="nv">weight</span><span class="p">:</span> <span class="kt">String</span>
-    
-    <span class="nf">init</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">weight</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span>
-    <span class="p">}</span>
-    
-    <span class="kd">func</span> <span class="nf">sit</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nf">print</span><span class="p">(</span><span class="s">"</span><span class="se">\(</span><span class="n">name</span><span class="se">)</span><span class="s"> 앉았습니다."</span><span class="p">)</span>
-    <span class="p">}</span>
-
-    <span class="kd">func</span> <span class="nf">layDown</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<h2 id="연관값-switch-조건문">연관값 Switch, 조건문</h2>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">Computer</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="nv">ght</span><span class="p">:</span> <span class="kt">Double</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">ram</span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">String</span><span class="p">)</span>
+    <span class="k">case</span> <span class="nf">hardDisk</span><span class="p">(</span><span class="nv">gb</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span>
 <span class="p">}</span>
-</code></pre></div></div>
-<ol>
-  <li>class Dog { … }을 정의하면
-    <ul>
-      <li>sit(), layDown() 같은 메서드는 -&gt; 코드 영역에 저장됨</li>
-      <li>name, weight 같은 구조 정보는 -&gt; 데이터 영역에 저장됨</li>
-    </ul>
-  </li>
-  <li>객체를 만들 때
-    <ul>
-      <li>Heap에 Dog 객체 생성됨</li>
-      <li>name = “보리” 같은 실제 데이터가 여기 존재</li>
-      <li>Stack에는 bori 라는 변수에 힙 주소(참조값)가 저장됨</li>
-    </ul>
-  </li>
-  <li>함수 호출
-    <ul>
-      <li>함수를 실행하기 위한 임시 공간(스택 프레임) 생김</li>
-      <li>이때 self라는 값이 들어옴(self = bori의 주소)</li>
-    </ul>
-  </li>
-  <li>코드 영역의 함수 실행
-    <ul>
-      <li>bori 변수는 Dog 인스턴스의 주소를 가지고 있다.</li>
-      <li>실제 메서드 탐색은 힙에 있는 Dog 인스턴스를 기준으로 이루어진다.</li>
-      <li>인스턴스는 자신의 타입 정보(Dog)를 통해 sit() 메서드를 찾는다.</li>
-      <li>해당 메서드의 실제 실행 위치(코드 영역)를 찾아간다.</li>
-    </ul>
-  </li>
-  <li>함수 종료
-    <ul>
-      <li>sit()실행 종료 시 스택에 만들어진 실행 공간 사라진다.</li>
-    </ul>
-  </li>
-</ol>
 
-<h2 id="계산-속성computed-properteis">계산 속성(Computed Properteis)</h2>
-<ul>
-  <li>속성의 형태를 가진 실질적 메서드</li>
-  <li>다른 저장 속성에 의존한 결과로 나오는 메서드를 속성처럼 만든 것</li>
-  <li>메서드이기 때문에 인스턴스의 메모리 공간이 할당되어 있지 않음</li>
-  <li>var 로만 선언 가능, 자료형까지 선언해야 한다.</li>
-</ul>
+<span class="k">let</span> <span class="nv">chip</span> <span class="o">=</span> <span class="kt">Computer</span><span class="o">.</span><span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="mi">8</span><span class="p">)</span>
+<span class="c1">// switch</span>
+<span class="k">switch</span> <span class="n">chip</span> <span class="p">{</span>
+<span class="k">case</span> <span class="o">.</span><span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="mi">8</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"cpu 8코어"</span><span class="p">)</span>
+<span class="k">case</span> <span class="o">.</span><span class="nf">cpu</span><span class="p">(</span><span class="nv">core</span><span class="p">:</span> <span class="k">let</span> <span class="nv">c</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"cpu: </span><span class="se">\(</span><span class="n">c</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+<span class="k">case</span> <span class="o">.</span><span class="nf">ram</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"RAM"</span><span class="p">)</span>
+<span class="k">case</span> <span class="kd">let</span> <span class="o">.</span><span class="nf">hardDisk</span><span class="p">(</span><span class="nv">gb</span><span class="p">:</span> <span class="n">g</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"하드: </span><span class="se">\(</span><span class="n">g</span><span class="se">)</span><span class="s">gb):
+}
 
-<h2 id="reference">Reference</h2>
-<ul>
-  <li>https://junbok97.tistory.com/318</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Swift" /><category term="Grammer" /><summary type="html"><![CDATA[클래스/구조체 클래스: 프로퍼티와 메서드로 구성된 참조 타입이다. 구조체: 프로퍼티와 메서드로 구성된 값 타입이다. 예시 class Dog { var name: String init(name: String) { self.name = name } func sit() { print("\(name) 앉았습니다.") } } // bori는 Dog 인스턴스를 참조하는 변수이다 // 클래스는 참조 타입이므로, 여러 변수가 하나의 인스턴스를 함께 가리킬 수 있다 // - bori 변수는 stack 영역에 생긴다 // - 실제 Dog() 데이터는 heap 영역에 생긴다 // - 즉 heap 영역에 만들어진 메모리 주소를 bori에 담는다 var bori = Dog(name: "보리") 구조체 struct Bird { var name: String func fly() { print("\(name) 날아갑니다.") } } // 구조체는 값 타입이므로 변수에 할당하거나 전달할 때 값이 복사된다 // 따라서 각각의 변수는 독립적인 데이터를 가진다 // - bird 변수는 stack 영역에 저장된다 // - 실제 Bird() 데이터는 스택에 저장된다 var bird = Bird() 타입 속성(Type Properties) class Circle { static let pi = 3.141526 static var count = 0 } 인스턴스에 속한 속성이 아니고 타입 자체에 속한 속성으로 Type.property로 접근해야한다. 저장 타입 속성(을 주로 사용) 모든 인스턴스가 동일하게 가져야 하는 보편적인 속성 모든 인스턴스가 공유해야하는 성격에 가까운 저장 속성을 의미 자체적으로 lazy한 성격을 가지므로 호출 시 메모리 할당(내부적으로 Thread-Safe) 계산 타입 속성 상속 시 재정의 가능(class 키워드 사용 시) 메서드이므로 타입에 메모리 공간이 할당되어 있지 않음 저장 속성(Stored Properties) struct Bird { var name = "새" var weight = 0.0 func fly() { print("날아갑니다.") } } 클래스/구조체의 틀에서 찍어낸 각 인스턴스가 가지는 고유의 데이터 저장 공간을 의미한다. var나 let으로 선언 가능하다. 객체의 초기화 시 각 저장 속성은 반드시 값을 가져야 한다. 기본값을 설정하거나 생성자에서 설정하거나 옵셔널 타입으로 선언하여 nil을 초기값으로 가질 수 있다. 메모리 공간을 가진다. 참고: 열거형의 경우 메모리 공간이 필요한 저장 속성을 선언할 수 없다. 지연 저장 속성(Lazy Stored Properties) lazy var view = UIImageView() 해당 속성이 반드시 처음부터 초기화가 필요하지 않은 경우(메모리 공간을 많이 차지할 여지가 있는) 초기화를 지연시킨다. 값에 대한 접근이 있어야 초기화(메모리 공간 생성) lazy var 로만 선언 가능하다(lazy let 불가) 생성자에서 초기화하지 않기 때문에 기본값이 필요하다. 사용하는 이유 메모리 공간의 낭비를 막기 위해 지연 저장 속성으로 선언되는 속성이 다른 저장 속성을 이용해야 할 때 메서드 코드 영역에서 어떤거를 실행할 지 명령어의 묶음이다. 메서드 호출 과정 class Dog { var name: String var weight: String init(name: String, weight: String) { self.name = name self.weight = weight } func sit() { print("\(name) 앉았습니다.") } func layDown() { } } class Dog { … }을 정의하면 sit(), layDown() 같은 메서드는 -&gt; 코드 영역에 저장됨 name, weight 같은 구조 정보는 -&gt; 데이터 영역에 저장됨 객체를 만들 때 Heap에 Dog 객체 생성됨 name = “보리” 같은 실제 데이터가 여기 존재 Stack에는 bori 라는 변수에 힙 주소(참조값)가 저장됨 함수 호출 함수를 실행하기 위한 임시 공간(스택 프레임) 생김 이때 self라는 값이 들어옴(self = bori의 주소) 코드 영역의 함수 실행 bori 변수는 Dog 인스턴스의 주소를 가지고 있다. 실제 메서드 탐색은 힙에 있는 Dog 인스턴스를 기준으로 이루어진다. 인스턴스는 자신의 타입 정보(Dog)를 통해 sit() 메서드를 찾는다. 해당 메서드의 실제 실행 위치(코드 영역)를 찾아간다. 함수 종료 sit()실행 종료 시 스택에 만들어진 실행 공간 사라진다. 계산 속성(Computed Properteis) 속성의 형태를 가진 실질적 메서드 다른 저장 속성에 의존한 결과로 나오는 메서드를 속성처럼 만든 것 메서드이기 때문에 인스턴스의 메모리 공간이 할당되어 있지 않음 var 로만 선언 가능, 자료형까지 선언해야 한다. Reference https://junbok97.tistory.com/318]]></summary></entry><entry><title type="html">[Swift] 9. 컬렉션</title><link href="http://localhost:4000/Swift-09-collection/" rel="alternate" type="text/html" title="[Swift] 9. 컬렉션" /><published>2026-04-16T00:00:00+00:00</published><updated>2026-04-16T00:00:00+00:00</updated><id>http://localhost:4000/%5BSwift-09%5D-collection</id><content type="html" xml:base="http://localhost:4000/Swift-09-collection/"><![CDATA[<h2 id="컬렉션">컬렉션</h2>
+// 조건문(특정 케이스만 다룰수 있다)
+if case let .ram(ram) = chil {
+    print("</span><span class="nv">ram</span><span class="p">:</span> <span class="p">\(</span><span class="n">ram</span><span class="p">)</span><span class="s">")
+}
+
+for case .cpu(core: let c) in chiplists {
+    print("</span><span class="nv">cpu칩</span><span class="p">:</span> <span class="p">\(</span><span class="n">c</span><span class="p">)</span><span class="n">코어</span><span class="s">")
+}
+</span></code></pre></div></div>]]></content><author><name>Dong Hyeon</name></author><category term="Swift" /><category term="Grammer" /><summary type="html"><![CDATA[커스텀 타입 Swift에서는 개발자가 직접 만들 수 있는 사용자 정의 타입이 있다 enum, class, struct로 구현 가능하다. class나 struct는 데이터를 묶어서 사용할 목적이다. 열거형 enum Weekday { case monday case tuesday case wednesday case thursday case friday case saturday case sunday } // .monday: 인스턴스를 생성한다 = data를 만들어서 메모리에 저장한다. var today: Weekday = .monday 타입 자체를 한정된 사례(case) 안에서 정의할 수 있는 타입이다. 미리 정의해둔 타입의 케이스에서 벗어날 수 없으므로 코드 가독성과 안정성이 높아진다. 열거형의 원시값(Raw Values) // 알아서 case별로 0부터 6까지 매칭됨 enum Weekday: Int { case monday case tuesday case wednesday case thursday case friday case saturday case sunday } // 알아서 case별로 문자열이 매칭됨 enum Weekday: String { case monday case tuesday case wednesday case thursday case friday case saturday case sunday } var today: Weekday? = Weekday(rawValue: 0) // 원시값으로 쉽게 인스턴스 생성 가능 var today: Weekday = Weekday(rawValue: 0)! // monday var num: Int = Weekday.monday.rawValue // 0 열거형의 연관값(Associated Values) enum Computer { case cpu(core: Int, ght: Double) case ram(Int, String) case hardDisk(gb: Int) } var chip: Computer = Computer.cpu(core: 6, ghz: 1.4) var chip1: Computer = Computer.ram(16, "DDR4") 구체적인 정보를 저장하기 위해 사용함(케이스가 카테고리의 역할로 바뀜) 연관값 Switch, 조건문 enum Computer { case cpu(core: Int, ght: Double) case ram(Int, String) case hardDisk(gb: Int) } let chip = Computer.cpu(core: 8) // switch switch chip { case .cpu(core: 8): print("cpu 8코어") case .cpu(core: let c): print("cpu: \(c)") case .ram(_): print("RAM") case let .hardDisk(gb: g): print("하드: \(g)gb): } // 조건문(특정 케이스만 다룰수 있다) if case let .ram(ram) = chil { print("ram: \(ram)") } for case .cpu(core: let c) in chiplists { print("cpu칩: \(c)코어") }]]></summary></entry><entry><title type="html">[Swift] 9. 컬렉션</title><link href="http://localhost:4000/Swift-09-collection/" rel="alternate" type="text/html" title="[Swift] 9. 컬렉션" /><published>2026-04-16T00:00:00+00:00</published><updated>2026-04-16T00:00:00+00:00</updated><id>http://localhost:4000/%5BSwift-09%5D-collection</id><content type="html" xml:base="http://localhost:4000/Swift-09-collection/"><![CDATA[<h2 id="컬렉션">컬렉션</h2>
 <div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protocol</span> <span class="kt">Collection</span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">Sequence</span>
 </code></pre></div></div>
 <ul>
@@ -1646,51 +1993,4 @@ ObservableMacroLightView: _model changed.
 <ul>
   <li>https://docs.swift.org/swift-book/documentation/the-swift-programming-language/collectiontypes/</li>
   <li>https://developer.apple.com/documentation/Swift/Collection</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Swift" /><category term="Grammer" /><summary type="html"><![CDATA[컬렉션 protocol Collection&lt;Element&gt; : Sequence 데이터를 여러 번 비파괴적으로 순회할 수 있고, 인덱스 첨자를 통해 접근할 수 있는 시퀀스 컬렉션이 변경될 필요가 없는 경우에는 immutable 으로 생성해 컴파일러가 컬렉션 성능을 최적화할 수 있다. 추후 배열, 딕셔너리, 집합 정리 예정 Reference https://docs.swift.org/swift-book/documentation/the-swift-programming-language/collectiontypes/ https://developer.apple.com/documentation/Swift/Collection]]></summary></entry><entry><title type="html">[Swift] 8. 옵셔널</title><link href="http://localhost:4000/Swift-08-optional/" rel="alternate" type="text/html" title="[Swift] 8. 옵셔널" /><published>2026-04-16T00:00:00+00:00</published><updated>2026-04-16T00:00:00+00:00</updated><id>http://localhost:4000/%5BSwift-08%5D-optional</id><content type="html" xml:base="http://localhost:4000/Swift-08-optional/"><![CDATA[<h2 id="옵셔널">옵셔널</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">@frozen</span>
-<span class="kd">enum</span> <span class="kt">Optional</span><span class="o">&lt;</span><span class="kt">Wrapped</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">Wrapped</span> <span class="p">:</span> <span class="kt">~Copyable</span><span class="p">,</span> <span class="kt">Wrapped</span> <span class="p">:</span> <span class="o">~</span><span class="kt">Escapable</span>
-</code></pre></div></div>
-<ul>
-  <li>래핑된 값 또는 값이 없는 경우를 나타내는 타입입니다.</li>
-</ul>
-
-<h2 id="옵셔널-구현">옵셔널 구현</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">enum</span> <span class="kt">Optional</span><span class="o">&lt;</span><span class="kt">Wrapped</span><span class="o">&gt;</span> <span class="p">{</span>
-    <span class="k">case</span> <span class="kd">some</span><span class="o">&lt;</span><span class="kt">Wrapped</span><span class="o">&gt;</span> <span class="c1">// 연관값</span>
-    <span class="k">case</span> <span class="k">none</span>          <span class="c1">// 값이 없음, none는 nil과 완전 동일</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<h2 id="옵셔널은-두-가지-경우를-가진-열거형이다">옵셔널은 두 가지 경우를 가진 열거형이다</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">number</span><span class="p">:</span> <span class="kt">Int</span><span class="p">?</span> <span class="o">=</span> <span class="kt">Optional</span><span class="o">.</span><span class="nf">some</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
-<span class="k">let</span> <span class="nv">noNumber</span><span class="p">:</span> <span class="kt">Int</span><span class="p">?</span> <span class="o">=</span> <span class="kt">Optional</span><span class="o">.</span><span class="k">none</span>
-<span class="nf">print</span><span class="p">(</span><span class="n">noNumber</span> <span class="o">==</span> <span class="kc">nil</span><span class="p">)</span>
-<span class="c1">// Prints "true"</span>
-</code></pre></div></div>
-
-<h2 id="옵셔널-값-추출-4가지">옵셔널 값 추출 4가지</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 1) 강제 추출</span>
-<span class="n">num</span><span class="o">!</span>
-
-<span class="c1">// 2) nil이 아닌지 확인후 강제추출</span>
-<span class="k">if</span> <span class="n">num</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span> <span class="nf">print</span><span class="p">(</span><span class="n">num</span><span class="o">!</span><span class="p">)</span> <span class="p">}</span>
-
-<span class="c1">// 3) 바인딩(상수나 변수에 대입)이 되는 경우만 특정 작업을 진행</span>
-<span class="k">if</span> <span class="k">let</span> <span class="nv">name</span> <span class="o">=</span> <span class="n">optionalName</span> <span class="p">{</span>
-    <span class="nf">print</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="c1">// 4) Nil-Coalescing: 옵셔널 표션식 뒤에 기본값을 제시해서 옵셔널 가능성을 없앤다.</span>
-<span class="n">optionalName</span> <span class="p">??</span> <span class="s">"인덱스"</span>
-</code></pre></div></div>
-
-<h2 id="접근연산자-사용법">접근연산자 사용법</h2>
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 옵셔널 체이닝</span>
-<span class="c1">// - 표현식이 옵셔널의 가능성이 있다는 것을 표현, 체이닝 결과는 항상 옵셔널</span>
-<span class="n">human</span><span class="p">?</span><span class="o">.</span><span class="n">choco</span><span class="p">?</span><span class="o">.</span><span class="n">name</span> <span class="c1">// 언래핑 필수</span>
-</code></pre></div></div>
-
-<h2 id="reference">Reference</h2>
-<ul>
-  <li>https://developer.apple.com/documentation/swift/optional</li>
-</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Swift" /><category term="Grammer" /><summary type="html"><![CDATA[옵셔널 @frozen enum Optional&lt;Wrapped&gt; where Wrapped : ~Copyable, Wrapped : ~Escapable 래핑된 값 또는 값이 없는 경우를 나타내는 타입입니다. 옵셔널 구현 enum Optional&lt;Wrapped&gt; { case some&lt;Wrapped&gt; // 연관값 case none // 값이 없음, none는 nil과 완전 동일 } 옵셔널은 두 가지 경우를 가진 열거형이다 let number: Int? = Optional.some(42) let noNumber: Int? = Optional.none print(noNumber == nil) // Prints "true" 옵셔널 값 추출 4가지 // 1) 강제 추출 num! // 2) nil이 아닌지 확인후 강제추출 if num != nil { print(num!) } // 3) 바인딩(상수나 변수에 대입)이 되는 경우만 특정 작업을 진행 if let name = optionalName { print(name) } // 4) Nil-Coalescing: 옵셔널 표션식 뒤에 기본값을 제시해서 옵셔널 가능성을 없앤다. optionalName ?? "인덱스" 접근연산자 사용법 // 옵셔널 체이닝 // - 표현식이 옵셔널의 가능성이 있다는 것을 표현, 체이닝 결과는 항상 옵셔널 human?.choco?.name // 언래핑 필수 Reference https://developer.apple.com/documentation/swift/optional]]></summary></entry></feed>
+</ul>]]></content><author><name>Dong Hyeon</name></author><category term="Swift" /><category term="Grammer" /><summary type="html"><![CDATA[컬렉션 protocol Collection&lt;Element&gt; : Sequence 데이터를 여러 번 비파괴적으로 순회할 수 있고, 인덱스 첨자를 통해 접근할 수 있는 시퀀스 컬렉션이 변경될 필요가 없는 경우에는 immutable 으로 생성해 컴파일러가 컬렉션 성능을 최적화할 수 있다. 추후 배열, 딕셔너리, 집합 정리 예정 Reference https://docs.swift.org/swift-book/documentation/the-swift-programming-language/collectiontypes/ https://developer.apple.com/documentation/Swift/Collection]]></summary></entry></feed>
