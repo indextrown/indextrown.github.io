@@ -1,7 +1,15 @@
 [
     
         {
-        "title"    : "모바일 개발자 2명이 iOS·Android를 함께 개발하는 방법: React Native 모듈 도입기",
+        "title"    : "",
+        "category" : "",
+        "tags"     : "",
+        "url"      : "/Makefile/",
+        "date"     : "2026-07-20 00:00:00 +0000"
+        } ,
+    
+        {
+        "title"    : "네이티브로 개발하던 팝팡에 React Native를 더한 이유",
         "category" : "",
         "tags"     : "React Native, iOS, Android, AI",
         "url"      : "/PopPang-poppang1/",
