@@ -1,5 +1,6 @@
 ---
-title: "모바일 개발자 2명이 iOS·Android를 함께 개발하는 방법: React Native 모듈 도입기"
+# title: "모바일 개발자 2명이 iOS·Android를 함께 개발하는 방법: React Native 모듈 도입기"
+title: "네이티브로 개발하던 팝팡이 React Native를 더한 이유"
 tags:
   - React Native
   - iOS
@@ -15,7 +16,7 @@ typora-root-url: ../
   <figcaption>네이티브 앱은 유지하고, 새 기능 중 네이티브 상태 의존성이 낮은 영역을 React Native 모듈로 개발했습니다.</figcaption>
 </figure>
 
-> iOS와 Android 개발자는 같은 기능을 각자 구현하고 있었습니다. 이 중 네이티브 상태 의존성이 낮은 새 기능을 React Native 모듈로 분리해 함께 개발할 수 있는 환경을 만들었습니다. 익숙하지 않았던 빌드 영역은 AI로 빠르게 탐색하되, 모든 가설은 실제 빌드와 앱 동작으로 검증했습니다.
+> 팝팡에서는 iOS 개발자 1명과 Android 개발자 1명이 각자의 플랫폼에서 같은 기능을 따로 구현하고 있었습니다. 이 중 네이티브 상태 의존성이 낮은 새 기능을 React Native 모듈로 분리해 함께 개발할 수 있는 환경을 만들었습니다. 익숙하지 않았던 빌드 영역은 AI로 빠르게 탐색하되, 모든 가설은 실제 빌드와 앱 동작으로 검증했습니다.
 
 ## 한눈에 보기
 
