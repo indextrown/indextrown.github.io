@@ -1,6 +1,6 @@
 ---
 # title: "모바일 개발자 2명이 iOS·Android를 함께 개발하는 방법: React Native 모듈 도입기"
-title: "네이티브로 개발하던 팝팡이 React Native를 더한 이유"
+title: "네이티브로 개발하던 팝팡에 React Native를 더한 이유"
 tags:
   - React Native
   - iOS
