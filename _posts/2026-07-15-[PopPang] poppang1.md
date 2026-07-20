@@ -81,25 +81,27 @@ React Native 모듈을 도입하더라도 기존 앱의 프로젝트 구조와 �
 
 React Native 빌드는 별도 프로젝트에서 처리하고, 네이티브 앱에는 완성된 산출물만 전달하도록 설계했습니다.
 
-### 공식 통합 방식에서는 기존 앱이 모듈 안으로 들어갔습니다
+### 팝팡이 React Native 공식 통합 방식을 선택하지 않은 이유
 
-[React Native 공식 문서](https://reactnative.dev/docs/integration-with-existing-apps.html)는 기존 앱에 React Native 화면을 추가하는 방법을 안내합니다. 이 방식은 React Native 프로젝트를 개발 환경의 루트로 만들고, 기존 iOS 프로젝트를 `ios` 폴더에, Android 프로젝트를 `android` 폴더에 두도록 제안합니다.
+[React Native 공식 문서](https://reactnative.dev/docs/integration-with-existing-apps.html)는 React Native 프로젝트를 개발 환경의 중심에 둡니다. 기존 iOS 프로젝트는 `ios` 폴더에, Android 프로젝트는 `android` 폴더에 배치하고 React Native를 앱 빌드에 직접 연결합니다.
 
-하지만 팝팡이 원한 방향은 반대였습니다. 기존 iOS·Android 앱을 그대로 유지한 채, 필요한 화면만 React Native 모듈로 추가하고 싶었습니다.
+React Native가 앱 빌드에 직접 참여해야 한다면 자연스러운 구조입니다. 하지만 기존 iOS·Android 앱을 유지하면서 필요한 새 기능만 모듈로 추가하려던 팝팡의 요구와는 맞지 않았습니다. 선택하지 않은 이유는 두 가지였습니다.
 
-일부 기능을 추가하려고 기존 앱 전체를 React Native 프로젝트 아래로 옮기는 것은 목적과 맞지 않았습니다. 기존 앱에 모듈을 넣으려던 일이 오히려 기존 앱을 모듈 프로젝트 안에 넣는 일로 바뀌기 때문입니다.
+첫째, 프로젝트 구조가 팝팡이 원한 방향과 반대였습니다. 일부 기능을 추가하기 위해 기존 앱 전체를 React Native 프로젝트 아래로 옮겨야 했습니다. 기존 앱에 모듈을 넣으려던 일이 오히려 모듈 프로젝트를 중심으로 기존 앱을 재구성하는 일이 됐습니다.
 
-의존성 관리 방식도 달라집니다. React Native를 직접 통합하면 iOS 앱에는 `Gemfile`, `Podfile`, CocoaPods가 추가되고, Android 앱에는 React Native Gradle Plugin과 런타임 설정이 들어갑니다.
+둘째, 기존 앱이 관리해야 할 의존성과 빌드 설정이 늘어났습니다. React Native를 직접 통합하면 iOS 앱에는 `Gemfile`, `Podfile`, CocoaPods가 추가되고, Android 앱에는 React Native Gradle Plugin과 런타임 설정이 들어갑니다.
 
 특히 Swift Package Manager와 CocoaPods는 서로의 의존성을 알지 못합니다. 두 도구를 함께 사용하면 중복 의존성과 빌드 충돌을 별도로 관리해야 합니다. [토스 기술 블로그의 사례](https://toss.tech/article/react-native-without-cocoapods)에서도 이 문제를 자세히 설명합니다.
 
-세 가지 방식을 같은 기준으로 비교했습니다.
+기존 앱의 구조와 의존성 관리 방식을 유지한다는 기준으로 세 가지 방식을 비교했습니다.
 
-| 검토한 방식 | 장점 | 선택하지 않은 이유 |
+| 검토한 방식 | 얻을 수 있는 것 | 판단 |
 | --- | --- | --- |
-| 전체 앱을 React Native로 전환 | 공통 코드 범위가 가장 넓음 | 안정화된 네이티브 기능까지 다시 구현하고 검증해야 함 |
-| 공식 가이드대로 기존 앱에 직접 통합 | 공식 생태계와 설정을 그대로 사용 | 기존 앱이 모듈 프로젝트 아래로 들어가고 의존성 관리 도구가 추가됨 |
-| React Native를 모듈로 Prebuild | 기존 앱의 구조와 의존성 관리 유지 | 플랫폼별 산출물을 만드는 빌드 체계를 직접 관리해야 함 |
+| 전체 앱을 React Native로 전환 | 공통 코드 범위를 가장 넓힐 수 있음 | 안정화된 네이티브 기능까지 다시 구현하고 검증해야 하므로 제외 |
+| 공식 가이드대로 기존 앱에 직접 통합 | 공식 생태계와 설정을 그대로 사용할 수 있음 | 기존 앱의 구조가 바뀌고 의존성 관리 범위가 늘어나므로 제외 |
+| React Native를 모듈로 Prebuild | 기존 앱의 구조와 의존성 관리 방식을 유지할 수 있음 | 빌드 체계를 직접 관리하는 비용을 감수하고 선택 |
+
+팝팡은 플랫폼별 산출물을 직접 관리하더라도 기존 앱을 흔들지 않는 세 번째 방식을 선택했습니다. React Native 빌드에 필요한 도구는 별도 프로젝트에 모으고, 각 앱에는 완성된 모듈만 배포하기로 했습니다.
 
 ### 토스의 Prebuild 방식은 최신 버전에 그대로 적용되지 않았습니다
 
