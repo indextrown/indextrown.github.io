@@ -85,7 +85,7 @@ React Native 빌드는 별도 프로젝트에서 처리하고, 네이티브 앱�
 ### 팝팡이 React Native 공식 통합 방식을 선택하지 않은 이유
 
 <figure>
-  <img src="{{ '/assets/img/2026-07-15-PopPang-RN/official-vs-poppang-integration.svg' | relative_url }}" alt="React Native 공식 통합 방식과 팝팡이 선택한 모듈 배포 방식 비교" width="100%">
+  <img src="{{ '/assets/img/2026-07-15-PopPang-RN/official-vs-poppang-integration-folder.svg' | relative_url }}" alt="React Native 공식 통합 방식과 팝팡이 선택한 모듈 배포 방식을 폴더 구조로 비교" width="100%">
   <figcaption>공식 방식은 React Native 프로젝트를 중심으로 기존 앱을 배치합니다. 팝팡은 기존 앱을 유지한 채, 미리 빌드한 모듈만 각 앱에 연결하는 방식을 선택했습니다.</figcaption>
 </figure>
 

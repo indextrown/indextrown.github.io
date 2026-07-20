@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720" role="img" aria-labelledby="title desc">
+  <title id="title">폴더 구조로 비교한 React Native 공식 통합 방식과 팝팡 방식</title>
+  <desc id="desc">왼쪽은 React Native 프로젝트 폴더 안에 기존 iOS와 Android 앱 폴더가 들어간 공식 통합 방식이다. 오른쪽은 기존 앱을 유지하고 별도 프로젝트에서 빌드한 모듈만 연결하는 팝팡의 방식이다.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+    <filter id="folder-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#0f172a" flood-opacity="0.07"/>
+    </filter>
+    <marker id="blue-arrow" markerWidth="14" markerHeight="14" refX="13" refY="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L14,7 L0,14 Z" fill="#38bdf8"/>
+    </marker>
+    <marker id="green-arrow" markerWidth="14" markerHeight="14" refX="13" refY="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L14,7 L0,14 Z" fill="#22c55e"/>
+    </marker>
+    <symbol id="rn-logo" viewBox="0 0 112 103">
+      <path d="m56 61.832c5.891 0 10.667-4.776 10.667-10.667s-4.777-10.667-10.667-10.667-10.666 4.776-10.666 10.667 4.774 10.667 10.666 10.667z" fill="#61dafb"/>
+      <g fill="none" stroke="#61dafb" stroke-width="5.333">
+        <path d="m56 75.165c29.455 0 53.333-10.745 53.333-24s-23.878-24-53.333-24-53.334 10.745-53.334 24 23.879 24 53.334 24z"/>
+        <path d="m35.215 63.165c14.728 25.509 35.972 40.815 47.451 34.188 11.48-6.628 8.846-32.68-5.882-58.188-14.727-25.51-35.972-40.816-47.45-34.188-11.48 6.627-8.846 32.679 5.881 58.188z"/>
+        <path d="m35.215 39.165c-14.727 25.509-17.36 51.56-5.882 58.188 11.48 6.627 32.724-8.68 47.451-34.188 14.728-25.51 17.362-51.56 5.883-58.188-11.48-6.628-32.724 8.679-47.452 34.188z"/>
+      </g>
+    </symbol>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", sans-serif; fill: #0f172a; }
+      .eyebrow { font-size: 19px; font-weight: 800; letter-spacing: 1.1px; }
+      .heading { font-size: 31px; font-weight: 800; }
+      .label { font-size: 23px; font-weight: 800; }
+      .body { font-size: 18px; font-weight: 500; fill: #475569; }
+      .small { font-size: 16px; font-weight: 700; fill: #475569; }
+      .folder-name { font-size: 17px; font-weight: 800; }
+      .metric { font-size: 23px; font-weight: 800; }
+    </style>
+  </defs>
+
+  <rect width="1400" height="720" rx="32" fill="#f8fafc"/>
+
+  <g filter="url(#shadow)">
+    <rect x="44" y="44" width="620" height="632" rx="28" fill="#ffffff" stroke="#fecaca" stroke-width="2"/>
+    <rect x="736" y="44" width="620" height="632" rx="28" fill="#ffffff" stroke="#bbf7d0" stroke-width="2"/>
+  </g>
+
+  <rect x="78" y="76" width="188" height="40" rx="20" fill="#fee2e2"/>
+  <text x="172" y="103" class="eyebrow" text-anchor="middle" fill="#b91c1c">OFFICIAL GUIDE</text>
+  <text x="78" y="157" class="heading">React Native 프로젝트가 중심</text>
+
+  <g filter="url(#folder-shadow)">
+    <path d="M102 187 H260 L291 217 H606 Q630 217 630 241 V548 H78 V211 Q78 187 102 187 Z" fill="#fff7f7" stroke="#fca5a5" stroke-width="2"/>
+  </g>
+
+  <rect x="106" y="226" width="50" height="50" rx="13" fill="#0f172a"/>
+  <use href="#rn-logo" x="111" y="233" width="40" height="37"/>
+  <text x="176" y="249" class="label">React Native 프로젝트/</text>
+  <text x="176" y="273" class="small">개발 환경의 루트 폴더</text>
+
+  <g filter="url(#folder-shadow)">
+    <path d="M128 329 H207 L228 349 H318 Q342 349 342 373 V498 H106 V353 Q106 329 128 329 Z" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+    <path d="M388 329 H486 L507 349 H578 Q602 349 602 373 V498 H366 V353 Q366 329 388 329 Z" fill="#f0fdf4" stroke="#86efac" stroke-width="2"/>
+  </g>
+
+  <text x="167" y="352" class="folder-name" text-anchor="middle" fill="#1d4ed8">ios/</text>
+  <circle cx="224" cy="391" r="17" fill="#2563eb"/>
+  <text x="224" y="396" font-size="13" font-weight="800" text-anchor="middle" fill="#ffffff">iOS</text>
+  <text x="224" y="441" class="label" text-anchor="middle">기존 iOS 앱</text>
+  <text x="224" y="466" class="body" text-anchor="middle">CocoaPods</text>
+
+  <text x="447" y="352" class="folder-name" text-anchor="middle" fill="#15803d">android/</text>
+  <circle cx="484" cy="391" r="17" fill="#16a34a"/>
+  <text x="484" y="395" font-size="10" font-weight="800" text-anchor="middle" fill="#ffffff">AOS</text>
+  <text x="484" y="441" class="label" text-anchor="middle">기존 Android 앱</text>
+  <text x="484" y="466" class="body" text-anchor="middle">RN Gradle Plugin</text>
+
+  <rect x="78" y="584" width="552" height="54" rx="18" fill="#fff1f2"/>
+  <text x="354" y="619" class="metric" text-anchor="middle" fill="#be123c">기존 앱이 React Native 프로젝트 안으로</text>
+
+  <circle cx="700" cy="360" r="31" fill="#e2e8f0"/>
+  <text x="700" y="368" font-size="20" font-weight="900" text-anchor="middle" fill="#64748b">VS</text>
+
+  <rect x="770" y="76" width="226" height="40" rx="20" fill="#dcfce7"/>
+  <text x="883" y="103" class="eyebrow" text-anchor="middle" fill="#15803d">POPPANG CHOICE</text>
+  <text x="770" y="157" class="heading">기존 네이티브 앱이 중심</text>
+
+  <g filter="url(#folder-shadow)">
+    <path d="M792 194 H874 L895 214 H996 Q1020 214 1020 238 V344 H770 V218 Q770 194 792 194 Z" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+    <path d="M1094 194 H1193 L1214 214 H1298 Q1322 214 1322 238 V344 H1072 V218 Q1072 194 1094 194 Z" fill="#f0fdf4" stroke="#86efac" stroke-width="2"/>
+  </g>
+  <text x="832" y="217" class="folder-name" text-anchor="middle" fill="#1d4ed8">iOS 앱/</text>
+  <circle cx="895" cy="249" r="17" fill="#2563eb"/>
+  <text x="895" y="254" font-size="13" font-weight="800" text-anchor="middle" fill="#ffffff">iOS</text>
+  <text x="895" y="301" class="label" text-anchor="middle">기존 iOS 앱</text>
+  <text x="895" y="323" class="body" text-anchor="middle">Swift Package Manager 유지</text>
+
+  <text x="1147" y="217" class="folder-name" text-anchor="middle" fill="#15803d">Android 앱/</text>
+  <circle cx="1197" cy="249" r="17" fill="#16a34a"/>
+  <text x="1197" y="253" font-size="10" font-weight="800" text-anchor="middle" fill="#ffffff">AOS</text>
+  <text x="1197" y="301" class="label" text-anchor="middle">기존 Android 앱</text>
+  <text x="1197" y="323" class="body" text-anchor="middle">Gradle 유지</text>
+
+  <path d="M895 432 V346" fill="none" stroke="#38bdf8" stroke-width="4" marker-end="url(#blue-arrow)"/>
+  <path d="M1197 432 V346" fill="none" stroke="#22c55e" stroke-width="4" marker-end="url(#green-arrow)"/>
+
+  <rect x="748" y="374" width="132" height="34" rx="17" fill="#e0f2fe"/>
+  <text x="814" y="397" class="small" text-anchor="middle" fill="#0369a1">XCFramework</text>
+  <rect x="1212" y="374" width="128" height="34" rx="17" fill="#dcfce7"/>
+  <text x="1276" y="397" class="small" text-anchor="middle" fill="#15803d">AAR · Maven</text>
+
+  <rect x="836" y="432" width="420" height="116" rx="24" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="2"/>
+  <rect x="919" y="461" width="58" height="58" rx="15" fill="#0f172a"/>
+  <use href="#rn-logo" x="926" y="470" width="44" height="41"/>
+  <text x="1002" y="483" class="label">PopPang-RN</text>
+  <text x="1002" y="515" class="body">별도 프로젝트에서 빌드</text>
+
+  <rect x="770" y="584" width="552" height="54" rx="18" fill="#ecfdf5"/>
+  <text x="1046" y="619" class="metric" text-anchor="middle" fill="#047857">React Native 모듈이 기존 앱 안으로</text>
+</svg>
