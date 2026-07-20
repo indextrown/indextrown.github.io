@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720" role="img" aria-labelledby="title desc">
+  <title id="title">PopPang-RN 소스가 XCFramework와 AAR로 만들어지는 흐름</title>
+  <desc id="desc">PopPang-RN 소스에서 iOS는 xcodebuild와 컴파일러, 링커를 거쳐 XCFramework와 Swift Package로 기존 iOS 앱에 연결되고, Android는 Gradle과 Android Gradle Plugin, 컴파일러와 네이티브 툴체인을 거쳐 AAR과 Maven 저장소로 기존 Android 앱에 연결된다. JavaScript bundle은 Metro로 별도 생성해 네이티브 패키지와 함께 릴리스한다.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="7" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+    <marker id="neutral-arrow" markerWidth="12" markerHeight="12" refX="11" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#94a3b8"/>
+    </marker>
+    <marker id="blue-arrow" markerWidth="12" markerHeight="12" refX="11" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#38bdf8"/>
+    </marker>
+    <marker id="green-arrow" markerWidth="12" markerHeight="12" refX="11" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#22c55e"/>
+    </marker>
+    <marker id="orange-arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#fb923c"/>
+    </marker>
+    <symbol id="rn-logo" viewBox="0 0 112 103">
+      <path d="m56 61.832c5.891 0 10.667-4.776 10.667-10.667s-4.777-10.667-10.667-10.667-10.666 4.776-10.666 10.667 4.774 10.667 10.666 10.667z" fill="#61dafb"/>
+      <g fill="none" stroke="#61dafb" stroke-width="5.333">
+        <path d="m56 75.165c29.455 0 53.333-10.745 53.333-24s-23.878-24-53.333-24-53.334 10.745-53.334 24 23.879 24 53.334 24z"/>
+        <path d="m35.215 63.165c14.728 25.509 35.972 40.815 47.451 34.188 11.48-6.628 8.846-32.68-5.882-58.188-14.727-25.51-35.972-40.816-47.45-34.188-11.48 6.627-8.846 32.679 5.881 58.188z"/>
+        <path d="m35.215 39.165c-14.727 25.509-17.36 51.56-5.882 58.188 11.48 6.627 32.724-8.68 47.451-34.188 14.728-25.51 17.362-51.56 5.883-58.188-11.48-6.628-32.724 8.679-47.452 34.188z"/>
+      </g>
+    </symbol>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", sans-serif; fill: #0f172a; }
+      .eyebrow { font-size: 17px; font-weight: 800; letter-spacing: 1px; }
+      .source-heading { font-size: 28px; font-weight: 800; }
+      .lane-heading { font-size: 22px; font-weight: 800; }
+      .card-heading { font-size: 21px; font-weight: 800; }
+      .body { font-size: 17px; font-weight: 500; fill: #475569; }
+      .small { font-size: 15px; font-weight: 700; fill: #475569; }
+      .footer { font-size: 17px; font-weight: 750; }
+    </style>
+  </defs>
+
+  <rect width="1400" height="720" rx="32" fill="#f8fafc"/>
+
+  <g filter="url(#shadow)">
+    <rect x="40" y="184" width="240" height="338" rx="28" fill="#ffffff" stroke="#bae6fd" stroke-width="2"/>
+  </g>
+  <rect x="72" y="216" width="136" height="36" rx="18" fill="#e0f2fe"/>
+  <text x="140" y="241" class="eyebrow" text-anchor="middle" fill="#0369a1">SOURCE</text>
+  <rect x="97" y="279" width="126" height="126" rx="28" fill="#0f172a"/>
+  <use href="#rn-logo" x="111" y="294" width="98" height="90"/>
+  <text x="160" y="452" class="source-heading" text-anchor="middle">PopPang-RN</text>
+  <text x="160" y="485" class="body" text-anchor="middle">JavaScript · Native bridge</text>
+
+  <g filter="url(#shadow)">
+    <rect x="330" y="40" width="1030" height="264" rx="28" fill="#ffffff" stroke="#bfdbfe" stroke-width="2"/>
+    <rect x="330" y="332" width="1030" height="264" rx="28" fill="#ffffff" stroke="#bbf7d0" stroke-width="2"/>
+  </g>
+
+  <circle cx="372" cy="80" r="20" fill="#2563eb"/>
+  <text x="372" y="86" font-size="15" font-weight="800" text-anchor="middle" fill="#ffffff">iOS</text>
+  <text x="406" y="87" class="lane-heading">iOS 네이티브 패키지</text>
+
+  <circle cx="372" cy="372" r="20" fill="#16a34a"/>
+  <text x="372" y="377" font-size="12" font-weight="800" text-anchor="middle" fill="#ffffff">AOS</text>
+  <text x="406" y="379" class="lane-heading">Android 네이티브 패키지</text>
+
+  <path d="M280 353 H315" fill="none" stroke="#94a3b8" stroke-width="3"/>
+  <circle cx="315" cy="353" r="5" fill="#94a3b8"/>
+  <path d="M315 353 V190 Q315 174 331 174 H338" fill="none" stroke="#94a3b8" stroke-width="3" marker-end="url(#neutral-arrow)"/>
+  <path d="M315 353 V450 Q315 466 331 466 H338" fill="none" stroke="#94a3b8" stroke-width="3" marker-end="url(#neutral-arrow)"/>
+
+  <rect x="350" y="120" width="200" height="136" rx="22" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+  <rect x="595" y="120" width="240" height="136" rx="22" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <rect x="880" y="120" width="210" height="136" rx="22" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="2"/>
+  <rect x="1135" y="120" width="195" height="136" rx="22" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+
+  <text x="450" y="174" class="card-heading" text-anchor="middle">Xcode · xcodebuild</text>
+  <text x="450" y="211" class="body" text-anchor="middle">빌드 작업과 순서 관리</text>
+
+  <text x="715" y="174" class="card-heading" text-anchor="middle">컴파일러 · 링커</text>
+  <text x="715" y="211" class="body" text-anchor="middle">소스 → 프레임워크 바이너리</text>
+
+  <text x="985" y="174" class="card-heading" text-anchor="middle">XCFramework</text>
+  <text x="985" y="204" class="body" text-anchor="middle">Device + Simulator</text>
+  <text x="985" y="229" class="small" text-anchor="middle">바이너리 · 헤더</text>
+
+  <text x="1232" y="174" class="card-heading" text-anchor="middle">Swift Package</text>
+  <text x="1232" y="204" class="body" text-anchor="middle">기존 iOS 앱에서</text>
+  <text x="1232" y="229" class="small" text-anchor="middle">대상 바이너리 링크</text>
+
+  <line x1="560" y1="188" x2="583" y2="188" stroke="#38bdf8" stroke-width="3" marker-end="url(#blue-arrow)"/>
+  <line x1="845" y1="188" x2="868" y2="188" stroke="#38bdf8" stroke-width="3" marker-end="url(#blue-arrow)"/>
+  <line x1="1100" y1="188" x2="1123" y2="188" stroke="#38bdf8" stroke-width="3" marker-end="url(#blue-arrow)"/>
+
+  <rect x="350" y="412" width="200" height="136" rx="22" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="2"/>
+  <rect x="595" y="412" width="240" height="136" rx="22" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <rect x="880" y="412" width="210" height="136" rx="22" fill="#ecfdf5" stroke="#86efac" stroke-width="2"/>
+  <rect x="1135" y="412" width="195" height="136" rx="22" fill="#f0fdf4" stroke="#86efac" stroke-width="2"/>
+
+  <text x="450" y="466" class="card-heading" text-anchor="middle">Gradle · AGP</text>
+  <text x="450" y="503" class="body" text-anchor="middle">빌드 작업과 순서 관리</text>
+
+  <text x="715" y="466" class="card-heading" text-anchor="middle">Kotlin·Java + NDK</text>
+  <text x="715" y="503" class="body" text-anchor="middle">class + 네이티브 .so</text>
+
+  <text x="985" y="466" class="card-heading" text-anchor="middle">AAR · Maven</text>
+  <text x="985" y="496" class="body" text-anchor="middle">코드 · 리소스</text>
+  <text x="985" y="521" class="small" text-anchor="middle">버전 · 의존성 메타데이터</text>
+
+  <text x="1232" y="466" class="card-heading" text-anchor="middle">Gradle 의존성</text>
+  <text x="1232" y="496" class="body" text-anchor="middle">DEX 변환 후</text>
+  <text x="1232" y="521" class="small" text-anchor="middle">APK · AAB에 병합</text>
+
+  <line x1="560" y1="480" x2="583" y2="480" stroke="#22c55e" stroke-width="3" marker-end="url(#green-arrow)"/>
+  <line x1="845" y1="480" x2="868" y2="480" stroke="#22c55e" stroke-width="3" marker-end="url(#green-arrow)"/>
+  <line x1="1100" y1="480" x2="1123" y2="480" stroke="#22c55e" stroke-width="3" marker-end="url(#green-arrow)"/>
+
+  <rect x="40" y="626" width="1320" height="62" rx="20" fill="#fff7ed" stroke="#fed7aa" stroke-width="2"/>
+  <rect x="65" y="640" width="82" height="34" rx="17" fill="#ffedd5"/>
+  <text x="106" y="663" class="eyebrow" text-anchor="middle" fill="#c2410c">JS</text>
+  <rect x="165" y="638" width="210" height="38" rx="14" fill="#ffffff" stroke="#fed7aa"/>
+  <text x="270" y="663" class="footer" text-anchor="middle">JavaScript · TypeScript</text>
+  <line x1="387" y1="657" x2="425" y2="657" stroke="#fb923c" stroke-width="3" marker-end="url(#orange-arrow)"/>
+  <rect x="440" y="638" width="110" height="38" rx="14" fill="#ffffff" stroke="#fed7aa"/>
+  <text x="495" y="663" class="footer" text-anchor="middle">Metro</text>
+  <line x1="562" y1="657" x2="600" y2="657" stroke="#fb923c" stroke-width="3" marker-end="url(#orange-arrow)"/>
+  <rect x="615" y="638" width="300" height="38" rx="14" fill="#ffffff" stroke="#fed7aa"/>
+  <text x="765" y="663" class="footer" text-anchor="middle">iOS · Android JavaScript bundle</text>
+  <line x1="927" y1="657" x2="965" y2="657" stroke="#fb923c" stroke-width="3" marker-end="url(#orange-arrow)"/>
+  <rect x="980" y="638" width="345" height="38" rx="14" fill="#ffffff" stroke="#fed7aa"/>
+  <text x="1152.5" y="663" class="footer" text-anchor="middle">네이티브 패키지와 함께 릴리스</text>
+</svg>
