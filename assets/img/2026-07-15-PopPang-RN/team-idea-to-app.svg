@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="600" viewBox="0 0 1400 600" role="img" aria-labelledby="title desc">
+  <title id="title">팀의 아이디어를 React Native 화면으로 검증하는 흐름</title>
+  <desc id="desc">디자이너, 백엔드 개발자, iOS 개발자, Android 개발자가 AI를 활용해 PopPang-RN에서 공통 화면을 만들고 데모 앱에서 확인한 뒤 iOS와 Android 앱에 함께 배포한다.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="7" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#64748b"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", sans-serif; fill: #0f172a; }
+      .eyebrow { font-size: 18px; font-weight: 800; letter-spacing: 1.2px; }
+      .heading { font-size: 30px; font-weight: 800; }
+      .label { font-size: 21px; font-weight: 750; }
+      .body { font-size: 18px; font-weight: 500; fill: #475569; }
+      .note { font-size: 23px; font-weight: 800; }
+    </style>
+  </defs>
+
+  <rect width="1400" height="600" rx="32" fill="#f8fafc"/>
+
+  <text x="58" y="62" class="eyebrow" fill="#64748b">TEAM</text>
+  <text x="58" y="103" class="heading">누구나 아이디어를 제안</text>
+
+  <g transform="translate(64 140)">
+    <circle cx="44" cy="40" r="30" fill="#f97316"/>
+    <path d="M6 105c0-31 16-50 38-50s38 19 38 50v12H6z" fill="#fb923c"/>
+    <circle cx="34" cy="37" r="4" fill="#ffffff"/>
+    <circle cx="54" cy="37" r="4" fill="#ffffff"/>
+    <path d="M35 51c6 5 12 5 18 0" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <text x="164" y="188" class="label">디자이너</text>
+  <text x="164" y="219" class="body">화면과 사용 흐름</text>
+
+  <g transform="translate(64 294)">
+    <circle cx="44" cy="40" r="30" fill="#9333ea"/>
+    <path d="M6 105c0-31 16-50 38-50s38 19 38 50v12H6z" fill="#a855f7"/>
+    <circle cx="34" cy="37" r="4" fill="#ffffff"/>
+    <circle cx="54" cy="37" r="4" fill="#ffffff"/>
+    <path d="M35 51c6 5 12 5 18 0" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <text x="164" y="342" class="label">백엔드 개발자</text>
+  <text x="164" y="373" class="body">데이터와 기능 아이디어</text>
+
+  <g transform="translate(64 448)">
+    <circle cx="34" cy="30" r="25" fill="#2563eb"/>
+    <path d="M3 88c0-26 13-42 31-42s31 16 31 42v9H3z" fill="#3b82f6"/>
+  </g>
+  <text x="143" y="487" class="label">iOS</text>
+
+  <g transform="translate(240 448)">
+    <circle cx="34" cy="30" r="25" fill="#16a34a"/>
+    <path d="M3 88c0-26 13-42 31-42s31 16 31 42v9H3z" fill="#22c55e"/>
+  </g>
+  <text x="319" y="487" class="label">Android</text>
+
+  <path d="M355 189 H438 Q470 189 494 219 L524 257" fill="none" stroke="#cbd5e1" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M355 343 H450 Q476 343 500 319 L524 295" fill="none" stroke="#cbd5e1" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M414 479 H438 Q474 479 494 442 L527 381" fill="none" stroke="#cbd5e1" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="536" y="82" width="350" height="386" rx="28" fill="#ffffff" stroke="#bae6fd" stroke-width="2"/>
+  </g>
+  <rect x="568" y="112" width="118" height="36" rx="18" fill="#e0f2fe"/>
+  <text x="627" y="137" class="eyebrow" text-anchor="middle" fill="#0369a1">AI + RN</text>
+
+  <rect x="648" y="170" width="126" height="126" rx="28" fill="#0f172a"/>
+  <g transform="translate(662 184) scale(.85)" aria-label="React Native logo">
+    <path d="m56 61.832c5.891 0 10.667-4.776 10.667-10.667s-4.777-10.667-10.667-10.667-10.666 4.776-10.666 10.667 4.774 10.667 10.666 10.667z" fill="#61dafb"/>
+    <g fill="none" stroke="#61dafb" stroke-width="5.333">
+      <path d="m56 75.165c29.455 0 53.333-10.745 53.333-24s-23.878-24-53.333-24-53.334 10.745-53.334 24 23.879 24 53.334 24z"/>
+      <path d="m35.215 63.165c14.728 25.509 35.972 40.815 47.451 34.188 11.48-6.628 8.846-32.68-5.882-58.188-14.727-25.51-35.972-40.816-47.45-34.188-11.48 6.627-8.846 32.679 5.881 58.188z"/>
+      <path d="m35.215 39.165c-14.727 25.509-17.36 51.56-5.882 58.188 11.48 6.627 32.724-8.68 47.451-34.188 14.728-25.51 17.362-51.56 5.883-58.188-11.48-6.628-32.724 8.679-47.452 34.188z"/>
+    </g>
+  </g>
+  <path d="M790 174l5 12 12 5-12 5-5 12-5-12-12-5 12-5z" fill="#f97316"/>
+
+  <text x="711" y="342" class="heading" text-anchor="middle">PopPang-RN</text>
+  <text x="711" y="378" class="body" text-anchor="middle">AI로 공통 UI와 기능 흐름 구현</text>
+  <rect x="588" y="404" width="246" height="38" rx="19" fill="#f0f9ff"/>
+  <text x="711" y="430" class="label" text-anchor="middle" fill="#0369a1">하나의 공통 모듈</text>
+
+  <line x1="900" y1="274" x2="950" y2="274" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="970" y="82" width="368" height="206" rx="26" fill="#fff7ed" stroke="#fed7aa" stroke-width="2"/>
+  </g>
+  <rect x="1000" y="112" width="118" height="36" rx="18" fill="#ffedd5"/>
+  <text x="1059" y="137" class="eyebrow" text-anchor="middle" fill="#c2410c">DEMO APP</text>
+  <rect x="1004" y="165" width="58" height="92" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="3"/>
+  <rect x="1013" y="179" width="40" height="49" rx="6" fill="#e0f2fe"/>
+  <circle cx="1033" cy="244" r="4" fill="#94a3b8"/>
+  <text x="1090" y="198" class="heading">바로 실행</text>
+  <text x="1090" y="233" class="body">화면과 동작을 함께 확인</text>
+
+  <path d="M1154 288 V329 H1064 V351" fill="none" stroke="#38bdf8" stroke-width="4"/>
+  <path d="M1154 288 V329 H1244 V351" fill="none" stroke="#38bdf8" stroke-width="4"/>
+  <circle cx="1154" cy="329" r="7" fill="#38bdf8"/>
+
+  <rect x="970" y="351" width="188" height="112" rx="22" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+  <circle cx="1010" cy="392" r="21" fill="#2563eb"/>
+  <text x="1010" y="399" font-size="16" font-weight="800" text-anchor="middle" fill="#ffffff">iOS</text>
+  <text x="1064" y="397" class="label">iOS 앱</text>
+  <text x="1064" y="432" class="body" text-anchor="middle">검토 후 함께 배포</text>
+
+  <rect x="1170" y="351" width="168" height="112" rx="22" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="2"/>
+  <circle cx="1208" cy="392" r="21" fill="#16a34a"/>
+  <text x="1208" y="399" font-size="14" font-weight="800" text-anchor="middle" fill="#ffffff">AOS</text>
+  <text x="1254" y="397" class="label">Android</text>
+  <text x="1254" y="432" class="body" text-anchor="middle">검토 후 함께 배포</text>
+
+  <rect x="536" y="505" width="802" height="58" rx="20" fill="#ecfdf5"/>
+  <text x="937" y="542" class="note" text-anchor="middle" fill="#047857">아이디어를 낸 팀원이 동작하는 화면까지 빠르게 검증</text>
+</svg>

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="520" viewBox="0 0 1400 520" role="img" aria-labelledby="title desc">
+  <title id="title">AI를 활용한 React Native Prebuild 실험과 검증 흐름</title>
+  <desc id="desc">문제를 정의한 뒤 AI로 문서와 소스를 비교하고 가설과 스크립트 초안을 만들며, 개발자가 실제 빌드와 네이티브 앱 연동을 검증한 뒤 릴리스로 자동화한다.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="7" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#64748b"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", sans-serif; fill: #0f172a; }
+      .step { font-size: 18px; font-weight: 800; letter-spacing: 1px; }
+      .heading { font-size: 25px; font-weight: 800; }
+      .body { font-size: 18px; font-weight: 500; fill: #475569; }
+      .note { font-size: 22px; font-weight: 750; }
+    </style>
+  </defs>
+
+  <rect width="1400" height="520" rx="32" fill="#f8fafc"/>
+
+  <g filter="url(#shadow)">
+    <rect x="46" y="60" width="280" height="316" rx="26" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+    <rect x="388" y="60" width="280" height="316" rx="26" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+    <rect x="730" y="60" width="280" height="316" rx="26" fill="#fff7ed" stroke="#fed7aa" stroke-width="2"/>
+    <rect x="1072" y="60" width="280" height="316" rx="26" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="2"/>
+  </g>
+
+  <text x="78" y="101" class="step" fill="#64748b">01 · 문제 정의</text>
+  <text x="78" y="145" class="heading">버전 차이에서 막힘</text>
+  <text x="78" y="193" class="body">토스 사례: RN 0.76</text>
+  <text x="78" y="225" class="body">팝팡 적용: RN 0.86</text>
+  <text x="78" y="278" class="body">Prebuild 구조와</text>
+  <text x="78" y="310" class="body">헤더 구성이 달라짐</text>
+
+  <line x1="334" y1="218" x2="374" y2="218" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <text x="420" y="101" class="step" fill="#2563eb">02 · AI 활용</text>
+  <text x="420" y="145" class="heading">탐색과 실험 가속</text>
+  <text x="420" y="193" class="body">공식 문서·소스 비교</text>
+  <text x="420" y="225" class="body">VFS·헤더 가설 수립</text>
+  <text x="420" y="257" class="body">빌드 스크립트 초안</text>
+  <text x="420" y="289" class="body">오류 원인 후보 정리</text>
+
+  <line x1="676" y1="218" x2="716" y2="218" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <text x="762" y="101" class="step" fill="#c2410c">03 · 직접 검증</text>
+  <text x="762" y="145" class="heading">실제 빌드로 판정</text>
+  <text x="762" y="193" class="body">Pod 산출물 구조 확인</text>
+  <text x="762" y="225" class="body">시뮬레이터·기기 archive</text>
+  <text x="762" y="257" class="body">SPM·Gradle 앱 연동</text>
+  <text x="762" y="289" class="body">화면·이벤트 동작 확인</text>
+
+  <line x1="1018" y1="218" x2="1058" y2="218" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <text x="1104" y="101" class="step" fill="#047857">04 · 자동화</text>
+  <text x="1104" y="145" class="heading">재현 가능한 릴리스</text>
+  <text x="1104" y="193" class="body">XCFramework + JS bundle</text>
+  <text x="1104" y="225" class="body">Maven 저장소 + AAR</text>
+  <text x="1104" y="257" class="body">버전 기반 GitHub Release</text>
+  <text x="1104" y="289" class="body">클라이언트는 버전만 갱신</text>
+
+  <rect x="46" y="414" width="1306" height="66" rx="20" fill="#e0f2fe"/>
+  <text x="699" y="456" class="note" text-anchor="middle" fill="#075985">AI의 답은 가설로 사용하고, 네이티브 앱의 빌드 성공과 실제 동작을 근거로 확정했습니다.</text>
+</svg>

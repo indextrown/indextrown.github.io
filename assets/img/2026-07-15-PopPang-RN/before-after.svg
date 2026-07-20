@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="620" viewBox="0 0 1400 620" role="img" aria-labelledby="title desc">
+  <title id="title">React Native 도입 전후 공통 기능 개발 방식</title>
+  <desc id="desc">도입 전에는 같은 기능을 iOS와 Android에서 각각 두 번 구현했고, 도입 후에는 React Native 공통 모듈을 한 번 구현해 두 앱에서 사용한다.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#64748b"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", sans-serif; fill: #0f172a; }
+      .eyebrow { font-size: 20px; font-weight: 800; letter-spacing: 1.4px; }
+      .heading { font-size: 34px; font-weight: 800; }
+      .label { font-size: 23px; font-weight: 700; }
+      .body { font-size: 19px; font-weight: 500; fill: #475569; }
+      .metric { font-size: 25px; font-weight: 800; }
+    </style>
+  </defs>
+
+  <rect width="1400" height="620" rx="32" fill="#f8fafc"/>
+
+  <g filter="url(#shadow)">
+    <rect x="44" y="44" width="590" height="532" rx="28" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+    <rect x="766" y="44" width="590" height="532" rx="28" fill="#ffffff" stroke="#dbeafe" stroke-width="2"/>
+  </g>
+
+  <rect x="78" y="76" width="116" height="40" rx="20" fill="#fee2e2"/>
+  <text x="136" y="103" class="eyebrow" text-anchor="middle" fill="#b91c1c">BEFORE</text>
+  <text x="78" y="157" class="heading">같은 기능을 두 번 구현</text>
+
+  <rect x="80" y="199" width="238" height="258" rx="22" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+  <circle cx="199" cy="244" r="25" fill="#2563eb"/>
+  <text x="199" y="252" font-size="20" font-weight="800" text-anchor="middle" fill="#ffffff">iOS</text>
+  <text x="199" y="300" class="label" text-anchor="middle">Swift</text>
+  <rect x="113" y="329" width="172" height="18" rx="9" fill="#93c5fd"/>
+  <rect x="113" y="365" width="139" height="18" rx="9" fill="#bfdbfe"/>
+  <rect x="113" y="401" width="158" height="18" rx="9" fill="#dbeafe"/>
+
+  <rect x="352" y="199" width="238" height="258" rx="22" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="2"/>
+  <circle cx="471" cy="244" r="25" fill="#16a34a"/>
+  <text x="471" y="252" font-size="18" font-weight="800" text-anchor="middle" fill="#ffffff">AOS</text>
+  <text x="471" y="300" class="label" text-anchor="middle">Kotlin</text>
+  <rect x="385" y="329" width="172" height="18" rx="9" fill="#86efac"/>
+  <rect x="385" y="365" width="139" height="18" rx="9" fill="#bbf7d0"/>
+  <rect x="385" y="401" width="158" height="18" rx="9" fill="#dcfce7"/>
+
+  <rect x="80" y="494" width="510" height="54" rx="18" fill="#fff1f2"/>
+  <text x="335" y="529" class="metric" text-anchor="middle" fill="#be123c">공통 화면 구현 단위 2회</text>
+
+  <line x1="660" y1="310" x2="740" y2="310" stroke="#64748b" stroke-width="5" marker-end="url(#arrow)"/>
+
+  <rect x="800" y="76" width="104" height="40" rx="20" fill="#dcfce7"/>
+  <text x="852" y="103" class="eyebrow" text-anchor="middle" fill="#15803d">AFTER</text>
+  <text x="800" y="157" class="heading">공통 화면을 한 번 구현</text>
+
+  <rect x="926" y="193" width="272" height="130" rx="24" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="2"/>
+  <g transform="translate(-10 0)">
+    <rect x="961" y="224" width="58" height="58" rx="15" fill="#0f172a"/>
+    <g transform="translate(968 233) scale(.4)" aria-label="React Native logo">
+      <path d="m56 61.832c5.891 0 10.667-4.776 10.667-10.667s-4.777-10.667-10.667-10.667-10.666 4.776-10.666 10.667 4.774 10.667 10.666 10.667z" fill="#61dafb"/>
+      <g fill="none" stroke="#61dafb" stroke-width="5.333">
+        <path d="m56 75.165c29.455 0 53.333-10.745 53.333-24s-23.878-24-53.333-24-53.334 10.745-53.334 24 23.879 24 53.334 24z"/>
+        <path d="m35.215 63.165c14.728 25.509 35.972 40.815 47.451 34.188 11.48-6.628 8.846-32.68-5.882-58.188-14.727-25.51-35.972-40.816-47.45-34.188-11.48 6.627-8.846 32.679 5.881 58.188z"/>
+        <path d="m35.215 39.165c-14.727 25.509-17.36 51.56-5.882 58.188 11.48 6.627 32.724-8.68 47.451-34.188 14.728-25.51 17.362-51.56 5.883-58.188-11.48-6.628-32.724 8.679-47.452 34.188z"/>
+      </g>
+    </g>
+    <text x="1043" y="247" class="label">React Native</text>
+    <text x="1043" y="277" class="body">공통 UI · 기능 흐름</text>
+  </g>
+
+  <path d="M1062 323 V365 H914 V395" fill="none" stroke="#38bdf8" stroke-width="4"/>
+  <path d="M1062 323 V365 H1210 V395" fill="none" stroke="#38bdf8" stroke-width="4"/>
+  <circle cx="1062" cy="365" r="8" fill="#38bdf8"/>
+
+  <rect x="800" y="395" width="228" height="76" rx="20" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+  <text x="914" y="426" class="label" text-anchor="middle">iOS 앱</text>
+  <text x="914" y="454" class="body" text-anchor="middle">세션 · 내비게이션 · SDK</text>
+
+  <rect x="1096" y="395" width="228" height="76" rx="20" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="2"/>
+  <text x="1210" y="426" class="label" text-anchor="middle">Android 앱</text>
+  <text x="1210" y="454" class="body" text-anchor="middle">세션 · 내비게이션 · SDK</text>
+
+  <rect x="800" y="494" width="524" height="54" rx="18" fill="#ecfdf5"/>
+  <text x="1062" y="529" class="metric" text-anchor="middle" fill="#047857">공통 화면 구현 단위 1회 · 약 2배</text>
+</svg>
