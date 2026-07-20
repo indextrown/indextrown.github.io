@@ -94,21 +94,21 @@
   <text x="1090" y="198" class="heading">바로 실행</text>
   <text x="1090" y="233" class="body">화면과 동작을 함께 확인</text>
 
-  <path d="M1154 288 V329 H1064 V351" fill="none" stroke="#38bdf8" stroke-width="4"/>
-  <path d="M1154 288 V329 H1244 V351" fill="none" stroke="#38bdf8" stroke-width="4"/>
+  <path d="M1154 288 V329 H1058 V351" fill="none" stroke="#38bdf8" stroke-width="4"/>
+  <path d="M1154 288 V329 H1250 V351" fill="none" stroke="#38bdf8" stroke-width="4"/>
   <circle cx="1154" cy="329" r="7" fill="#38bdf8"/>
 
-  <rect x="970" y="351" width="188" height="112" rx="22" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
-  <circle cx="1010" cy="392" r="21" fill="#2563eb"/>
-  <text x="1010" y="399" font-size="16" font-weight="800" text-anchor="middle" fill="#ffffff">iOS</text>
-  <text x="1064" y="397" class="label">iOS 앱</text>
-  <text x="1064" y="432" class="body" text-anchor="middle">검토 후 함께 배포</text>
+  <rect x="970" y="351" width="176" height="112" rx="22" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+  <circle cx="1058" cy="380" r="18" fill="#2563eb"/>
+  <text x="1058" y="386" font-size="14" font-weight="800" text-anchor="middle" fill="#ffffff">iOS</text>
+  <text x="1058" y="418" class="label" text-anchor="middle">iOS 앱</text>
+  <text x="1058" y="446" class="body" text-anchor="middle">검토 후 함께 배포</text>
 
-  <rect x="1170" y="351" width="168" height="112" rx="22" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="2"/>
-  <circle cx="1208" cy="392" r="21" fill="#16a34a"/>
-  <text x="1208" y="399" font-size="14" font-weight="800" text-anchor="middle" fill="#ffffff">AOS</text>
-  <text x="1254" y="397" class="label">Android</text>
-  <text x="1254" y="432" class="body" text-anchor="middle">검토 후 함께 배포</text>
+  <rect x="1162" y="351" width="176" height="112" rx="22" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="2"/>
+  <circle cx="1250" cy="380" r="18" fill="#16a34a"/>
+  <text x="1250" y="386" font-size="12" font-weight="800" text-anchor="middle" fill="#ffffff">AOS</text>
+  <text x="1250" y="418" class="label" text-anchor="middle">Android 앱</text>
+  <text x="1250" y="446" class="body" text-anchor="middle">검토 후 함께 배포</text>
 
   <rect x="536" y="505" width="802" height="58" rx="20" fill="#ecfdf5"/>
   <text x="937" y="542" class="note" text-anchor="middle" fill="#047857">아이디어를 낸 팀원이 동작하는 화면까지 빠르게 검증</text>

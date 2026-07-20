@@ -117,6 +117,25 @@ React Native가 앱 빌드에 직접 참여해야 한다면 자연스러운 구�
 
 팝팡은 플랫폼별 산출물을 직접 관리하더라도 기존 앱을 흔들지 않는 세 번째 방식을 선택했습니다. React Native 빌드에 필요한 도구는 별도 프로젝트에 모으고, 각 앱에는 완성된 모듈만 배포하기로 했습니다.
 
+### XCFramework와 AAR은 빌드 도구가 아니라 배포 형식입니다
+
+이 구조를 이해하려면 빌드 도구와 빌드 산출물의 역할을 나눠서 봐야 합니다. Xcode의 `xcodebuild`와 Gradle은 어떤 작업을 어떤 순서로 실행할지 관리하는 빌드 시스템입니다. 그 안에서 컴파일러는 소스 코드를 오브젝트 코드나 바이트코드로 바꿉니다. 네이티브 코드에서는 링커가 컴파일된 코드의 심벌과 라이브러리를 연결해 바이너리를 만듭니다. XCFramework와 AAR은 이 과정을 실행하는 도구가 아니라, 만들어진 코드와 필요한 정보를 네이티브 앱에 전달하는 패키지 형식입니다.
+
+| 단계 | iOS | Android |
+| --- | --- | --- |
+| 빌드 관리 | Xcode와 `xcodebuild`가 컴파일·링크·아카이브 순서를 실행 | Gradle과 Android Gradle Plugin이 컴파일·리소스 처리·패키징 작업을 실행 |
+| 컴파일·링크 | 컴파일러와 링커가 디바이스용·시뮬레이터용 프레임워크 바이너리를 생성 | Kotlin·Java 컴파일러가 클래스 파일을 만들고, 네이티브 툴체인이 필요한 `.so` 파일을 생성 |
+| 패키징 | `xcodebuild -create-xcframework`가 디바이스용·시뮬레이터용 프레임워크를 XCFramework로 묶음 | Android Gradle Plugin이 클래스, Manifest, 리소스, 네이티브 라이브러리를 AAR로 묶음 |
+| 기존 앱 연결 | Swift Package Manager가 패키지를 내려받고 Xcode가 현재 빌드 대상에 맞는 바이너리를 링크 | Gradle이 Maven 메타데이터를 읽어 AAR과 의존성을 가져오고 앱 빌드에 병합 |
+
+[Apple 공식 문서](https://developer.apple.com/documentation/xcode/creating-a-multi-platform-binary-framework-bundle)에 따르면 XCFramework는 디바이스·시뮬레이터처럼 실행 환경이 다른 프레임워크·라이브러리 바이너리와 헤더를 하나로 묶는 형식입니다. PopPang-RN은 iOS 디바이스용과 시뮬레이터용 프레임워크를 각각 archive한 뒤 XCFramework로 묶습니다. Swift Package Manager는 이 결과물을 binary target으로 받아 기존 iOS 앱에 연결합니다.
+
+[Android 공식 문서](https://developer.android.com/studio/projects/android-library)에 따르면 AAR(Android Archive)은 Android 라이브러리의 코드뿐 아니라 Manifest, 리소스, 네이티브 `.so` 파일까지 담을 수 있는 형식입니다. AAR이 실제 라이브러리 파일이라면, 로컬 Maven 저장소는 AAR과 버전·의존성 메타데이터를 Gradle이 찾을 수 있게 배치한 디렉터리입니다. PopPang-RN은 debug·release AAR과 POM·Gradle Module Metadata를 이 저장소에 함께 넣습니다.
+
+Prebuild가 기존 앱의 빌드를 없애는 것은 아닙니다. iOS 앱은 XCFramework에서 현재 대상에 맞는 바이너리를 골라 링크합니다. Android 앱은 AAR의 클래스 파일을 DEX로 변환하고 Manifest·리소스·네이티브 라이브러리를 APK·AAB에 합칩니다. 달라진 점은 React Native 소스를 두 네이티브 프로젝트에서 다시 컴파일하지 않는다는 것입니다. 소스 컴파일과 네이티브 패키징은 PopPang-RN이 맡고, 기존 앱은 검증된 산출물을 연결해 최종 앱을 만듭니다.
+
+React Native의 화면 로직이 담긴 JavaScript bundle은 네이티브 패키지와 별도로 생성합니다. `release-rn.sh`는 iOS·Android용 JavaScript bundle과 XCFramework·AAR 기반 네이티브 패키지를 함께 빌드해 하나의 릴리스에 올립니다. 따라서 각 앱에 전달하는 전체 단위는 `네이티브 패키지 + JavaScript bundle`입니다.
+
 ### 토스의 Prebuild 방식은 최신 버전에 그대로 적용되지 않았습니다
 
 [토스 기술 블로그의 Prebuild 방식](https://toss.tech/article/react-native-without-cocoapods)은 팝팡의 요구에 가까웠습니다. CocoaPods는 빌드 전용 프로젝트에서만 사용하고 실제 앱에는 미리 만든 산출물만 전달합니다. 이렇게 하면 기존 앱의 의존성 관리 도구를 바꾸지 않아도 됩니다.
