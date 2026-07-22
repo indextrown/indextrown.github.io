@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="830" viewBox="0 0 1500 830" role="img" aria-labelledby="title desc">
+  <title id="title">PopPangListKit이 셀 의존성을 옮긴 위치</title>
+  <desc id="desc">화면이 여러 구체적인 UICollectionViewCell을 직접 등록하고 꺼내던 구조에서 List, Section, Cell만 선언하고 Component와 AnyComponent, 공통 셀이 라이브러리 경계 안에서 셀 생성을 담당하는 구조로 바뀐다.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="7" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+      <path d="M0,0 L14,7 L0,14 Z" fill="#64748b"/>
+    </marker>
+    <marker id="blue-arrow" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+      <path d="M0,0 L14,7 L0,14 Z" fill="#3182f6"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", sans-serif; fill: #0f172a; }
+      .title { font-size: 38px; font-weight: 800; }
+      .subtitle { font-size: 20px; font-weight: 500; fill: #475569; }
+      .heading { font-size: 27px; font-weight: 800; }
+      .node { font-size: 21px; font-weight: 750; }
+      .body { font-size: 17px; font-weight: 500; fill: #475569; }
+      .small { font-size: 15px; font-weight: 600; fill: #64748b; }
+      .chip { font-size: 17px; font-weight: 750; }
+    </style>
+  </defs>
+
+  <rect width="1500" height="830" rx="34" fill="#f8fafc"/>
+  <text x="60" y="68" class="title">셀 의존성은 화면에서 라이브러리 경계 안으로 이동합니다</text>
+  <text x="60" y="108" class="subtitle">화면에는 List 선언만 남고, 셀 등록·재사용·렌더링은 Component Core가 맡습니다.</text>
+
+  <g filter="url(#shadow)">
+    <rect x="45" y="155" width="560" height="570" rx="28" fill="#ffffff" stroke="#fecaca" stroke-width="2.5"/>
+    <rect x="895" y="155" width="560" height="570" rx="28" fill="#ffffff" stroke="#bfdbfe" stroke-width="2.5"/>
+  </g>
+
+  <rect x="80" y="184" width="230" height="38" rx="19" fill="#fee2e2"/>
+  <text x="195" y="209" class="chip" text-anchor="middle" fill="#b91c1c">UICollectionView 직접 연결</text>
+  <text x="80" y="270" class="heading">화면이 구체적인 셀을 압니다</text>
+  <text x="80" y="304" class="body">셀마다 등록, dequeue, 캐스팅과 갱신 코드를 작성합니다.</text>
+
+  <rect x="80" y="350" width="490" height="105" rx="20" fill="#fff1f2" stroke="#fda4af" stroke-width="2"/>
+  <text x="325" y="390" class="node" text-anchor="middle">ViewController · Adapter</text>
+  <text x="325" y="424" class="body" text-anchor="middle">register · dequeue · cast · configure</text>
+
+  <line x1="325" y1="455" x2="325" y2="505" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="80" y="518" width="490" height="112" rx="20" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="325" y="560" class="node" text-anchor="middle">PopupCell · HomeCardCell · GridCell</text>
+  <text x="325" y="595" class="body" text-anchor="middle">화면마다 늘어나는 UICollectionViewCell</text>
+
+  <rect x="80" y="654" width="490" height="42" rx="18" fill="#fee2e2"/>
+  <text x="325" y="681" class="chip" text-anchor="middle" fill="#b91c1c">구체 셀 의존성 위치: 화면</text>
+
+  <line x1="630" y1="430" x2="860" y2="430" stroke="#3182f6" stroke-width="3" marker-end="url(#blue-arrow)"/>
+  <rect x="662" y="372" width="165" height="42" rx="21" fill="#dbeafe"/>
+  <text x="745" y="399" class="chip" text-anchor="middle" fill="#1d4ed8">의존성 이동</text>
+  <text x="745" y="468" class="small" text-anchor="middle">공통 셀 하나로 수렴</text>
+
+  <rect x="930" y="184" width="210" height="38" rx="19" fill="#dbeafe"/>
+  <text x="1035" y="209" class="chip" text-anchor="middle" fill="#1d4ed8">PopPangListKit</text>
+  <text x="930" y="270" class="heading">화면은 List 구조만 선언합니다</text>
+  <text x="930" y="304" class="body">구체적인 셀 타입과 재사용 방법을 참조하지 않습니다.</text>
+
+  <rect x="930" y="338" width="490" height="82" rx="20" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="1175" y="373" class="node" text-anchor="middle">ViewController · SwiftUI View</text>
+  <text x="1175" y="402" class="small" text-anchor="middle">List · Section · Cell만 사용</text>
+
+  <line x1="1175" y1="420" x2="1175" y2="462" stroke="#3182f6" stroke-width="3" marker-end="url(#blue-arrow)"/>
+
+  <rect x="918" y="474" width="514" height="172" rx="22" fill="#eff6ff" stroke="#60a5fa" stroke-width="2.5" stroke-dasharray="10 8"/>
+  <rect x="940" y="492" width="180" height="32" rx="16" fill="#dbeafe"/>
+  <text x="1030" y="514" class="small" text-anchor="middle" fill="#1d4ed8">Component Core 경계</text>
+
+  <rect x="940" y="541" width="140" height="76" rx="16" fill="#ffffff" stroke="#93c5fd" stroke-width="2"/>
+  <text x="1010" y="574" class="node" text-anchor="middle">Component</text>
+  <text x="1010" y="600" class="small" text-anchor="middle">UIView 규칙</text>
+
+  <rect x="1105" y="541" width="140" height="76" rx="16" fill="#ffffff" stroke="#93c5fd" stroke-width="2"/>
+  <text x="1175" y="574" class="chip" text-anchor="middle">AnyComponent</text>
+  <text x="1175" y="600" class="small" text-anchor="middle">타입 소거</text>
+
+  <rect x="1270" y="541" width="140" height="76" rx="16" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
+  <text x="1340" y="570" class="chip" text-anchor="middle">공통 Cell</text>
+  <text x="1340" y="600" class="small" text-anchor="middle">register · reuse</text>
+
+  <rect x="930" y="664" width="490" height="42" rx="18" fill="#dcfce7"/>
+  <text x="1175" y="691" class="chip" text-anchor="middle" fill="#15803d">화면의 구체적인 UICollectionViewCell 참조 0개</text>
+
+  <text x="60" y="790" class="subtitle">새 UI를 추가할 때 Component를 작성합니다. ViewController와 Adapter의 셀 분기는 늘어나지 않습니다.</text>
+</svg>

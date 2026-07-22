@@ -497,8 +497,12 @@
 <lastmod>2026-07-15T00:00:00+00:00</lastmod>
 </url>
 <url>
-<loc>http://localhost:4000/Makefile/</loc>
-<lastmod>2026-07-20T00:00:00+00:00</lastmod>
+<loc>http://localhost:4000/PopPang-PopPangListKit/</loc>
+<lastmod>2026-07-22T00:00:00+00:00</lastmod>
+</url>
+<url>
+<loc>http://localhost:4000/UIKit-UICollectionView-Adapter/</loc>
+<lastmod>2026-07-22T00:00:00+00:00</lastmod>
 </url>
 <url>
 <loc>http://localhost:4000/projects/star-bridge/</loc>
@@ -658,6 +662,9 @@
 </url>
 <url>
 <loc>http://localhost:4000/page25/</loc>
+</url>
+<url>
+<loc>http://localhost:4000/page26/</loc>
 </url>
 <url>
 <loc>http://localhost:4000/assets/pseudocode.js-2.4.1/katex-samples.html</loc>

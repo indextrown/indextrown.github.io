@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="900" viewBox="0 0 1500 900" role="img" aria-labelledby="title desc">
+  <title id="title">SwiftUI로 시작한 팝팡이 PopPangListKit을 만든 이유</title>
+  <desc id="desc">SwiftUI의 높은 생산성과 UICollectionView의 명시적인 셀 제어를 PopPangListKit이 하나의 구조로 연결한다.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="7" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+      <path d="M0,0 L14,7 L0,14 Z" fill="#3182f6"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", sans-serif; fill: #0f172a; }
+      .title { font-size: 38px; font-weight: 800; }
+      .subtitle { font-size: 20px; font-weight: 500; fill: #475569; }
+      .heading { font-size: 27px; font-weight: 800; }
+      .node { font-size: 21px; font-weight: 750; }
+      .body { font-size: 17px; font-weight: 500; fill: #475569; }
+      .small { font-size: 15px; font-weight: 600; fill: #64748b; }
+      .chip { font-size: 17px; font-weight: 750; }
+    </style>
+  </defs>
+
+  <rect width="1500" height="900" rx="34" fill="#f8fafc"/>
+  <text x="60" y="68" class="title">SwiftUI의 생산성과 UICollectionView의 제어력을 함께 가져갑니다</text>
+  <text x="60" y="108" class="subtitle">팝팡은 SwiftUI로 시작했고, 복잡한 화면의 렌더링 뼈대만 UICollectionView에 맡겼습니다.</text>
+
+  <g filter="url(#shadow)">
+    <rect x="45" y="165" width="420" height="550" rx="28" fill="#ffffff" stroke="#c4b5fd" stroke-width="2.5"/>
+    <rect x="540" y="165" width="420" height="550" rx="28" fill="#ffffff" stroke="#fdba74" stroke-width="2.5"/>
+    <rect x="1035" y="165" width="420" height="550" rx="28" fill="#ffffff" stroke="#93c5fd" stroke-width="2.5"/>
+  </g>
+
+  <rect x="80" y="198" width="130" height="38" rx="19" fill="#ede9fe"/>
+  <text x="145" y="223" class="chip" text-anchor="middle" fill="#6d28d9">시작점</text>
+  <text x="80" y="286" class="heading">SwiftUI List</text>
+  <text x="80" y="322" class="body">List · ScrollView · LazyVStack</text>
+
+  <rect x="80" y="366" width="350" height="66" rx="18" fill="#f5f3ff"/>
+  <text x="255" y="407" class="node" text-anchor="middle">빠른 화면 작성</text>
+  <rect x="80" y="450" width="350" height="66" rx="18" fill="#f8fafc"/>
+  <text x="255" y="491" class="body" text-anchor="middle">정체성과 갱신을 프레임워크가 관리</text>
+  <rect x="80" y="534" width="350" height="110" rx="18" fill="#fff7ed" stroke="#fed7aa" stroke-width="2"/>
+  <text x="255" y="574" class="body" text-anchor="middle">복잡한 스크롤 수명주기와</text>
+  <text x="255" y="606" class="body" text-anchor="middle">prefetch · pagination 제어가 필요해짐</text>
+  <text x="255" y="680" class="small" text-anchor="middle">간단한 화면에는 여전히 좋은 선택</text>
+
+  <rect x="575" y="198" width="175" height="38" rx="19" fill="#ffedd5"/>
+  <text x="663" y="223" class="chip" text-anchor="middle" fill="#c2410c">필요한 제어</text>
+  <text x="575" y="286" class="heading">UICollectionView Core</text>
+  <text x="575" y="322" class="body">명시적인 snapshot과 재사용 경로</text>
+
+  <rect x="575" y="366" width="350" height="66" rx="18" fill="#fff7ed"/>
+  <text x="750" y="407" class="node" text-anchor="middle">예측 가능한 갱신</text>
+  <rect x="575" y="450" width="350" height="66" rx="18" fill="#fff7ed"/>
+  <text x="750" y="491" class="body" text-anchor="middle">diff · reuse · layout · animation</text>
+  <rect x="575" y="534" width="350" height="110" rx="18" fill="#fff1f2" stroke="#fecaca" stroke-width="2"/>
+  <text x="750" y="574" class="body" text-anchor="middle">delegate · dataSource · 구체 셀을</text>
+  <text x="750" y="606" class="body" text-anchor="middle">화면마다 직접 연결하면 코드가 커짐</text>
+  <text x="750" y="680" class="small" text-anchor="middle">제어력은 높지만 선언 비용이 큼</text>
+
+  <rect x="1070" y="198" width="220" height="38" rx="19" fill="#dbeafe"/>
+  <text x="1180" y="223" class="chip" text-anchor="middle" fill="#1d4ed8">PopPangListKit</text>
+  <text x="1070" y="286" class="heading">SwiftUI 선언 + UIKit 렌더링</text>
+  <text x="1070" y="322" class="body">두 경로를 Component로 연결</text>
+
+  <rect x="1070" y="366" width="350" height="66" rx="18" fill="#eff6ff"/>
+  <text x="1245" y="407" class="node" text-anchor="middle">List · Section · Cell</text>
+  <rect x="1070" y="450" width="350" height="66" rx="18" fill="#eff6ff"/>
+  <text x="1245" y="491" class="body" text-anchor="middle">Component · AnyComponent</text>
+  <rect x="1070" y="534" width="350" height="110" rx="18" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="2"/>
+  <text x="1245" y="574" class="body" text-anchor="middle">SwiftUI View와 UIKit UIView가</text>
+  <text x="1245" y="606" class="body" text-anchor="middle">같은 diff · reuse 경로를 사용</text>
+  <text x="1245" y="680" class="small" text-anchor="middle">선언은 가볍게, 동작은 조정 가능하게</text>
+
+  <line x1="465" y1="440" x2="528" y2="440" stroke="#3182f6" stroke-width="3" marker-end="url(#arrow)"/>
+  <line x1="960" y1="440" x2="1023" y2="440" stroke="#3182f6" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="250" y="772" width="1000" height="70" rx="24" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="2"/>
+  <text x="750" y="814" class="node" text-anchor="middle">화면은 SwiftUI답게 선언하고, 성능과 수명주기는 UICollectionView에서 관리합니다.</text>
+</svg>
