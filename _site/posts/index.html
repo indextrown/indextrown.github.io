@@ -319,7 +319,7 @@ checkbox.addEventListener('change', function() {
 
 
 <h3 class="archive__subtitle">전체 게시글
-  <span class="n_posts">(127)</span>
+  <span class="n_posts">(129)</span>
 </h3>
 <!-- 
 <div class="container">
@@ -585,6 +585,159 @@ checkbox.addEventListener('change', function() {
   <div class="post-wrapper" 
   
     
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/%ED%85%8C%EC%8A%A4%ED%8A%B8-%EC%A0%9C%EB%AA%A9/" rel="permalink">테스트 제목
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-08-02T00:00:00+00:00">August 2, 2026</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">11
+</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Makefile/" rel="permalink">
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-08-02T00:00:00+00:00">August 2, 2026</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
+  >
+    
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/Makefile/" rel="permalink">
+</a>
+      
+    </h2>
+
+
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-07-28T00:00:00+00:00">July 28, 2026</time>
+      </span>
+    
+
+    
+
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+    
+      <div class="archive__item-tags">
+        
+      </div>
+    
+  </div>
+  
+  <div class="post-wrapper" 
+  
+    
       data-UIKit
     
       data-SwiftUI
@@ -731,57 +884,6 @@ ScrollView {
           
             <a class="posttag tagged" href="/posts/?tag=UICollectionView">UICollectionView</a>
           
-        
-      </div>
-    
-  </div>
-  
-  <div class="post-wrapper" 
-  
-    
-  >
-    
-
-
-
-
-<div class="list__item">
-  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title no_toc" itemprop="headline">
-      
-        <a href="/Makefile/" rel="permalink">
-</a>
-      
-    </h2>
-
-
-    
-
-  <p class="page__meta">
-    
-      
-      <span class="page__meta-date">
-        <i class="far fa-calendar-alt" aria-hidden="true"></i>
-        
-        <time datetime="2026-07-22T00:00:00+00:00">July 22, 2026</time>
-      </span>
-    
-
-    
-
-    
-
-  </p>
-
-
-    <p class="archive__item-excerpt" itemprop="description">
-</p>
-  </article>
-</div>
-
-    
-      <div class="archive__item-tags">
         
       </div>
     
@@ -9526,5 +9628,29 @@ RxSwift를 알기 위해 ReactiveX에 대해 알아야 한다. ReactiveX 혹은 
       </a>
     </aside>
 
-  </body>
+  <script data-jekyll-blog-scroll-sync>
+  (() => {
+    let scheduled = false;
+    let latestRatio = 0;
+
+    const applyScroll = () => {
+      scheduled = false;
+      const scroller = document.scrollingElement || document.documentElement;
+      const maxScroll = Math.max(0, scroller.scrollHeight - window.innerHeight);
+      window.scrollTo(0, latestRatio * maxScroll);
+    };
+
+    window.addEventListener('message', (event) => {
+      if (event.source !== window.parent || event.data?.type !== 'jekyllBlog.scroll') {
+        return;
+      }
+      latestRatio = Math.min(1, Math.max(0, Number(event.data.ratio) || 0));
+      if (!scheduled) {
+        scheduled = true;
+        requestAnimationFrame(applyScroll);
+      }
+    });
+  })();
+</script>
+</body>
 </html>

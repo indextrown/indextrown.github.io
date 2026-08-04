@@ -464,5 +464,29 @@ SwiftUI 뷰 계층구조를 관리하는 뷰컨트롤러이다.     <br />
       </a>
     </aside>
 
-  </body>
+  <script data-jekyll-blog-scroll-sync>
+  (() => {
+    let scheduled = false;
+    let latestRatio = 0;
+
+    const applyScroll = () => {
+      scheduled = false;
+      const scroller = document.scrollingElement || document.documentElement;
+      const maxScroll = Math.max(0, scroller.scrollHeight - window.innerHeight);
+      window.scrollTo(0, latestRatio * maxScroll);
+    };
+
+    window.addEventListener('message', (event) => {
+      if (event.source !== window.parent || event.data?.type !== 'jekyllBlog.scroll') {
+        return;
+      }
+      latestRatio = Math.min(1, Math.max(0, Number(event.data.ratio) || 0));
+      if (!scheduled) {
+        scheduled = true;
+        requestAnimationFrame(applyScroll);
+      }
+    });
+  })();
+</script>
+</body>
 </html>
