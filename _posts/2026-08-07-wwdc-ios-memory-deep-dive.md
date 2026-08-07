@@ -1,7 +1,7 @@
 ---
 title: "[WWDC] iOS Memory Deep Dive"
 date: 2026-08-07
-tags: []
+tags: [WWDC, Swift]
 ---
 
 ## Why reduce memory
@@ -595,5 +595,7 @@ Memgraph에서 직접적인 문제를 찾을 수 없을 때, command line으로 
 ## Reference
 
 - [https://developer.apple.com/kr/videos/play/wwdc2018/416/](https://developer.apple.com/kr/videos/play/wwdc2018/416/)
+
+&nbsp;
 
 &nbsp;
