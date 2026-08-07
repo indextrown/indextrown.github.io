@@ -4,15 +4,16 @@ date: 2026-08-07
 tags: []
 ---
 
+<details class="notion-toggle-list" markdown="1">
+<summary>사전 지식</summary>
+
 #### Pixel
 
 - 디지털 이미지는 작은 점인 **Pixel(Picture Element)**의 집합으로 표현됩니다.
 - pixel의 색상은 보통 RGBA(Red, Green, Blue, Alpha)라는 채널로 표현합니다. 
 - 각 채널을 8bit로 표현하는 일반적인 RGBA 이미지에서는 각 채널이 0\~255 사이의 숫자로 표현됩니다.
 - 즉 8bit RGBA 기준 하나의 픽셀은 1byte(=8bit) x 4 = 4byte 크기의 메모리를 사용합니다.
-- 참고: 모든 이미지의 픽셀이 항상 4byte는 아닙니다. RGB, grayscale, 16bit 채널 등 픽셀 포맷에 따라 달라질 수 있습니다.
-
-#### JPG
+- 참고: 모든 이미지의 픽셀이 항상 4byte는 아닙니다. RGB, grayscale, 16bit 채널 등 픽셀 포맷에 따라 달라질 수 있습니다.JPG
 
 - JPEG는 **픽셀로 표현되는 래스터(Raster) 이미지 포맷**입니다.
 - 압축 방식: 손실 압축 방식(Lossy Compression)을 사용해 사람 눈에 덜 보이는 정보를 버리고 용량을 줄입니다. 
@@ -51,12 +52,15 @@ tags: []
 
 &nbsp;
 
-이미지를 렌더링 하기 위해서는 압축된 JPEG/PNG 형식을 디코딩하여 pixel 데이터로 준비해야 합니다.   
-팝팡은 서버에서 2250 × 2812(6,327,000 pixels) 해상도의 이미지를 받아왔습니다. 그런데 CollectionView에서 실제 표시 크기는 150 \* 150만 필요했습니다.
+</details>
+
+#### 이미지를 렌더링 하기 위해서는 **압축된 JPEG/PNG 형식을 디코딩하여 Pixel 데이터로 준비**해야 합니다.
+
+팝팡은 서버에서 2250 × 2812(6,327,000 pixels) 해상도의 이미지를 받아왔습니다. 그런데 CollectionView의 셀에서 실제 표시 크기는 150 x 150 픽셀만 필요했습니다.
 
 기존에는 원본 해상도를 그대로 디코딩하려고 했기 때문에 2250 × 2812 x 4byte = 25,308,000byte, 즉 이미지 하나가 약 **25.3MB**, MiB 기준으로는 약 **24.1MiB**의 메모리가 요구되었습니다.
 
-&nbsp;
+#### CPU를 효율적으로 사용하고 메모리를 절약하기 위한 방법
 
 ```bash
 원본
@@ -79,12 +83,12 @@ UIImage
 
 이를 해결하기 위해 WWDC를 참고해서 팝팡에서는 아래 두 가지 전략을 활용했습니다.
 
-- Prefetching으로 셀이 등장하기 전에 앞으로 필요한 이미지의 준비 작업을 미리 시작하여, 스크롤 시점에 CPU 작업이 집중되는 것을 줄입니다.
-- 백그라운드에서 원본 이미지를(JPEG) 필요한 크기로 **Downsampling**하고(CGImage확장자), 축소된 이미지를 **Decode**하여(Pixel확장자) 화면에 바로 표시할 수 있는 상태로 준비합니다.
+1. Prefetching으로 셀이 등장하기 전에 앞으로 필요한 이미지의 준비 작업을 미리 시작하여, 스크롤 시점에 CPU 작업이 집중되는 것을 줄입니다.
+2. 백그라운드에서 원본 이미지를(JPEG) 필요한 크기로 **Downsampling**하고(CGImage확장자), 축소된 이미지를 **Decode**하여(Pixel확장자) 화면에 바로 표시할 수 있는 상태로 준비합니다.
 
 &nbsp;
 
-#### Prefetching: 무거운 작업을 셀이 등장하기 전에 미리 시작
+#### 1. Prefetching: 무거운 작업을 셀이 등장하기 전에 미리 시작
 
 ```bash
 현재 화면
@@ -119,7 +123,7 @@ func collectionView(
 
 &nbsp;
 
-#### Background Downsample / Decode: 이미지 준비 작업을 메인 스레드에서 피하자
+#### 2. Background Downsample / Decode: 이미지 준비 작업을 메인 스레드에서 피하자
 
 ```bash
 Main Thread
