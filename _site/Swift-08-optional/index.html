@@ -23,7 +23,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="DongHyeon Kim's Blog">
 <meta property="og:title" content="[Swift] 8. 옵셔널">
-<meta property="og:url" content="http://localhost:4000/Swift-08-optional/">
+<meta property="og:url" content="https://indextrown.github.io/Swift-08-optional/">
 
 
   <meta property="og:description" content="옵셔널 @frozen enum Optional&lt;Wrapped&gt; where Wrapped : ~Copyable, Wrapped : ~Escapable     래핑된 값 또는 값이 없는 경우를 나타내는 타입입니다.   옵셔널 구현 enum Optional&lt;Wrapped&gt; {     case some&lt;Wrapped&gt; // 연관값     case none          // 값이 없음, none는 nil과 완전 동일 }   옵셔널은 두 가지 경우를 가진 열거형이다 let number: Int? = Optional.some(42) let noNumber: Int? = Optional.none print(noNumber == nil) // Prints &quot;true&quot;   옵셔널 값 추출 4가지 // 1) 강제 추출 num!  // 2) nil이 아닌지 확인후 강제추출 if num != nil { print(num!) }  // 3) 바인딩(상수나 변수에 대입)이 되는 경우만 특정 작업을 진행 if let name = optionalName {     print(name) }  // 4) Nil-Coalescing: 옵셔널 표션식 뒤에 기본값을 제시해서 옵셔널 가능성을 없앤다. optionalName ?? &quot;인덱스&quot;   접근연산자 사용법 // 옵셔널 체이닝 // - 표현식이 옵셔널의 가능성이 있다는 것을 표현, 체이닝 결과는 항상 옵셔널 human?.choco?.name // 언래핑 필수   Reference    https://developer.apple.com/documentation/swift/optional">
@@ -45,7 +45,7 @@
   
 
 
-<link rel="canonical" href="http://localhost:4000/Swift-08-optional/">
+<link rel="canonical" href="https://indextrown.github.io/Swift-08-optional/">
 
 
 
@@ -56,7 +56,7 @@
     
       "@type": "Person",
       "name": "indextrown",
-      "url": "http://localhost:4000/"
+      "url": "https://indextrown.github.io/"
     
   }
 </script>
@@ -283,7 +283,7 @@ checkbox.addEventListener('change', function() {
       
         <header>
           <h1 id="page-title" class="page__title p-name" itemprop="headline">
-            <a href="http://localhost:4000/Swift-08-optional/" class="u-url" itemprop="url">[Swift] 8. 옵셔널
+            <a href="https://indextrown.github.io/Swift-08-optional/" class="u-url" itemprop="url">[Swift] 8. 옵셔널
 </a>
           </h1>
           <footer class="page__meta">
@@ -508,29 +508,5 @@ checkbox.addEventListener('change', function() {
       </a>
     </aside>
 
-  <script data-jekyll-blog-scroll-sync>
-  (() => {
-    let scheduled = false;
-    let latestRatio = 0;
-
-    const applyScroll = () => {
-      scheduled = false;
-      const scroller = document.scrollingElement || document.documentElement;
-      const maxScroll = Math.max(0, scroller.scrollHeight - window.innerHeight);
-      window.scrollTo(0, latestRatio * maxScroll);
-    };
-
-    window.addEventListener('message', (event) => {
-      if (event.source !== window.parent || event.data?.type !== 'jekyllBlog.scroll') {
-        return;
-      }
-      latestRatio = Math.min(1, Math.max(0, Number(event.data.ratio) || 0));
-      if (!scheduled) {
-        scheduled = true;
-        requestAnimationFrame(applyScroll);
-      }
-    });
-  })();
-</script>
-</body>
+  </body>
 </html>

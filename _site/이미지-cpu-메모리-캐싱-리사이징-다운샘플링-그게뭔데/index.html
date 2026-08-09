@@ -1,0 +1,877 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>[WWDC] Image and Graphics Best Practices - DongHyeon Kim’s Blog</title>
+<meta name="description" content="Image, Memory, Cpu…  Image와 Graphics를 사용할 때 메모리와 CPU의 자원 사용에 대해 이야기됩니다. 앱의 CPU 사용량과 메모리 사용량은 서로 관련이 있고, 더 많은 CPU를 사용할수록 배터리 수명과 앱의 응답성에 부정적인 영향을 미친다는 것은 명백합니다. 따라서 메모리와 CPU 사용량을 개선하는 방법에 대해 알아보겠습니다.    ++WWDC18 - iOS Memory Deep Dive++의 이미지 관련 내용과 관련있는 부분이 있어서 내용을 간단하게 요약하겠습니다.  WWDC에서 예시의 이미지 파일은 590KB이지만, 실제로 쓰이는 메모리는 무려 10MB나 됩니다. (2048 x 1526 x 4바이트) 그 이유는 OS에서 이미지를 불러올 때 Load → Decode → Render 과정을 거치기 때문입니다.       Load 단계에서 압축된 상태의 590KB JPG 파일 이미지를 메모리에 불러오고   Decode 단계에서 GPU가 읽을 수 있도록 포맷을 변환합니다. 이때 사이즈가 커지게 됩니다. (바이너리 데이터 -&gt; 디코딩)   Render 단계에서 디코딩된 이미지 데이터를 렌더링합니다.      UIImage and UIImageView    이런 화면을 구성한다면 어떻게 만들 수 있을까요?       UIImageView와 UIImage를 사용해 만들 수 있습니다. MVC 스타일에서 UIImage는 Model 객체, UIImageView는 View에 해당합니다.     UIImage: 이미지 컨텐츠의 로드를 담당   UIImageView: UIImage를 표시하고 렌더링하는 역할        그러나 실제 이미지를 표시하는 과정은 둘 사이에 디코딩하는 과정이 추가됩니다.    디코딩에 대해 알아보기 전에 버퍼가 무엇인지 알아야 합니다.       바퍼는 연속적인 메모리의 영역을 의미합니다. 특히 동일한 일련의 요소로 구성된 메모리를 가리킬 때 버퍼라는 용어를 사용합니다.       이미지 버퍼는 메모리의 버퍼 중에서 이미지의 일부를 나타내고 있는 버퍼를 의미합니다. 이미지 버퍼가 따로 중요한 이유는 버퍼의 각 요소들은 단일 픽셀의 색상과 투명도를 나타내기 때문입니다. 즉 버퍼의 크기는 이미지의 크기에 비례합니다.       프레임 버퍼는 애플리케이션에서 실제 렌더링된 출력을 보유합니다. 앱이 뷰의 계층 구조를 업데이트하면 UIKit은 앱의 윈도우와 모든 뷰를 프레임 버퍼로 렌더링합니다. 그리고 프레임 버퍼는 디스플레이에 출력하기 위해 하드웨어가 읽을 픽셀별 색상 정보를 제공합니다.  이 동작은 1/60초 또는 1/120초와 같은 고정된 간격으로 발생합니다. 변경 사항이 없으면 디스플레이 하드웨어는 이전에 보았던 것과 동일한 데이터를 프레임 버퍼에서 가져옵니다.       그러나 변경사항이 있다면 앱의 창을 프레임 버퍼로 다시 렌더링하고 디스플레이 하드웨어가 프레임 버퍼에서 새 컨텐츠를 가져옵니다.       Data Buffer는 이미지를 비교 및 대조할 때 쓰이는 버퍼입니다. 데이터 버퍼 또한 다음과 같은 일련의 바이트를 포함하고 있습니다.     해당 버퍼에 저장된 이미지의 크기를 설명하는 메타데이터   JPEG, PNG 등 인코딩된 이미지 데이터 자체   그러나 바이트는 직접적으로 픽셀 정보를 제공하지 못합니다.       예를 들어 여기에 UIImageView가 있고 이미지 파일의 내용을 나타내는 데이터 버퍼가 있습니다. 이미지를 화면에 표시하려면 UIImageView의 프레임 버퍼를 한 픽셀 당 나타내야 할 데이터(색상, 투명도 등)로 채워야 합니다.       따라서 이를 위해 UIImage는 데이터 버퍼의 이미지와 동일한 크기의 이미지 버퍼를 할당하고 이미지 데이터를 픽셀당 정보로 변환하는 작업을 수행하는데 이를 바로 Decoding 작업이라고 부릅니다.       그러나 디코딩 작업은 CPU를 많이 사용하고, 메모리 할당과 해제가 지속적으로 발생할 수 있는 작업입니다. 따라서 UIKit이 imageView에 렌더링을 요청할 때마다 매번 디코딩을 수행하는 것이 아니라 UIImage가 이미지 버퍼를 가지고 있어 한 번만 작업이 수행됩니다.       결과적으로 크고 영구적인 메모리가 앱의 모든 이미지마다 할당됩니다. 이 할당은 이미지의 크기에 비례하고 성능 저하 및 단편화의 원인이 됩니다. 애플리케이션이 허용 한도를 초과하여 메모리 사용량을 측정하면 OS가 물리적 메모리 영역을 압축하기 시작합니다. 이 작업 또한 CPU를 사용하기 때문에 CPU 사용량이 증가하고, 결국 OS가 프로세스를 하나씩 종료하게 되며 심지어 현재 앱 자체가 종료될 수 있습니다.  따라서 앱이 짧은 시간 동안만 메모리를 사용하더라도 장기적으로는 악영향을 미칠 수 있으므로 우리는 메모리를 효율적으로 사용해야 합니다.     Downsampling    다운샘플링은 메모리 사용량 자체를 줄이는 기술입니다.  앞서 보았던 이미지 렌더링 파이프라인을 다시 보면 일반적으로 이미지를 표시하는 ImageView가 실제 내부에 표시할 이미지 크기보다 작습니다. 다운 샘플링을 사용하면 메모리를 절약할 수 있습니다.       축소된 이미지를 썸네일이라는 객체로 저장합니다. 썸네일은 더 작은 디코딩된 이미지 버퍼를 갖기 때문에 결국 총 메모리 사용량은 줄어듭니다. 썸네일의 이미지 버퍼를 통해 만든 UIImage를 ImageView에 할당합니다. 그러면 원본 이미지 버퍼를 줄일 수 있게 됩니다.     다운샘플링 수행을 위한 코드       1. CGImageSource 객체 생성  let imageSourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary let imageSource = CGImageSourceCreateWithURL(imageURL as CFURL, imageSourceOptions)!   CGImageSourceCreateWithURL() 메서드를 통해 객체를 생성합니다. Core Graphics 프레임워크에 해당 URL의 파일에 저장된 데이터를 나타내는 객체를 생성하고 있음을 알려줍니다. 옵션에 대한 값을 딕셔너리 형태로 취할 수 있습니다.     kCGImageSourceShouldCache: false는 디코딩된 형식으로 캐싱할 것인지 설정하는 옵션입니다.   다운샘플링 후 원본 데이터 버퍼를 버릴 것이므로 false로 설정합니다.      2. 썸네일의 크기 및 옵션 설정  let maxDimensionInPixels = max(pointSize.width, pointSize.height) * scale let downsampleOptions = [     kCGImageSourceCreateThumbnailFromImageAlways: true,     kCGImageSourceShouldCacheImmediately: true,     kCGImageSourceCreateThumbnailWithTransform: true,     kCGImageSourceThumbnailMaxPixelSize: maxDimensionInPixels] as CFDictionary   썸네일의 최대 크기(픽셀 수)를 설정하고 다운샘플링 옵션을 딕셔너리로 생성합니다.     kCGImageSourceCreateThumbnailFromImageAlways: true            원본 이미지가 썸네일을 포함하고 있더라도 전체 이미지로 썸네일을 만들 것인지           kCGImageSourceShouldCacheImmediately: true            썸네일을 생성할 때 이미지 버퍼를 생성할 것인지           kCGImageSourceCreateThumbnailWithTransform: true            원본 이미지의 방향이나 비율에 맞춰 썸네일을 조정할 것인지           kCGImageSourceThumbnailMaxPixelSize: true            썸네일 이미지의 최대 가로, 세로 크기(픽셀 단위)           여기서 중요한 옵션은 kCGImageSourceShouldCacheImmediately. Core Graphics에게 썸네일 생성을 요청할 때 디코딩된 이미지 버퍼를 생성해야 한다고 알려주는 옵션입니다. 따라서 디코딩에 따른 CPU를 사용하는 시점을 정확히 제어할 수 있게 됩니다.     3. 썸네일 생성  let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions)! return UIImage(cgImage: downsampledImage)   반환되는 CGImage인 썸네일을 생성합니다. 결과를 UIImage로 반환합니다.     4. 결과    3,000 x 2,000 픽셀의 이미지를 최적화를 거치지 않고 UIImageView에 할당하면 31.5MB를 사용했습니다.    다운샘플링을 사용하여 이미지를 최적화하면 18.4MB로 줄일 수 있습니다.       화면의 작은 공간에서 큰 이미지를 많이 로드해야 하는 앨범 앱 같은 경우 메모리 문제가 복잡합니다.       collectionView의 셀 내부에서 이미지를 표현한다고 가정합니다. 보여질 이미지의 크기가 작기 때문에 셀 내부에서 다운샘플링을 통해 이미지 썸네일을 만들고 이를 표시할 것입니다.       그러나 이 방식은 CPU 관점에서 좋지 않습니다. 새로운 행이 화면에 보여질 때 CPU의 사용량이 급증하는 것을 볼 수 있습니다.  셀의 ImageView에 프레임 버퍼가 업데이트되고 디스플레이 하드웨어가 곧 새프레임을 얻어 화면을 업데이트한다면 깔끔한 화면을 볼 수 있지만, CollecionView에 셀이 전달되기 전에 이미지의 디코딩이 오래걸리거나 이미지가 더이상 쓸모없게 되어버리는 경우가 발생할 수 있습니다.       이러한 불규칙적인 CPU 사용량은 사용자 경험과 배터리 수명에도 좋지 않습니다. 따라서 균일한 CPU 사용량을 유지하는 방법은 2가지가 있습니다.     첫 번째는 Prefetching입니다. 필요한 이미지를 미리 디코딩하여 CPU 사용량을 분산시킬 수 있습니다.   두 번째는 백그라운드에서 디코딩/다운샘플링을 시도할 수 있습니다.        prefetch 메서드 구현입니다. 글로벌 큐를 이용해 다운샘플링 함수를 호출할 수 있지만. Thread Explosion을 유발하는 원인이 될 수 있기 때문에 글로벌 큐 대신 직렬 큐를 사용합니다.       이미지 소스는 네트워킹 외에도 가져오는 방법이 다양한데 앱에서 어떤 이미지를 지원한다면 에셋을 사용하는 것을 권장합니다. 이미지 에셋은 이름/특성 기반으로 조회하기 때문에 매우 빠르고 버퍼 캐싱 관리와 장치별 thinning과 같은 기능들을 포함하고 있습니다.       벡터 아트워크는 iOS 11에서 도입된 기능으로 벡터 데이터를 보존하여 이미지가 기본 크기보다 크거나 작은 ImageView에서 렌더링될 때 흐려지지 않습니다. 이미지 에셋 인스펙터에서 Vector Artwork 체크박스를 체크하여 사용할 수 있습니다.       벡터 아트워큰는 디코딩 대신 레스터화 라는 과정을 거칩니다. 벡터 데이터를 블러와 프레임 버퍼에 복사할 수 있는 비트맵 데이터로 변환합니다.       만약 모든 벡터 아트워크에 대해 이 작업을 수행한다면 또 다시 CPU와 메모리 사용량에 대한 고민을 마주하게 될 것입니다. Xcode에서 이러한 작업에 대해 적당한 크기로 레스터화된 과정을 생성하고 이것을 에셋 카탈로그에 저장합니다. 따라서 매번 벡터 아트워크를 비트맵으로 변환하는 대신 에셋에 저장된 이미지를 디코딩하고 프레임 버퍼에 렌더링하여 사용합니다.  이런 최적화를 통해 이미지가 그려질 때마다가 아닌 컴파일 시간에 아트워크를 래스터화하여 CPU 히트를 최적화합니다.     Custom drawing with UIKit    경우에 따라 애플리케이션이 런타임 컨텐츠를 그리기도 합니다. 아까와 마찬가지로 이번에는 이 화면을 구성한다고 가정합니다. UIButton은 Live Photo를 활성화/비활성화 하는 이 버튼 스타일을 지원하지 않습니다.       UIView를 하위 클래스로 만들고 draw 메서드를 재정의하여 노란색 roundRect와 일부 텍스트 및 아이콘 이미지를 그려 Custom View를 구현할 수 있지만 이 방식을 권장하지 않습니다.       그 이유를 UIImageView와 비교하면서 알아봅니다. ImageView는 디코딩된 이미지 버퍼를 생성하도록 이미지에 요청하면 디코딩된 이미지를 CALayer로 넘겨 해당 레이어의 컨텐츠로 사용합니다.  Custom View는 이미지 버퍼를 생성해야 할 레이어는 draw 메서드의 내용을 갖고 있습니다. 그리고 뷰는 draw 메서드를 실행하고 이미지 버퍼의 내용을 채웁니다. 그런 다음 디스플레이 하드웨어의 요청에 따라 프레임 버퍼에 복사됩니다.  Custom View의 비용이 UIImageView보다 더 큰데, 그 이유는 백업 저장소(Backing Store)에 있습니다.       CALayer에 연결된 이미지 버퍼의 백업 저장소의 크기는 우리가 표시해야 하는 View의 사이즈에 비례합니다. iOS 12에서 추가된 새로운 최적화 기능은 백업 저장소의 요소 크기가 색상 컨텐츠 사용 여부(표준 색상, SRGB 색상)에 따라 동적으로 증가한다는 것입니다.       백업 저장소의 사용을 줄이는 방법은 다음과 같습니다.     큰 뷰를 더 작은 하위 뷰로 리팩토링한다.   draw 메서드의 오버라이딩을 줄이거나 제거한다.   이미지 데이터의 중복 복사본을 제거한다.   백업 저장소가 필요하지 않은 UIView의 최적화된 속성을 사용한다.        draw 메서드를 재정의하면 CALayer와 함께 사용할 백업 저장소를 생성해야 하므로 커스텀 드로잉의 대안으로 다음을 선택할 수 있습니다.     UIView의 일부 속성들은 여전히 사용할 수 있다.   예를 들어 패턴이 없는 단색의 backgroundColor는 백업 저장소를 만들 필요 없이 적용된다.   배경색으로 패턴을 만드는 대신 UIImageView를 사용한다.        또한 Masking Views를 사용할 때 백업 저장소를 유의해야 합니다.     UIView.maskView, CALayer.maskLayer는 해당 mask를 저장하기 위해 추가 할당이 발생한다.   반면 CALayer의 cornerRadius는 추가 메모리 할당 없이 잘린 모서리를 얻을 수 있다.        마지막으로 중복된 이미지 데이터를 제거하기 위한 방법이 있습니다.     UIImageView는 렌더링 과정에서 직접 프레임 버퍼에 단색으로 채색할 수 있다.   UIImage.withRenderingMode(_:)   UIImageView의 tintColor를 사용하면 이미지를 렌더링하려는 색상으로 설정할 수 있다.        UILabel에도 마찬가지로 동일한 기법의 최적화가 적용되어 있습니. 단색화를 통해 컬러 텍스트나 이모지를 표시할 때보다 75% 적게 사용할 수 있습니다.       메모리의 이미지 버퍼에 저장된 아트워크를 오프스크린으로 렌더링하고 싶다면 UIKit에서 제공하는 UIGraphicsImageRenderer를 사용합니다.     Advanced CPU and GPU techniques  iOS에서 제공하는 고급 CPU 및 GPU 기술을 앱에서 사용하는 방법       이미지에 대해 실시간으로 많은 고급 처리가 필요한 경우 Core Image를 사용합니다.            Core Image는 이미지 처리를 위한 레시피를 생성하고 처리 동작을 CPU 또는 GPU에서 처리하는 프레임워크이다.           CIImage에서 UIImage를 만들고 이를 UIImageView에 전달하면 GPU에서 실행합니다.            이것으로 얻을 수 있는 효과는 효율성과 앱에서 다른 작업을 수행할 수 있도록 CPU를 자유롭게 유지한다.                   그래픽 컨텐츠를 처리하고 렌더링하는 고급 프레임워크            Metal, Vision, Accelerate 등       여기에서 공통적으로 사용하는 데이터 타입: CVPixelBuffer (CPU나 GPU에서 사용할 수 있는 버퍼)           CPU와 GPU 사이에서 데이터를 옮길 때 작업을 교환하지 않아야 합니다.            두 작업이 병렬로 실행될 수 있다.           Reference     https://velog.io/@gration77/iOS는-이미지를-어떻게-그릴까   https://youngkdevlog.tistory.com/69   https://kka7.tistory.com/639   https://velog.io/@o_joon_/Swift-Image-and-Memory   https://velog.io/@kwan_hee/JPG-vs-JPEG-JPG-vs-PNG-비교하기   https://ios-development.tistory.com/1591   https://dlwogus0128.tistory.com/30   https://nonstrict.eu/wwdcindex/wwdc2018/219/   https://medium.com/@mini-min/ios-개발자라면-반드시-봐야할-wwdc-세션-1탄-00068d637e01   https://github.com/kimkyunghun3/WWDC/blob/main/2018/Image_and_Graphics_Best_Practices.md   https://developer.apple.com/kr/videos/play/wwdc2021/10252   https://dlwogus0128.tistory.com/26   https://developer.apple.com/documentation/uikit/building-high-performance-lists-and-collection-views?utm_source=chatgpt.com          ">
+
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[WWDC] Image and Graphics Best Practices">
+<meta property="og:url" content="https://indextrown.github.io/%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/">
+
+
+  <meta property="og:description" content="Image, Memory, Cpu…  Image와 Graphics를 사용할 때 메모리와 CPU의 자원 사용에 대해 이야기됩니다. 앱의 CPU 사용량과 메모리 사용량은 서로 관련이 있고, 더 많은 CPU를 사용할수록 배터리 수명과 앱의 응답성에 부정적인 영향을 미친다는 것은 명백합니다. 따라서 메모리와 CPU 사용량을 개선하는 방법에 대해 알아보겠습니다.    ++WWDC18 - iOS Memory Deep Dive++의 이미지 관련 내용과 관련있는 부분이 있어서 내용을 간단하게 요약하겠습니다.  WWDC에서 예시의 이미지 파일은 590KB이지만, 실제로 쓰이는 메모리는 무려 10MB나 됩니다. (2048 x 1526 x 4바이트) 그 이유는 OS에서 이미지를 불러올 때 Load → Decode → Render 과정을 거치기 때문입니다.       Load 단계에서 압축된 상태의 590KB JPG 파일 이미지를 메모리에 불러오고   Decode 단계에서 GPU가 읽을 수 있도록 포맷을 변환합니다. 이때 사이즈가 커지게 됩니다. (바이너리 데이터 -&gt; 디코딩)   Render 단계에서 디코딩된 이미지 데이터를 렌더링합니다.      UIImage and UIImageView    이런 화면을 구성한다면 어떻게 만들 수 있을까요?       UIImageView와 UIImage를 사용해 만들 수 있습니다. MVC 스타일에서 UIImage는 Model 객체, UIImageView는 View에 해당합니다.     UIImage: 이미지 컨텐츠의 로드를 담당   UIImageView: UIImage를 표시하고 렌더링하는 역할        그러나 실제 이미지를 표시하는 과정은 둘 사이에 디코딩하는 과정이 추가됩니다.    디코딩에 대해 알아보기 전에 버퍼가 무엇인지 알아야 합니다.       바퍼는 연속적인 메모리의 영역을 의미합니다. 특히 동일한 일련의 요소로 구성된 메모리를 가리킬 때 버퍼라는 용어를 사용합니다.       이미지 버퍼는 메모리의 버퍼 중에서 이미지의 일부를 나타내고 있는 버퍼를 의미합니다. 이미지 버퍼가 따로 중요한 이유는 버퍼의 각 요소들은 단일 픽셀의 색상과 투명도를 나타내기 때문입니다. 즉 버퍼의 크기는 이미지의 크기에 비례합니다.       프레임 버퍼는 애플리케이션에서 실제 렌더링된 출력을 보유합니다. 앱이 뷰의 계층 구조를 업데이트하면 UIKit은 앱의 윈도우와 모든 뷰를 프레임 버퍼로 렌더링합니다. 그리고 프레임 버퍼는 디스플레이에 출력하기 위해 하드웨어가 읽을 픽셀별 색상 정보를 제공합니다.  이 동작은 1/60초 또는 1/120초와 같은 고정된 간격으로 발생합니다. 변경 사항이 없으면 디스플레이 하드웨어는 이전에 보았던 것과 동일한 데이터를 프레임 버퍼에서 가져옵니다.       그러나 변경사항이 있다면 앱의 창을 프레임 버퍼로 다시 렌더링하고 디스플레이 하드웨어가 프레임 버퍼에서 새 컨텐츠를 가져옵니다.       Data Buffer는 이미지를 비교 및 대조할 때 쓰이는 버퍼입니다. 데이터 버퍼 또한 다음과 같은 일련의 바이트를 포함하고 있습니다.     해당 버퍼에 저장된 이미지의 크기를 설명하는 메타데이터   JPEG, PNG 등 인코딩된 이미지 데이터 자체   그러나 바이트는 직접적으로 픽셀 정보를 제공하지 못합니다.       예를 들어 여기에 UIImageView가 있고 이미지 파일의 내용을 나타내는 데이터 버퍼가 있습니다. 이미지를 화면에 표시하려면 UIImageView의 프레임 버퍼를 한 픽셀 당 나타내야 할 데이터(색상, 투명도 등)로 채워야 합니다.       따라서 이를 위해 UIImage는 데이터 버퍼의 이미지와 동일한 크기의 이미지 버퍼를 할당하고 이미지 데이터를 픽셀당 정보로 변환하는 작업을 수행하는데 이를 바로 Decoding 작업이라고 부릅니다.       그러나 디코딩 작업은 CPU를 많이 사용하고, 메모리 할당과 해제가 지속적으로 발생할 수 있는 작업입니다. 따라서 UIKit이 imageView에 렌더링을 요청할 때마다 매번 디코딩을 수행하는 것이 아니라 UIImage가 이미지 버퍼를 가지고 있어 한 번만 작업이 수행됩니다.       결과적으로 크고 영구적인 메모리가 앱의 모든 이미지마다 할당됩니다. 이 할당은 이미지의 크기에 비례하고 성능 저하 및 단편화의 원인이 됩니다. 애플리케이션이 허용 한도를 초과하여 메모리 사용량을 측정하면 OS가 물리적 메모리 영역을 압축하기 시작합니다. 이 작업 또한 CPU를 사용하기 때문에 CPU 사용량이 증가하고, 결국 OS가 프로세스를 하나씩 종료하게 되며 심지어 현재 앱 자체가 종료될 수 있습니다.  따라서 앱이 짧은 시간 동안만 메모리를 사용하더라도 장기적으로는 악영향을 미칠 수 있으므로 우리는 메모리를 효율적으로 사용해야 합니다.     Downsampling    다운샘플링은 메모리 사용량 자체를 줄이는 기술입니다.  앞서 보았던 이미지 렌더링 파이프라인을 다시 보면 일반적으로 이미지를 표시하는 ImageView가 실제 내부에 표시할 이미지 크기보다 작습니다. 다운 샘플링을 사용하면 메모리를 절약할 수 있습니다.       축소된 이미지를 썸네일이라는 객체로 저장합니다. 썸네일은 더 작은 디코딩된 이미지 버퍼를 갖기 때문에 결국 총 메모리 사용량은 줄어듭니다. 썸네일의 이미지 버퍼를 통해 만든 UIImage를 ImageView에 할당합니다. 그러면 원본 이미지 버퍼를 줄일 수 있게 됩니다.     다운샘플링 수행을 위한 코드       1. CGImageSource 객체 생성  let imageSourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary let imageSource = CGImageSourceCreateWithURL(imageURL as CFURL, imageSourceOptions)!   CGImageSourceCreateWithURL() 메서드를 통해 객체를 생성합니다. Core Graphics 프레임워크에 해당 URL의 파일에 저장된 데이터를 나타내는 객체를 생성하고 있음을 알려줍니다. 옵션에 대한 값을 딕셔너리 형태로 취할 수 있습니다.     kCGImageSourceShouldCache: false는 디코딩된 형식으로 캐싱할 것인지 설정하는 옵션입니다.   다운샘플링 후 원본 데이터 버퍼를 버릴 것이므로 false로 설정합니다.      2. 썸네일의 크기 및 옵션 설정  let maxDimensionInPixels = max(pointSize.width, pointSize.height) * scale let downsampleOptions = [     kCGImageSourceCreateThumbnailFromImageAlways: true,     kCGImageSourceShouldCacheImmediately: true,     kCGImageSourceCreateThumbnailWithTransform: true,     kCGImageSourceThumbnailMaxPixelSize: maxDimensionInPixels] as CFDictionary   썸네일의 최대 크기(픽셀 수)를 설정하고 다운샘플링 옵션을 딕셔너리로 생성합니다.     kCGImageSourceCreateThumbnailFromImageAlways: true            원본 이미지가 썸네일을 포함하고 있더라도 전체 이미지로 썸네일을 만들 것인지           kCGImageSourceShouldCacheImmediately: true            썸네일을 생성할 때 이미지 버퍼를 생성할 것인지           kCGImageSourceCreateThumbnailWithTransform: true            원본 이미지의 방향이나 비율에 맞춰 썸네일을 조정할 것인지           kCGImageSourceThumbnailMaxPixelSize: true            썸네일 이미지의 최대 가로, 세로 크기(픽셀 단위)           여기서 중요한 옵션은 kCGImageSourceShouldCacheImmediately. Core Graphics에게 썸네일 생성을 요청할 때 디코딩된 이미지 버퍼를 생성해야 한다고 알려주는 옵션입니다. 따라서 디코딩에 따른 CPU를 사용하는 시점을 정확히 제어할 수 있게 됩니다.     3. 썸네일 생성  let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions)! return UIImage(cgImage: downsampledImage)   반환되는 CGImage인 썸네일을 생성합니다. 결과를 UIImage로 반환합니다.     4. 결과    3,000 x 2,000 픽셀의 이미지를 최적화를 거치지 않고 UIImageView에 할당하면 31.5MB를 사용했습니다.    다운샘플링을 사용하여 이미지를 최적화하면 18.4MB로 줄일 수 있습니다.       화면의 작은 공간에서 큰 이미지를 많이 로드해야 하는 앨범 앱 같은 경우 메모리 문제가 복잡합니다.       collectionView의 셀 내부에서 이미지를 표현한다고 가정합니다. 보여질 이미지의 크기가 작기 때문에 셀 내부에서 다운샘플링을 통해 이미지 썸네일을 만들고 이를 표시할 것입니다.       그러나 이 방식은 CPU 관점에서 좋지 않습니다. 새로운 행이 화면에 보여질 때 CPU의 사용량이 급증하는 것을 볼 수 있습니다.  셀의 ImageView에 프레임 버퍼가 업데이트되고 디스플레이 하드웨어가 곧 새프레임을 얻어 화면을 업데이트한다면 깔끔한 화면을 볼 수 있지만, CollecionView에 셀이 전달되기 전에 이미지의 디코딩이 오래걸리거나 이미지가 더이상 쓸모없게 되어버리는 경우가 발생할 수 있습니다.       이러한 불규칙적인 CPU 사용량은 사용자 경험과 배터리 수명에도 좋지 않습니다. 따라서 균일한 CPU 사용량을 유지하는 방법은 2가지가 있습니다.     첫 번째는 Prefetching입니다. 필요한 이미지를 미리 디코딩하여 CPU 사용량을 분산시킬 수 있습니다.   두 번째는 백그라운드에서 디코딩/다운샘플링을 시도할 수 있습니다.        prefetch 메서드 구현입니다. 글로벌 큐를 이용해 다운샘플링 함수를 호출할 수 있지만. Thread Explosion을 유발하는 원인이 될 수 있기 때문에 글로벌 큐 대신 직렬 큐를 사용합니다.       이미지 소스는 네트워킹 외에도 가져오는 방법이 다양한데 앱에서 어떤 이미지를 지원한다면 에셋을 사용하는 것을 권장합니다. 이미지 에셋은 이름/특성 기반으로 조회하기 때문에 매우 빠르고 버퍼 캐싱 관리와 장치별 thinning과 같은 기능들을 포함하고 있습니다.       벡터 아트워크는 iOS 11에서 도입된 기능으로 벡터 데이터를 보존하여 이미지가 기본 크기보다 크거나 작은 ImageView에서 렌더링될 때 흐려지지 않습니다. 이미지 에셋 인스펙터에서 Vector Artwork 체크박스를 체크하여 사용할 수 있습니다.       벡터 아트워큰는 디코딩 대신 레스터화 라는 과정을 거칩니다. 벡터 데이터를 블러와 프레임 버퍼에 복사할 수 있는 비트맵 데이터로 변환합니다.       만약 모든 벡터 아트워크에 대해 이 작업을 수행한다면 또 다시 CPU와 메모리 사용량에 대한 고민을 마주하게 될 것입니다. Xcode에서 이러한 작업에 대해 적당한 크기로 레스터화된 과정을 생성하고 이것을 에셋 카탈로그에 저장합니다. 따라서 매번 벡터 아트워크를 비트맵으로 변환하는 대신 에셋에 저장된 이미지를 디코딩하고 프레임 버퍼에 렌더링하여 사용합니다.  이런 최적화를 통해 이미지가 그려질 때마다가 아닌 컴파일 시간에 아트워크를 래스터화하여 CPU 히트를 최적화합니다.     Custom drawing with UIKit    경우에 따라 애플리케이션이 런타임 컨텐츠를 그리기도 합니다. 아까와 마찬가지로 이번에는 이 화면을 구성한다고 가정합니다. UIButton은 Live Photo를 활성화/비활성화 하는 이 버튼 스타일을 지원하지 않습니다.       UIView를 하위 클래스로 만들고 draw 메서드를 재정의하여 노란색 roundRect와 일부 텍스트 및 아이콘 이미지를 그려 Custom View를 구현할 수 있지만 이 방식을 권장하지 않습니다.       그 이유를 UIImageView와 비교하면서 알아봅니다. ImageView는 디코딩된 이미지 버퍼를 생성하도록 이미지에 요청하면 디코딩된 이미지를 CALayer로 넘겨 해당 레이어의 컨텐츠로 사용합니다.  Custom View는 이미지 버퍼를 생성해야 할 레이어는 draw 메서드의 내용을 갖고 있습니다. 그리고 뷰는 draw 메서드를 실행하고 이미지 버퍼의 내용을 채웁니다. 그런 다음 디스플레이 하드웨어의 요청에 따라 프레임 버퍼에 복사됩니다.  Custom View의 비용이 UIImageView보다 더 큰데, 그 이유는 백업 저장소(Backing Store)에 있습니다.       CALayer에 연결된 이미지 버퍼의 백업 저장소의 크기는 우리가 표시해야 하는 View의 사이즈에 비례합니다. iOS 12에서 추가된 새로운 최적화 기능은 백업 저장소의 요소 크기가 색상 컨텐츠 사용 여부(표준 색상, SRGB 색상)에 따라 동적으로 증가한다는 것입니다.       백업 저장소의 사용을 줄이는 방법은 다음과 같습니다.     큰 뷰를 더 작은 하위 뷰로 리팩토링한다.   draw 메서드의 오버라이딩을 줄이거나 제거한다.   이미지 데이터의 중복 복사본을 제거한다.   백업 저장소가 필요하지 않은 UIView의 최적화된 속성을 사용한다.        draw 메서드를 재정의하면 CALayer와 함께 사용할 백업 저장소를 생성해야 하므로 커스텀 드로잉의 대안으로 다음을 선택할 수 있습니다.     UIView의 일부 속성들은 여전히 사용할 수 있다.   예를 들어 패턴이 없는 단색의 backgroundColor는 백업 저장소를 만들 필요 없이 적용된다.   배경색으로 패턴을 만드는 대신 UIImageView를 사용한다.        또한 Masking Views를 사용할 때 백업 저장소를 유의해야 합니다.     UIView.maskView, CALayer.maskLayer는 해당 mask를 저장하기 위해 추가 할당이 발생한다.   반면 CALayer의 cornerRadius는 추가 메모리 할당 없이 잘린 모서리를 얻을 수 있다.        마지막으로 중복된 이미지 데이터를 제거하기 위한 방법이 있습니다.     UIImageView는 렌더링 과정에서 직접 프레임 버퍼에 단색으로 채색할 수 있다.   UIImage.withRenderingMode(_:)   UIImageView의 tintColor를 사용하면 이미지를 렌더링하려는 색상으로 설정할 수 있다.        UILabel에도 마찬가지로 동일한 기법의 최적화가 적용되어 있습니. 단색화를 통해 컬러 텍스트나 이모지를 표시할 때보다 75% 적게 사용할 수 있습니다.       메모리의 이미지 버퍼에 저장된 아트워크를 오프스크린으로 렌더링하고 싶다면 UIKit에서 제공하는 UIGraphicsImageRenderer를 사용합니다.     Advanced CPU and GPU techniques  iOS에서 제공하는 고급 CPU 및 GPU 기술을 앱에서 사용하는 방법       이미지에 대해 실시간으로 많은 고급 처리가 필요한 경우 Core Image를 사용합니다.            Core Image는 이미지 처리를 위한 레시피를 생성하고 처리 동작을 CPU 또는 GPU에서 처리하는 프레임워크이다.           CIImage에서 UIImage를 만들고 이를 UIImageView에 전달하면 GPU에서 실행합니다.            이것으로 얻을 수 있는 효과는 효율성과 앱에서 다른 작업을 수행할 수 있도록 CPU를 자유롭게 유지한다.                   그래픽 컨텐츠를 처리하고 렌더링하는 고급 프레임워크            Metal, Vision, Accelerate 등       여기에서 공통적으로 사용하는 데이터 타입: CVPixelBuffer (CPU나 GPU에서 사용할 수 있는 버퍼)           CPU와 GPU 사이에서 데이터를 옮길 때 작업을 교환하지 않아야 합니다.            두 작업이 병렬로 실행될 수 있다.           Reference     https://velog.io/@gration77/iOS는-이미지를-어떻게-그릴까   https://youngkdevlog.tistory.com/69   https://kka7.tistory.com/639   https://velog.io/@o_joon_/Swift-Image-and-Memory   https://velog.io/@kwan_hee/JPG-vs-JPEG-JPG-vs-PNG-비교하기   https://ios-development.tistory.com/1591   https://dlwogus0128.tistory.com/30   https://nonstrict.eu/wwdcindex/wwdc2018/219/   https://medium.com/@mini-min/ios-개발자라면-반드시-봐야할-wwdc-세션-1탄-00068d637e01   https://github.com/kimkyunghun3/WWDC/blob/main/2018/Image_and_Graphics_Best_Practices.md   https://developer.apple.com/kr/videos/play/wwdc2021/10252   https://dlwogus0128.tistory.com/26   https://developer.apple.com/documentation/uikit/building-high-performance-lists-and-collection-views?utm_source=chatgpt.com          ">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2026-08-07T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://indextrown.github.io/%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "https://indextrown.github.io/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <input id="switch" class="theme-toggle__checkbox" name="theme" type="checkbox">
+<label class="switch_label theme-toggle" for="switch" aria-label="Toggle dark mode">
+  <span class="theme-toggle__button onf_btn" aria-hidden="true"></span>
+</label>
+
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li><li class="masthead__menu-item">
+              <a href="/projects/">Projects</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[WWDC] Image and Graphics Best Practices">
+    <meta itemprop="description" content="Image, Memory, Cpu…Image와 Graphics를 사용할 때 메모리와 CPU의 자원 사용에 대해 이야기됩니다. 앱의 CPU 사용량과 메모리 사용량은 서로 관련이 있고, 더 많은 CPU를 사용할수록 배터리 수명과 앱의 응답성에 부정적인 영향을 미친다는 것은 명백합니다. 따라서 메모리와 CPU 사용량을 개선하는 방법에 대해 알아보겠습니다.++WWDC18 - iOS Memory Deep Dive++의 이미지 관련 내용과 관련있는 부분이 있어서 내용을 간단하게 요약하겠습니다.WWDC에서 예시의 이미지 파일은 590KB이지만, 실제로 쓰이는 메모리는 무려 10MB나 됩니다. (2048 x 1526 x 4바이트) 그 이유는 OS에서 이미지를 불러올 때 Load → Decode → Render 과정을 거치기 때문입니다.  Load 단계에서 압축된 상태의 590KB JPG 파일 이미지를 메모리에 불러오고  Decode 단계에서 GPU가 읽을 수 있도록 포맷을 변환합니다. 이때 사이즈가 커지게 됩니다. (바이너리 데이터 -&gt; 디코딩)  Render 단계에서 디코딩된 이미지 데이터를 렌더링합니다. UIImage and UIImageView이런 화면을 구성한다면 어떻게 만들 수 있을까요? UIImageView와 UIImage를 사용해 만들 수 있습니다. MVC 스타일에서 UIImage는 Model 객체, UIImageView는 View에 해당합니다.  UIImage: 이미지 컨텐츠의 로드를 담당  UIImageView: UIImage를 표시하고 렌더링하는 역할 그러나 실제 이미지를 표시하는 과정은 둘 사이에 디코딩하는 과정이 추가됩니다.   디코딩에 대해 알아보기 전에 버퍼가 무엇인지 알아야 합니다. 바퍼는 연속적인 메모리의 영역을 의미합니다. 특히 동일한 일련의 요소로 구성된 메모리를 가리킬 때 버퍼라는 용어를 사용합니다. 이미지 버퍼는 메모리의 버퍼 중에서 이미지의 일부를 나타내고 있는 버퍼를 의미합니다. 이미지 버퍼가 따로 중요한 이유는 버퍼의 각 요소들은 단일 픽셀의 색상과 투명도를 나타내기 때문입니다. 즉 버퍼의 크기는 이미지의 크기에 비례합니다. 프레임 버퍼는 애플리케이션에서 실제 렌더링된 출력을 보유합니다. 앱이 뷰의 계층 구조를 업데이트하면 UIKit은 앱의 윈도우와 모든 뷰를 프레임 버퍼로 렌더링합니다. 그리고 프레임 버퍼는 디스플레이에 출력하기 위해 하드웨어가 읽을 픽셀별 색상 정보를 제공합니다.이 동작은 1/60초 또는 1/120초와 같은 고정된 간격으로 발생합니다. 변경 사항이 없으면 디스플레이 하드웨어는 이전에 보았던 것과 동일한 데이터를 프레임 버퍼에서 가져옵니다. 그러나 변경사항이 있다면 앱의 창을 프레임 버퍼로 다시 렌더링하고 디스플레이 하드웨어가 프레임 버퍼에서 새 컨텐츠를 가져옵니다. Data Buffer는 이미지를 비교 및 대조할 때 쓰이는 버퍼입니다. 데이터 버퍼 또한 다음과 같은 일련의 바이트를 포함하고 있습니다.  해당 버퍼에 저장된 이미지의 크기를 설명하는 메타데이터  JPEG, PNG 등 인코딩된 이미지 데이터 자체그러나 바이트는 직접적으로 픽셀 정보를 제공하지 못합니다. 예를 들어 여기에 UIImageView가 있고 이미지 파일의 내용을 나타내는 데이터 버퍼가 있습니다. 이미지를 화면에 표시하려면 UIImageView의 프레임 버퍼를 한 픽셀 당 나타내야 할 데이터(색상, 투명도 등)로 채워야 합니다. 따라서 이를 위해 UIImage는 데이터 버퍼의 이미지와 동일한 크기의 이미지 버퍼를 할당하고 이미지 데이터를 픽셀당 정보로 변환하는 작업을 수행하는데 이를 바로 Decoding 작업이라고 부릅니다. 그러나 디코딩 작업은 CPU를 많이 사용하고, 메모리 할당과 해제가 지속적으로 발생할 수 있는 작업입니다. 따라서 UIKit이 imageView에 렌더링을 요청할 때마다 매번 디코딩을 수행하는 것이 아니라 UIImage가 이미지 버퍼를 가지고 있어 한 번만 작업이 수행됩니다. 결과적으로 크고 영구적인 메모리가 앱의 모든 이미지마다 할당됩니다. 이 할당은 이미지의 크기에 비례하고 성능 저하 및 단편화의 원인이 됩니다. 애플리케이션이 허용 한도를 초과하여 메모리 사용량을 측정하면 OS가 물리적 메모리 영역을 압축하기 시작합니다. 이 작업 또한 CPU를 사용하기 때문에 CPU 사용량이 증가하고, 결국 OS가 프로세스를 하나씩 종료하게 되며 심지어 현재 앱 자체가 종료될 수 있습니다.따라서 앱이 짧은 시간 동안만 메모리를 사용하더라도 장기적으로는 악영향을 미칠 수 있으므로 우리는 메모리를 효율적으로 사용해야 합니다. Downsampling다운샘플링은 메모리 사용량 자체를 줄이는 기술입니다.앞서 보았던 이미지 렌더링 파이프라인을 다시 보면 일반적으로 이미지를 표시하는 ImageView가 실제 내부에 표시할 이미지 크기보다 작습니다. 다운 샘플링을 사용하면 메모리를 절약할 수 있습니다. 축소된 이미지를 썸네일이라는 객체로 저장합니다. 썸네일은 더 작은 디코딩된 이미지 버퍼를 갖기 때문에 결국 총 메모리 사용량은 줄어듭니다. 썸네일의 이미지 버퍼를 통해 만든 UIImage를 ImageView에 할당합니다. 그러면 원본 이미지 버퍼를 줄일 수 있게 됩니다. 다운샘플링 수행을 위한 코드 1. CGImageSource 객체 생성let imageSourceOptions = [kCGImageSourceShouldCache: false] as CFDictionarylet imageSource = CGImageSourceCreateWithURL(imageURL as CFURL, imageSourceOptions)!CGImageSourceCreateWithURL() 메서드를 통해 객체를 생성합니다. Core Graphics 프레임워크에 해당 URL의 파일에 저장된 데이터를 나타내는 객체를 생성하고 있음을 알려줍니다. 옵션에 대한 값을 딕셔너리 형태로 취할 수 있습니다.  kCGImageSourceShouldCache: false는 디코딩된 형식으로 캐싱할 것인지 설정하는 옵션입니다.  다운샘플링 후 원본 데이터 버퍼를 버릴 것이므로 false로 설정합니다. 2. 썸네일의 크기 및 옵션 설정let maxDimensionInPixels = max(pointSize.width, pointSize.height) * scalelet downsampleOptions = [    kCGImageSourceCreateThumbnailFromImageAlways: true,    kCGImageSourceShouldCacheImmediately: true,    kCGImageSourceCreateThumbnailWithTransform: true,    kCGImageSourceThumbnailMaxPixelSize: maxDimensionInPixels] as CFDictionary썸네일의 최대 크기(픽셀 수)를 설정하고 다운샘플링 옵션을 딕셔너리로 생성합니다.  kCGImageSourceCreateThumbnailFromImageAlways: true          원본 이미지가 썸네일을 포함하고 있더라도 전체 이미지로 썸네일을 만들 것인지        kCGImageSourceShouldCacheImmediately: true          썸네일을 생성할 때 이미지 버퍼를 생성할 것인지        kCGImageSourceCreateThumbnailWithTransform: true          원본 이미지의 방향이나 비율에 맞춰 썸네일을 조정할 것인지        kCGImageSourceThumbnailMaxPixelSize: true          썸네일 이미지의 최대 가로, 세로 크기(픽셀 단위)      여기서 중요한 옵션은 kCGImageSourceShouldCacheImmediately. Core Graphics에게 썸네일 생성을 요청할 때 디코딩된 이미지 버퍼를 생성해야 한다고 알려주는 옵션입니다. 따라서 디코딩에 따른 CPU를 사용하는 시점을 정확히 제어할 수 있게 됩니다. 3. 썸네일 생성let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions)!return UIImage(cgImage: downsampledImage)반환되는 CGImage인 썸네일을 생성합니다. 결과를 UIImage로 반환합니다. 4. 결과3,000 x 2,000 픽셀의 이미지를 최적화를 거치지 않고 UIImageView에 할당하면 31.5MB를 사용했습니다.   다운샘플링을 사용하여 이미지를 최적화하면 18.4MB로 줄일 수 있습니다. 화면의 작은 공간에서 큰 이미지를 많이 로드해야 하는 앨범 앱 같은 경우 메모리 문제가 복잡합니다. collectionView의 셀 내부에서 이미지를 표현한다고 가정합니다. 보여질 이미지의 크기가 작기 때문에 셀 내부에서 다운샘플링을 통해 이미지 썸네일을 만들고 이를 표시할 것입니다. 그러나 이 방식은 CPU 관점에서 좋지 않습니다. 새로운 행이 화면에 보여질 때 CPU의 사용량이 급증하는 것을 볼 수 있습니다.셀의 ImageView에 프레임 버퍼가 업데이트되고 디스플레이 하드웨어가 곧 새프레임을 얻어 화면을 업데이트한다면 깔끔한 화면을 볼 수 있지만, CollecionView에 셀이 전달되기 전에 이미지의 디코딩이 오래걸리거나 이미지가 더이상 쓸모없게 되어버리는 경우가 발생할 수 있습니다. 이러한 불규칙적인 CPU 사용량은 사용자 경험과 배터리 수명에도 좋지 않습니다. 따라서 균일한 CPU 사용량을 유지하는 방법은 2가지가 있습니다.  첫 번째는 Prefetching입니다. 필요한 이미지를 미리 디코딩하여 CPU 사용량을 분산시킬 수 있습니다.  두 번째는 백그라운드에서 디코딩/다운샘플링을 시도할 수 있습니다. prefetch 메서드 구현입니다. 글로벌 큐를 이용해 다운샘플링 함수를 호출할 수 있지만. Thread Explosion을 유발하는 원인이 될 수 있기 때문에 글로벌 큐 대신 직렬 큐를 사용합니다. 이미지 소스는 네트워킹 외에도 가져오는 방법이 다양한데 앱에서 어떤 이미지를 지원한다면 에셋을 사용하는 것을 권장합니다. 이미지 에셋은 이름/특성 기반으로 조회하기 때문에 매우 빠르고 버퍼 캐싱 관리와 장치별 thinning과 같은 기능들을 포함하고 있습니다. 벡터 아트워크는 iOS 11에서 도입된 기능으로 벡터 데이터를 보존하여 이미지가 기본 크기보다 크거나 작은 ImageView에서 렌더링될 때 흐려지지 않습니다. 이미지 에셋 인스펙터에서 Vector Artwork 체크박스를 체크하여 사용할 수 있습니다. 벡터 아트워큰는 디코딩 대신 레스터화 라는 과정을 거칩니다. 벡터 데이터를 블러와 프레임 버퍼에 복사할 수 있는 비트맵 데이터로 변환합니다. 만약 모든 벡터 아트워크에 대해 이 작업을 수행한다면 또 다시 CPU와 메모리 사용량에 대한 고민을 마주하게 될 것입니다. Xcode에서 이러한 작업에 대해 적당한 크기로 레스터화된 과정을 생성하고 이것을 에셋 카탈로그에 저장합니다. 따라서 매번 벡터 아트워크를 비트맵으로 변환하는 대신 에셋에 저장된 이미지를 디코딩하고 프레임 버퍼에 렌더링하여 사용합니다.이런 최적화를 통해 이미지가 그려질 때마다가 아닌 컴파일 시간에 아트워크를 래스터화하여 CPU 히트를 최적화합니다. Custom drawing with UIKit경우에 따라 애플리케이션이 런타임 컨텐츠를 그리기도 합니다. 아까와 마찬가지로 이번에는 이 화면을 구성한다고 가정합니다. UIButton은 Live Photo를 활성화/비활성화 하는 이 버튼 스타일을 지원하지 않습니다. UIView를 하위 클래스로 만들고 draw 메서드를 재정의하여 노란색 roundRect와 일부 텍스트 및 아이콘 이미지를 그려 Custom View를 구현할 수 있지만 이 방식을 권장하지 않습니다. 그 이유를 UIImageView와 비교하면서 알아봅니다. ImageView는 디코딩된 이미지 버퍼를 생성하도록 이미지에 요청하면 디코딩된 이미지를 CALayer로 넘겨 해당 레이어의 컨텐츠로 사용합니다.Custom View는 이미지 버퍼를 생성해야 할 레이어는 draw 메서드의 내용을 갖고 있습니다. 그리고 뷰는 draw 메서드를 실행하고 이미지 버퍼의 내용을 채웁니다. 그런 다음 디스플레이 하드웨어의 요청에 따라 프레임 버퍼에 복사됩니다.Custom View의 비용이 UIImageView보다 더 큰데, 그 이유는 백업 저장소(Backing Store)에 있습니다. CALayer에 연결된 이미지 버퍼의 백업 저장소의 크기는 우리가 표시해야 하는 View의 사이즈에 비례합니다. iOS 12에서 추가된 새로운 최적화 기능은 백업 저장소의 요소 크기가 색상 컨텐츠 사용 여부(표준 색상, SRGB 색상)에 따라 동적으로 증가한다는 것입니다. 백업 저장소의 사용을 줄이는 방법은 다음과 같습니다.  큰 뷰를 더 작은 하위 뷰로 리팩토링한다.  draw 메서드의 오버라이딩을 줄이거나 제거한다.  이미지 데이터의 중복 복사본을 제거한다.  백업 저장소가 필요하지 않은 UIView의 최적화된 속성을 사용한다. draw 메서드를 재정의하면 CALayer와 함께 사용할 백업 저장소를 생성해야 하므로 커스텀 드로잉의 대안으로 다음을 선택할 수 있습니다.  UIView의 일부 속성들은 여전히 사용할 수 있다.  예를 들어 패턴이 없는 단색의 backgroundColor는 백업 저장소를 만들 필요 없이 적용된다.  배경색으로 패턴을 만드는 대신 UIImageView를 사용한다. 또한 Masking Views를 사용할 때 백업 저장소를 유의해야 합니다.  UIView.maskView, CALayer.maskLayer는 해당 mask를 저장하기 위해 추가 할당이 발생한다.  반면 CALayer의 cornerRadius는 추가 메모리 할당 없이 잘린 모서리를 얻을 수 있다. 마지막으로 중복된 이미지 데이터를 제거하기 위한 방법이 있습니다.  UIImageView는 렌더링 과정에서 직접 프레임 버퍼에 단색으로 채색할 수 있다.  UIImage.withRenderingMode(_:)  UIImageView의 tintColor를 사용하면 이미지를 렌더링하려는 색상으로 설정할 수 있다. UILabel에도 마찬가지로 동일한 기법의 최적화가 적용되어 있습니. 단색화를 통해 컬러 텍스트나 이모지를 표시할 때보다 75% 적게 사용할 수 있습니다. 메모리의 이미지 버퍼에 저장된 아트워크를 오프스크린으로 렌더링하고 싶다면 UIKit에서 제공하는 UIGraphicsImageRenderer를 사용합니다. Advanced CPU and GPU techniquesiOS에서 제공하는 고급 CPU 및 GPU 기술을 앱에서 사용하는 방법  이미지에 대해 실시간으로 많은 고급 처리가 필요한 경우 Core Image를 사용합니다.          Core Image는 이미지 처리를 위한 레시피를 생성하고 처리 동작을 CPU 또는 GPU에서 처리하는 프레임워크이다.        CIImage에서 UIImage를 만들고 이를 UIImageView에 전달하면 GPU에서 실행합니다.          이것으로 얻을 수 있는 효과는 효율성과 앱에서 다른 작업을 수행할 수 있도록 CPU를 자유롭게 유지한다.         그래픽 컨텐츠를 처리하고 렌더링하는 고급 프레임워크          Metal, Vision, Accelerate 등      여기에서 공통적으로 사용하는 데이터 타입: CVPixelBuffer (CPU나 GPU에서 사용할 수 있는 버퍼)        CPU와 GPU 사이에서 데이터를 옮길 때 작업을 교환하지 않아야 합니다.          두 작업이 병렬로 실행될 수 있다.      Reference  https://velog.io/@gration77/iOS는-이미지를-어떻게-그릴까  https://youngkdevlog.tistory.com/69  https://kka7.tistory.com/639  https://velog.io/@o_joon_/Swift-Image-and-Memory  https://velog.io/@kwan_hee/JPG-vs-JPEG-JPG-vs-PNG-비교하기  https://ios-development.tistory.com/1591  https://dlwogus0128.tistory.com/30  https://nonstrict.eu/wwdcindex/wwdc2018/219/  https://medium.com/@mini-min/ios-개발자라면-반드시-봐야할-wwdc-세션-1탄-00068d637e01  https://github.com/kimkyunghun3/WWDC/blob/main/2018/Image_and_Graphics_Best_Practices.md  https://developer.apple.com/kr/videos/play/wwdc2021/10252  https://dlwogus0128.tistory.com/26  https://developer.apple.com/documentation/uikit/building-high-performance-lists-and-collection-views?utm_source=chatgpt.com   ">
+    <meta itemprop="datePublished" content="2026-08-07T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="https://indextrown.github.io/%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/" class="u-url" itemprop="url">[WWDC] Image and Graphics Best Practices
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=WWDC">WWDC</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2026-08-07T00:00:00+00:00">August 7, 2026</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <h2 id="image-memory-cpu">Image, Memory, Cpu…</h2>
+
+<p>Image와 Graphics를 사용할 때 메모리와 CPU의 자원 사용에 대해 이야기됩니다. 앱의 CPU 사용량과 메모리 사용량은 서로 관련이 있고, 더 많은 CPU를 사용할수록 배터리 수명과 앱의 응답성에 부정적인 영향을 미친다는 것은 명백합니다. 따라서 메모리와 CPU 사용량을 개선하는 방법에 대해 알아보겠습니다.</p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T063623-2.png" alt="붙여넣은 이미지" /></p>
+
+<p><a href="https://github.com/kimkyunghun3/WWDC/blob/main/2018/iOS_Memory_Deep_Dive.md">++WWDC18 - iOS Memory Deep Dive++</a>의 이미지 관련 내용과 관련있는 부분이 있어서 내용을 간단하게 요약하겠습니다.</p>
+
+<p>WWDC에서 예시의 이미지 파일은 590KB이지만, 실제로 쓰이는 메모리는 무려 10MB나 됩니다. (2048 x 1526 x 4바이트) 그 이유는 OS에서 이미지를 불러올 때 Load → Decode → Render 과정을 거치기 때문입니다.</p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T063709-2.png" alt="붙여넣은 이미지" /></p>
+
+<ul>
+  <li>Load 단계에서 압축된 상태의 <code class="language-plaintext highlighter-rouge">590KB</code> JPG 파일 이미지를 메모리에 불러오고</li>
+  <li>Decode 단계에서 GPU가 읽을 수 있도록 포맷을 변환합니다. 이때 사이즈가 커지게 됩니다. (바이너리 데이터 -&gt; 디코딩)</li>
+  <li>Render 단계에서 디코딩된 이미지 데이터를 렌더링합니다.</li>
+</ul>
+
+<p> </p>
+
+<h2 id="uiimage-and-uiimageview">UIImage and UIImageView</h2>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T064154-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>이런 화면을 구성한다면 어떻게 만들 수 있을까요?</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T064210-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>UIImageView와 UIImage를 사용해 만들 수 있습니다. MVC 스타일에서 UIImage는 Model 객체, UIImageView는 View에 해당합니다.</p>
+
+<ul>
+  <li>UIImage: 이미지 컨텐츠의 로드를 담당</li>
+  <li>UIImageView: UIImage를 표시하고 렌더링하는 역할</li>
+</ul>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T064309-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>그러나 실제 이미지를 표시하는 과정은 둘 사이에 디코딩하는 과정이 추가됩니다.   <br />
+디코딩에 대해 알아보기 전에 버퍼가 무엇인지 알아야 합니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T064343-2.png" alt="붙여넣은 이미지" /></p>
+
+<p><strong>바퍼는 연속적인 메모리의 영역을 의미</strong>합니다. 특히 동일한 일련의 요소로 구성된 메모리를 가리킬 때 버퍼라는 용어를 사용합니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T064423-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>이미지 버퍼는 메모리의 버퍼 중에서 <strong>이미지의 일부를 나타내고 있는 버퍼</strong>를 의미합니다. <strong>이미지 버퍼가 따로 중요한 이유는 버퍼의 각 요소들은 단일 픽셀의 색상과 투명도를 나타내기 때문</strong>입니다. <strong>즉 버퍼의 크기는 이미지의 크기에 비례합니다.</strong></p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T064535-2.png" alt="붙여넣은 이미지" /></p>
+
+<p><strong>프레임 버퍼는 애플리케이션에서 실제 렌더링된 출력을 보유</strong>합니다. 앱이 뷰의 계층 구조를 업데이트하면 UIKit은 앱의 윈도우와 모든 뷰를 프레임 버퍼로 렌더링합니다. 그리고 프레임 버퍼는 디스플레이에 출력하기 위해 하드웨어가 읽을 픽셀별 색상 정보를 제공합니다.</p>
+
+<p>이 동작은 1/60초 또는 1/120초와 같은 고정된 간격으로 발생합니다. 변경 사항이 없으면 디스플레이 하드웨어는 이전에 보았던 것과 동일한 데이터를 프레임 버퍼에서 가져옵니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T065824-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>그러나 변경사항이 있다면 앱의 창을 프레임 버퍼로 다시 렌더링하고 디스플레이 하드웨어가 프레임 버퍼에서 새 컨텐츠를 가져옵니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T065853-2.png" alt="붙여넣은 이미지" /></p>
+
+<p><strong>Data Buffer는 이미지를 비교 및 대조할 때 쓰이는 버퍼</strong>입니다. 데이터 버퍼 또한 다음과 같은 일련의 바이트를 포함하고 있습니다.</p>
+
+<ul>
+  <li>해당 버퍼에 저장된 이미지의 크기를 설명하는 메타데이터</li>
+  <li>JPEG, PNG 등 인코딩된 이미지 데이터 자체</li>
+</ul>
+
+<p>그러나 바이트는 직접적으로 픽셀 정보를 제공하지 못합니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T065956-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>예를 들어 여기에 UIImageView가 있고 <strong>이미지 파일의 내용을 나타내는 데이터 버퍼</strong>가 있습니다. <strong>이미지를 화면에 표시하려면</strong> UIImageView의 <strong>프레임 버퍼를 한 픽셀 당 나타내야 할 데이터(색상, 투명도 등)로 채워야</strong> 합니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T070053-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>따라서 이를 위해 UIImage는 <strong>데이터 버퍼</strong>의 이미지와 동일한 크기의 <strong>이미지 버퍼</strong>를 할당하고 이미지 데이터를 픽셀당 정보로 변환하는 작업을 수행하는데 이를 바로 Decoding 작업이라고 부릅니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T070458-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>그러나 디코딩 작업은 CPU를 많이 사용하고, 메모리 할당과 해제가 지속적으로 발생할 수 있는 작업입니다. 따라서 UIKit이 imageView에 렌더링을 요청할 때마다 매번 디코딩을 수행하는 것이 아니라 UIImage가 이미지 버퍼를 가지고 있어 한 번만 작업이 수행됩니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T070601-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>결과적으로 크고 영구적인 메모리가 앱의 모든 이미지마다 할당됩니다. 이 할당은 이미지의 크기에 비례하고 성능 저하 및 단편화의 원인이 됩니다. 애플리케이션이 허용 한도를 초과하여 메모리 사용량을 측정하면 OS가 물리적 메모리 영역을 압축하기 시작합니다. 이 작업 또한 CPU를 사용하기 때문에 CPU 사용량이 증가하고, 결국 OS가 프로세스를 하나씩 종료하게 되며 심지어 현재 앱 자체가 종료될 수 있습니다.</p>
+
+<p>따라서 앱이 짧은 시간 동안만 메모리를 사용하더라도 장기적으로는 악영향을 미칠 수 있으므로 우리는 메모리를 효율적으로 사용해야 합니다.</p>
+
+<p> </p>
+
+<h4 id="downsampling">Downsampling</h4>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T070743-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>다운샘플링은 메모리 사용량 자체를 줄이는 기술입니다.</p>
+
+<p>앞서 보았던 이미지 렌더링 파이프라인을 다시 보면 일반적으로 이미지를 표시하는 ImageView가 실제 내부에 표시할 이미지 크기보다 작습니다. 다운 샘플링을 사용하면 메모리를 절약할 수 있습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T070927-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>축소된 이미지를 썸네일이라는 객체로 저장합니다. 썸네일은 더 작은 디코딩된 이미지 버퍼를 갖기 때문에 결국 총 메모리 사용량은 줄어듭니다. 썸네일의 이미지 버퍼를 통해 만든 UIImage를 ImageView에 할당합니다. 그러면 원본 이미지 버퍼를 줄일 수 있게 됩니다.</p>
+
+<p> </p>
+
+<h4 id="다운샘플링-수행을-위한-코드">다운샘플링 수행을 위한 코드</h4>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T071113-2.png" alt="붙여넣은 이미지" /></p>
+
+<p> </p>
+
+<h4 id="1-cgimagesource-객체-생성">1. CGImageSource 객체 생성</h4>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">imageSourceOptions</span> <span class="o">=</span> <span class="p">[</span><span class="nv">kCGImageSourceShouldCache</span><span class="p">:</span> <span class="kc">false</span><span class="p">]</span> <span class="k">as</span> <span class="kt">CFDictionary</span>
+<span class="k">let</span> <span class="nv">imageSource</span> <span class="o">=</span> <span class="kt">CGImageSourceCreateWithURL</span><span class="p">(</span><span class="n">imageURL</span> <span class="k">as</span> <span class="kt">CFURL</span><span class="p">,</span> <span class="n">imageSourceOptions</span><span class="p">)</span><span class="o">!</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">CGImageSourceCreateWithURL()</code> 메서드를 통해 객체를 생성합니다. Core Graphics 프레임워크에 해당 URL의 파일에 저장된 데이터를 나타내는 객체를 생성하고 있음을 알려줍니다. 옵션에 대한 값을 딕셔너리 형태로 취할 수 있습니다.</p>
+
+<ul>
+  <li>kCGImageSourceShouldCache: false는 디코딩된 형식으로 캐싱할 것인지 설정하는 옵션입니다.  <br />
+다운샘플링 후 원본 데이터 버퍼를 버릴 것이므로 false로 설정합니다.</li>
+</ul>
+
+<p> </p>
+
+<h4 id="2-썸네일의-크기-및-옵션-설정">2. 썸네일의 크기 및 옵션 설정</h4>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">maxDimensionInPixels</span> <span class="o">=</span> <span class="nf">max</span><span class="p">(</span><span class="n">pointSize</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">pointSize</span><span class="o">.</span><span class="n">height</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span>
+<span class="k">let</span> <span class="nv">downsampleOptions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="nv">kCGImageSourceCreateThumbnailFromImageAlways</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nv">kCGImageSourceShouldCacheImmediately</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nv">kCGImageSourceCreateThumbnailWithTransform</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nv">kCGImageSourceThumbnailMaxPixelSize</span><span class="p">:</span> <span class="n">maxDimensionInPixels</span><span class="p">]</span> <span class="k">as</span> <span class="kt">CFDictionary</span>
+</code></pre></div></div>
+
+<p>썸네일의 최대 크기(픽셀 수)를 설정하고 다운샘플링 옵션을 딕셔너리로 생성합니다.</p>
+
+<ul>
+  <li>kCGImageSourceCreateThumbnailFromImageAlways: true
+    <ul>
+      <li>원본 이미지가 썸네일을 포함하고 있더라도 전체 이미지로 썸네일을 만들 것인지</li>
+    </ul>
+  </li>
+  <li>kCGImageSourceShouldCacheImmediately: true
+    <ul>
+      <li>썸네일을 생성할 때 이미지 버퍼를 생성할 것인지</li>
+    </ul>
+  </li>
+  <li>kCGImageSourceCreateThumbnailWithTransform: true
+    <ul>
+      <li>원본 이미지의 방향이나 비율에 맞춰 썸네일을 조정할 것인지</li>
+    </ul>
+  </li>
+  <li>kCGImageSourceThumbnailMaxPixelSize: true
+    <ul>
+      <li>썸네일 이미지의 최대 가로, 세로 크기(픽셀 단위)</li>
+    </ul>
+  </li>
+</ul>
+
+<p>여기서 중요한 옵션은 <code class="language-plaintext highlighter-rouge">kCGImageSourceShouldCacheImmediately</code>. Core Graphics에게 썸네일 생성을 요청할 때 디코딩된 이미지 버퍼를 생성해야 한다고 알려주는 옵션입니다. 따라서 디코딩에 따른 CPU를 사용하는 시점을 정확히 제어할 수 있게 됩니다.</p>
+
+<p> </p>
+
+<h4 id="3-썸네일-생성">3. 썸네일 생성</h4>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">downsampledImage</span> <span class="o">=</span> <span class="kt">CGImageSourceCreateThumbnailAtIndex</span><span class="p">(</span><span class="n">imageSource</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">downsampleOptions</span><span class="p">)</span><span class="o">!</span>
+<span class="k">return</span> <span class="kt">UIImage</span><span class="p">(</span><span class="nv">cgImage</span><span class="p">:</span> <span class="n">downsampledImage</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>반환되는 CGImage인 썸네일을 생성합니다. 결과를 UIImage로 반환합니다.</p>
+
+<p> </p>
+
+<h4 id="4-결과">4. 결과</h4>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T071552-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>3,000 x 2,000 픽셀의 이미지를 최적화를 거치지 않고 UIImageView에 할당하면 31.5MB를 사용했습니다.   <br />
+다운샘플링을 사용하여 이미지를 최적화하면 18.4MB로 줄일 수 있습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T071618-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>화면의 작은 공간에서 큰 이미지를 많이 로드해야 하는 앨범 앱 같은 경우 메모리 문제가 복잡합니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T071648-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>collectionView의 셀 내부에서 이미지를 표현한다고 가정합니다. 보여질 이미지의 크기가 작기 때문에 셀 내부에서 다운샘플링을 통해 이미지 썸네일을 만들고 이를 표시할 것입니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T071727-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>그러나 이 방식은 CPU 관점에서 좋지 않습니다. 새로운 행이 화면에 보여질 때 CPU의 사용량이 급증하는 것을 볼 수 있습니다.</p>
+
+<p>셀의 ImageView에 프레임 버퍼가 업데이트되고 디스플레이 하드웨어가 곧 새프레임을 얻어 화면을 업데이트한다면 깔끔한 화면을 볼 수 있지만, CollecionView에 셀이 전달되기 전에 이미지의 디코딩이 오래걸리거나 이미지가 더이상 쓸모없게 되어버리는 경우가 발생할 수 있습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T071907-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>이러한 불규칙적인 CPU 사용량은 사용자 경험과 배터리 수명에도 좋지 않습니다. 따라서 균일한 CPU 사용량을 유지하는 방법은 2가지가 있습니다.</p>
+
+<ol>
+  <li>첫 번째는 Prefetching입니다. 필요한 이미지를 미리 디코딩하여 CPU 사용량을 분산시킬 수 있습니다.</li>
+  <li>두 번째는 백그라운드에서 디코딩/다운샘플링을 시도할 수 있습니다.</li>
+</ol>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T072240-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>prefetch 메서드 구현입니다. 글로벌 큐를 이용해 다운샘플링 함수를 호출할 수 있지만. Thread Explosion을 유발하는 원인이 될 수 있기 때문에 글로벌 큐 대신 직렬 큐를 사용합니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T072423-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>이미지 소스는 네트워킹 외에도 가져오는 방법이 다양한데 앱에서 어떤 이미지를 지원한다면 에셋을 사용하는 것을 권장합니다. 이미지 에셋은 이름/특성 기반으로 조회하기 때문에 매우 빠르고 버퍼 캐싱 관리와 장치별 thinning과 같은 기능들을 포함하고 있습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T072520.png" alt="붙여넣은 이미지" /></p>
+
+<p>벡터 아트워크는 iOS 11에서 도입된 기능으로 벡터 데이터를 보존하여 이미지가 기본 크기보다 크거나 작은 ImageView에서 렌더링될 때 흐려지지 않습니다. 이미지 에셋 인스펙터에서 Vector Artwork 체크박스를 체크하여 사용할 수 있습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T072616-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>벡터 아트워큰는 디코딩 대신 레스터화 라는 과정을 거칩니다. 벡터 데이터를 블러와 프레임 버퍼에 복사할 수 있는 비트맵 데이터로 변환합니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T072659-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>만약 모든 벡터 아트워크에 대해 이 작업을 수행한다면 또 다시 CPU와 메모리 사용량에 대한 고민을 마주하게 될 것입니다. Xcode에서 이러한 작업에 대해 적당한 크기로 레스터화된 과정을 생성하고 이것을 에셋 카탈로그에 저장합니다. 따라서 매번 벡터 아트워크를 비트맵으로 변환하는 대신 에셋에 저장된 이미지를 디코딩하고 프레임 버퍼에 렌더링하여 사용합니다.</p>
+
+<p>이런 최적화를 통해 이미지가 그려질 때마다가 아닌 컴파일 시간에 아트워크를 래스터화하여 CPU 히트를 최적화합니다.</p>
+
+<p> </p>
+
+<h2 id="custom-drawing-with-uikit">Custom drawing with UIKit</h2>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T072822-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>경우에 따라 애플리케이션이 런타임 컨텐츠를 그리기도 합니다. 아까와 마찬가지로 이번에는 이 화면을 구성한다고 가정합니다. UIButton은 Live Photo를 활성화/비활성화 하는 이 버튼 스타일을 지원하지 않습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T073159-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>UIView를 하위 클래스로 만들고 draw 메서드를 재정의하여 노란색 roundRect와 일부 텍스트 및 아이콘 이미지를 그려 Custom View를 구현할 수 있지만 이 방식을 권장하지 않습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T073229-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>그 이유를 UIImageView와 비교하면서 알아봅니다. ImageView는 디코딩된 이미지 버퍼를 생성하도록 이미지에 요청하면 디코딩된 이미지를 CALayer로 넘겨 해당 레이어의 컨텐츠로 사용합니다.</p>
+
+<p>Custom View는 이미지 버퍼를 생성해야 할 레이어는 draw 메서드의 내용을 갖고 있습니다. 그리고 뷰는 draw 메서드를 실행하고 이미지 버퍼의 내용을 채웁니다. 그런 다음 디스플레이 하드웨어의 요청에 따라 프레임 버퍼에 복사됩니다.</p>
+
+<p>Custom View의 비용이 UIImageView보다 더 큰데, 그 이유는 백업 저장소(Backing Store)에 있습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T073327-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>CALayer에 연결된 이미지 버퍼의 백업 저장소의 크기는 우리가 표시해야 하는 View의 사이즈에 비례합니다. iOS 12에서 추가된 새로운 최적화 기능은 백업 저장소의 요소 크기가 색상 컨텐츠 사용 여부(표준 색상, SRGB 색상)에 따라 동적으로 증가한다는 것입니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T073345-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>백업 저장소의 사용을 줄이는 방법은 다음과 같습니다.</p>
+
+<ul>
+  <li>큰 뷰를 더 작은 하위 뷰로 리팩토링한다.</li>
+  <li>draw 메서드의 오버라이딩을 줄이거나 제거한다.</li>
+  <li>이미지 데이터의 중복 복사본을 제거한다.</li>
+  <li>백업 저장소가 필요하지 않은 UIView의 최적화된 속성을 사용한다.</li>
+</ul>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T073407-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>draw 메서드를 재정의하면 CALayer와 함께 사용할 백업 저장소를 생성해야 하므로 커스텀 드로잉의 대안으로 다음을 선택할 수 있습니다.</p>
+
+<ul>
+  <li>UIView의 일부 속성들은 여전히 사용할 수 있다.</li>
+  <li>예를 들어 패턴이 없는 단색의 backgroundColor는 백업 저장소를 만들 필요 없이 적용된다.</li>
+  <li>배경색으로 패턴을 만드는 대신 UIImageView를 사용한다.</li>
+</ul>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T073424-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>또한 Masking Views를 사용할 때 백업 저장소를 유의해야 합니다.</p>
+
+<ul>
+  <li>UIView.maskView, CALayer.maskLayer는 해당 mask를 저장하기 위해 추가 할당이 발생한다.</li>
+  <li>반면 CALayer의 cornerRadius는 추가 메모리 할당 없이 잘린 모서리를 얻을 수 있다.</li>
+</ul>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T073440-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>마지막으로 중복된 이미지 데이터를 제거하기 위한 방법이 있습니다.</p>
+
+<ul>
+  <li>UIImageView는 렌더링 과정에서 직접 프레임 버퍼에 단색으로 채색할 수 있다.</li>
+  <li><code class="language-plaintext highlighter-rouge">UIImage.withRenderingMode(_:)</code></li>
+  <li>UIImageView의 tintColor를 사용하면 이미지를 렌더링하려는 색상으로 설정할 수 있다.</li>
+</ul>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T073459-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>UILabel에도 마찬가지로 동일한 기법의 최적화가 적용되어 있습니. 단색화를 통해 컬러 텍스트나 이모지를 표시할 때보다 75% 적게 사용할 수 있습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T073518-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>메모리의 이미지 버퍼에 저장된 아트워크를 오프스크린으로 렌더링하고 싶다면 UIKit에서 제공하는 <code class="language-plaintext highlighter-rouge">UIGraphicsImageRenderer</code>를 사용합니다.</p>
+
+<p> </p>
+
+<h2 id="advanced-cpu-and-gpu-techniques">Advanced CPU and GPU techniques</h2>
+
+<p>iOS에서 제공하는 고급 CPU 및 GPU 기술을 앱에서 사용하는 방법</p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T073544-2.png" alt="붙여넣은 이미지" /></p>
+
+<ol>
+  <li>이미지에 대해 실시간으로 많은 고급 처리가 필요한 경우 <strong>Core Image</strong>를 사용합니다.
+    <ul>
+      <li>Core Image는 이미지 처리를 위한 레시피를 생성하고 처리 동작을 CPU 또는 GPU에서 처리하는 프레임워크이다.</li>
+    </ul>
+  </li>
+  <li>CIImage에서 UIImage를 만들고 이를 UIImageView에 전달하면 GPU에서 실행합니다.
+    <ul>
+      <li>이것으로 얻을 수 있는 효과는 효율성과 앱에서 다른 작업을 수행할 수 있도록 CPU를 자유롭게 유지한다.</li>
+    </ul>
+  </li>
+</ol>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/pasted-image-20260807T073606-2.png" alt="붙여넣은 이미지" /></p>
+
+<ol>
+  <li>그래픽 컨텐츠를 처리하고 렌더링하는 고급 프레임워크
+    <ul>
+      <li>Metal, Vision, Accelerate 등</li>
+      <li>여기에서 공통적으로 사용하는 데이터 타입: CVPixelBuffer (CPU나 GPU에서 사용할 수 있는 버퍼)</li>
+    </ul>
+  </li>
+  <li>CPU와 GPU 사이에서 데이터를 옮길 때 작업을 교환하지 않아야 합니다.
+    <ul>
+      <li>두 작업이 병렬로 실행될 수 있다.</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="reference">Reference</h2>
+
+<ul>
+  <li><a href="https://velog.io/@gration77/iOS는-이미지를-어떻게-그릴까">https://velog.io/@gration77/iOS는-이미지를-어떻게-그릴까</a></li>
+  <li><a href="https://youngkdevlog.tistory.com/69">https://youngkdevlog.tistory.com/69</a></li>
+  <li><a href="https://kka7.tistory.com/639">https://kka7.tistory.com/639</a></li>
+  <li><a href="https://velog.io/@o_joon_/Swift-Image-and-Memory">https://velog.io/@o_joon_/Swift-Image-and-Memory</a></li>
+  <li><a href="https://velog.io/@kwan_hee/JPG-vs-JPEG-JPG-vs-PNG-비교하기">https://velog.io/@kwan_hee/JPG-vs-JPEG-JPG-vs-PNG-비교하기</a></li>
+  <li><a href="https://ios-development.tistory.com/1591">https://ios-development.tistory.com/1591</a></li>
+  <li><a href="https://dlwogus0128.tistory.com/30">https://dlwogus0128.tistory.com/30</a></li>
+  <li><a href="https://nonstrict.eu/wwdcindex/wwdc2018/219/">https://nonstrict.eu/wwdcindex/wwdc2018/219/</a></li>
+  <li><a href="https://medium.com/@mini-min/ios-개발자라면-반드시-봐야할-wwdc-세션-1탄-00068d637e01">https://medium.com/@mini-min/ios-개발자라면-반드시-봐야할-wwdc-세션-1탄-00068d637e01</a></li>
+  <li><a href="https://github.com/kimkyunghun3/WWDC/blob/main/2018/Image_and_Graphics_Best_Practices.md">https://github.com/kimkyunghun3/WWDC/blob/main/2018/Image_and_Graphics_Best_Practices.md</a></li>
+  <li><a href="https://developer.apple.com/kr/videos/play/wwdc2021/10252">https://developer.apple.com/kr/videos/play/wwdc2021/10252</a></li>
+  <li><a href="https://dlwogus0128.tistory.com/26">https://dlwogus0128.tistory.com/26</a></li>
+  <li><a href="https://developer.apple.com/documentation/uikit/building-high-performance-lists-and-collection-views?utm_source=chatgpt.com">https://developer.apple.com/documentation/uikit/building-high-performance-lists-and-collection-views?utm_source=chatgpt.com</a></li>
+</ul>
+
+<p> </p>
+
+<p> </p>
+
+<p> </p>
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/wwdc-ios-memory-deep-dive/" class="pagination--pager" title="[WWDC] iOS Memory Deep Dive
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2026 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

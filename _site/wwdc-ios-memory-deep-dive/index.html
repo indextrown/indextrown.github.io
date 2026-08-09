@@ -1,0 +1,1143 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>[WWDC] iOS Memory Deep Dive - DongHyeon Kim’s Blog</title>
+<meta name="description" content="Why reduce memory  메모리를 줄여야 하는 이유는 사용자 경험이 좋아지기 때문입니다. 앱 실행 속도가 빨라지고 시스템 전체의 속도도 향상됩니다. 메모리를 줄인다는 것은 실질적으로 메모리 사용량(footprint)을 줄인다는 뜻입니다.       메모리 페이지는 프로세스가 사용하는 가상 메모리를 일정 크기의 블록으로 나눈 것을 의미합니다. 페이지는 heap에서 여러 객체를 포함할 수 있고 어떤 객체는 여러 페이지에 걸쳐 존재하기도 합니다. 일반적으로 16KB 크기를 가지며 clean하거나 dirty해질 수 있습니다.       Pages 앱 기준 앱의 메모리 사용은 실제로 페이지 수에 페이지 크기를 곱한 값입니다.       그렇다면 클린 페이지와 더러운 페이지가 무엇일까요?  예로 들자면 위처럼 20,000개의 정수를 저장하는 배열을 할당한다고 가정해봅시다. 해당 배열을 위해 6개의 페이지가 할당되었고, 할당되었을 초기를 꺠끗한 상태라고부릅니다.  하지만 배열에서 어떠한 인덱스에 데이터를 write 한다면 (데이터를 버퍼에 쓰기 시작한다면) 해당 페이지는 더러워집니다. 데이터가 쓰이지 않은 곳은 클린한 상태로 남아있지만 쓰인 곳은 더러운 페이지라고 부릅니다.       메모리 매핑된 파일(memory-mapped files)라는 개념도 있습니다.  memory-mapped files는 디스크에 존재하는 파일을 메모리에 직접 매핑해서, 마치 메모리에서 데이터를 읽고 쓰는 것처럼 파일을 다루는 기술입니다. 즉 운영체제가 파일을 가상 메모리에 매핑하고, 이를 통해 애플리케이션이 디스크 데이터를 직접 접근하는 것처럼 사용하는 것입니다.  읽기 전용 파일은 언제나 클린 페이지로 유지되고(언제나 삭제 가능, 필요시 디스크에서 다시 읽음) 쓰는 것이 가능한 파일은 더러운 페이지가 되어 이후 디스크에 기록됩니다. 커널은 이러한 파일들을 RAM으로 로드하거나 디스크로 내리는 작업을 관리합니다.       일반적인 앱의 메모리 프로필에는 더러운 메모리(dirty memory), 압축된 메모리(compressed memory), 그리고 깨끗한 메모리(clean memory) 섹션이 있습니다.     Clean Memory    깨끗한 메모리는 시스템이 페이지에서 제거할 수 있는 데이터입니다. 앞서 설명한 memory-mapped files들이 해당되며, 이미지, 데이터 블롭, 트레이닝 모델 등이 포함될 수 있습니다.       또한 프레임워크도 깨끗한 메모리를 포함할 수 있습니다.  모든 프레임워크는 DATA CONST 섹션을 가지고 있는데, 변경되지 않는 상수 데이터를 저장하는 메모리 영역이기 때문에 일반적으로 깨끗한 상태입니다.  하지만 런타임에서 특정 조작을 수행하면 더러워질 수 있습니다. 예를 들어 메서드 스위즐링(Method Swizzling)은 런타임에 기존 메소드를 다른 메서드로 교체하는 런타임 변형 기법입니다.     Dirty memory    더러운 메모리는 앱이 직접 데이터를 기록한 메모리입니다. 즉, 앱이 메모리에 데이터를 썼기 때문에 시스템이 이를 페이지에서 제거할 수 없습니다.       더러운 메모리에 포함될 수 있는 데이터는 다음과 같습니다.     객체(Object): 앱에서 할당한 객체들 (예: 문자열, 배열 등)   디코딩된 이미지 버퍼(Decoded Image Buffers): 이미지는 저장될 때 압축된 상태로 존재하지만, 디코딩되면 더러운 메모리가 됨   프레임워크(Frameworks): 프레임워크에는 data 섹션과 data-dirty 섹션이 있고, 항상 더러운 메모리로 계산됨        프레임워크와 앱이 사용하는 메모리는 더러운 메모리로 남을 수밖에 없습니다. 그래서 싱글톤을 사용하거나 Global initializer를 최소화해서 더러운 메모리 사용량을 최대한 줄이는 것이 좋습니다.     싱글톤은 생성된 이후 메모리에서 계속 유지되고 추가적인 할당을 줄일 수 있음.   Global initializer는 프레임워크가 링크되거나 클래스가 로드될 때 실행됨. 이를 최소화하면 메모리 사용량을 줄이는 데 도움됨.      Compressed Memory    일반적으로 운영체제들은 Swap 방식을 사용합니다.  Swap은 물리 메모리가 부족한 경우 RAM의 데이터를 디스크에 저장하는 방식을 말합니다. iOS는 7부터 이러한 Swap 대신 메모리 압축기(Memory Compressor)를 사용합니다. (Swap의 경우, 느리고, SSD에 데이터를 자주 쓰면 수명이 줄어들 수 있다는 단점 존재)  Memory Compressor는 RAM이 부족할 때 사용하지 않는 메모리를 압축해서 저장하는 기술입니다. 그렇지만, 해당 데이터에 접근하게 되면 압축했던 메모리가 다시 풀려나기 때문에, 메모리 사용량이 증가할 수도 있습니다.       예시로 캐싱을 위해 사용된 딕셔너리를 생각해 봅시다.          딕셔너리는 3개의 페이지를 차지하고 있었습니다.   그런데, 이 데이터에 한동안 접근하지 않았던 시스템은 이를 압축하여 하나의 페이지로 줄일 수 있습니다.   압축된 덕분에 추가적인 메모리 공간이 확보됩니다.   하지만, 추후 이 데이터에 접근하면 다시 압축이 풀리면서 원래 크기로 복원됩니다.        메모리 경고는 항상 앱 자체의 문제로 인해 발생하는 것이 아닙니다.  예를 들어, 메모리가 적은 기기에서 전화와 같은 어떠한 기능이 수행될 경우, 메모리 경고가 발생할 수 있습니다. 이 때, 앱이 강제로 종료되는 문제가 발생할 수 있습니다. iOS에서는 Memory Compressor를 사용하기 때문에, 메모리를 해제하는 것이 반드시 메모리 사용량을 줄이는 것이 아닙니다. 어떤 경우에는 메모리를 해제한 이후에 더 많은 메모리를 사용하게 되는 상황도 발생할 수도 있습니다.  따라서 메모리 해제를 어떻게 해야 하는가도 중요한 쟁점입니다.     좋은 방식    예를 들어 일정 기간 동안 캐싱을 중지하거나, 백그라운드 작업을 조절하는 방식으로 메모리 사용량을 관리할 수 있습니다.     잘못된 메모리 관리 방식    메모리 해제가 오히려 더 많은 메모리 사용량을 야기하는 케이스를 살펴보겠습니다. 많은 개발자들이 메모리 경고를 받으면 캐시를 완전히 비우는 방식을 사용합니다. 그러나 앞서 이야기한 압축된 딕셔너리 예제를 떠올려 봅시다.     캐시에서 모든 객체를 제거하면 시스템은 다시 압축을 풀면서 메모리를 원래 크기로 확장합니다.   따라서, 오히려 메모리 사용량이 증가할 수 있습니다.   이러한 점을 고려해서, 메모리 경고가 발생하면 캐시를 조금씩 줄이거나, 일정한 비율로 줄이는 방식을 선택하는 것이 좋습니다.     캐싱의 중요성    캐싱은 CPU가 동일한 연산을 반복하지 않도록 하는 것이 목적입니다.  그러나 너무 많은 데이터를 캐싱하면 메모리 사용량이 증가하면서 시스템 성능이 저하될 수 있기에 적절한 균형을 이루는 것이 중요합니다. NSCache를 이용하면 효율적으로 캐싱을 관리할 수 있습니다.     NSCache는 Thread-Safe한 방식으로 객체를 캐싱할 수 있음   자동으로 캐시된 객체를 삭제할 수 있는 기능 존재   메모리 부족 상황에서는 시스템이 알아서 NSCache에 저장된 데이터를 제거할 수도 있음      Memory FootPrint    앞서 이야기한 것처럼, 앱의 메모리는 더러운 메모리(Dirty Memory)와 압축된 메모리(Compressed Memory)가 차지하고 있습니다. 깨끗한 메모리(Clean Memory)는 실제로 시스템 메모리에 포함되지 않기 때문에, 신경쓰지 않아도 됩니다.  모든 앱은 메모리 사용량 제한(Footprint Limit)이 존재합니다. 일반적인 앱에서는 이 제한이 상대적으로 높지만, 기기에 따라 다르다고 합니다. 예를 들어, 1GB RAM을 가진 기기에서 사용할 수 있는 메모리는 당연히 4GB RAM을 가진 기기보다 적습니다. 또한, Extensions의 경우에는 훨씬 적은 limit를 가지고 있습니다.  만약 앱이 이 제한을 초과한다면 아래처럼 됩니다.     시스템이 EXC_RESOURCE EXCEPTION를 발생시킵니다.   이 예외가 발생하면, 앱이 강제 종료될 수 있습니다.        앱의 메모리 사용량을 프로파일링할 수 있는 도구들입니다.       앱을 실행하다가 Xcode에서 메모리 사용량이 증가하는 것이 확인된다면 Instruments를 활용해 앱의 메모리 프로파일을 조사할 수 있습니다.       다음과 같이 네 가지 기능이 있습니다.     Allocations → 앱에서 힙(heap) 할당을 프로파일링   Leaks → 메모리 누수(leaks) 감지   VM Tracker (가상 메모리 트래커)   Virtual Memory Trace (가상 메모리 추적기)      VM Tracker (가상 메모리 트래커)    앞서 계속 설명했던 것처럼, iOS의 메모리는 더러운 메모리(Dirty Memory)와 압축된 메모리(Compressed Memory)로 구분됩니다. VM Tracker는 이를 효과적으로 프로파일링하는 데 아주 유용하고, 앱이 실제로 얼마나 많은 더러운 메모리를 차지하는지 살펴볼 수 있습니다.     Dirty (더러운 메모리)   Swapped (압축된 메모리, iOS에서는 Compressed Memory)   Resident Size (현재 앱이 사용하는 실제 메모리 크기)      VM Memory Trace (가상 메모리 추적기)    VM Memory Trace로 앱의 가상 메모리 시스템의 성능을 분석할 수 있습니다.  By Operation 탭을 확인하면,     페이지 캐시 히트(Page Cache Hits): 요청한 데이터가 이미 메모리에 있음   페이지 제로 필(Page Zero Fills): 새로운 메모리를 할당할 때, 0으로 초기화하는 과정   과 같은 가상 메모리 시스템의 동작을 상세히 볼 수 있습니다.     EXC_RESOURCE 예외 발생 시    앱이 메모리 한계를 초과하면 EXC_RESOURCE EXCEPTION이 발생합니다. Xcode 10에서는 이 예외를 자동으로 감지하고 앱을 일시 정지하는데, 이 때 Memory Debugger를 실행해서 문제를 바로 살필 수 있습니다.     메모리 디버거 (Memory Debugger)    메모리 디버거(Memory Debugger)로 앱의 객체 간의 참조(reference), 순환 참조(retain cycles), 메모리 누수(leaks) 등을 조사할 수 있습니다. Memgraph 파일으로는 앱의 메모리 사용량을 시각적으로 분석할 수 있습니다.         만약 앱이 실행되던 중 EXC_RESOURCE EXCEPTION이 발생했다면 먼저, 가장 기본적인 도구인 vmmap을 사용할 수 있습니다. 앱의 전체적인 메모리 사용량을 요약(Summary)해서 출력해 줍니다.            가상 메모리 크기(Virtual Size): 가상 메모리는 실제 메모리 사용량과 무관할 수 있음, 중요치 않음   더러운 메모리(Dirty Memory)   압축된 메모리(Swapped, iOS에서는 Compressed)    앱의 실제 메모리 사용량은 더러운 메모리 + 압축된 메모리이기 때문에, 이 두 값을 확인하는 것이 중요합니다.       여기에서 앱의 메모리 사용량이 급증하는 원인을 알고 싶다면, 특정 라이브러리(dylib)가 원인인지 확인해야 합니다. 이때 grep과 awk를 활용하여 특정 라이브러리의 메모리 사용량을 분석할 수 있습니다. 이렇게 하면, 앱이 사용하는 동적 라이브러리(dylib)들의 전체 더러운 메모리 사용량을 확인할 수 있습니다.     Leaks 도구 활용    leaks 명령어는 힙(heap)에서 루트 노드가 없는 객체들을 추적합니다. 즉, 더러운 메모리이면서 절대 해제되지 않는 객체를 찾을 수 있습니다.         이제 메모리 디버거에서 순환 참조가 발생한 객체를 확인해보겠습니다. 위와 같이 누수된 객체들과 해당 객체들이 속한 retain cycle을 표시해줍니다.       또한, malloc stack logging이 활성화된 경우, 메모리 할당 당시의 호출 스택(Backtrace)을 확인할 수도 있습니다.     Heap(힙 분석)  메모리가 많이 사용되고 있을 때 vmmap을 확인해보면 heap의 크기가 매우 클 수 있습니다. 이때 heap 툴을 사용해서 어떤 객체들이 얼마나 할당되었는지 확인할 수 있습니다.    (기본적으로 객체 개수 기준으로 정렬되며, 특정 객체의 크기가 너무 클 경우 sortBySize로 객체 크기 기준으로 정렬을 수행할 수 있습니다.)       메모리 누수의 원인을 찾고 싶다면, heap 명령어에 addresses 플래그를 사용하면 특정 클래스의 모든 인스턴스 주소를 확인할 수 있습니다.       malloc stack logging을 활성화하면 메모리 할당 시점의 backtrace를 기록할 수 있습니다.        이를 활용해서 malloc history 명령어로 특정 메모리 주소가 어디에서 할당되었는지 추적할 수 있습니다.       (예제에서는 NoirFilter의 apply 메서드가 NSConcreteData 객체를 생성하면서 메모리를 과도하게 사용하고 있음이 발견되었습니다.)     메모리 분석을 위한 3가지 접근 방식       객체가 언제 생성되었는가? → malloc history   특정 객체를 참조하는 것은 무엇인가? → leaks   객체의 크기가 얼마나 큰가? → vmmap 또는 heap   우선 vmmap -summary [Memgraph 파일]를 실행한 뒤, 가장 큰 값을 차지하는 메모리 영역을 찾아 분석을 시작하면 됩니다.     Images    이미지는 메모리 관점에서 중요합니다. 이미지에서 가장 중요한 점은 메모리 사용량이 파일 크기와 관련이 없다는 것입니다. 이미지의 메모리 사용량은 이미지 크기(픽셀 단위)에 따라 결정되기 때문입니다.       예를 들어 iPad 앱의 배경화면으로 사용할 이미지를 가지고 있다고 가정하겠습니다. 이 이미지의 크기는 2048 x 1536 픽셀이며, 파일 크기는 590KB입니다.그렇다면 이 이미지가 메모리에서 차지하는 크기는 590KB일까요?       정답은 10MB입니다. 이미지를 GPU에서 사용할 수 있도록 변환하는 과정이 필요하기 때문인데요.     이미지 처리 과정    iOS에서 이미지를 사용하려면 3단계를 거칩니다.     로딩(Load) → JPEG 파일을 메모리에 로드 (590KB)   디코딩(Decode) → GPU에서 사용할 수 있도록 압축 해제 (10MB)   렌더링(Render) → 최종적으로 화면에 표시   이때 디코딩 단계에서 이미지가 압축 해제되면서 메모리 사용량이 급증하게 되는 것입니다.     Image-rendering formats    이미지의 메모리 사용량은 픽셀당 사용되는 바이트 수(bytes per pixel)에 따라 달라집니다. 가장 일반적인 포맷은 SRGB (Standard RGB)이며, 각 픽셀당 4바이트(1바이트씩 R, G, B, Alpha)를 차지합니다.       그러나, 더 많은 메모리를 사용하는 광색역(Wide Color Format) 포맷도 있습니다. 더 정밀한 색 표현을 위해 픽셀당 8바이트를 사용합니다.       반대로, 메모리를 절약할 수 있는 포맷도 있습니다.     Grayscale + Alpha (1픽셀당 2바이트) → 메모리 50% 절약   Alpha Only (A8 포맷) (1픽셀당 1바이트) → 메모리 75% 절약      Picking the right format    이러한 이미지 포맷을 수동으로 선택할 필요 없이, 이를 자동으로 최적화하는 UIImageGraphicsRenderer API를 사용할 수 있습니다. 기존 사용했던 UIGraphicsBeginImageContextWithOptions은 무조건 4바이트(SRGB) 포맷을 사용했는데, iOS 10부터 제공되는 UIGraphicsImageRenderer API를 사용하면 iOS가 자동으로 가장 적절한 포맷을 선택해줍니다.       위와 같이, 불필요한 메모리 사용 없이 최적의 포맷(A8 포맷 등)을 자동으로 적용합니다.     이미지 다운샘플링 (Downsampling)    고해상도 이미지를 축소할 때는 어떻게 해야 할까요?       UIImage는 전체 이미지를 메모리에 로드한 후 축소하기 때문에, 직접 사용해서 축소하면 메모리 사용량이 급증할 수 있습니다. 이를 방지하려면, ImageIO 프레임워크를 사용하여 이미지를 스트리밍 방식으로 축소하면 됩니다.     Optimizing when in background    앱이 백그라운드로 전환될 때 여전히 메모리에 큰 이미지가 남아 있다면, 불필요한 메모리 사용이므로 자동으로 해제하는 것이 좋습니다.       첫번째는 앱이 백그라운드로 갈 때 불필요한 메모리를 자동으로 해제하는 방식으로, 시스템 리소스를 절약할 수 있습니다.       두번째로는 탭뷰나 네비컨에서 화면 전환 후 보이지 않는 이미지가 계속 메모리에 남아 있다면, 불필요한 메모리 사용이므로 뷰가 사라질 때 해제하는 것이 좋습니다. 위와 같이, 사용자가 화면을 이동할 때 불필요한 메모리를 자동으로 해제하는 방식입니다.     Demo    NASA에서 제공하는 고해상도 태양계 이미지를 가져와, 필터를 적용하는 데모 앱이 소개되었는데요. 강연에서 주목한 세 가지 문제점은 다음과 같습니다.     모든 기기가 2GB RAM을 가지고 있는 건 아니다.            개발 환경에서는 2GB의 메모리가 있지만, 1GB RAM을 가진 기기에서 실행하면 앱이 이미 강제 종료될 가능성이 크다.           iOS는 단순히 앱의 메모리 사용량만 보고 강제 종료를 결정하지 않는다.            시스템에서 다른 프로세스가 차지하는 메모리와 전체적인 리소스 사용량을 함께 고려한다.       현재 빨간색 영역이 아니라고 해도 앱이 종료될 수 있다.           앱이 과도한 메모리를 차지하면 사용자 경험이 최악이 된다.            vmmap을 확인해 보니, 앱이 실행되면서 다른 앱들은 모두 운영체제에 의해 종료되었다.       즉, 사용자가 다른 앱으로 전환할 때 모든 앱이 다시 실행되어야 한다.       결과적으로 앱 전환 속도가 느려지고 사용자의 불만을 초래할 수 있다.              Memgraph    Memgraph 파일을 확인하기 위해 몇 가지 디버깅 방법을 사용할 수 있겠습니다.     메모리 누수(Leaks) 확인      Leaks 필터를 적용해봤는데 누수는 발견되지 않음   누수가 없다면, 불필요한 객체가 많거나 특정 객체가 너무 커서 메모리를 많이 차지하는 경우일 가능성이 큼           객체 개수 확인      각 클래스별로 딱 한 개의 객체만 존재하여 불필요한 객체가 많지는 않음           객체 크기 확인      Memory Inspector를 통해 각 객체의 크기를 확인했지만, 모두 작은 크기(32바이트 ~ 1500바이트)임   Memgraph에서 직접적인 문제를 찾을 수 없을 때, command line으로 더 깊이 분석합니다.     command line 메모리 분석 (vmmap, leaks, malloc history)    1. vmmap 요약 (vmmap -summary)     vmmap 명령어를 사용하여 어떤 부분이 가장 많은 메모리를 사용하고 있는지 확인   주의 깊게 봐야 할 두 가지 열            Dirty - 앱이 실제로 사용하는 메모리 크기       Swapped (Compressed) - 압축된 상태로 저장된 메모리           분석            CG Image 영역이 가장 많은 메모리를 차지하고 있음       IOSurface, MALLOC LARGE도 다수 사용 중이지만, 주요 문제는 CG Image임                               **2. CG Image 관련 가상 메모리 영역 확인 (vmmap       grep CGImage)**              grep을 사용하여 CG Image와 관련된 메모리 블록만 필터링   가장 큰 CG Image 영역의 시작 주소를 확인하여 추가 분석 진행        3. 해당 메모리 블록을 참조하는 객체 찾기 (leaks –traceTree)     leaks –traceTree 명령어를 사용하여, CG Image 메모리 블록을 참조하고 있는 객체 트리 출력           Core Image 필터 관련 클래스(CIImage, CIFilter 등)가 참조 중   Core Image 관련 객체들이 계속 유지되고 있음        4. 객체의 생성 시점 확인 (malloc history)     malloc history 명령어를 사용하여, 해당 메모리 블록이 언제, 어디서 생성되었는지 백트레이스를 추적   결과적으로 NoirFilter의 apply() 메서드에서 메모리를 과도하게 사용하고 있음을 확인               메모리 최적화 방법   원인을 알았으니, 이제는 메모리를 최적화할 수 있습니다.     1. 이미지 크기 줄이기       원본 이미지 크기가 15,000 x 13,000 이었기 때문에,        iPhone X에서 3x 해상도이므로, 실제 메모리 사용량은 15,000 × 13,000 × 3 × 3 × 4 = 7.5GB               따라서, 필터를 적용하기 전 이미지 크기를 뷰 크기로 축소하여 메모리 사용량을 줄이고, CGImageSourceCreateThumbnailAtIndex API를 사용하여 이미지를 바로 다운샘플링하는 방법으로 수정하고자 했습니다.  2. UIGraphics API 최적화       as-is: UIGraphicsBeginImageContextWithOptions() 사용   to-be: UIGraphicsImageRenderer() 사용      3. 불필요한 이미지 메모리 해제     백그라운드로 전환될 때 불필요한 이미지 해제      Summary       메모리는 한정되어 있고 공유되기에, 앱이 필요 이상으로 메모리를 사용하면 시스템 전체에 영향을 줌   메모리 리포트로, 디버깅 중 메모리 사용량 변화를 감지하기   UIImage는 OS에서 적절한 포맷을 선택하도록 UIImage GraphicsRenderer를 사용할 것   ImageIO를 활용한 다운샘플링   화면에 보이지 않는 이미지는 unload해야 됨, 불필요한 메모리를 유지하면 사용자 경험이 저하되므로      Reference     https://developer.apple.com/kr/videos/play/wwdc2018/416/          ">
+
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[WWDC] iOS Memory Deep Dive">
+<meta property="og:url" content="https://indextrown.github.io/wwdc-ios-memory-deep-dive/">
+
+
+  <meta property="og:description" content="Why reduce memory  메모리를 줄여야 하는 이유는 사용자 경험이 좋아지기 때문입니다. 앱 실행 속도가 빨라지고 시스템 전체의 속도도 향상됩니다. 메모리를 줄인다는 것은 실질적으로 메모리 사용량(footprint)을 줄인다는 뜻입니다.       메모리 페이지는 프로세스가 사용하는 가상 메모리를 일정 크기의 블록으로 나눈 것을 의미합니다. 페이지는 heap에서 여러 객체를 포함할 수 있고 어떤 객체는 여러 페이지에 걸쳐 존재하기도 합니다. 일반적으로 16KB 크기를 가지며 clean하거나 dirty해질 수 있습니다.       Pages 앱 기준 앱의 메모리 사용은 실제로 페이지 수에 페이지 크기를 곱한 값입니다.       그렇다면 클린 페이지와 더러운 페이지가 무엇일까요?  예로 들자면 위처럼 20,000개의 정수를 저장하는 배열을 할당한다고 가정해봅시다. 해당 배열을 위해 6개의 페이지가 할당되었고, 할당되었을 초기를 꺠끗한 상태라고부릅니다.  하지만 배열에서 어떠한 인덱스에 데이터를 write 한다면 (데이터를 버퍼에 쓰기 시작한다면) 해당 페이지는 더러워집니다. 데이터가 쓰이지 않은 곳은 클린한 상태로 남아있지만 쓰인 곳은 더러운 페이지라고 부릅니다.       메모리 매핑된 파일(memory-mapped files)라는 개념도 있습니다.  memory-mapped files는 디스크에 존재하는 파일을 메모리에 직접 매핑해서, 마치 메모리에서 데이터를 읽고 쓰는 것처럼 파일을 다루는 기술입니다. 즉 운영체제가 파일을 가상 메모리에 매핑하고, 이를 통해 애플리케이션이 디스크 데이터를 직접 접근하는 것처럼 사용하는 것입니다.  읽기 전용 파일은 언제나 클린 페이지로 유지되고(언제나 삭제 가능, 필요시 디스크에서 다시 읽음) 쓰는 것이 가능한 파일은 더러운 페이지가 되어 이후 디스크에 기록됩니다. 커널은 이러한 파일들을 RAM으로 로드하거나 디스크로 내리는 작업을 관리합니다.       일반적인 앱의 메모리 프로필에는 더러운 메모리(dirty memory), 압축된 메모리(compressed memory), 그리고 깨끗한 메모리(clean memory) 섹션이 있습니다.     Clean Memory    깨끗한 메모리는 시스템이 페이지에서 제거할 수 있는 데이터입니다. 앞서 설명한 memory-mapped files들이 해당되며, 이미지, 데이터 블롭, 트레이닝 모델 등이 포함될 수 있습니다.       또한 프레임워크도 깨끗한 메모리를 포함할 수 있습니다.  모든 프레임워크는 DATA CONST 섹션을 가지고 있는데, 변경되지 않는 상수 데이터를 저장하는 메모리 영역이기 때문에 일반적으로 깨끗한 상태입니다.  하지만 런타임에서 특정 조작을 수행하면 더러워질 수 있습니다. 예를 들어 메서드 스위즐링(Method Swizzling)은 런타임에 기존 메소드를 다른 메서드로 교체하는 런타임 변형 기법입니다.     Dirty memory    더러운 메모리는 앱이 직접 데이터를 기록한 메모리입니다. 즉, 앱이 메모리에 데이터를 썼기 때문에 시스템이 이를 페이지에서 제거할 수 없습니다.       더러운 메모리에 포함될 수 있는 데이터는 다음과 같습니다.     객체(Object): 앱에서 할당한 객체들 (예: 문자열, 배열 등)   디코딩된 이미지 버퍼(Decoded Image Buffers): 이미지는 저장될 때 압축된 상태로 존재하지만, 디코딩되면 더러운 메모리가 됨   프레임워크(Frameworks): 프레임워크에는 data 섹션과 data-dirty 섹션이 있고, 항상 더러운 메모리로 계산됨        프레임워크와 앱이 사용하는 메모리는 더러운 메모리로 남을 수밖에 없습니다. 그래서 싱글톤을 사용하거나 Global initializer를 최소화해서 더러운 메모리 사용량을 최대한 줄이는 것이 좋습니다.     싱글톤은 생성된 이후 메모리에서 계속 유지되고 추가적인 할당을 줄일 수 있음.   Global initializer는 프레임워크가 링크되거나 클래스가 로드될 때 실행됨. 이를 최소화하면 메모리 사용량을 줄이는 데 도움됨.      Compressed Memory    일반적으로 운영체제들은 Swap 방식을 사용합니다.  Swap은 물리 메모리가 부족한 경우 RAM의 데이터를 디스크에 저장하는 방식을 말합니다. iOS는 7부터 이러한 Swap 대신 메모리 압축기(Memory Compressor)를 사용합니다. (Swap의 경우, 느리고, SSD에 데이터를 자주 쓰면 수명이 줄어들 수 있다는 단점 존재)  Memory Compressor는 RAM이 부족할 때 사용하지 않는 메모리를 압축해서 저장하는 기술입니다. 그렇지만, 해당 데이터에 접근하게 되면 압축했던 메모리가 다시 풀려나기 때문에, 메모리 사용량이 증가할 수도 있습니다.       예시로 캐싱을 위해 사용된 딕셔너리를 생각해 봅시다.          딕셔너리는 3개의 페이지를 차지하고 있었습니다.   그런데, 이 데이터에 한동안 접근하지 않았던 시스템은 이를 압축하여 하나의 페이지로 줄일 수 있습니다.   압축된 덕분에 추가적인 메모리 공간이 확보됩니다.   하지만, 추후 이 데이터에 접근하면 다시 압축이 풀리면서 원래 크기로 복원됩니다.        메모리 경고는 항상 앱 자체의 문제로 인해 발생하는 것이 아닙니다.  예를 들어, 메모리가 적은 기기에서 전화와 같은 어떠한 기능이 수행될 경우, 메모리 경고가 발생할 수 있습니다. 이 때, 앱이 강제로 종료되는 문제가 발생할 수 있습니다. iOS에서는 Memory Compressor를 사용하기 때문에, 메모리를 해제하는 것이 반드시 메모리 사용량을 줄이는 것이 아닙니다. 어떤 경우에는 메모리를 해제한 이후에 더 많은 메모리를 사용하게 되는 상황도 발생할 수도 있습니다.  따라서 메모리 해제를 어떻게 해야 하는가도 중요한 쟁점입니다.     좋은 방식    예를 들어 일정 기간 동안 캐싱을 중지하거나, 백그라운드 작업을 조절하는 방식으로 메모리 사용량을 관리할 수 있습니다.     잘못된 메모리 관리 방식    메모리 해제가 오히려 더 많은 메모리 사용량을 야기하는 케이스를 살펴보겠습니다. 많은 개발자들이 메모리 경고를 받으면 캐시를 완전히 비우는 방식을 사용합니다. 그러나 앞서 이야기한 압축된 딕셔너리 예제를 떠올려 봅시다.     캐시에서 모든 객체를 제거하면 시스템은 다시 압축을 풀면서 메모리를 원래 크기로 확장합니다.   따라서, 오히려 메모리 사용량이 증가할 수 있습니다.   이러한 점을 고려해서, 메모리 경고가 발생하면 캐시를 조금씩 줄이거나, 일정한 비율로 줄이는 방식을 선택하는 것이 좋습니다.     캐싱의 중요성    캐싱은 CPU가 동일한 연산을 반복하지 않도록 하는 것이 목적입니다.  그러나 너무 많은 데이터를 캐싱하면 메모리 사용량이 증가하면서 시스템 성능이 저하될 수 있기에 적절한 균형을 이루는 것이 중요합니다. NSCache를 이용하면 효율적으로 캐싱을 관리할 수 있습니다.     NSCache는 Thread-Safe한 방식으로 객체를 캐싱할 수 있음   자동으로 캐시된 객체를 삭제할 수 있는 기능 존재   메모리 부족 상황에서는 시스템이 알아서 NSCache에 저장된 데이터를 제거할 수도 있음      Memory FootPrint    앞서 이야기한 것처럼, 앱의 메모리는 더러운 메모리(Dirty Memory)와 압축된 메모리(Compressed Memory)가 차지하고 있습니다. 깨끗한 메모리(Clean Memory)는 실제로 시스템 메모리에 포함되지 않기 때문에, 신경쓰지 않아도 됩니다.  모든 앱은 메모리 사용량 제한(Footprint Limit)이 존재합니다. 일반적인 앱에서는 이 제한이 상대적으로 높지만, 기기에 따라 다르다고 합니다. 예를 들어, 1GB RAM을 가진 기기에서 사용할 수 있는 메모리는 당연히 4GB RAM을 가진 기기보다 적습니다. 또한, Extensions의 경우에는 훨씬 적은 limit를 가지고 있습니다.  만약 앱이 이 제한을 초과한다면 아래처럼 됩니다.     시스템이 EXC_RESOURCE EXCEPTION를 발생시킵니다.   이 예외가 발생하면, 앱이 강제 종료될 수 있습니다.        앱의 메모리 사용량을 프로파일링할 수 있는 도구들입니다.       앱을 실행하다가 Xcode에서 메모리 사용량이 증가하는 것이 확인된다면 Instruments를 활용해 앱의 메모리 프로파일을 조사할 수 있습니다.       다음과 같이 네 가지 기능이 있습니다.     Allocations → 앱에서 힙(heap) 할당을 프로파일링   Leaks → 메모리 누수(leaks) 감지   VM Tracker (가상 메모리 트래커)   Virtual Memory Trace (가상 메모리 추적기)      VM Tracker (가상 메모리 트래커)    앞서 계속 설명했던 것처럼, iOS의 메모리는 더러운 메모리(Dirty Memory)와 압축된 메모리(Compressed Memory)로 구분됩니다. VM Tracker는 이를 효과적으로 프로파일링하는 데 아주 유용하고, 앱이 실제로 얼마나 많은 더러운 메모리를 차지하는지 살펴볼 수 있습니다.     Dirty (더러운 메모리)   Swapped (압축된 메모리, iOS에서는 Compressed Memory)   Resident Size (현재 앱이 사용하는 실제 메모리 크기)      VM Memory Trace (가상 메모리 추적기)    VM Memory Trace로 앱의 가상 메모리 시스템의 성능을 분석할 수 있습니다.  By Operation 탭을 확인하면,     페이지 캐시 히트(Page Cache Hits): 요청한 데이터가 이미 메모리에 있음   페이지 제로 필(Page Zero Fills): 새로운 메모리를 할당할 때, 0으로 초기화하는 과정   과 같은 가상 메모리 시스템의 동작을 상세히 볼 수 있습니다.     EXC_RESOURCE 예외 발생 시    앱이 메모리 한계를 초과하면 EXC_RESOURCE EXCEPTION이 발생합니다. Xcode 10에서는 이 예외를 자동으로 감지하고 앱을 일시 정지하는데, 이 때 Memory Debugger를 실행해서 문제를 바로 살필 수 있습니다.     메모리 디버거 (Memory Debugger)    메모리 디버거(Memory Debugger)로 앱의 객체 간의 참조(reference), 순환 참조(retain cycles), 메모리 누수(leaks) 등을 조사할 수 있습니다. Memgraph 파일으로는 앱의 메모리 사용량을 시각적으로 분석할 수 있습니다.         만약 앱이 실행되던 중 EXC_RESOURCE EXCEPTION이 발생했다면 먼저, 가장 기본적인 도구인 vmmap을 사용할 수 있습니다. 앱의 전체적인 메모리 사용량을 요약(Summary)해서 출력해 줍니다.            가상 메모리 크기(Virtual Size): 가상 메모리는 실제 메모리 사용량과 무관할 수 있음, 중요치 않음   더러운 메모리(Dirty Memory)   압축된 메모리(Swapped, iOS에서는 Compressed)    앱의 실제 메모리 사용량은 더러운 메모리 + 압축된 메모리이기 때문에, 이 두 값을 확인하는 것이 중요합니다.       여기에서 앱의 메모리 사용량이 급증하는 원인을 알고 싶다면, 특정 라이브러리(dylib)가 원인인지 확인해야 합니다. 이때 grep과 awk를 활용하여 특정 라이브러리의 메모리 사용량을 분석할 수 있습니다. 이렇게 하면, 앱이 사용하는 동적 라이브러리(dylib)들의 전체 더러운 메모리 사용량을 확인할 수 있습니다.     Leaks 도구 활용    leaks 명령어는 힙(heap)에서 루트 노드가 없는 객체들을 추적합니다. 즉, 더러운 메모리이면서 절대 해제되지 않는 객체를 찾을 수 있습니다.         이제 메모리 디버거에서 순환 참조가 발생한 객체를 확인해보겠습니다. 위와 같이 누수된 객체들과 해당 객체들이 속한 retain cycle을 표시해줍니다.       또한, malloc stack logging이 활성화된 경우, 메모리 할당 당시의 호출 스택(Backtrace)을 확인할 수도 있습니다.     Heap(힙 분석)  메모리가 많이 사용되고 있을 때 vmmap을 확인해보면 heap의 크기가 매우 클 수 있습니다. 이때 heap 툴을 사용해서 어떤 객체들이 얼마나 할당되었는지 확인할 수 있습니다.    (기본적으로 객체 개수 기준으로 정렬되며, 특정 객체의 크기가 너무 클 경우 sortBySize로 객체 크기 기준으로 정렬을 수행할 수 있습니다.)       메모리 누수의 원인을 찾고 싶다면, heap 명령어에 addresses 플래그를 사용하면 특정 클래스의 모든 인스턴스 주소를 확인할 수 있습니다.       malloc stack logging을 활성화하면 메모리 할당 시점의 backtrace를 기록할 수 있습니다.        이를 활용해서 malloc history 명령어로 특정 메모리 주소가 어디에서 할당되었는지 추적할 수 있습니다.       (예제에서는 NoirFilter의 apply 메서드가 NSConcreteData 객체를 생성하면서 메모리를 과도하게 사용하고 있음이 발견되었습니다.)     메모리 분석을 위한 3가지 접근 방식       객체가 언제 생성되었는가? → malloc history   특정 객체를 참조하는 것은 무엇인가? → leaks   객체의 크기가 얼마나 큰가? → vmmap 또는 heap   우선 vmmap -summary [Memgraph 파일]를 실행한 뒤, 가장 큰 값을 차지하는 메모리 영역을 찾아 분석을 시작하면 됩니다.     Images    이미지는 메모리 관점에서 중요합니다. 이미지에서 가장 중요한 점은 메모리 사용량이 파일 크기와 관련이 없다는 것입니다. 이미지의 메모리 사용량은 이미지 크기(픽셀 단위)에 따라 결정되기 때문입니다.       예를 들어 iPad 앱의 배경화면으로 사용할 이미지를 가지고 있다고 가정하겠습니다. 이 이미지의 크기는 2048 x 1536 픽셀이며, 파일 크기는 590KB입니다.그렇다면 이 이미지가 메모리에서 차지하는 크기는 590KB일까요?       정답은 10MB입니다. 이미지를 GPU에서 사용할 수 있도록 변환하는 과정이 필요하기 때문인데요.     이미지 처리 과정    iOS에서 이미지를 사용하려면 3단계를 거칩니다.     로딩(Load) → JPEG 파일을 메모리에 로드 (590KB)   디코딩(Decode) → GPU에서 사용할 수 있도록 압축 해제 (10MB)   렌더링(Render) → 최종적으로 화면에 표시   이때 디코딩 단계에서 이미지가 압축 해제되면서 메모리 사용량이 급증하게 되는 것입니다.     Image-rendering formats    이미지의 메모리 사용량은 픽셀당 사용되는 바이트 수(bytes per pixel)에 따라 달라집니다. 가장 일반적인 포맷은 SRGB (Standard RGB)이며, 각 픽셀당 4바이트(1바이트씩 R, G, B, Alpha)를 차지합니다.       그러나, 더 많은 메모리를 사용하는 광색역(Wide Color Format) 포맷도 있습니다. 더 정밀한 색 표현을 위해 픽셀당 8바이트를 사용합니다.       반대로, 메모리를 절약할 수 있는 포맷도 있습니다.     Grayscale + Alpha (1픽셀당 2바이트) → 메모리 50% 절약   Alpha Only (A8 포맷) (1픽셀당 1바이트) → 메모리 75% 절약      Picking the right format    이러한 이미지 포맷을 수동으로 선택할 필요 없이, 이를 자동으로 최적화하는 UIImageGraphicsRenderer API를 사용할 수 있습니다. 기존 사용했던 UIGraphicsBeginImageContextWithOptions은 무조건 4바이트(SRGB) 포맷을 사용했는데, iOS 10부터 제공되는 UIGraphicsImageRenderer API를 사용하면 iOS가 자동으로 가장 적절한 포맷을 선택해줍니다.       위와 같이, 불필요한 메모리 사용 없이 최적의 포맷(A8 포맷 등)을 자동으로 적용합니다.     이미지 다운샘플링 (Downsampling)    고해상도 이미지를 축소할 때는 어떻게 해야 할까요?       UIImage는 전체 이미지를 메모리에 로드한 후 축소하기 때문에, 직접 사용해서 축소하면 메모리 사용량이 급증할 수 있습니다. 이를 방지하려면, ImageIO 프레임워크를 사용하여 이미지를 스트리밍 방식으로 축소하면 됩니다.     Optimizing when in background    앱이 백그라운드로 전환될 때 여전히 메모리에 큰 이미지가 남아 있다면, 불필요한 메모리 사용이므로 자동으로 해제하는 것이 좋습니다.       첫번째는 앱이 백그라운드로 갈 때 불필요한 메모리를 자동으로 해제하는 방식으로, 시스템 리소스를 절약할 수 있습니다.       두번째로는 탭뷰나 네비컨에서 화면 전환 후 보이지 않는 이미지가 계속 메모리에 남아 있다면, 불필요한 메모리 사용이므로 뷰가 사라질 때 해제하는 것이 좋습니다. 위와 같이, 사용자가 화면을 이동할 때 불필요한 메모리를 자동으로 해제하는 방식입니다.     Demo    NASA에서 제공하는 고해상도 태양계 이미지를 가져와, 필터를 적용하는 데모 앱이 소개되었는데요. 강연에서 주목한 세 가지 문제점은 다음과 같습니다.     모든 기기가 2GB RAM을 가지고 있는 건 아니다.            개발 환경에서는 2GB의 메모리가 있지만, 1GB RAM을 가진 기기에서 실행하면 앱이 이미 강제 종료될 가능성이 크다.           iOS는 단순히 앱의 메모리 사용량만 보고 강제 종료를 결정하지 않는다.            시스템에서 다른 프로세스가 차지하는 메모리와 전체적인 리소스 사용량을 함께 고려한다.       현재 빨간색 영역이 아니라고 해도 앱이 종료될 수 있다.           앱이 과도한 메모리를 차지하면 사용자 경험이 최악이 된다.            vmmap을 확인해 보니, 앱이 실행되면서 다른 앱들은 모두 운영체제에 의해 종료되었다.       즉, 사용자가 다른 앱으로 전환할 때 모든 앱이 다시 실행되어야 한다.       결과적으로 앱 전환 속도가 느려지고 사용자의 불만을 초래할 수 있다.              Memgraph    Memgraph 파일을 확인하기 위해 몇 가지 디버깅 방법을 사용할 수 있겠습니다.     메모리 누수(Leaks) 확인      Leaks 필터를 적용해봤는데 누수는 발견되지 않음   누수가 없다면, 불필요한 객체가 많거나 특정 객체가 너무 커서 메모리를 많이 차지하는 경우일 가능성이 큼           객체 개수 확인      각 클래스별로 딱 한 개의 객체만 존재하여 불필요한 객체가 많지는 않음           객체 크기 확인      Memory Inspector를 통해 각 객체의 크기를 확인했지만, 모두 작은 크기(32바이트 ~ 1500바이트)임   Memgraph에서 직접적인 문제를 찾을 수 없을 때, command line으로 더 깊이 분석합니다.     command line 메모리 분석 (vmmap, leaks, malloc history)    1. vmmap 요약 (vmmap -summary)     vmmap 명령어를 사용하여 어떤 부분이 가장 많은 메모리를 사용하고 있는지 확인   주의 깊게 봐야 할 두 가지 열            Dirty - 앱이 실제로 사용하는 메모리 크기       Swapped (Compressed) - 압축된 상태로 저장된 메모리           분석            CG Image 영역이 가장 많은 메모리를 차지하고 있음       IOSurface, MALLOC LARGE도 다수 사용 중이지만, 주요 문제는 CG Image임                               **2. CG Image 관련 가상 메모리 영역 확인 (vmmap       grep CGImage)**              grep을 사용하여 CG Image와 관련된 메모리 블록만 필터링   가장 큰 CG Image 영역의 시작 주소를 확인하여 추가 분석 진행        3. 해당 메모리 블록을 참조하는 객체 찾기 (leaks –traceTree)     leaks –traceTree 명령어를 사용하여, CG Image 메모리 블록을 참조하고 있는 객체 트리 출력           Core Image 필터 관련 클래스(CIImage, CIFilter 등)가 참조 중   Core Image 관련 객체들이 계속 유지되고 있음        4. 객체의 생성 시점 확인 (malloc history)     malloc history 명령어를 사용하여, 해당 메모리 블록이 언제, 어디서 생성되었는지 백트레이스를 추적   결과적으로 NoirFilter의 apply() 메서드에서 메모리를 과도하게 사용하고 있음을 확인               메모리 최적화 방법   원인을 알았으니, 이제는 메모리를 최적화할 수 있습니다.     1. 이미지 크기 줄이기       원본 이미지 크기가 15,000 x 13,000 이었기 때문에,        iPhone X에서 3x 해상도이므로, 실제 메모리 사용량은 15,000 × 13,000 × 3 × 3 × 4 = 7.5GB               따라서, 필터를 적용하기 전 이미지 크기를 뷰 크기로 축소하여 메모리 사용량을 줄이고, CGImageSourceCreateThumbnailAtIndex API를 사용하여 이미지를 바로 다운샘플링하는 방법으로 수정하고자 했습니다.  2. UIGraphics API 최적화       as-is: UIGraphicsBeginImageContextWithOptions() 사용   to-be: UIGraphicsImageRenderer() 사용      3. 불필요한 이미지 메모리 해제     백그라운드로 전환될 때 불필요한 이미지 해제      Summary       메모리는 한정되어 있고 공유되기에, 앱이 필요 이상으로 메모리를 사용하면 시스템 전체에 영향을 줌   메모리 리포트로, 디버깅 중 메모리 사용량 변화를 감지하기   UIImage는 OS에서 적절한 포맷을 선택하도록 UIImage GraphicsRenderer를 사용할 것   ImageIO를 활용한 다운샘플링   화면에 보이지 않는 이미지는 unload해야 됨, 불필요한 메모리를 유지하면 사용자 경험이 저하되므로      Reference     https://developer.apple.com/kr/videos/play/wwdc2018/416/          ">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2026-08-07T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://indextrown.github.io/wwdc-ios-memory-deep-dive/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "https://indextrown.github.io/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <input id="switch" class="theme-toggle__checkbox" name="theme" type="checkbox">
+<label class="switch_label theme-toggle" for="switch" aria-label="Toggle dark mode">
+  <span class="theme-toggle__button onf_btn" aria-hidden="true"></span>
+</label>
+
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li><li class="masthead__menu-item">
+              <a href="/projects/">Projects</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[WWDC] iOS Memory Deep Dive">
+    <meta itemprop="description" content="Why reduce memory메모리를 줄여야 하는 이유는 사용자 경험이 좋아지기 때문입니다. 앱 실행 속도가 빨라지고 시스템 전체의 속도도 향상됩니다. 메모리를 줄인다는 것은 실질적으로 메모리 사용량(footprint)을 줄인다는 뜻입니다. 메모리 페이지는 프로세스가 사용하는 가상 메모리를 일정 크기의 블록으로 나눈 것을 의미합니다. 페이지는 heap에서 여러 객체를 포함할 수 있고 어떤 객체는 여러 페이지에 걸쳐 존재하기도 합니다. 일반적으로 16KB 크기를 가지며 clean하거나 dirty해질 수 있습니다. Pages 앱 기준 앱의 메모리 사용은 실제로 페이지 수에 페이지 크기를 곱한 값입니다. 그렇다면 클린 페이지와 더러운 페이지가 무엇일까요?예로 들자면 위처럼 20,000개의 정수를 저장하는 배열을 할당한다고 가정해봅시다. 해당 배열을 위해 6개의 페이지가 할당되었고, 할당되었을 초기를 꺠끗한 상태라고부릅니다.하지만 배열에서 어떠한 인덱스에 데이터를 write 한다면 (데이터를 버퍼에 쓰기 시작한다면) 해당 페이지는 더러워집니다. 데이터가 쓰이지 않은 곳은 클린한 상태로 남아있지만 쓰인 곳은 더러운 페이지라고 부릅니다. 메모리 매핑된 파일(memory-mapped files)라는 개념도 있습니다.memory-mapped files는 디스크에 존재하는 파일을 메모리에 직접 매핑해서, 마치 메모리에서 데이터를 읽고 쓰는 것처럼 파일을 다루는 기술입니다. 즉 운영체제가 파일을 가상 메모리에 매핑하고, 이를 통해 애플리케이션이 디스크 데이터를 직접 접근하는 것처럼 사용하는 것입니다.읽기 전용 파일은 언제나 클린 페이지로 유지되고(언제나 삭제 가능, 필요시 디스크에서 다시 읽음) 쓰는 것이 가능한 파일은 더러운 페이지가 되어 이후 디스크에 기록됩니다. 커널은 이러한 파일들을 RAM으로 로드하거나 디스크로 내리는 작업을 관리합니다. 일반적인 앱의 메모리 프로필에는 더러운 메모리(dirty memory), 압축된 메모리(compressed memory), 그리고 깨끗한 메모리(clean memory) 섹션이 있습니다. Clean Memory깨끗한 메모리는 시스템이 페이지에서 제거할 수 있는 데이터입니다. 앞서 설명한 memory-mapped files들이 해당되며, 이미지, 데이터 블롭, 트레이닝 모델 등이 포함될 수 있습니다. 또한 프레임워크도 깨끗한 메모리를 포함할 수 있습니다.모든 프레임워크는 DATA CONST 섹션을 가지고 있는데, 변경되지 않는 상수 데이터를 저장하는 메모리 영역이기 때문에 일반적으로 깨끗한 상태입니다.하지만 런타임에서 특정 조작을 수행하면 더러워질 수 있습니다. 예를 들어 메서드 스위즐링(Method Swizzling)은 런타임에 기존 메소드를 다른 메서드로 교체하는 런타임 변형 기법입니다. Dirty memory더러운 메모리는 앱이 직접 데이터를 기록한 메모리입니다. 즉, 앱이 메모리에 데이터를 썼기 때문에 시스템이 이를 페이지에서 제거할 수 없습니다. 더러운 메모리에 포함될 수 있는 데이터는 다음과 같습니다.  객체(Object): 앱에서 할당한 객체들 (예: 문자열, 배열 등)  디코딩된 이미지 버퍼(Decoded Image Buffers): 이미지는 저장될 때 압축된 상태로 존재하지만, 디코딩되면 더러운 메모리가 됨  프레임워크(Frameworks): 프레임워크에는 data 섹션과 data-dirty 섹션이 있고, 항상 더러운 메모리로 계산됨 프레임워크와 앱이 사용하는 메모리는 더러운 메모리로 남을 수밖에 없습니다. 그래서 싱글톤을 사용하거나 Global initializer를 최소화해서 더러운 메모리 사용량을 최대한 줄이는 것이 좋습니다.  싱글톤은 생성된 이후 메모리에서 계속 유지되고 추가적인 할당을 줄일 수 있음.  Global initializer는 프레임워크가 링크되거나 클래스가 로드될 때 실행됨. 이를 최소화하면 메모리 사용량을 줄이는 데 도움됨. Compressed Memory일반적으로 운영체제들은 Swap 방식을 사용합니다.Swap은 물리 메모리가 부족한 경우 RAM의 데이터를 디스크에 저장하는 방식을 말합니다. iOS는 7부터 이러한 Swap 대신 메모리 압축기(Memory Compressor)를 사용합니다. (Swap의 경우, 느리고, SSD에 데이터를 자주 쓰면 수명이 줄어들 수 있다는 단점 존재)Memory Compressor는 RAM이 부족할 때 사용하지 않는 메모리를 압축해서 저장하는 기술입니다. 그렇지만, 해당 데이터에 접근하게 되면 압축했던 메모리가 다시 풀려나기 때문에, 메모리 사용량이 증가할 수도 있습니다. 예시로 캐싱을 위해 사용된 딕셔너리를 생각해 봅시다.   딕셔너리는 3개의 페이지를 차지하고 있었습니다.  그런데, 이 데이터에 한동안 접근하지 않았던 시스템은 이를 압축하여 하나의 페이지로 줄일 수 있습니다.  압축된 덕분에 추가적인 메모리 공간이 확보됩니다.  하지만, 추후 이 데이터에 접근하면 다시 압축이 풀리면서 원래 크기로 복원됩니다. 메모리 경고는 항상 앱 자체의 문제로 인해 발생하는 것이 아닙니다.예를 들어, 메모리가 적은 기기에서 전화와 같은 어떠한 기능이 수행될 경우, 메모리 경고가 발생할 수 있습니다. 이 때, 앱이 강제로 종료되는 문제가 발생할 수 있습니다. iOS에서는 Memory Compressor를 사용하기 때문에, 메모리를 해제하는 것이 반드시 메모리 사용량을 줄이는 것이 아닙니다. 어떤 경우에는 메모리를 해제한 이후에 더 많은 메모리를 사용하게 되는 상황도 발생할 수도 있습니다.따라서 메모리 해제를 어떻게 해야 하는가도 중요한 쟁점입니다. 좋은 방식예를 들어 일정 기간 동안 캐싱을 중지하거나, 백그라운드 작업을 조절하는 방식으로 메모리 사용량을 관리할 수 있습니다. 잘못된 메모리 관리 방식메모리 해제가 오히려 더 많은 메모리 사용량을 야기하는 케이스를 살펴보겠습니다. 많은 개발자들이 메모리 경고를 받으면 캐시를 완전히 비우는 방식을 사용합니다. 그러나 앞서 이야기한 압축된 딕셔너리 예제를 떠올려 봅시다.  캐시에서 모든 객체를 제거하면 시스템은 다시 압축을 풀면서 메모리를 원래 크기로 확장합니다.  따라서, 오히려 메모리 사용량이 증가할 수 있습니다.이러한 점을 고려해서, 메모리 경고가 발생하면 캐시를 조금씩 줄이거나, 일정한 비율로 줄이는 방식을 선택하는 것이 좋습니다. 캐싱의 중요성캐싱은 CPU가 동일한 연산을 반복하지 않도록 하는 것이 목적입니다.그러나 너무 많은 데이터를 캐싱하면 메모리 사용량이 증가하면서 시스템 성능이 저하될 수 있기에 적절한 균형을 이루는 것이 중요합니다. NSCache를 이용하면 효율적으로 캐싱을 관리할 수 있습니다.  NSCache는 Thread-Safe한 방식으로 객체를 캐싱할 수 있음  자동으로 캐시된 객체를 삭제할 수 있는 기능 존재  메모리 부족 상황에서는 시스템이 알아서 NSCache에 저장된 데이터를 제거할 수도 있음 Memory FootPrint앞서 이야기한 것처럼, 앱의 메모리는 더러운 메모리(Dirty Memory)와 압축된 메모리(Compressed Memory)가 차지하고 있습니다. 깨끗한 메모리(Clean Memory)는 실제로 시스템 메모리에 포함되지 않기 때문에, 신경쓰지 않아도 됩니다.모든 앱은 메모리 사용량 제한(Footprint Limit)이 존재합니다. 일반적인 앱에서는 이 제한이 상대적으로 높지만, 기기에 따라 다르다고 합니다. 예를 들어, 1GB RAM을 가진 기기에서 사용할 수 있는 메모리는 당연히 4GB RAM을 가진 기기보다 적습니다. 또한, Extensions의 경우에는 훨씬 적은 limit를 가지고 있습니다.만약 앱이 이 제한을 초과한다면 아래처럼 됩니다.  시스템이 EXC_RESOURCE EXCEPTION를 발생시킵니다.  이 예외가 발생하면, 앱이 강제 종료될 수 있습니다. 앱의 메모리 사용량을 프로파일링할 수 있는 도구들입니다. 앱을 실행하다가 Xcode에서 메모리 사용량이 증가하는 것이 확인된다면 Instruments를 활용해 앱의 메모리 프로파일을 조사할 수 있습니다. 다음과 같이 네 가지 기능이 있습니다.  Allocations → 앱에서 힙(heap) 할당을 프로파일링  Leaks → 메모리 누수(leaks) 감지  VM Tracker (가상 메모리 트래커)  Virtual Memory Trace (가상 메모리 추적기) VM Tracker (가상 메모리 트래커)앞서 계속 설명했던 것처럼, iOS의 메모리는 더러운 메모리(Dirty Memory)와 압축된 메모리(Compressed Memory)로 구분됩니다. VM Tracker는 이를 효과적으로 프로파일링하는 데 아주 유용하고, 앱이 실제로 얼마나 많은 더러운 메모리를 차지하는지 살펴볼 수 있습니다.  Dirty (더러운 메모리)  Swapped (압축된 메모리, iOS에서는 Compressed Memory)  Resident Size (현재 앱이 사용하는 실제 메모리 크기) VM Memory Trace (가상 메모리 추적기)VM Memory Trace로 앱의 가상 메모리 시스템의 성능을 분석할 수 있습니다.  By Operation 탭을 확인하면,  페이지 캐시 히트(Page Cache Hits): 요청한 데이터가 이미 메모리에 있음  페이지 제로 필(Page Zero Fills): 새로운 메모리를 할당할 때, 0으로 초기화하는 과정과 같은 가상 메모리 시스템의 동작을 상세히 볼 수 있습니다. EXC_RESOURCE 예외 발생 시앱이 메모리 한계를 초과하면 EXC_RESOURCE EXCEPTION이 발생합니다. Xcode 10에서는 이 예외를 자동으로 감지하고 앱을 일시 정지하는데, 이 때 Memory Debugger를 실행해서 문제를 바로 살필 수 있습니다. 메모리 디버거 (Memory Debugger)메모리 디버거(Memory Debugger)로 앱의 객체 간의 참조(reference), 순환 참조(retain cycles), 메모리 누수(leaks) 등을 조사할 수 있습니다. Memgraph 파일으로는 앱의 메모리 사용량을 시각적으로 분석할 수 있습니다. 만약 앱이 실행되던 중 EXC_RESOURCE EXCEPTION이 발생했다면 먼저, 가장 기본적인 도구인 vmmap을 사용할 수 있습니다. 앱의 전체적인 메모리 사용량을 요약(Summary)해서 출력해 줍니다.   가상 메모리 크기(Virtual Size): 가상 메모리는 실제 메모리 사용량과 무관할 수 있음, 중요치 않음  더러운 메모리(Dirty Memory)  압축된 메모리(Swapped, iOS에서는 Compressed) 앱의 실제 메모리 사용량은 더러운 메모리 + 압축된 메모리이기 때문에, 이 두 값을 확인하는 것이 중요합니다. 여기에서 앱의 메모리 사용량이 급증하는 원인을 알고 싶다면, 특정 라이브러리(dylib)가 원인인지 확인해야 합니다. 이때 grep과 awk를 활용하여 특정 라이브러리의 메모리 사용량을 분석할 수 있습니다. 이렇게 하면, 앱이 사용하는 동적 라이브러리(dylib)들의 전체 더러운 메모리 사용량을 확인할 수 있습니다. Leaks 도구 활용leaks 명령어는 힙(heap)에서 루트 노드가 없는 객체들을 추적합니다. 즉, 더러운 메모리이면서 절대 해제되지 않는 객체를 찾을 수 있습니다.   이제 메모리 디버거에서 순환 참조가 발생한 객체를 확인해보겠습니다. 위와 같이 누수된 객체들과 해당 객체들이 속한 retain cycle을 표시해줍니다. 또한, malloc stack logging이 활성화된 경우, 메모리 할당 당시의 호출 스택(Backtrace)을 확인할 수도 있습니다. Heap(힙 분석)메모리가 많이 사용되고 있을 때 vmmap을 확인해보면 heap의 크기가 매우 클 수 있습니다. 이때 heap 툴을 사용해서 어떤 객체들이 얼마나 할당되었는지 확인할 수 있습니다.   (기본적으로 객체 개수 기준으로 정렬되며, 특정 객체의 크기가 너무 클 경우 sortBySize로 객체 크기 기준으로 정렬을 수행할 수 있습니다.) 메모리 누수의 원인을 찾고 싶다면, heap 명령어에 addresses 플래그를 사용하면 특정 클래스의 모든 인스턴스 주소를 확인할 수 있습니다. malloc stack logging을 활성화하면 메모리 할당 시점의 backtrace를 기록할 수 있습니다.  이를 활용해서 malloc history 명령어로 특정 메모리 주소가 어디에서 할당되었는지 추적할 수 있습니다. (예제에서는 NoirFilter의 apply 메서드가 NSConcreteData 객체를 생성하면서 메모리를 과도하게 사용하고 있음이 발견되었습니다.) 메모리 분석을 위한 3가지 접근 방식  객체가 언제 생성되었는가? → malloc history  특정 객체를 참조하는 것은 무엇인가? → leaks  객체의 크기가 얼마나 큰가? → vmmap 또는 heap우선 vmmap -summary [Memgraph 파일]를 실행한 뒤, 가장 큰 값을 차지하는 메모리 영역을 찾아 분석을 시작하면 됩니다. Images이미지는 메모리 관점에서 중요합니다. 이미지에서 가장 중요한 점은 메모리 사용량이 파일 크기와 관련이 없다는 것입니다. 이미지의 메모리 사용량은 이미지 크기(픽셀 단위)에 따라 결정되기 때문입니다. 예를 들어 iPad 앱의 배경화면으로 사용할 이미지를 가지고 있다고 가정하겠습니다. 이 이미지의 크기는 2048 x 1536 픽셀이며, 파일 크기는 590KB입니다.그렇다면 이 이미지가 메모리에서 차지하는 크기는 590KB일까요? 정답은 10MB입니다. 이미지를 GPU에서 사용할 수 있도록 변환하는 과정이 필요하기 때문인데요. 이미지 처리 과정iOS에서 이미지를 사용하려면 3단계를 거칩니다.  로딩(Load) → JPEG 파일을 메모리에 로드 (590KB)  디코딩(Decode) → GPU에서 사용할 수 있도록 압축 해제 (10MB)  렌더링(Render) → 최종적으로 화면에 표시이때 디코딩 단계에서 이미지가 압축 해제되면서 메모리 사용량이 급증하게 되는 것입니다. Image-rendering formats이미지의 메모리 사용량은 픽셀당 사용되는 바이트 수(bytes per pixel)에 따라 달라집니다. 가장 일반적인 포맷은 SRGB (Standard RGB)이며, 각 픽셀당 4바이트(1바이트씩 R, G, B, Alpha)를 차지합니다. 그러나, 더 많은 메모리를 사용하는 광색역(Wide Color Format) 포맷도 있습니다. 더 정밀한 색 표현을 위해 픽셀당 8바이트를 사용합니다. 반대로, 메모리를 절약할 수 있는 포맷도 있습니다.  Grayscale + Alpha (1픽셀당 2바이트) → 메모리 50% 절약  Alpha Only (A8 포맷) (1픽셀당 1바이트) → 메모리 75% 절약 Picking the right format이러한 이미지 포맷을 수동으로 선택할 필요 없이, 이를 자동으로 최적화하는 UIImageGraphicsRenderer API를 사용할 수 있습니다. 기존 사용했던 UIGraphicsBeginImageContextWithOptions은 무조건 4바이트(SRGB) 포맷을 사용했는데, iOS 10부터 제공되는 UIGraphicsImageRenderer API를 사용하면 iOS가 자동으로 가장 적절한 포맷을 선택해줍니다. 위와 같이, 불필요한 메모리 사용 없이 최적의 포맷(A8 포맷 등)을 자동으로 적용합니다. 이미지 다운샘플링 (Downsampling)고해상도 이미지를 축소할 때는 어떻게 해야 할까요? UIImage는 전체 이미지를 메모리에 로드한 후 축소하기 때문에, 직접 사용해서 축소하면 메모리 사용량이 급증할 수 있습니다. 이를 방지하려면, ImageIO 프레임워크를 사용하여 이미지를 스트리밍 방식으로 축소하면 됩니다. Optimizing when in background앱이 백그라운드로 전환될 때 여전히 메모리에 큰 이미지가 남아 있다면, 불필요한 메모리 사용이므로 자동으로 해제하는 것이 좋습니다. 첫번째는 앱이 백그라운드로 갈 때 불필요한 메모리를 자동으로 해제하는 방식으로, 시스템 리소스를 절약할 수 있습니다. 두번째로는 탭뷰나 네비컨에서 화면 전환 후 보이지 않는 이미지가 계속 메모리에 남아 있다면, 불필요한 메모리 사용이므로 뷰가 사라질 때 해제하는 것이 좋습니다. 위와 같이, 사용자가 화면을 이동할 때 불필요한 메모리를 자동으로 해제하는 방식입니다. DemoNASA에서 제공하는 고해상도 태양계 이미지를 가져와, 필터를 적용하는 데모 앱이 소개되었는데요. 강연에서 주목한 세 가지 문제점은 다음과 같습니다.  모든 기기가 2GB RAM을 가지고 있는 건 아니다.          개발 환경에서는 2GB의 메모리가 있지만, 1GB RAM을 가진 기기에서 실행하면 앱이 이미 강제 종료될 가능성이 크다.        iOS는 단순히 앱의 메모리 사용량만 보고 강제 종료를 결정하지 않는다.          시스템에서 다른 프로세스가 차지하는 메모리와 전체적인 리소스 사용량을 함께 고려한다.      현재 빨간색 영역이 아니라고 해도 앱이 종료될 수 있다.        앱이 과도한 메모리를 차지하면 사용자 경험이 최악이 된다.          vmmap을 확인해 보니, 앱이 실행되면서 다른 앱들은 모두 운영체제에 의해 종료되었다.      즉, 사용자가 다른 앱으로 전환할 때 모든 앱이 다시 실행되어야 한다.      결과적으로 앱 전환 속도가 느려지고 사용자의 불만을 초래할 수 있다.       MemgraphMemgraph 파일을 확인하기 위해 몇 가지 디버깅 방법을 사용할 수 있겠습니다.  메모리 누수(Leaks) 확인  Leaks 필터를 적용해봤는데 누수는 발견되지 않음  누수가 없다면, 불필요한 객체가 많거나 특정 객체가 너무 커서 메모리를 많이 차지하는 경우일 가능성이 큼   객체 개수 확인  각 클래스별로 딱 한 개의 객체만 존재하여 불필요한 객체가 많지는 않음   객체 크기 확인  Memory Inspector를 통해 각 객체의 크기를 확인했지만, 모두 작은 크기(32바이트 ~ 1500바이트)임Memgraph에서 직접적인 문제를 찾을 수 없을 때, command line으로 더 깊이 분석합니다. command line 메모리 분석 (vmmap, leaks, malloc history)1. vmmap 요약 (vmmap -summary)  vmmap 명령어를 사용하여 어떤 부분이 가장 많은 메모리를 사용하고 있는지 확인  주의 깊게 봐야 할 두 가지 열          Dirty - 앱이 실제로 사용하는 메모리 크기      Swapped (Compressed) - 압축된 상태로 저장된 메모리        분석          CG Image 영역이 가장 많은 메모리를 차지하고 있음      IOSurface, MALLOC LARGE도 다수 사용 중이지만, 주요 문제는 CG Image임                   **2. CG Image 관련 가상 메모리 영역 확인 (vmmap      grep CGImage)**        grep을 사용하여 CG Image와 관련된 메모리 블록만 필터링  가장 큰 CG Image 영역의 시작 주소를 확인하여 추가 분석 진행 3. 해당 메모리 블록을 참조하는 객체 찾기 (leaks –traceTree)  leaks –traceTree 명령어를 사용하여, CG Image 메모리 블록을 참조하고 있는 객체 트리 출력   Core Image 필터 관련 클래스(CIImage, CIFilter 등)가 참조 중  Core Image 관련 객체들이 계속 유지되고 있음 4. 객체의 생성 시점 확인 (malloc history)  malloc history 명령어를 사용하여, 해당 메모리 블록이 언제, 어디서 생성되었는지 백트레이스를 추적  결과적으로 NoirFilter의 apply() 메서드에서 메모리를 과도하게 사용하고 있음을 확인  메모리 최적화 방법 원인을 알았으니, 이제는 메모리를 최적화할 수 있습니다. 1. 이미지 크기 줄이기  원본 이미지 크기가 15,000 x 13,000 이었기 때문에,      iPhone X에서 3x 해상도이므로, 실제 메모리 사용량은 15,000 × 13,000 × 3 × 3 × 4 = 7.5GB       따라서, 필터를 적용하기 전 이미지 크기를 뷰 크기로 축소하여 메모리 사용량을 줄이고, CGImageSourceCreateThumbnailAtIndex API를 사용하여 이미지를 바로 다운샘플링하는 방법으로 수정하고자 했습니다.2. UIGraphics API 최적화  as-is: UIGraphicsBeginImageContextWithOptions() 사용  to-be: UIGraphicsImageRenderer() 사용 3. 불필요한 이미지 메모리 해제  백그라운드로 전환될 때 불필요한 이미지 해제 Summary  메모리는 한정되어 있고 공유되기에, 앱이 필요 이상으로 메모리를 사용하면 시스템 전체에 영향을 줌  메모리 리포트로, 디버깅 중 메모리 사용량 변화를 감지하기  UIImage는 OS에서 적절한 포맷을 선택하도록 UIImage GraphicsRenderer를 사용할 것  ImageIO를 활용한 다운샘플링  화면에 보이지 않는 이미지는 unload해야 됨, 불필요한 메모리를 유지하면 사용자 경험이 저하되므로 Reference  https://developer.apple.com/kr/videos/play/wwdc2018/416/   ">
+    <meta itemprop="datePublished" content="2026-08-07T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="https://indextrown.github.io/wwdc-ios-memory-deep-dive/" class="u-url" itemprop="url">[WWDC] iOS Memory Deep Dive
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=WWDC">WWDC</a>
+    
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=Swift">Swift</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2026-08-07T00:00:00+00:00">August 7, 2026</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <h2 id="why-reduce-memory">Why reduce memory</h2>
+
+<p>메모리를 줄여야 하는 이유는 사용자 경험이 좋아지기 때문입니다. 앱 실행 속도가 빨라지고 시스템 전체의 속도도 향상됩니다. 메모리를 줄인다는 것은 실질적으로 메모리 사용량(footprint)을 줄인다는 뜻입니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T050932-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>메모리 페이지는 프로세스가 사용하는 가상 메모리를 일정 크기의 블록으로 나눈 것을 의미합니다. 페이지는 heap에서 여러 객체를 포함할 수 있고 어떤 객체는 여러 페이지에 걸쳐 존재하기도 합니다. 일반적으로 16KB 크기를 가지며 clean하거나 dirty해질 수 있습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T045950-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>Pages 앱 기준 앱의 메모리 사용은 실제로 페이지 수에 페이지 크기를 곱한 값입니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T051111-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>그렇다면 클린 페이지와 더러운 페이지가 무엇일까요?</p>
+
+<p>예로 들자면 위처럼 20,000개의 정수를 저장하는 배열을 할당한다고 가정해봅시다. 해당 배열을 위해 6개의 페이지가 할당되었고, 할당되었을 초기를 꺠끗한 상태라고부릅니다.</p>
+
+<p>하지만 배열에서 어떠한 인덱스에 데이터를 write 한다면 (데이터를 버퍼에 쓰기 시작한다면) 해당 페이지는 더러워집니다. 데이터가 쓰이지 않은 곳은 클린한 상태로 남아있지만 쓰인 곳은 더러운 페이지라고 부릅니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T051357-2.png" alt="붙여넣은 이미지" /></p>
+
+<p><strong>메모리 매핑된 파일(memory-mapped files)</strong>라는 개념도 있습니다.</p>
+
+<p>memory-mapped files는 디스크에 존재하는 파일을 메모리에 직접 매핑해서, 마치 메모리에서 데이터를 읽고 쓰는 것처럼 파일을 다루는 기술입니다. 즉 운영체제가 파일을 가상 메모리에 매핑하고, 이를 통해 애플리케이션이 디스크 데이터를 직접 접근하는 것처럼 사용하는 것입니다.</p>
+
+<p>읽기 전용 파일은 언제나 클린 페이지로 유지되고(언제나 삭제 가능, 필요시 디스크에서 다시 읽음) 쓰는 것이 가능한 파일은 더러운 페이지가 되어 이후 디스크에 기록됩니다. 커널은 이러한 파일들을 RAM으로 로드하거나 디스크로 내리는 작업을 관리합니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T051739-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>일반적인 앱의 메모리 프로필에는 더러운 메모리(dirty memory), 압축된 메모리(compressed memory), 그리고 깨끗한 메모리(clean memory) 섹션이 있습니다.</p>
+
+<p> </p>
+
+<h4 id="clean-memory">Clean Memory</h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T051803-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>깨끗한 메모리는 시스템이 페이지에서 제거할 수 있는 데이터입니다. 앞서 설명한 memory-mapped files들이 해당되며, 이미지, 데이터 블롭, 트레이닝 모델 등이 포함될 수 있습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T051953-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>또한 프레임워크도 깨끗한 메모리를 포함할 수 있습니다.</p>
+
+<p>모든 프레임워크는 DATA CONST 섹션을 가지고 있는데, 변경되지 않는 상수 데이터를 저장하는 메모리 영역이기 때문에 일반적으로 깨끗한 상태입니다.</p>
+
+<p>하지만 런타임에서 특정 조작을 수행하면 더러워질 수 있습니다. 예를 들어 메서드 스위즐링(Method Swizzling)은 런타임에 기존 메소드를 다른 메서드로 교체하는 런타임 변형 기법입니다.</p>
+
+<p> </p>
+
+<h4 id="dirty-memory">Dirty memory</h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T052230-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>더러운 메모리는 앱이 직접 데이터를 기록한 메모리입니다. 즉, 앱이 메모리에 데이터를 썼기 때문에 시스템이 이를 페이지에서 제거할 수 없습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T052312-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>더러운 메모리에 포함될 수 있는 데이터는 다음과 같습니다.</p>
+
+<ul>
+  <li>객체(Object): 앱에서 할당한 객체들 (예: 문자열, 배열 등)</li>
+  <li>디코딩된 이미지 버퍼(Decoded Image Buffers): 이미지는 저장될 때 압축된 상태로 존재하지만, 디코딩되면 더러운 메모리가 됨</li>
+  <li>프레임워크(Frameworks): 프레임워크에는 data 섹션과 data-dirty 섹션이 있고, 항상 더러운 메모리로 계산됨</li>
+</ul>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T052533.png" alt="붙여넣은 이미지" /></p>
+
+<p>프레임워크와 앱이 사용하는 메모리는 더러운 메모리로 남을 수밖에 없습니다. 그래서 싱글톤을 사용하거나 Global initializer를 최소화해서 더러운 메모리 사용량을 최대한 줄이는 것이 좋습니다.</p>
+
+<ul>
+  <li>싱글톤은 생성된 이후 메모리에서 계속 유지되고 추가적인 할당을 줄일 수 있음.</li>
+  <li>Global initializer는 프레임워크가 링크되거나 클래스가 로드될 때 실행됨. 이를 최소화하면 메모리 사용량을 줄이는 데 도움됨.</li>
+</ul>
+
+<p> </p>
+
+<h4 id="compressed-memory">Compressed Memory</h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T052816-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>일반적으로 운영체제들은 Swap 방식을 사용합니다.</p>
+
+<p>Swap은 물리 메모리가 부족한 경우 RAM의 데이터를 디스크에 저장하는 방식을 말합니다. iOS는 7부터 이러한 Swap 대신 <strong>메모리 압축기(Memory Compressor)</strong>를 사용합니다. (Swap의 경우, 느리고, SSD에 데이터를 자주 쓰면 수명이 줄어들 수 있다는 단점 존재)</p>
+
+<p>Memory Compressor는 RAM이 부족할 때 사용하지 않는 메모리를 압축해서 저장하는 기술입니다. 그렇지만, <strong>해당 데이터에 접근하게 되면 압축했던 메모리가 다시 풀려나기 때문에</strong>, 메모리 사용량이 증가할 수도 있습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T052950-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>예시로 캐싱을 위해 사용된 딕셔너리를 생각해 봅시다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T053008-2.png" alt="붙여넣은 이미지" /></p>
+
+<ul>
+  <li>딕셔너리는 3개의 페이지를 차지하고 있었습니다.</li>
+  <li>그런데, 이 데이터에 한동안 접근하지 않았던 시스템은 이를 압축하여 하나의 페이지로 줄일 수 있습니다.</li>
+  <li>압축된 덕분에 추가적인 메모리 공간이 확보됩니다.</li>
+  <li>하지만, 추후 이 데이터에 접근하면 다시 압축이 풀리면서 원래 크기로 복원됩니다.</li>
+</ul>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T053149-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>메모리 경고는 항상 앱 자체의 문제로 인해 발생하는 것이 아닙니다.</p>
+
+<p>예를 들어, 메모리가 적은 기기에서 전화와 같은 어떠한 기능이 수행될 경우, 메모리 경고가 발생할 수 있습니다. 이 때, 앱이 강제로 종료되는 문제가 발생할 수 있습니다. iOS에서는 Memory Compressor를 사용하기 때문에, <strong>메모리를 해제하는 것이 반드시 메모리 사용량을 줄이는 것이 아닙</strong>니다. 어떤 경우에는 메모리를 해제한 이후에 더 많은 메모리를 사용하게 되는 상황도 발생할 수도 있습니다.</p>
+
+<p>따라서 메모리 해제를 어떻게 해야 하는가도 중요한 쟁점입니다.</p>
+
+<p> </p>
+
+<h4 id="좋은-방식">좋은 방식</h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T053329-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>예를 들어 일정 기간 동안 캐싱을 중지하거나, 백그라운드 작업을 조절하는 방식으로 메모리 사용량을 관리할 수 있습니다.</p>
+
+<p> </p>
+
+<h4 id="잘못된-메모리-관리-방식">잘못된 메모리 관리 방식</h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T053418-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>메모리 해제가 오히려 더 많은 메모리 사용량을 야기하는 케이스를 살펴보겠습니다. 많은 개발자들이 메모리 경고를 받으면 캐시를 완전히 비우는 방식을 사용합니다. 그러나 앞서 이야기한 압축된 딕셔너리 예제를 떠올려 봅시다.</p>
+
+<ul>
+  <li>캐시에서 모든 객체를 제거하면 시스템은 다시 압축을 풀면서 메모리를 원래 크기로 확장합니다.</li>
+  <li>따라서, 오히려 메모리 사용량이 증가할 수 있습니다.</li>
+</ul>
+
+<p>이러한 점을 고려해서, 메모리 경고가 발생하면 캐시를 조금씩 줄이거나, 일정한 비율로 줄이는 방식을 선택하는 것이 좋습니다.</p>
+
+<p> </p>
+
+<h4 id="캐싱의-중요성">캐싱의 중요성</h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T053811-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>캐싱은 CPU가 동일한 연산을 반복하지 않도록 하는 것이 목적입니다.</p>
+
+<p>그러나 너무 많은 데이터를 캐싱하면 메모리 사용량이 증가하면서 시스템 성능이 저하될 수 있기에 적절한 균형을 이루는 것이 중요합니다. NSCache를 이용하면 효율적으로 캐싱을 관리할 수 있습니다.</p>
+
+<ul>
+  <li>NSCache는 Thread-Safe한 방식으로 객체를 캐싱할 수 있음</li>
+  <li>자동으로 캐시된 객체를 삭제할 수 있는 기능 존재</li>
+  <li>메모리 부족 상황에서는 시스템이 알아서 NSCache에 저장된 데이터를 제거할 수도 있음</li>
+</ul>
+
+<p> </p>
+
+<h4 id="memory-footprint">Memory FootPrint</h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T054100-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>앞서 이야기한 것처럼, 앱의 메모리는 더러운 메모리(Dirty Memory)와 압축된 메모리(Compressed Memory)가 차지하고 있습니다. 깨끗한 메모리(Clean Memory)는 실제로 시스템 메모리에 포함되지 않기 때문에, 신경쓰지 않아도 됩니다.</p>
+
+<p>모든 앱은 <strong>메모리 사용량 제한(Footprint Limit)</strong>이 존재합니다. 일반적인 앱에서는 이 제한이 상대적으로 높지만, 기기에 따라 다르다고 합니다. 예를 들어, 1GB RAM을 가진 기기에서 사용할 수 있는 메모리는 당연히 4GB RAM을 가진 기기보다 적습니다. 또한, Extensions의 경우에는 훨씬 적은 limit를 가지고 있습니다.</p>
+
+<p>만약 앱이 이 제한을 초과한다면 아래처럼 됩니다.</p>
+
+<ul>
+  <li>시스템이 EXC_RESOURCE EXCEPTION를 발생시킵니다.</li>
+  <li>이 예외가 발생하면, 앱이 강제 종료될 수 있습니다.</li>
+</ul>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T054412-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>앱의 메모리 사용량을 프로파일링할 수 있는 도구들입니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T054439-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>앱을 실행하다가 Xcode에서 메모리 사용량이 증가하는 것이 확인된다면 Instruments를 활용해 앱의 메모리 프로파일을 조사할 수 있습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T054514-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>다음과 같이 네 가지 기능이 있습니다.</p>
+
+<ul>
+  <li>Allocations → 앱에서 힙(heap) 할당을 프로파일링</li>
+  <li>Leaks → 메모리 누수(leaks) 감지</li>
+  <li>VM Tracker (가상 메모리 트래커)</li>
+  <li>Virtual Memory Trace (가상 메모리 추적기)</li>
+</ul>
+
+<p> </p>
+
+<h4 id="vm-tracker-가상-메모리-트래커"><strong>VM Tracker (가상 메모리 트래커)</strong></h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T054557-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>앞서 계속 설명했던 것처럼, iOS의 메모리는 더러운 메모리(Dirty Memory)와 압축된 메모리(Compressed Memory)로 구분됩니다. VM Tracker는 이를 효과적으로 프로파일링하는 데 아주 유용하고, 앱이 실제로 얼마나 많은 더러운 메모리를 차지하는지 살펴볼 수 있습니다.</p>
+
+<ul>
+  <li>Dirty (더러운 메모리)</li>
+  <li>Swapped (압축된 메모리, iOS에서는 Compressed Memory)</li>
+  <li>Resident Size (현재 앱이 사용하는 실제 메모리 크기)</li>
+</ul>
+
+<p> </p>
+
+<h4 id="vm-memory-trace-가상-메모리-추적기"><strong>VM Memory Trace (가상 메모리 추적기)</strong></h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T054703-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>VM Memory Trace로 앱의 가상 메모리 시스템의 성능을 분석할 수 있습니다.  By Operation 탭을 확인하면,</p>
+
+<ul>
+  <li>페이지 캐시 히트(Page Cache Hits): 요청한 데이터가 이미 메모리에 있음</li>
+  <li>페이지 제로 필(Page Zero Fills): 새로운 메모리를 할당할 때, 0으로 초기화하는 과정</li>
+</ul>
+
+<p>과 같은 가상 메모리 시스템의 동작을 상세히 볼 수 있습니다.</p>
+
+<p> </p>
+
+<h4 id="exc_resource-예외-발생-시"><strong>EXC_RESOURCE 예외 발생 시</strong></h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T054737-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>앱이 메모리 한계를 초과하면 EXC_RESOURCE EXCEPTION이 발생합니다. Xcode 10에서는 이 예외를 자동으로 감지하고 앱을 일시 정지하는데, 이 때 Memory Debugger를 실행해서 문제를 바로 살필 수 있습니다.</p>
+
+<p> </p>
+
+<h4 id="메모리-디버거-memory-debugger"><strong>메모리 디버거 (Memory Debugger)</strong></h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T054757-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>메모리 디버거(Memory Debugger)로 앱의 객체 간의 참조(reference), 순환 참조(retain cycles), 메모리 누수(leaks) 등을 조사할 수 있습니다. Memgraph 파일으로는 앱의 메모리 사용량을 시각적으로 분석할 수 있습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T054811.png" alt="붙여넣은 이미지" /></p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T054811-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>만약 앱이 실행되던 중 EXC_RESOURCE EXCEPTION이 발생했다면 먼저, 가장 기본적인 도구인 vmmap을 사용할 수 있습니다. 앱의 전체적인 메모리 사용량을 요약(Summary)해서 출력해 줍니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T054834.png" alt="붙여넣은 이미지" /></p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T054834-2.png" alt="붙여넣은 이미지" /></p>
+
+<ul>
+  <li>가상 메모리 크기(Virtual Size): 가상 메모리는 실제 메모리 사용량과 무관할 수 있음, 중요치 않음</li>
+  <li>더러운 메모리(Dirty Memory)</li>
+  <li>압축된 메모리(Swapped, iOS에서는 Compressed) </li>
+</ul>
+
+<p>앱의 실제 메모리 사용량은 더러운 메모리 + 압축된 메모리이기 때문에, 이 두 값을 확인하는 것이 중요합니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T054903-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>여기에서 앱의 메모리 사용량이 급증하는 원인을 알고 싶다면, 특정 라이브러리(dylib)가 원인인지 확인해야 합니다. 이때 grep과 awk를 활용하여 특정 라이브러리의 메모리 사용량을 분석할 수 있습니다. 이렇게 하면, 앱이 사용하는 동적 라이브러리(dylib)들의 전체 더러운 메모리 사용량을 확인할 수 있습니다.</p>
+
+<p> </p>
+
+<h4 id="leaks-도구-활용"><strong>Leaks 도구 활용</strong></h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T054945-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>leaks 명령어는 힙(heap)에서 루트 노드가 없는 객체들을 추적합니다. 즉, 더러운 메모리이면서 절대 해제되지 않는 객체를 찾을 수 있습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T055015-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>  이제 메모리 디버거에서 순환 참조가 발생한 객체를 확인해보겠습니다. 위와 같이 누수된 객체들과 해당 객체들이 속한 retain cycle을 표시해줍니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T055035-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>또한, malloc stack logging이 활성화된 경우, 메모리 할당 당시의 호출 스택(Backtrace)을 확인할 수도 있습니다.</p>
+
+<p> </p>
+
+<h4 id="heap힙-분석"><strong>Heap(힙 분석)</strong></h4>
+
+<p>메모리가 많이 사용되고 있을 때 vmmap을 확인해보면 heap의 크기가 매우 클 수 있습니다. 이때 heap 툴을 사용해서 어떤 객체들이 얼마나 할당되었는지 확인할 수 있습니다.   <br />
+(기본적으로 객체 개수 기준으로 정렬되며, 특정 객체의 크기가 너무 클 경우 sortBySize로 객체 크기 기준으로 정렬을 수행할 수 있습니다.)</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T055224-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>메모리 누수의 원인을 찾고 싶다면, heap 명령어에 addresses 플래그를 사용하면 특정 클래스의 모든 인스턴스 주소를 확인할 수 있습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T055233-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>malloc stack logging을 활성화하면 메모리 할당 시점의 backtrace를 기록할 수 있습니다. </p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T055247.png" alt="붙여넣은 이미지" /></p>
+
+<p>이를 활용해서 malloc history 명령어로 특정 메모리 주소가 어디에서 할당되었는지 추적할 수 있습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T055300-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>(예제에서는 NoirFilter의 apply 메서드가 NSConcreteData 객체를 생성하면서 메모리를 과도하게 사용하고 있음이 발견되었습니다.)</p>
+
+<p> </p>
+
+<h4 id="메모리-분석을-위한-3가지-접근-방식"><strong>메모리 분석을 위한 3가지 접근 방식</strong></h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T055326-2.png" alt="붙여넣은 이미지" /></p>
+
+<ol>
+  <li>객체가 언제 생성되었는가? → malloc history</li>
+  <li>특정 객체를 참조하는 것은 무엇인가? → leaks</li>
+  <li>객체의 크기가 얼마나 큰가? → vmmap 또는 heap</li>
+</ol>
+
+<p>우선 vmmap -summary [Memgraph 파일]를 실행한 뒤, 가장 큰 값을 차지하는 메모리 영역을 찾아 분석을 시작하면 됩니다.</p>
+
+<p> </p>
+
+<h4 id="images"><strong>Images</strong></h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T055357-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>이미지는 메모리 관점에서 중요합니다. 이미지에서 가장 중요한 점은 메모리 사용량이 파일 크기와 관련이 없다는 것입니다. 이미지의 메모리 사용량은 이미지 크기(픽셀 단위)에 따라 결정되기 때문입니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T055454-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>예를 들어 iPad 앱의 배경화면으로 사용할 이미지를 가지고 있다고 가정하겠습니다. 이 이미지의 크기는 2048 x 1536 픽셀이며, 파일 크기는 590KB입니다.그렇다면 이 이미지가 메모리에서 차지하는 크기는 590KB일까요?</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T055532-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>정답은 10MB입니다. 이미지를 GPU에서 사용할 수 있도록 변환하는 과정이 필요하기 때문인데요.</p>
+
+<p> </p>
+
+<h4 id="이미지-처리-과정">이미지 처리 과정</h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T055612-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>iOS에서 이미지를 사용하려면 3단계를 거칩니다.</p>
+
+<ol>
+  <li>로딩(Load) → JPEG 파일을 메모리에 로드 (590KB)</li>
+  <li>디코딩(Decode) → GPU에서 사용할 수 있도록 압축 해제 (10MB)</li>
+  <li>렌더링(Render) → 최종적으로 화면에 표시</li>
+</ol>
+
+<p>이때 디코딩 단계에서 이미지가 압축 해제되면서 메모리 사용량이 급증하게 되는 것입니다.</p>
+
+<p> </p>
+
+<h4 id="image-rendering-formats"><strong>Image-rendering formats</strong></h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T055955-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>이미지의 메모리 사용량은 픽셀당 사용되는 바이트 수(bytes per pixel)에 따라 달라집니다. 가장 일반적인 포맷은 SRGB (Standard RGB)이며, 각 픽셀당 4바이트(1바이트씩 R, G, B, Alpha)를 차지합니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T060011-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>그러나, 더 많은 메모리를 사용하는 광색역(Wide Color Format) 포맷도 있습니다. 더 정밀한 색 표현을 위해 픽셀당 8바이트를 사용합니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T060239-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>반대로, 메모리를 절약할 수 있는 포맷도 있습니다.</p>
+
+<ul>
+  <li>Grayscale + Alpha (1픽셀당 2바이트) → 메모리 50% 절약</li>
+  <li>Alpha Only (A8 포맷) (1픽셀당 1바이트) → 메모리 75% 절약</li>
+</ul>
+
+<p> </p>
+
+<h4 id="picking-the-right-format"><strong>Picking the right format</strong></h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T060317-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>이러한 이미지 포맷을 수동으로 선택할 필요 없이, 이를 자동으로 최적화하는 UIImageGraphicsRenderer API를 사용할 수 있습니다. 기존 사용했던 UIGraphicsBeginImageContextWithOptions은 무조건 4바이트(SRGB) 포맷을 사용했는데, iOS 10부터 제공되는 UIGraphicsImageRenderer API를 사용하면 iOS가 자동으로 가장 적절한 포맷을 선택해줍니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T060348-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>위와 같이, 불필요한 메모리 사용 없이 최적의 포맷(A8 포맷 등)을 자동으로 적용합니다.</p>
+
+<p> </p>
+
+<h4 id="이미지-다운샘플링-downsampling"><strong>이미지 다운샘플링 (Downsampling)</strong></h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T060420-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>고해상도 이미지를 축소할 때는 어떻게 해야 할까요?</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T060516-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>UIImage는 전체 이미지를 메모리에 로드한 후 축소하기 때문에, 직접 사용해서 축소하면 메모리 사용량이 급증할 수 있습니다. 이를 방지하려면, ImageIO 프레임워크를 사용하여 이미지를 스트리밍 방식으로 축소하면 됩니다.</p>
+
+<p> </p>
+
+<h4 id="optimizing-when-in-background"><strong>Optimizing when in background</strong></h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T060557-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>앱이 백그라운드로 전환될 때 여전히 메모리에 큰 이미지가 남아 있다면, 불필요한 메모리 사용이므로 자동으로 해제하는 것이 좋습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T060607-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>첫번째는 앱이 백그라운드로 갈 때 불필요한 메모리를 자동으로 해제하는 방식으로, 시스템 리소스를 절약할 수 있습니다.</p>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T060710-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>두번째로는 탭뷰나 네비컨에서 화면 전환 후 보이지 않는 이미지가 계속 메모리에 남아 있다면, 불필요한 메모리 사용이므로 뷰가 사라질 때 해제하는 것이 좋습니다. 위와 같이, 사용자가 화면을 이동할 때 불필요한 메모리를 자동으로 해제하는 방식입니다.</p>
+
+<p> </p>
+
+<h4 id="demo"><strong>Demo</strong></h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T060816.png" alt="붙여넣은 이미지" /></p>
+
+<p>NASA에서 제공하는 고해상도 태양계 이미지를 가져와, 필터를 적용하는 데모 앱이 소개되었는데요. 강연에서 주목한 세 가지 문제점은 다음과 같습니다.</p>
+
+<ul>
+  <li>모든 기기가 2GB RAM을 가지고 있는 건 아니다.
+    <ul>
+      <li>개발 환경에서는 2GB의 메모리가 있지만, 1GB RAM을 가진 기기에서 실행하면 앱이 이미 강제 종료될 가능성이 크다.</li>
+    </ul>
+  </li>
+  <li>iOS는 단순히 앱의 메모리 사용량만 보고 강제 종료를 결정하지 않는다.
+    <ul>
+      <li>시스템에서 다른 프로세스가 차지하는 메모리와 전체적인 리소스 사용량을 함께 고려한다.</li>
+      <li>현재 빨간색 영역이 아니라고 해도 앱이 종료될 수 있다.</li>
+    </ul>
+  </li>
+  <li>앱이 과도한 메모리를 차지하면 사용자 경험이 최악이 된다.
+    <ul>
+      <li>vmmap을 확인해 보니, 앱이 실행되면서 다른 앱들은 모두 운영체제에 의해 종료되었다.</li>
+      <li>즉, 사용자가 다른 앱으로 전환할 때 모든 앱이 다시 실행되어야 한다.</li>
+      <li>결과적으로 앱 전환 속도가 느려지고 사용자의 불만을 초래할 수 있다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p> </p>
+
+<h4 id="memgraph"><strong>Memgraph</strong></h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T060937-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>Memgraph 파일을 확인하기 위해 몇 가지 디버깅 방법을 사용할 수 있겠습니다.</p>
+
+<ol>
+  <li>메모리 누수(Leaks) 확인</li>
+</ol>
+
+<ul>
+  <li>Leaks 필터를 적용해봤는데 누수는 발견되지 않음</li>
+  <li>누수가 없다면, 불필요한 객체가 많거나 특정 객체가 너무 커서 메모리를 많이 차지하는 경우일 가능성이 큼</li>
+</ul>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T060958-2.png" alt="붙여넣은 이미지" /></p>
+
+<ol>
+  <li>객체 개수 확인</li>
+</ol>
+
+<ul>
+  <li>각 클래스별로 딱 한 개의 객체만 존재하여 불필요한 객체가 많지는 않음</li>
+</ul>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T061015-2.png" alt="붙여넣은 이미지" /></p>
+
+<ol>
+  <li>객체 크기 확인</li>
+</ol>
+
+<ul>
+  <li>Memory Inspector를 통해 각 객체의 크기를 확인했지만, 모두 작은 크기(32바이트 ~ 1500바이트)임</li>
+</ul>
+
+<p>Memgraph에서 직접적인 문제를 찾을 수 없을 때, command line으로 더 깊이 분석합니다.</p>
+
+<p> </p>
+
+<h4 id="command-line-메모리-분석-vmmap-leaks-malloc-history"><strong>command line 메모리 분석 (vmmap, leaks, malloc history)</strong></h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T061037-2.png" alt="붙여넣은 이미지" /></p>
+
+<p><strong>1. vmmap 요약 (vmmap -summary)</strong></p>
+
+<ul>
+  <li>vmmap 명령어를 사용하여 어떤 부분이 가장 많은 메모리를 사용하고 있는지 확인</li>
+  <li>주의 깊게 봐야 할 두 가지 열
+    <ol>
+      <li>Dirty - 앱이 실제로 사용하는 메모리 크기</li>
+      <li>Swapped (Compressed) - 압축된 상태로 저장된 메모리</li>
+    </ol>
+  </li>
+  <li>분석
+    <ul>
+      <li>CG Image 영역이 가장 많은 메모리를 차지하고 있음</li>
+      <li>IOSurface, MALLOC LARGE도 다수 사용 중이지만, 주요 문제는 CG Image임</li>
+    </ul>
+  </li>
+</ul>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T061112-2.png" alt="붙여넣은 이미지" /></p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>**2. CG Image 관련 가상 메모리 영역 확인 (vmmap</td>
+      <td>grep CGImage)**</td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+  <li>grep을 사용하여 CG Image와 관련된 메모리 블록만 필터링</li>
+  <li>가장 큰 CG Image 영역의 시작 주소를 확인하여 추가 분석 진행</li>
+</ul>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T061137-2.png" alt="붙여넣은 이미지" /></p>
+
+<p><strong>3. 해당 메모리 블록을 참조하는 객체 찾기 (leaks –traceTree)</strong></p>
+
+<ul>
+  <li>leaks –traceTree 명령어를 사용하여, CG Image 메모리 블록을 참조하고 있는 객체 트리 출력</li>
+</ul>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T061143-2.png" alt="붙여넣은 이미지" /></p>
+
+<ul>
+  <li>Core Image 필터 관련 클래스(CIImage, CIFilter 등)가 참조 중</li>
+  <li>Core Image 관련 객체들이 계속 유지되고 있음</li>
+</ul>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T061214-2.png" alt="붙여넣은 이미지" /></p>
+
+<p><strong>4. 객체의 생성 시점 확인 (malloc history)</strong></p>
+
+<ul>
+  <li>malloc history 명령어를 사용하여, 해당 메모리 블록이 언제, 어디서 생성되었는지 백트레이스를 추적</li>
+  <li>결과적으로 NoirFilter의 apply() 메서드에서 메모리를 과도하게 사용하고 있음을 확인</li>
+</ul>
+
+<p> </p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T061225-2.png" alt="붙여넣은 이미지" /></p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T061228-2.png" alt="붙여넣은 이미지" /></p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T061235-2.png" alt="붙여넣은 이미지" /></p>
+
+<p> </p>
+
+<h4 id="메모리-최적화-방법"><strong>메모리 최적화 방법</strong></h4>
+
+<p> 원인을 알았으니, 이제는 메모리를 최적화할 수 있습니다.</p>
+
+<p> </p>
+
+<p><strong>1. 이미지 크기 줄이기</strong></p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T061251-2.png" alt="붙여넣은 이미지" /></p>
+
+<ul>
+  <li>원본 이미지 크기가 15,000 x 13,000 이었기 때문에,</li>
+  <li>
+    <p>iPhone X에서 3x 해상도이므로, 실제 메모리 사용량은 15,000 × 13,000 × 3 × 3 × 4 = 7.5GB</p>
+
+    <p> </p>
+  </li>
+</ul>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T061321-2.png" alt="붙여넣은 이미지" /></p>
+
+<p>따라서, 필터를 적용하기 전 이미지 크기를 뷰 크기로 축소하여 메모리 사용량을 줄이고, CGImageSourceCreateThumbnailAtIndex API를 사용하여 이미지를 바로 다운샘플링하는 방법으로 수정하고자 했습니다.</p>
+
+<p><strong>2. UIGraphics API 최적화</strong></p>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T061333-2.png" alt="붙여넣은 이미지" /></p>
+
+<ul>
+  <li>as-is: UIGraphicsBeginImageContextWithOptions() 사용</li>
+  <li>to-be: UIGraphicsImageRenderer() 사용</li>
+</ul>
+
+<p> </p>
+
+<p><strong>3. 불필요한 이미지 메모리 해제</strong></p>
+
+<ul>
+  <li>백그라운드로 전환될 때 불필요한 이미지 해제</li>
+</ul>
+
+<p> </p>
+
+<h4 id="summary"><strong>Summary</strong></h4>
+
+<p><img src="/assets/img/2026-08-07-wwdc-ios-memory-deep-dive/pasted-image-20260807T061404-2.png" alt="붙여넣은 이미지" /></p>
+
+<ol>
+  <li>메모리는 한정되어 있고 공유되기에, 앱이 필요 이상으로 메모리를 사용하면 시스템 전체에 영향을 줌</li>
+  <li>메모리 리포트로, 디버깅 중 메모리 사용량 변화를 감지하기</li>
+  <li>UIImage는 OS에서 적절한 포맷을 선택하도록 UIImage GraphicsRenderer를 사용할 것</li>
+  <li>ImageIO를 활용한 다운샘플링</li>
+  <li>화면에 보이지 않는 이미지는 unload해야 됨, 불필요한 메모리를 유지하면 사용자 경험이 저하되므로</li>
+</ol>
+
+<p> </p>
+
+<h2 id="reference">Reference</h2>
+
+<ul>
+  <li><a href="https://developer.apple.com/kr/videos/play/wwdc2018/416/">https://developer.apple.com/kr/videos/play/wwdc2018/416/</a></li>
+</ul>
+
+<p> </p>
+
+<p> </p>
+
+<p> </p>
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/poppang-%EB%A9%94%EB%AA%A8%EB%A6%AC%EB%8A%94-%EC%A4%84%EC%97%88%EB%8A%94%EB%8D%B0-cpu%EB%8A%94-%EC%99%9C-%EB%B0%94%EB%B9%A0%EC%A1%8C%EC%9D%84%EA%B9%8C-%ED%8C%9D%ED%8C%A1%EC%9D%98-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%B5%9C%EC%A0%81%ED%99%94-%EC%9D%B4%EC%95%BC%EA%B8%B0/" class="pagination--pager" title="팝팡의 이미지 최적화: 다운샘플링으로 메모리와 CPU 피크 줄이기
+">Previous</a>
+    
+    
+      <a href="/%EC%9D%B4%EB%AF%B8%EC%A7%80-cpu-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%BA%90%EC%8B%B1-%EB%A6%AC%EC%82%AC%EC%9D%B4%EC%A7%95-%EB%8B%A4%EC%9A%B4%EC%83%98%ED%94%8C%EB%A7%81-%EA%B7%B8%EA%B2%8C%EB%AD%94%EB%8D%B0/" class="pagination--pager" title="[WWDC] Image and Graphics Best Practices
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2026 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

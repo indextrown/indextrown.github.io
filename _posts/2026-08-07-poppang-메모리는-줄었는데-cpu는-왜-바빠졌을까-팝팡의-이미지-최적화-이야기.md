@@ -1,5 +1,5 @@
 ---
-title: "[작성중 PopPang] 메모리는 줄었는데 CPU는 왜 바빠졌을까? 팝팡의 이미지 최적화 이야기"
+title: "팝팡의 이미지 최적화: 다운샘플링으로 메모리와 CPU 피크 줄이기"
 date: 2026-08-07
 tags: []
 ---
@@ -14,7 +14,6 @@ tags: []
 - 각 채널을 8bit로 표현하는 일반적인 RGBA 이미지에서는 각 채널이 0\~255 사이의 숫자로 표현됩니다.
 - 즉 8bit RGBA 기준 하나의 픽셀은 1byte(=8bit) x 4 = 4byte 크기의 메모리를 사용합니다.
 - 참고: 모든 이미지의 픽셀이 항상 4byte는 아닙니다. RGB, grayscale, 16bit 채널 등 픽셀 포맷에 따라 달라질 수 있습니다.JPG
-
 - JPEG는 **픽셀로 표현되는 래스터(Raster) 이미지 포맷**입니다.
 - 압축 방식: 손실 압축 방식(Lossy Compression)을 사용해 사람 눈에 덜 보이는 정보를 버리고 용량을 줄입니다. 
 - 장점: 색상 변화가 많은 이미지에서 높은 압축 효율로 파일 크기가 상대적으로 작아집니다.
@@ -49,343 +48,178 @@ tags: []
 - 단점: 
   - JPEG나 PNG에 비해 플랫폼 및 프로그램 호환성이 떨어질 수 있음
   - 호환성이 필요한 환경에서는 JPEG나 PNG 등으로 변환해야 할 수 있음
-
-&nbsp;
-
 </details>
 
-#### 이미지를 렌더링 하기 위해서는 **압축된 JPEG/PNG 형식을 디코딩하여 Pixel 데이터로 준비**해야 합니다.
 
-팝팡은 서버에서 2250 × 2812(6,327,000 pixels) 해상도의 이미지를 받아왔습니다. 그런데 CollectionView의 셀에서 실제 표시 크기는 150 x 150 픽셀만 필요했습니다.
 
-기존에는 원본 해상도를 그대로 디코딩하려고 했기 때문에 2250 × 2812 x 4byte = 25,308,000byte, 즉 이미지 하나가 약 **25.3MB**, MiB 기준으로는 약 **24.1MiB**의 메모리가 요구되었습니다.
 
-#### CPU를 효율적으로 사용하고 메모리를 절약하기 위한 방법
-
-```bash
-원본
-2250 × 2812 JPEG
-(압축 데이터)
-
-        ↓ ImageIO
-
-작은 크기의 CGImage
-(Thumbnail)
-
-        ↓ Decode / backing store 준비
-
-작은 Pixel Buffer
-
-        ↓
-
-UIImage
-```
-
-이를 해결하기 위해 WWDC를 참고해서 팝팡에서는 아래 두 가지 전략을 활용했습니다.
-
-1. Prefetching으로 셀이 등장하기 전에 앞으로 필요한 이미지의 준비 작업을 미리 시작하여, 스크롤 시점에 CPU 작업이 집중되는 것을 줄입니다.
-2. 백그라운드에서 원본 이미지를(JPEG) 필요한 크기로 **Downsampling**하고(CGImage확장자), 축소된 이미지를 **Decode**하여(Pixel확장자) 화면에 바로 표시할 수 있는 상태로 준비합니다.
 
 &nbsp;
 
-#### 1. Prefetching: 무거운 작업을 셀이 등장하기 전에 미리 시작
+![붙여넣은 이미지](/assets/img/2026-08-07-poppang-메모리는-줄었는데-cpu는-왜-바빠졌을까-팝팡의-이미지-최적화-이야기/pasted-image-20260809T081939-2.png)
 
-```bash
-현재 화면
+팝팡의 화면은 많은 팝업 이미지를 보여줍니다. 처음에는 이미지가 많으니 메모리 사용량도 늘겠거니 생각했습니다. 하지만 화면을 넘길수록 이미지가 누적되고, 프로세스 메모리가 GB 단위까지 커지는 상황을 확인하면서 이미지 메모리 최적화가 필요하다는 것을 알게 되었습니다.
 
-[1]
-[2]
-[3]
-[4]  ← 현재
+디코드된 이미지 한 장이 25MB라면 화면에 여러 장이 보이는 것만으로도 메모리는 빠르게 늘어납니다. 스크롤하면서 새로운 이미지를 계속 준비하면 메모리 부족으로 앱이 종료될 수도 있습니다. 따라서 단순히 이미지 파일을 내려받는 것에 그치지 않고, 화면에 필요한 크기로 이미지를 다뤄야 합니다.
 
-[5]  ← 미리 준비 시작
-[6]  ← 미리 준비 시작
-[7]  ← 미리 준비 시작
-[8]  ← 미리 준비 시작
-```
+문제는 이미지 한 장이 실제로 얼마나 많은 메모리를 사용하는지, 어느 크기까지 줄여도 되는지 기준이 없었다는 점입니다. 이미지 처리 과정을 제대로 이해하기 위해 WWDC 내용을 공부했고, 팝팡에 적용한 방식과 함께 이 글에 정리했습니다.
 
-앞으로 필요할 데이터를 미리 준비하는 방식입니다.
+
 
 &nbsp;
+
+![exec-59137e69-509c-400d-9de4-12b5c6a9d706](/assets/img/2026-08-07-poppang-메모리는-줄었는데-cpu는-왜-바빠졌을까-팝팡의-이미지-최적화-이야기/exec-59137e69-509c-400d-9de4-12b5c6a9d706-2.png)
+
+가로 2250, 세로 2812 픽셀의 이미지가 있고 이 이미지 파일의 용량은 1.2MB입니다. 하지만 이 이미지가 iOS 메모리에 올라갈 때는 얼마나 사용될까요? 무려 25MB를 사용하게 됩니다. 만약 이미지가 10개가 보인다면 250MB가 보이게 되는 것입니다.
+
+&nbsp;
+
+#### 이미지를 렌더링 하는 과정은 3단계로 동작합니다.
+
+![팝업 이미지의 Load, Decode, Render 과정](/assets/img/2026-08-07-poppang-메모리는-줄었는데-cpu는-왜-바빠졌을까-팝팡의-이미지-최적화-이야기/poppang-image-rendering-flow.png)
+
+1. Load: JPEG 이미지를 메모리에 불러옵니다.
+2. Decode: 이미지 데이터를 픽셀당 정보로 변환하는 작업으로 CPU를 많이 사용하고 메모리 할당과 해제가   
+지속적으로 발생할 수 있습니다.
+3. Render: 디코딩된 이미지 데이터를 렌더링합니다.
+
+
+
+&nbsp;
+
+![SwiftUI 이미지 렌더링 파이프라인](/assets/img/2026-08-07-poppang-메모리는-줄었는데-cpu는-왜-바빠졌을까-팝팡의-이미지-최적화-이야기/swiftui-image-buffer-rendering-pipeline.png)
+
+조금 더 깊게 들어가기위해 Data Buffer, Image Buffer, Frame Buffer를 이해하는게 좋습니다.
+
+**Data Buffer**에는 JPEG, PNG처럼 인코딩된 이미지 바이트와 메타데이터가 들어 있습니다. 압축된 파일이므로 이 단계의 크기는 파일 용량과 가깝습니다. 다만 렌더러는 이 바이트를 그대로 픽셀로 그릴 수 없습니다. Decode는 인코딩된 바이트를 픽셀별 색상과 투명도 정보로 푸는 작업입니다.
+
+**Image Buffer**에는 디코딩된 픽셀 정보가 들어 있습니다. 버퍼 크기는 이미지의 가로·세로 픽셀 수에 비례합니다. 일반적인 8비트 RGBA 또는 BGRA 포맷은 픽셀당 4바이트를 사용합니다. 렌더러는 이 버퍼를 샘플링해 화면의 일부에 이미지를 그립니다.
+
+**Frame Buffer**에는 앱이 한 프레임 동안 화면에 실제로 렌더링한 최종 픽셀 결과가 들어 있습니다. Image Buffer가 원본 이미지의 디코딩된 픽셀을 담는다면, Frame Buffer는 이미지·텍스트·배경처럼 화면 전체를 합친 출력 표면입니다. 그림의 작은 색 영역은 Image Buffer의 픽셀이 최종 화면에서 차지하는 위치를 나타냅니다. 작은 색 영역만 Frame Buffer인 것이 아니라, 큰 사각형 전체가 Frame Buffer입니다.
+
+SwiftUI의 상태가 바뀌면 View를 다시 계산하고, 시스템이 변경된 화면을 새 프레임으로 렌더링합니다. 시스템 컴포지터는 이 결과를 다른 화면 요소와 합성해 디스플레이에 전달합니다. 디스플레이는 기기 주사율에 맞춰 프레임을 표시합니다. 예를 들어 60Hz 기기는 약 16.67ms마다, 120Hz 기기는 약 8.33ms마다 새 프레임을 표시할 수 있습니다. 화면에 변경 사항이 없으면 같은 프레임을 계속 표시하므로, 매 표시 주기마다 앱이 화면 전체를 다시 그릴 필요는 없습니다.
+
+블러, 마스크, 투명도 그룹처럼 한 번에 합성하기 어려운 효과는 GPU가 중간 결과를 담을 render target을 추가로 만들 수 있습니다. 이 표면은 화면 크기에 가까울 수 있어 메모리와 GPU 대역폭을 함께 사용합니다.
+
+> 엄밀히 말하면 SwiftUI 앱이 물리 디스플레이의 프레임 버퍼를 직접 소유하지는 않습니다. Core Animation과 GPU가 시스템 관리 렌더링 표면을 통해 최종 화면을 합성합니다. 이 글에서는 WWDC의 설명 방식을 따라 이 최종 출력 표면을 Frame Buffer라고 부릅니다.
+
+
+
+&nbsp;
+
+## 기존 팝팡 문제점
 
 ```swift
-UICollectionViewDataSourcePrefetching
+extension UIImage {
+    func resize(newWidth: CGFloat) -> UIImage {
+        let scale = newWidth / self.size.width
+        let newHeight = self.size.height * scale
 
-func collectionView(
-    _ collectionView: UICollectionView,
-    prefetchItemsAt indexPaths: [IndexPath]
-)
-```
+        let newSize = CGSize(width: newWidth, height: newHeight)
+        let resized = UIGraphicsImageRenderer(size: newSize)
+        let resizedImage = resized.image { context in
+            self.draw(in: CGRect(origin: .zero, size: newSize))
+        }
 
- `prefetchItemsAt`은 앞으로 필요할 가능성이 있는 index path의 데이터를 미리 준비하도록 알려주고, 필요 없어진 작업은 `cancelPrefetchingForItemsAt`에서 취소할 수 있습니다.
+        printData(resizedImage)
+        return resizedImage
+    }
 
-중요한 점은 Prefetching 자체가 이미지를 디코딩 해주는 것은 아니고 **곧 필요할 것 같으니까 지금부터 작업 시작해라는 delegate 이벤트만 전달해주는 메서드**입니다.
-
-&nbsp;
-
-#### 2. Background Downsample / Decode: 이미지 준비 작업을 메인 스레드에서 피하자
-
-```bash
-Main Thread
-───────────────────────────────
-Cell 생성               UIImage 설정
-   │                         ▲
-   │                         │
-   └──── Background ─────────┘
-          Decode
-        Downsample
-```
-
-그림처럼 디코딩과 다운샘플링을 백그라운드에서 처리할 수 있습니다.
-
-&nbsp;
-
-```bash
-// gcd ver
-image.prepareThumbnail(of: size) { thumbnail in
-    ...
 }
-
-// swift concurrency ver
-let thumbnail = await image.byPreparingThumbnail(ofSize: size)
-
-// 참고: 동기 API 버전
-let thumbnail = image.preparingThumbnail(of: CGSize(width: 300, height: 300))
 ```
 
-애플은 iOS 15부터 위 API를 제공합니다. 비동기 prepareThumbnail은 thumbnail 생성을 백그라운드에서 수행합니다. Apple은 비동기 Image preparation API가 내부 UIKit Queue에서 처리한다고 설명합니다. [공식문서](https://developer.apple.com/documentation/uikit/uiimage/preparethumbnail(of:completionhandler:)?changes=__3)
+![붙여넣은 이미지](/assets/img/2026-08-07-poppang-메모리는-줄었는데-cpu는-왜-바빠졌을까-팝팡의-이미지-최적화-이야기/pasted-image-20260809T095619.png)
+
+처음에는 `UIGraphicsImageRenderer`로 이미지를 줄였습니다. 화면에 남는 이미지 버퍼는 작아졌지만, `draw(in:)`은 먼저 원본 JPEG 전체를 디코드합니다.
+
+원본 버퍼를 만든 뒤 축소본을 다시 그리므로 CPU와 임시 메모리가 한 번에 올라갑니다. 최종 이미지가 작아져도 **디코딩 CPU 피크는 줄지 않았습니다.**
+
+
 
 &nbsp;
 
-#### 방법 1 + 2 같이 사용하면
+## 해결 방법 1: ImageIO 다운샘플링으로 CPU 피크 줄이기
 
-```bash
-                    화면 밖
-                      │
-                Prefetch 발생
-                      │
-                      ▼
-                 Download
-                      │
-                      ▼
-         Background Decode
-              + Downsample
-                      │
-                      ▼
-                    Cache
-                      │
-──────────────────────┼────────────
-                      │
-                  Cell 등장
-                      │
-                      ▼
-                  Cache Hit
-                      │
-                      ▼
-                   Display
-```
+![붙여넣은 이미지](/assets/img/2026-08-07-poppang-메모리는-줄었는데-cpu는-왜-바빠졌을까-팝팡의-이미지-최적화-이야기/pasted-image-20260809T092949-2.png)
 
-Apple도 WWDC21에서 **prefetching이 다운로드와 image preparation에 더 많은 시간을 제공한다**고 설명하고, 최종적으로 prefetching + image preparation(비동기 다운샘플링 + 비동기 디코딩 작업)을 함께 사용하는 구조를 보여줍니다. [WWDC](https://developer.apple.com/videos/play/wwdc2021/10252/?time=915)
-
-&nbsp;
-
-#### iOS 17
-
-SwiftUI iOS 17에서는 `onScrollTargetVisibilityChange` 를 사용할 수 없어 최선의 방식은 현재 index를 확인하고 index + 1... index + N 데이터를 Prefetch하는 휴리스틱 방안이 있습니다.
-
-#### iOS 18+
-
-SwiftUI iOS 18+에서는 `onScrollTargetVisibilityChange` 를 사용가능해 `scrollTargetLayout()`과 함께 현재 visible target ID들을 관찰할 수 있습니다. [공식문서](https://developer.apple.com/documentation/swiftui/view/onscrolltargetvisibilitychange%28idtype%3Athreshold%3A_%3A%29?changes=_1__6&language=objc&utm_source=chatgpt.com) 따라서 화면에 보이는 마지막 셀의 index를 알고 그다음 인덱스들을 prefetch할 수 있습니다. 실제 이미지 로드는 `.task(id: photo.id)` 를 이용할 수 있습니다. SwiftUI는 View가 사라지거나 바뀌면 `.task(id:)` 작업을 취소/재시작할 수 있습니다.
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
----
-
-&nbsp;
-
-&nbsp;
-
-Apple WWDC21에서 아래 두가지 방법을 함께 사용하는 것을 권장합니다.
-
-- Data Source Prefetching으로 필요한 이미지를 미리 디코딩하여 CPU 사용량을 분산
-- 백그라운드에서 디코딩/다운샘플링을 시도할 수 있습니다.
-
-&nbsp;
-
-JPEG/PNG/HEIC 같은 이미지는 압축된 상태입니다. 실제 호면에 표시하려면 raw pixel 데이터가 필요합니다. Apple은 이미지가 `UIImageView`에 표시되는 시점까지 준비되지 않았다면 display commit 과정에서 이미지 준비가 메인 스레드 작업을 길게 만들 수 있다고 설명합니다.
-
-&nbsp;
-
-## 문제 예시
-
-```bash
-원본 이미지
-4000 × 3000
-
-↓ CollectionView
-
-셀
-150 × 150
-```
-
-예를 들어 위처럼 원본 전체를 디코딩 하는것은 낭비입니다.
-
-&nbsp;
-
-```bash
-4000 × 3000 JPEG
-        ↓
-   Downsample
-        ↓
-   150 × 150 Bitmap
-```
-
-그래서 다운샘플링을 하는 것이 좋습니다. UIImage의 thumbnail API는 원본 크기 전체를 디코딩하는 메모리 오버헤드를 피하도록 제공합니다.
-
-&nbsp;
-
-```bash
-스크롤
- ↓
-새 셀 1 등장 → Decode
-새 셀 2 등장 → Decode
-새 셀 3 등장 → Decode
-새 셀 4 등장 → Decode
-                ↑
-           CPU 작업 집중
-```
-
-하지만 여전히 문제가 있습니다. 매번 셀이 보일때마다 무거운 디코딩 과정을 해야하기 때문에 무겁습니다.
-
-&nbsp;
-
-## 두가지 해결 전략
-
-#### 뱡법1: Prefetching
+`PopupPaginationImageIOPipeline`은 서버에서 받은 `Data`로 `CGImageSource`를 만들고, 화면 크기에 맞는 썸네일을 요청합니다. 원본을 `UIImage`로 먼저 만들지 않고 필요한 크기만 디코드하는 방식입니다. [WWDC18 iOS Memory Deep Dive](https://developer.apple.com/videos/play/wwdc2018/416/)
 
 ```swift
-UICollectionViewDataSourcePrefetching
-```
+import ImageIO
+import UIKit
 
-앞으로 필요할 데이터를 미리 준비하는 방식입니다. UIKit에서는 `UICollectionViewDataSourcePrefetching`으로 이를 적용할 수 있습니다. `prefetchItemsAt`은 앞으로 필요할 가능성이 있는 index path의 데이터를 미리 준비하도록 알려주고, 필요 없어진 작업은 `cancelPrefetchingForItemsAt`에서 취소할 수 있습니다.
+extension UIImage {
+    /// 화면에 표시할 크기에 맞춰 ImageIO에서 바로 다운샘플링합니다.
+    static func downsampled(
+        data: Data,
+        to targetSize: CGSize,
+        scale: CGFloat
+    ) -> UIImage? {
+        let maxPixelSize = max(targetSize.width, targetSize.height) * scale
 
-&nbsp;
+        guard
+            maxPixelSize > 0,
+            let source = CGImageSourceCreateWithData(data as CFData, nil)
+        else {
+            return nil
+        }
 
-```bash
-현재 화면
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceThumbnailMaxPixelSize: Int(maxPixelSize.rounded())
+        ]
 
-[1]
-[2]
-[3]
-[4]  ← 현재
+        guard let cgImage = CGImageSourceCreateThumbnailAtIndex(
+            source,
+            0,
+            options as CFDictionary
+        ) else {
+            return nil
+        }
 
-[5]  ← 미리 준비
-[6]  ← 미리 준비
-[7]  ← 미리 준비
-[8]  ← 미리 준비
-```
-
-중요한 점은 Prefetching 자체가 이미지를 디코딩 해주는 것은 아니고 **곧 필요할 것 같으니까 지금부터 준비 시작을 위한 delegate 이벤트만 전달해주는 메서드**입니다.
-
-&nbsp;
-
-#### 방법2: Background Decode / Downsample
-
-```bash
-// gcd ver
-image.prepareThumbnail(of: size) { thumbnail in
-    ...
+        return UIImage(cgImage: cgImage, scale: scale, orientation: .up)
+    }
 }
-
-// swift concurrency ver
-let thumbnail = await image.byPreparingThumbnail(ofSize: size)
 ```
 
-애플은 iOS 15부터 위 API를 제공합니다. 비동기 prepareThumbnail은 thumbnail 생성을 백그라운드에서 수행합니다. Apple은 비동기 Image preparation API가 내부 UIKit Queue에서 처리한다고 설명합니다. [공식문서](https://developer.apple.com/documentation/uikit/uiimage/preparethumbnail(of:completionhandler:)?changes=__3)
+![붙여넣은 이미지](/assets/img/2026-08-07-poppang-메모리는-줄었는데-cpu는-왜-바빠졌을까-팝팡의-이미지-최적화-이야기/pasted-image-20260809T095714-2.png)
+
+원본이 `2250 × 2812px`라면 약 `24.14MiB`가 필요하지만, 화면 크기에 맞춘 결과는 훨씬 작습니다. 리사이징과 다운샘플링이 같은 크기의 결과를 만들면 최종 버퍼 크기는 같지만, 다운샘플링은 원본 전체 디코드를 피하므로 CPU 피크와 순간 메모리 사용량을 줄입니다.
+
+
 
 &nbsp;
 
-```bash
-Main Thread
-───────────────────────────────
-Cell 생성               UIImage 설정
-   │                         ▲
-   │                         │
-   └──── Background ─────────┘
-          Decode
-        Downsample
-```
+## 해결 방법 2: 프리패칭으로 이미지 작업(다운샘플링과 디코딩) 앞당기기
 
-2번 방식은 이런 그림처럼 디코딩과 다운샘플링을 백그라운드에서 처리할 수 있습니다.
+![스크롤 중 이미지 디코딩으로 발생하는 CPU 부하](/assets/img/2026-08-07-poppang-메모리는-줄었는데-cpu는-왜-바빠졌을까-팝팡의-이미지-최적화-이야기/poppang-scroll-decoding-problem.png)
+
+스크롤 위치와 화면 높이로 다음에 보일 카드 URL을 계산합니다. 화면의 약 1.25배 앞까지 같은 이미지 파이프라인에 미리 요청해, 셀이 보이기 전에 다운로드와 이미지 준비를 시작합니다.
 
 &nbsp;
 
-#### 방법 1 + 2 같이 사용하면
+## 해결 방법 3: 다운샘플링과 디코딩은 백그라운드에서 처리
 
-```bash
-                    화면 밖
-                      │
-                Prefetch 발생
-                      │
-                      ▼
-                 Download
-                      │
-                      ▼
-         Background Decode
-              + Downsample
-                      │
-                      ▼
-                    Cache
-                      │
-──────────────────────┼────────────
-                      │
-                  Cell 등장
-                      │
-                      ▼
-                  Cache Hit
-                      │
-                      ▼
-                   Display
-```
+![프리패칭과 백그라운드 디코딩 타임라인](/assets/img/2026-08-07-poppang-메모리는-줄었는데-cpu는-왜-바빠졌을까-팝팡의-이미지-최적화-이야기/poppang-background-decoding-timeline.png)
 
-Apple도 WWDC21에서 **prefetching이 다운로드와 image preparation에 더 많은 시간을 제공한다**고 설명하고, 최종적으로 prefetching + image preparation을 함께 사용하는 구조를 보여줍니다. [WWDC](https://developer.apple.com/videos/play/wwdc2021/10252/?time=915)
+WWDC 예제는 디코딩을 직렬 큐에서 하나씩 처리합니다. 여러 작업이 동시에 독립적인 스레드를 만들며 시스템을 압박하는 상황을 피하기 위한 선택입니다.
+
+팝팡은 Swift Concurrency로 구현했습니다. `Task`는 OS 스레드와 1:1로 대응하지 않고, Swift 런타임의 협력적 스레드 풀에서 실행됩니다. 그래서 직렬 큐로 모든 디코드를 한 줄로 세우는 대신, `TaskGroup`에서 이미지 준비 작업을 최대 10개까지만 실행해 동시 작업량을 제한했습니다.
+
+`actor`는 대기열, 캐시, 중복 요청 같은 공유 상태만 보호합니다. 다운샘플링과 디코딩은 메인 액터 밖에서 실행하고, 준비된 이미지를 화면에 반영할 때만 `MainActor`로 돌아옵니다. 완성된 이미지는 URL별로 최대 36장까지 캐시합니다.
 
 &nbsp;
 
-&nbsp;
+## 마무리
+
+이미지 최적화에서 먼저 봐야 할 값은 압축 파일 크기가 아니라 디코드된 픽셀 버퍼의 크기입니다. 화면에 작은 썸네일만 필요하다면 원본 크기 전체를 디코드할 이유가 없습니다.
+
+팝팡은 세 단계로 이 비용을 줄였습니다.
+
+1. ImageIO 다운샘플링으로 필요한 크기만 디코드합니다.
+2. 프리패칭으로 이미지 준비 시점을 스크롤보다 앞당깁니다.
+3. 제한된 수의 백그라운드 작업으로 준비하고, 메인 스레드는 화면 갱신에만 사용합니다.
+
+이 방식이 이미지 메모리를 없애는 것은 아닙니다. 대신 필요한 크기의 이미지 버퍼만 유지하고, 스크롤 순간에 CPU 작업이 몰리지 않도록 제어합니다. 앞으로도 이미지 표시 크기, 캐시 개수, 동시 작업 수를 함께 관찰하면서 화면별 기준을 조정할 예정입니다.

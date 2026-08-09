@@ -23,7 +23,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="DongHyeon Kim's Blog">
 <meta property="og:title" content="[Swift] 12. 클래스">
-<meta property="og:url" content="http://localhost:4000/Swift-12-class/">
+<meta property="og:url" content="https://indextrown.github.io/Swift-12-class/">
 
 
   <meta property="og:description" content="클래스">
@@ -45,7 +45,7 @@
   
 
 
-<link rel="canonical" href="http://localhost:4000/Swift-12-class/">
+<link rel="canonical" href="https://indextrown.github.io/Swift-12-class/">
 
 
 
@@ -56,7 +56,7 @@
     
       "@type": "Person",
       "name": "indextrown",
-      "url": "http://localhost:4000/"
+      "url": "https://indextrown.github.io/"
     
   }
 </script>
@@ -283,7 +283,7 @@ checkbox.addEventListener('change', function() {
       
         <header>
           <h1 id="page-title" class="page__title p-name" itemprop="headline">
-            <a href="http://localhost:4000/Swift-12-class/" class="u-url" itemprop="url">[Swift] 12. 클래스
+            <a href="https://indextrown.github.io/Swift-12-class/" class="u-url" itemprop="url">[Swift] 12. 클래스
 </a>
           </h1>
           <footer class="page__meta">
@@ -462,29 +462,5 @@ checkbox.addEventListener('change', function() {
       </a>
     </aside>
 
-  <script data-jekyll-blog-scroll-sync>
-  (() => {
-    let scheduled = false;
-    let latestRatio = 0;
-
-    const applyScroll = () => {
-      scheduled = false;
-      const scroller = document.scrollingElement || document.documentElement;
-      const maxScroll = Math.max(0, scroller.scrollHeight - window.innerHeight);
-      window.scrollTo(0, latestRatio * maxScroll);
-    };
-
-    window.addEventListener('message', (event) => {
-      if (event.source !== window.parent || event.data?.type !== 'jekyllBlog.scroll') {
-        return;
-      }
-      latestRatio = Math.min(1, Math.max(0, Number(event.data.ratio) || 0));
-      if (!scheduled) {
-        scheduled = true;
-        requestAnimationFrame(applyScroll);
-      }
-    });
-  })();
-</script>
-</body>
+  </body>
 </html>
