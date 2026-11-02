@@ -11,15 +11,16 @@ Mapbox iOS SDK에서 지도 위에 마커나 경로 같은 데이터를 올리�
 
 | 방법 | 설명 | 어울리는 상황 |
 | --- | --- | --- |
-| Marker | SwiftUI `Map` 안에 좌표만 넣으면 기본 핀을 그려주는 가장 간단한 API | 프로토타입, 핀 몇 개 |
-| Annotation | `PointAnnotation`, `PolylineAnnotation` 등을 Annotation Manager로 추가 | 마커 수십 개 정도, 빠른 구현 |
+| Marker | SwiftUI `Map` 안에 좌표만 넣으면 기본 핀을 그려주는 가장 간단한 API (SwiftUI 전용, 실험적 API) | 프로토타입, 핀 몇 개 |
+| Annotation | `PointAnnotation`, `CircleAnnotation`, `PolylineAnnotation`, `PolygonAnnotation` 4종을 Annotation Manager로 추가 | 마커 수십 개 정도, 빠른 구현 |
 | View Annotation | 지도 좌표에 UIKit/SwiftUI 뷰를 그대로 띄움 | 말풍선, 버튼이 있는 카드 등 인터랙티브한 UI |
 | Style Layer (Source + Layer) | 데이터(Source)와 그리는 방법(Layer)을 Style에 직접 추가 | 데이터 수백~수천 개, 클러스터링, 데이터에 따른 스타일 |
 | Custom Layer | `CustomLayer`에 Metal 렌더링 코드를 직접 작성해 지도 렌더링 파이프라인에 끼워 넣음 | 3D 모델, 파티클, 셰이더 효과 등 기본 Layer로 표현할 수 없는 그래픽 |
 
-Marker와 Annotation이 쉬워 보이지만, 사실 이 둘도 내부적으로는 **Source와 Layer를 만들어서** 그립니다. 즉 Source + Layer 방식이 Mapbox가 지도를 그리는 가장 기본 원리이고, 나머지는 이를 편하게 감싼 API에 가깝습니다. 단, 두 가지는 예외입니다.
+5가지는 내부 동작 방식에 따라 세 갈래로 나뉩니다.
 
-- **View Annotation**은 지도 렌더링과 별개로 지도 위에 실제 UIView를 올리는 방식입니다.
+- **Annotation은 내부적으로 Source와 Layer를 만들어서** 그립니다. 10장에서 실제로 확인합니다. 즉 Source + Layer 방식이 Mapbox가 지도를 그리는 가장 기본 원리이고, Annotation은 이를 편하게 감싼 API입니다.
+- **Marker와 View Annotation은 지도 렌더링과 별개로, 지도 위에 실제 뷰를 올립니다.** SDK 소스의 주석에 따르면 Marker는 내부적으로 `MapViewAnnotation`(View Annotation)을 만드는 편의 API입니다. 그래서 Marker는 Layer, Annotation을 포함한 지도의 모든 콘텐츠 위에 표시되고 클러스터링을 지원하지 않습니다. 마커가 100개 이상이면 `PointAnnotation`을 권장한다고 적혀 있습니다.
 - **Custom Layer**는 Layer 배열에 들어가 순서는 다른 Layer와 함께 관리되지만, Source 없이 내가 직접 Metal로 그리는 방식입니다. 가장 자유롭지만 가장 저수준이라, 이 부분은 별도 글에서 딥다이브할 예정입니다.
 
 그래서 이 글에서는 **Source + Layer 방식부터** 공부하겠습니다. 이 구조를 이해하면 나머지 방법은 "이걸 대신 해주는 도구구나" 하고 자연스럽게 이해할 수 있습니다.
@@ -41,7 +42,7 @@ Source + Layer 방식을 공부하다 보면 `Source`, `Layer`, `Feature`, `GeoJ
 5. Style - 지도 전체의 설계도
 6. Source - 데이터를 어디서 가져올까
 7. Layer - 데이터를 어떻게 그릴까
-8. Expression - 데이터에 따라 다르게 그리기
+8. Expression - 데이터에 따라 다르게 그리기 (+ Swift `Exp` 문법)
 9. 상호작용 - 지도에서 Feature 찾기
 10. 다시 보는 Annotation - 결국 Source + Layer
 11. 자주 쓰는 예제 - 삼각형, 선박, 경로, 반경, 클러스터링, 히트맵, 3D
@@ -227,17 +228,129 @@ Mapbox 지도는 기본적으로 **Vector Tile**입니다. 데이터만 내려�
 
 ## 2. Geometry - 점, 선, 면
 
-지도 위의 모든 데이터는 결국 세 가지 도형 중 하나입니다.
+지도 위의 모든 데이터는 결국 **점, 선, 면** 세 가지 도형입니다. GeoJSON 표준(RFC 7946)은 이 세 가지와, 여러 개를 묶은 형태를 합쳐 **7가지 Geometry**를 정의합니다. Mapbox iOS SDK에 포함된 Turf 라이브러리에도 같은 이름의 Swift 타입이 7개 있습니다.
 
-| Geometry | 의미 | 예시 |
-| --- | --- | --- |
-| Point | 점 하나 | 카페 위치, 버스 정류장 |
-| LineString | 점들을 이은 선 | 도로, 이동 경로, 버스 노선 |
-| Polygon | 닫힌 면 | 건물, 공원, 행정구역 |
+| Geometry (GeoJSON `type`) | Turf Swift 타입 | 의미 | 예시 |
+| --- | --- | --- | --- |
+| `Point` | `Point` | 점 하나 | 카페 위치, 버스 정류장 |
+| `MultiPoint` | `MultiPoint` | 점 여러 개를 Feature 하나로 | 한 노선의 정류장들 |
+| `LineString` | `LineString` | 점들을 순서대로 이은 선 | 도로, 이동 경로 |
+| `MultiLineString` | `MultiLineString` | 선 여러 개를 Feature 하나로 | 끊어진 구간이 있는 노선 |
+| `Polygon` | `Polygon` | 닫힌 면 (구멍 포함 가능) | 건물, 공원, 반경 영역 |
+| `MultiPolygon` | `MultiPolygon` | 면 여러 개를 Feature 하나로 | 섬이 여러 개인 행정구역 |
+| `GeometryCollection` | `GeometryCollection` | 서로 다른 Geometry를 묶음 | 점 + 선이 한 묶음인 시설 |
 
-여기에 여러 개를 묶은 `MultiPoint`, `MultiLineString`, `MultiPolygon`과, 서로 다른 Geometry를 묶는 `GeometryCollection`이 있습니다. 예를 들어 섬이 여러 개인 행정구역은 `MultiPolygon`으로 표현합니다.
+Swift에서는 7가지 모두를 `Geometry` enum의 case로 다룹니다. `Feature(geometry:)`에 어떤 Geometry든 넣을 수 있는 이유입니다.
 
-어떤 Geometry인지에 따라 사용할 수 있는 Layer 종류가 달라지므로 기억해두면 좋습니다.
+<details class="notion-toggle-list" markdown="1">
+<summary>7가지 Geometry를 Swift(Turf)로 만드는 코드 보기</summary>
+
+```swift
+let a = CLLocationCoordinate2D(latitude: 37.57, longitude: 126.97)
+let b = CLLocationCoordinate2D(latitude: 37.58, longitude: 126.98)
+let c = CLLocationCoordinate2D(latitude: 37.57, longitude: 126.99)
+let d = CLLocationCoordinate2D(latitude: 37.56, longitude: 126.98)
+
+let point = Point(a)
+let multiPoint = MultiPoint([a, b, c])
+let line = LineString([a, b, c])
+let multiLine = MultiLineString([[a, b], [b, c]])
+let polygon = Polygon([[a, b, c, a]])                              // [바깥 링, 구멍 링...]
+let multiPolygon = MultiPolygon([[[a, b, c, a]], [[a, c, d, a]]])  // [Polygon의 링 배열, ...]
+let collection = GeometryCollection(geometries: [.point(point), .lineString(line)])
+
+// 7가지 모두 Geometry enum의 case
+let geometry: Geometry = .multiPolygon(multiPolygon)
+let feature = Feature(geometry: geometry)
+```
+
+</details>
+
+### 배열이 몇 겹인지가 곧 Geometry다
+
+GeoJSON 좌표를 처음 보면 `[[[...]]]`처럼 대괄호가 몇 겹인지 헷갈립니다. 규칙은 단순합니다.
+
+```text
+Point             [lng, lat]                                  좌표 1개
+MultiPoint        [ [lng, lat], ... ]                         좌표 배열
+LineString        [ [lng, lat], ... ]                         좌표 배열 (2개 이상)
+MultiLineString   [ [ [lng, lat], ... ], ... ]                LineString 배열
+Polygon           [ [ [lng, lat], ... ], ... ]                링(ring) 배열: [바깥, 구멍, 구멍...]
+MultiPolygon      [ [ [ [lng, lat], ... ], ... ], ... ]       Polygon 배열
+GeometryCollection  "coordinates" 대신 "geometries": [ {Geometry}, ... ]
+```
+
+`MultiPoint`와 `LineString`은 좌표 모양이 똑같고 `type`만 다릅니다. **점들을 이을지 말지**의 차이입니다.
+
+### Polygon의 구멍과 감는 방향
+
+Polygon의 좌표는 **링(ring)의 배열**입니다. 첫 번째 링이 바깥 테두리이고, 두 번째부터는 구멍(hole)입니다. 각 링은 첫 좌표와 마지막 좌표가 같아야 닫힙니다.
+
+GeoJSON 표준(RFC 7946)은 링을 감는 방향도 정해 두었습니다. **바깥 링은 반시계 방향, 구멍은 시계 방향**입니다(오른손 법칙). 그런데 Mapbox가 실제로 이 방향을 따지는지 시뮬레이터로 확인해 보니, 아래 캡처처럼 방향을 일부러 틀리게 넣어도 똑같이 그려졌습니다.
+
+- "Polygon+구멍": 바깥 반시계, 구멍 시계 (표준대로) → 구멍이 뚫림
+- "구멍 같은 방향": 바깥, 구멍 모두 반시계 (표준 위반) → **그래도 구멍이 뚫림**
+- "바깥 시계 방향": 바깥을 시계 방향으로 (표준 위반) → **그래도 정상적으로 채워짐**
+
+즉 Mapbox는 감는 방향이 아니라 **링의 순서(첫 번째 = 바깥)** 로 구멍을 판단합니다. 그래도 GeoJSON은 PostGIS, Turf의 면적 계산 등 다른 도구에서도 쓰이므로 표준 방향을 지켜 두는 것이 안전합니다.
+
+### 어떤 Layer가 어떤 Geometry를 그릴까
+
+"Geometry에 따라 쓸 수 있는 Layer가 다르다"고 하지만, 실제로는 맞지 않는 조합을 넣어도 **에러가 나지 않고 예상과 다르게 그려집니다.** 7가지 Geometry(+ 구멍, 감는 방향 실험용 Polygon)를 Source 하나에 넣고 Layer를 하나씩만 걸어서 확인했습니다. 라벨은 `이름 + geometry-type` 값입니다.
+
+<div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+  <figure style="width: 180px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-basic-concepts/sim-geom-fill.jpg" alt="fill Layer만" style="width: 100%;">
+    <figcaption style="font-size: 0.75em; text-align: center;">fill만</figcaption>
+  </figure>
+  <figure style="width: 180px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-basic-concepts/sim-geom-line.jpg" alt="line Layer만" style="width: 100%;">
+    <figcaption style="font-size: 0.75em; text-align: center;">line만</figcaption>
+  </figure>
+  <figure style="width: 180px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-basic-concepts/sim-geom-circle.jpg" alt="circle Layer만" style="width: 100%;">
+    <figcaption style="font-size: 0.75em; text-align: center;">circle만</figcaption>
+  </figure>
+  <figure style="width: 180px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-basic-concepts/sim-geom-symbol.jpg" alt="symbol Layer만" style="width: 100%;">
+    <figcaption style="font-size: 0.75em; text-align: center;">symbol만</figcaption>
+  </figure>
+</div>
+
+&nbsp;
+
+| Geometry | `fill` | `line` | `circle` | `symbol` |
+| --- | --- | --- | --- | --- |
+| Point | 그리지 않음 | 그리지 않음 | 원 | 라벨 |
+| MultiPoint | ⚠️ **점들을 이어 면으로 채움** | ⚠️ **점들을 이어 선을 그림** | 점마다 원 | 점마다 라벨 |
+| LineString | ⚠️ **처음과 끝을 이어 면으로 채움** | 선 | ⚠️ **꼭짓점마다 원** | 라벨 |
+| MultiLineString | 이 실험에서는 보이지 않음 (직선 2개라 면적이 없음) | 선마다 그림 | ⚠️ **꼭짓점마다 원** | 선마다 라벨 |
+| Polygon | 채움 (구멍 반영) | **바깥과 구멍의 테두리** | ⚠️ **꼭짓점마다 원** | 라벨 |
+| MultiPolygon | 면마다 채움 | 면마다 테두리 | ⚠️ **꼭짓점마다 원** | 면마다 라벨 |
+| GeometryCollection | 안에 든 Geometry별로 위 규칙대로 | 〃 | 〃 | 〃 |
+
+GeometryCollection은 하나의 Feature지만 **안에 든 Geometry가 각각 따로** 그려졌습니다. 캡처에서 "GeometryCollection" 라벨이 `Point`와 `LineString` 두 개로 나뉘어 붙은 이유입니다.
+
+⚠️ 표시한 조합이 실무에서 자주 생기는 버그입니다. 예를 들어 경로(LineString)와 정류장(Point)을 Source 하나에 넣고 circle Layer를 걸면 정류장뿐 아니라 **경로의 꺾이는 지점마다 원이** 생깁니다.
+
+### geometry-type으로 Layer 나누기
+
+해결 방법은 `geometry-type` Expression으로 Layer마다 filter를 거는 것입니다.
+
+<details class="notion-toggle-list" markdown="1">
+<summary>geometry-type filter 코드 보기</summary>
+
+```swift
+fill.filter = Exp(.eq) { Exp(.geometryType); "Polygon" }      // Polygon, MultiPolygon
+line.filter = Exp(.eq) { Exp(.geometryType); "LineString" }   // LineString, MultiLineString
+circle.filter = Exp(.eq) { Exp(.geometryType); "Point" }      // Point, MultiPoint
+```
+
+</details>
+
+<p style="text-align: center;"><img src="/assets/img/2026-11-02-mapbox-basic-concepts/sim-geom-typed.jpg" alt="geometry-type filter 적용" style="width: 240px;"></p>
+
+이제 fill은 면만, line은 선만, circle은 점만 그립니다. 라벨에서 보이듯 **`geometry-type`은 Multi 계열도 단수형으로 돌려줍니다.** MultiPoint는 `"Point"`, MultiLineString은 `"LineString"`, MultiPolygon은 `"Polygon"`입니다. 그래서 filter 하나로 Multi 계열까지 함께 걸러집니다.
 
 &nbsp;
 
@@ -285,6 +398,7 @@ Polygon은 두 가지를 주의해야 합니다.
 
 - 좌표 배열이 한 겹 더 감싸져 있습니다. 첫 번째 배열은 바깥 테두리, 그다음 배열들은 구멍(hole)입니다.
 - 첫 좌표와 마지막 좌표가 **같아야** 닫힌 도형이 됩니다.
+- 링을 감는 방향(바깥 반시계, 구멍 시계)은 표준 권장 사항입니다. Mapbox에서 실제로 어떻게 동작하는지는 2장에서 확인했습니다.
 
 ### Feature와 FeatureCollection
 
@@ -394,6 +508,14 @@ Style JSON의 뼈대는 아래와 같습니다.
 
 결국 Mapbox로 지도를 커스터마이징한다는 것은 **이 Style에 Source와 Layer를 추가, 수정, 삭제하는 것**입니다. 코드로 `addSource`, `addLayer`를 호출하는 것도 런타임에 이 JSON을 고치는 일과 같습니다.
 
+Style에는 Source, Layer 외에 지도 전체에 적용되는 설정도 들어 있습니다. 이 글에 나오는 것 위주로 정리하면 다음과 같습니다.
+
+| 설정 | 종류 | 의미 |
+| --- | --- | --- |
+| `projection` | `mercator`, `globe` | 지구를 평면에 펼칠지, 공 모양으로 보여줄지 |
+| `terrain` | `raster-dem` Source 참조 | 지형 고도를 반영한 3D 지형 |
+| `slot` (Standard 스타일) | `bottom`, `middle`, `top` | 내 Layer를 Standard 스타일 Layer 사이 어디에 끼울지 |
+
 > v11의 기본 스타일인 **Mapbox Standard**는 내부 Layer를 직접 노출하지 않고, `slot`과 설정값(config)으로 커스터마이징하는 방식입니다. 개념 학습 단계에서는 `streets-v12`처럼 Layer 구조가 그대로 보이는 클래식 스타일로 실습하면 이해하기 더 쉽습니다.
 
 &nbsp;
@@ -406,15 +528,22 @@ Style JSON의 뼈대는 아래와 같습니다.
 
 **Source**는 지도에 그릴 데이터와 그 데이터를 가져오는 방법을 정의합니다. Source 자체는 화면에 그려지지 않습니다.
 
-| Source type | 데이터 | 사용 예 |
-| --- | --- | --- |
-| `vector` | Vector Tile | Mapbox 기본 지도 데이터, 대용량 데이터 |
-| `raster` | Raster Tile 이미지 | 위성사진, 외부 타일 서버 |
-| `raster-dem` | 고도 데이터 | 3D 지형, 음영 기복 |
-| `geojson` | GeoJSON | 앱에서 직접 만든 마커, 경로 등 |
-| `image` | 이미지 한 장 | 특정 영역에 평면도 덮어씌우기 |
+SDK 11.34.1의 `SourceType`에는 10가지가 정의되어 있습니다.
 
-처음에는 `geojson`과 `vector` 두 가지만 알아도 충분합니다.
+| Source type | Swift 타입 | 데이터 | 사용 예 |
+| --- | --- | --- | --- |
+| `geojson` | `GeoJSONSource` | GeoJSON | 앱에서 직접 만든 마커, 경로, 영역 |
+| `vector` | `VectorSource` | Vector Tile | Mapbox 기본 지도 데이터, 대용량 데이터 |
+| `raster` | `RasterSource` | Raster Tile 이미지 | 위성사진, 외부 타일 서버 (이 글의 배경 지도) |
+| `raster-dem` | `RasterDemSource` | 고도 데이터 타일 | 3D 지형(terrain), 음영 기복(hillshade) |
+| `image` | `ImageSource` | 이미지 한 장 + 네 모서리 좌표 | 특정 영역에 평면도, 레이더 이미지 덮어씌우기 |
+| `raster-array` | `RasterArraySource` (실험적) | 여러 밴드를 가진 래스터 타일 | 바람, 기온 같은 기상 데이터 (`raster-particle` Layer와 함께) |
+| `model` | `ModelSource` | 3D 모델(glTF) | `model` Layer로 3D 모델 배치 |
+| `batched-model` | `ModelSource` | 위치 정보가 함께 묶인 3D 모델 모음 | 여러 3D 모델을 한 번에 배치 |
+| `custom-geometry` | `addCustomGeometrySource` | 앱이 타일 요청마다 직접 공급하는 Feature | 서버 형식이 GeoJSON, Vector Tile이 아닌 데이터 |
+| `custom-raster` | `addCustomRasterSource` (실험적) | 앱이 타일 요청마다 직접 공급하는 이미지 | 앱에서 생성하는 래스터 |
+
+웹(Mapbox GL JS)의 스타일 스펙에는 `video` Source도 있지만, iOS SDK 11.34.1의 `SourceType`에는 없습니다. 처음에는 `geojson`, `vector`, `raster` 세 가지만 알아도 충분합니다.
 
 ### GeoJSON Source
 
@@ -426,12 +555,23 @@ Style JSON의 뼈대는 아래와 같습니다.
 ```swift
 var source = GeoJSONSource(id: "cafes")
 source.data = .featureCollection(collection)
-// 또는 원격 파일: source.data = .url(URL(string: "https://example.com/cafes.geojson")!)
+// 또는 원격 파일 URL: source.data = .string("https://example.com/cafes.geojson")
 
 try mapView.mapboxMap.addSource(source)
 ```
 
 </details>
+
+`source.data`에 넣을 수 있는 값(`GeoJSONSourceData`)은 4가지입니다.
+
+| 값 | 의미 |
+| --- | --- |
+| `.featureCollection(...)` | Feature 여러 개 (가장 많이 씀) |
+| `.feature(...)` | Feature 하나 (경로 하나, 영역 하나) |
+| `.geometry(...)` | properties 없이 Geometry만 |
+| `.string(...)` | GeoJSON 문자열, 또는 **원격 GeoJSON 파일의 URL** |
+
+URL을 넣는 전용 case는 없고 `.string`에 URL 문자열을 넣습니다.
 
 데이터가 바뀌면 Source를 새로 만들지 않고 데이터만 갱신합니다.
 
@@ -480,17 +620,36 @@ buildings.sourceLayer = "building"
 
 ### Layer 종류
 
-| Layer type | 그리는 것 | 어울리는 Geometry |
-| --- | --- | --- |
-| `background` | 지도 배경색 | (Source 없음) |
-| `fill` | 면 채우기 | Polygon |
-| `line` | 선 | LineString, Polygon 테두리 |
-| `circle` | 원 | Point |
-| `symbol` | 아이콘, 텍스트 | Point, LineString(도로명처럼 선을 따라) |
-| `fill-extrusion` | 3D로 솟은 면 | Polygon (3D 건물) |
-| `heatmap` | 밀도 히트맵 | Point |
-| `raster` | 래스터 이미지 | raster source |
-| `hillshade` | 지형 음영 | raster-dem source |
+SDK 11.34.1의 `LayerType`에는 16가지가 정의되어 있습니다. 성격별로 나누면 다음과 같습니다.
+
+| 분류 | Layer type | 그리는 것 | 필요한 Source |
+| --- | --- | --- | --- |
+| 데이터 | `fill` | 면 채우기 | geojson, vector |
+| 데이터 | `line` | 선 | geojson, vector |
+| 데이터 | `circle` | 원 | geojson, vector |
+| 데이터 | `symbol` | 아이콘, 텍스트 | geojson, vector |
+| 데이터 | `heatmap` | 밀집도 히트맵 | geojson, vector (Point) |
+| 데이터 | `fill-extrusion` | 3D로 솟은 면 | geojson, vector (Polygon) |
+| 데이터 | `model` | 3D 모델 | model, batched-model, geojson |
+| 래스터, 지형 | `raster` | 래스터 이미지 | raster, image |
+| 래스터, 지형 | `raster-particle` (실험적) | 바람 지도 같은 텍스처로 움직이는 입자 | raster-array |
+| 래스터, 지형 | `hillshade` | 지형 음영 | raster-dem |
+| 배경 | `background` | 지도 전체 배경색, 패턴 | 없음 |
+| 배경 | `sky` | 지도 뒤의 하늘 (Globe 미지원, Atmosphere 권장) | 없음 |
+| 특수 | `location-indicator` | 사용자 위치 표시(puck) | 없음 |
+| 특수 | `clip` | 아래 Layer들의 3D 콘텐츠를 지정 영역에서 제거 | geojson, vector (Polygon) |
+| 특수 | `slot` | Standard 스타일에서 Layer를 끼울 자리 표시 | 없음 |
+| 특수 | `custom` | Metal로 직접 그리기 ([딥다이브]({% post_url 2026-11-02-mapbox-custom-layer-deep-dive %})) | 없음 |
+
+어떤 Layer가 어떤 Geometry를 실제로 어떻게 그리는지는 2장에서 캡처로 확인했습니다.
+
+`symbol` Layer는 `symbolPlacement`에 따라 라벨을 놓는 방식이 3가지입니다.
+
+| `symbolPlacement` | 배치 |
+| --- | --- |
+| `.point` (기본값) | Feature의 위치(점, 선 위의 지점, 면 위의 지점)에 똑바로 |
+| `.line` | 선을 따라 반복해서, 선 방향으로 기울여서 (도로명) |
+| `.lineCenter` | 선의 가운데에 한 번, 선 방향으로 |
 
 같은 데이터라도 Layer를 바꾸면 전혀 다르게 보입니다. 카페 위치(Point)를 `circle`로 그리면 점, `symbol`로 그리면 아이콘과 이름, `heatmap`으로 그리면 카페 밀집 지역이 됩니다.
 
@@ -615,6 +774,156 @@ Expression은 JSON 배열 형태의 작은 언어입니다. 첫 번째 원소가
 | `feature-state` | Feature에 붙인 상태 읽기 (9장) |
 | `==`, `>=`, `all`, `any`, `has` | 비교, 논리 연산 (filter에 자주 사용) |
 
+스타일 스펙은 Expression을 용도별로 분류합니다. 위 표는 그중 자주 쓰는 것만 뽑은 것이고, 분류 전체는 다음과 같습니다.
+
+| 분류 | 대표 연산자 | 용도 |
+| --- | --- | --- |
+| Types | `literal`, `to-string`, `to-number`, `boolean`, `number` | 타입 변환, 타입 확인 |
+| Feature data | `get`, `has`, `id`, `properties`, `geometry-type`, `feature-state` | Feature의 데이터 읽기 |
+| Lookup | `at`, `in`, `index-of`, `length`, `slice` | 배열, 문자열 조회 |
+| Decision | `case`, `match`, `coalesce`, `==`, `!=`, `<`, `>`, `all`, `any`, `!` | 조건 분기, 비교 |
+| Ramps, scales, curves | `interpolate`, `step` | 값 구간에 따라 결과 정하기 |
+| Variable binding | `let`, `var` | 계산 결과에 이름 붙여 재사용 |
+| String | `concat`, `upcase`, `downcase` | 문자열 조합 |
+| Color | `rgb`, `rgba`, `to-color` | 색 만들기 |
+| Math | `+`, `-`, `*`, `/`, `%`, `^`(거듭제곱), `sqrt`, `round` 등 | 계산 |
+| Camera | `zoom`, `pitch`, `distance-from-center` | 카메라 상태에 따라 |
+| Heatmap, Line | `heatmap-density`, `line-progress` | 특정 Layer 전용 값 |
+
+`interpolate`의 보간 방식도 3가지입니다.
+
+| 보간 방식 | JSON | 변화 |
+| --- | --- | --- |
+| 선형 | `["linear"]` | 일정한 비율로 변함 |
+| 지수 | `["exponential", 1.5]` | base가 1보다 크면 뒤쪽(높은 입력)에서 급격히 변함. 줌에 따른 크기 변화에 자연스러움 |
+| 베지어 곡선 | `["cubic-bezier", x1, y1, x2, y2]` | 애니메이션 easing처럼 곡선 모양을 직접 지정 |
+
+### Swift `Exp` 문법 읽는 법
+
+Expression에서 가장 헷갈리는 부분은 **Swift 코드와 JSON이 생긴 게 너무 다르다**는 점입니다. 공식 문서와 예제는 대부분 JSON으로 되어 있는데, Swift에서는 `Exp(.match) { ... }` 같은 문법을 씁니다. 둘의 대응 규칙만 알면 JSON 예제를 Swift로 바로 옮길 수 있습니다.
+
+#### 규칙 1. `Exp(연산자) { 인자들 }` = `["연산자", 인자들...]`
+
+`Exp`는 Swift의 **result builder**로 만들어져 있습니다. 중괄호 안의 **한 줄이 JSON 배열의 원소 하나**가 됩니다.
+
+```text
+Swift                                         JSON
+──────────────────────────────────────────    ─────────────────────────────
+Exp(.get) { "name" }                          ["get", "name"]
+
+Exp(.eq) {                                    ["==",
+    Exp(.get) { "category" }                    ["get", "category"],
+    "cafe"                                      "cafe"
+}                                             ]
+```
+
+- 중괄호 안에 또 `Exp`를 넣으면 JSON에서도 배열 안의 배열(중첩)이 됩니다.
+- 한 줄에 여러 인자를 쓰려면 세미콜론(`;`)으로 구분합니다. `Exp(.eq) { Exp(.get) { "category" }; "cafe" }`
+- 인자가 간단하면 `Exp(.get, "name")`처럼 괄호 안에 나열하는 방식도 같은 결과를 냅니다.
+
+아래는 이 글에서 쓴 `Exp`들을 실제로 JSON으로 인코딩해 출력한 결과입니다.
+
+| Swift | 실제로 만들어지는 JSON |
+| --- | --- |
+| `Exp(.get) { "name" }` | `["get","name"]` |
+| `Exp(.eq) { Exp(.get) { "category" }; "cafe" }` | `["==",["get","category"],"cafe"]` |
+| `Exp(.all) { Exp(.eq) {…}; Exp(.gte) { Exp(.get) { "rating" }; 4.0 } }` | `["all",["==",…],[">=",["get","rating"],4]]` |
+| `Exp(.not) { Exp(.has) { "point_count" } }` | `["!",["has","point_count"]]` |
+| `Exp(.interpolate) { Exp(.linear); Exp(.zoom); 12; 4; 16; 14 }` | `["interpolate",["linear"],["zoom"],12,4,16,14]` |
+| `Exp(.switchCase) { Exp(.boolean) { Exp(.featureState) { "selected" }; false }; 6; 2 }` | `["case",["boolean",["feature-state","selected"],false],6,2]` |
+| `match` 안의 `UIColor(red: 0.55, green: 0.35, blue: 0.17, alpha: 1)` | `"rgba(140.25, 89.25, 43.35, 1.00)"` |
+
+`UIColor`는 `rgba(...)` 문자열로, `4.0`은 `4`로 바뀌는 것도 볼 수 있습니다. Swift 타입은 결국 JSON 값으로 변환된다는 뜻입니다.
+
+#### 규칙 2. Swift 이름과 JSON 이름이 다르다
+
+JSON 연산자는 `==`, `!`, `case`처럼 Swift 식별자로 쓸 수 없는 이름이 많아서, Swift에서는 다른 이름을 씁니다. JSON 예제를 옮길 때 가장 많이 막히는 부분입니다.
+
+| JSON | Swift | | JSON | Swift |
+| --- | --- | --- | --- | --- |
+| `==` | `.eq` | | `case` | `.switchCase` |
+| `!=` | `.neq` | | `in` | `.inExpression` |
+| `>` / `>=` | `.gt` / `.gte` | | `feature-state` | `.featureState` |
+| `<` / `<=` | `.lt` / `.lte` | | `geometry-type` | `.geometryType` |
+| `!` | `.not` | | `line-progress` | `.lineProgress` |
+| `+` `-` `*` `/` `%` `^` | `.sum` `.subtract` `.product` `.division` `.mod` `.pow` | | `heatmap-density` | `.heatmapDensity` |
+| `to-string` / `to-number` | `.toString` / `.toNumber` | | `get`, `has`, `match`, `step`, `all`, `any` | 이름 그대로 |
+
+규칙은 단순합니다. **기호는 영어 단어로, `kebab-case`는 `camelCase`로** 바뀝니다. 예외는 Swift 예약어와 겹치는 `case` → `.switchCase`, `in` → `.inExpression`입니다.
+
+#### 규칙 3. 인자는 "짝"으로 읽는다
+
+`match`, `interpolate`, `step`, `case`는 인자가 길게 나열되는데, 짝을 지어 읽어야 의미가 보입니다. 이 글에서 쓴 예제를 짝으로 나누면 이렇습니다.
+
+```text
+match       입력값,  [비교값, 결과], [비교값, 결과], ...,  기본값
+            ["match", ["get","category"],  "cafe", 갈색,  "restaurant", 빨강,  회색]
+
+interpolate 보간방식, 입력값,  [입력, 출력], [입력, 출력], ...
+            ["interpolate", ["linear"], ["zoom"],  12, 4,  16, 14]
+
+step        입력값,  기본출력,  [기준값, 출력], [기준값, 출력], ...
+            ["step", ["get","point_count"],  16,  20, 22,  50, 30]
+            → 20 미만: 16 / 20 이상: 22 / 50 이상: 30
+
+case        [조건, 결과], [조건, 결과], ...,  기본값
+            ["case",  ["boolean",["feature-state","selected"],false], 6,  2]
+            → 선택됐으면 6, 아니면 2
+```
+
+Swift 코드에서도 한 줄에 하나씩 쓰기 때문에, **짝 단위로 줄을 묶어 주석을 달아 두면** 훨씬 읽기 쉽습니다. 이 글의 `interpolate` 코드에 `// 줌 12일 때`, `//   반지름 4` 주석을 단 이유입니다.
+
+#### 규칙 4. `.constant`와 `.expression`, 그리고 filter
+
+Layer 속성의 타입은 `Value<T>`이고, 값을 넣는 방법이 두 가지입니다.
+
+| 쓰는 법 | 의미 | Layer JSON에서 |
+| --- | --- | --- |
+| `.constant(8)` | 모든 Feature에 같은 값 | `"circle-radius": 8` |
+| `.expression(Exp(.get) { "color" })` | Feature, 줌마다 계산 | `"circle-color": ["get","color"]` |
+| `layer.filter = Exp(.has) { "name" }` | filter는 `Value`가 아니라 `Exp`를 바로 받음 | `"filter": ["has","name"]` |
+
+`.constant`와 `.expression`은 결국 Layer JSON에 숫자로 들어가느냐, 배열(Expression)로 들어가느냐의 차이입니다. filter는 항상 Expression이라 `.expression(...)`으로 감싸지 않습니다.
+
+#### 규칙 5. builder 안에서 `for`, `if`도 쓸 수 있다
+
+result builder라서 중괄호 안에서 반복문, 조건문을 쓸 수 있습니다. 선종별 색처럼 짝이 많은 `match`를 데이터로 만들 때 편합니다.
+
+```swift
+let colors: [(String, UIColor)] = [("cargo", .systemGreen), ("tanker", .systemRed)]
+
+let typeColor = Exp(.match) {
+    Exp(.get) { "type" }
+    for (type, color) in colors {
+        type      // 비교값
+        color     // 결과
+    }
+    UIColor.gray  // 기본값
+}
+// → ["match",["get","type"],"cargo","rgba(52.00, 199.00, 89.00, 1.00)","tanker","rgba(255.00, 59.00, 48.00, 1.00)","rgba(127.50, 127.50, 127.50, 1.00)"]
+```
+
+#### 자주 하는 실수 (실제 에러 메시지)
+
+아래 에러들은 잘못된 Expression을 넣고 `addLayer`를 호출해서 실제로 받은 메시지입니다. `addLayer`가 `throws`이므로 `try?`로 삼키지 말고 `do-catch`로 받아서 출력해 보면 원인을 바로 알 수 있습니다.
+
+| 실수 | 결과 |
+| --- | --- |
+| `match`에 기본값(마지막 인자)을 빠뜨림 | `Expected at least 4 arguments, but found only 3.` |
+| `interpolate`의 입력값을 16 → 12처럼 내림차순으로 씀 | `Input/output pairs for "interpolate" expressions must be arranged with input values in strictly ascending order.` |
+| `zoom`을 `interpolate`, `step` 밖에서 씀 (예: `Exp(.sum) { 2; Exp(.interpolate) {…zoom…} }`) | `"zoom" expression may only be used as input to a top-level "step" or "interpolate" expression…` |
+| `textField = .constant("name")` | **에러 없이 통과**합니다. 대신 모든 라벨에 글자 "name"이 그대로 찍힙니다. 데이터 값을 쓰려면 `.expression(Exp(.get) { "name" })` |
+
+마지막처럼 에러가 나지 않는 실수가 더 찾기 어렵습니다. 헷갈릴 때는 만든 `Exp`를 JSON으로 출력해서 의도한 배열이 맞는지 확인하는 것이 가장 빠릅니다.
+
+```swift
+let encoder = JSONEncoder()
+let json = String(data: try encoder.encode(myExpression), encoding: .utf8)!
+print(json)   // ["match",["get","category"],"cafe",...]
+```
+
+`Exp`는 `Codable`이라 이렇게 바로 JSON으로 바꿀 수 있습니다. 출력된 배열을 공식 문서의 JSON 예제와 나란히 놓고 비교하면 대부분의 문제가 보입니다.
+
 ### match - 카테고리별 색상
 
 ```json
@@ -724,8 +1033,20 @@ labels.filter = onlyGoodCafes   // 라벨 Layer에도 같은 filter를 줘야 �
 
 | API | 대상 |
 | --- | --- |
-| `queryRenderedFeatures` | 현재 화면에 **그려진** Feature (Layer 기준) |
-| `querySourceFeatures` | Source에 있는 Feature (화면 표시 여부와 무관) |
+| `queryRenderedFeatures` | 현재 화면에 **그려진** Feature (Layer 기준). 탭 처리에 사용 |
+| `querySourceFeatures` | Source에 있는 Feature (화면 표시 여부와 무관). 단, 현재 불러온 타일 범위 안에서만 |
+| `getGeoJsonClusterLeaves` | 클러스터 하나에 묶인 원래 점들 |
+| `getGeoJsonClusterChildren` | 클러스터를 한 단계 풀었을 때의 하위 클러스터, 점들 |
+| `getGeoJsonClusterExpansionZoom` | 클러스터가 풀리는 줌 레벨 (탭하면 그 줌으로 확대할 때 사용) |
+
+Feature State를 다루는 API는 4개입니다.
+
+| API | 역할 |
+| --- | --- |
+| `setFeatureState` | Feature에 상태 붙이기 |
+| `getFeatureState` | 현재 상태 읽기 |
+| `removeFeatureState` | 상태 하나(또는 전부) 지우기 |
+| `resetFeatureStates` | Source(또는 source-layer)의 모든 Feature 상태 초기화 |
 
 선택된 장소만 강조하고 싶을 때는 **Feature State**를 사용합니다. 데이터를 다시 넣지 않고 특정 Feature에 `selected: true` 같은 상태만 붙인 뒤, Expression의 `feature-state`로 읽어 스타일을 바꿉니다. 이를 위해 Feature에 `id`가 있어야 합니다. (7장 데이터 준비 코드에서 `feature.identifier`를 넣은 이유입니다)
 
@@ -790,6 +1111,17 @@ private var selectedId: String?
 ## 10. 다시 보는 Annotation - 결국 Source + Layer
 
 글 처음에 소개한 **Annotation** API를 이제 다시 보겠습니다. Source/Layer를 직접 다루지 않아도 마커를 찍을 수 있습니다.
+
+Annotation은 4종이고, 각각 Annotation Manager가 따로 있습니다. 4종을 모두 만든 뒤 Style의 Layer 목록을 출력해서, 각 Manager가 어떤 Layer를 만드는지 확인했습니다.
+
+| Annotation | Manager | 내부에 만들어지는 것 (실측) |
+| --- | --- | --- |
+| `PointAnnotation` | `makePointAnnotationManager()` | geojson Source 1개 + **symbol** Layer |
+| `CircleAnnotation` | `makeCircleAnnotationManager()` | geojson Source 1개 + **circle** Layer |
+| `PolylineAnnotation` | `makePolylineAnnotationManager()` | geojson Source 1개 + **line** Layer |
+| `PolygonAnnotation` | `makePolygonAnnotationManager()` | geojson Source 1개 + **fill** Layer |
+
+7장에서 직접 만든 Source + Layer 조합과 정확히 대응합니다.
 
 <details class="notion-toggle-list" markdown="1">
 <summary>PointAnnotation 코드 보기</summary>
@@ -915,18 +1247,17 @@ try mapView.mapboxMap.addLayer(labels)
 
 ### 선박 모양 그리기 - 육각형 Polygon
 
-해양, 물류 앱에서 자주 그리는 **선박 모양**입니다. 실제 선박의 길이, 폭(미터)과 진행 방향(heading)으로 육각형 선체를 계산해서 Polygon으로 넣습니다. 꼭짓점은 뱃머리, 좌우 어깨, 좌우 선미, 선미 중앙의 6개입니다.
+해양, 물류 앱에서 자주 그리는 **선박 모양**입니다. 실제 선박의 길이, 폭(미터)과 진행 방향(heading)으로 육각형 선체를 계산해서 Polygon으로 넣습니다. 꼭짓점은 **뱃머리 좌우 2개, 어깨 좌우 2개, 선미 좌우 2개**입니다. 뱃머리는 뾰족하지 않게 좁고 납작하게, 선미는 평평하게 만듭니다.
 
 ```text
-            ▲ 뱃머리 (0, +L/2)
-           / \
- 좌현 어깨 /   \ 우현 어깨 (+W/2, +L/4)
-          |     |
-          |     |      x: 우현 방향 (+)
-          |     |      y: 뱃머리 방향 (+)
- 좌현 선미 \   / 우현 선미 (+W/2, -0.4L)
-            \ /
-             ▼ 선미 중앙 (0, -L/2)
+            ┌────┐           뱃머리 좌우 (±0.2W, +L/2)   ← 좁고 납작
+           /      \
+          /        \         어깨 좌우   (±W/2, +L/4)    ← 여기서 폭이 최대
+          |        |
+          |        |         x: 우현 방향 (+)
+          |        |         y: 뱃머리 방향 (+)
+          |        |
+          └────────┘         선미 좌우   (±W/2, -L/2)    ← 평평
 ```
 
 <details class="notion-toggle-list" markdown="1">
@@ -938,12 +1269,12 @@ func shipPolygon(center: CLLocationCoordinate2D, heading: Double, length: Double
     let l = length, w = width
     // 선박 기준 좌표 (x: 우현 방향, y: 뱃머리 방향), 단위 미터
     let hull: [(x: Double, y: Double)] = [
-        (0, 0.5 * l),            // 뱃머리
+        (0.2 * w, 0.5 * l),      // 뱃머리 우현
         (0.5 * w, 0.25 * l),     // 우현 어깨
-        (0.5 * w, -0.4 * l),     // 우현 선미
-        (0, -0.5 * l),           // 선미 중앙
-        (-0.5 * w, -0.4 * l),    // 좌현 선미
-        (-0.5 * w, 0.25 * l)     // 좌현 어깨
+        (0.5 * w, -0.5 * l),     // 우현 선미
+        (-0.5 * w, -0.5 * l),    // 좌현 선미
+        (-0.5 * w, 0.25 * l),    // 좌현 어깨
+        (-0.2 * w, 0.5 * l)      // 뱃머리 좌현
     ]
     let rad = heading * .pi / 180
     let metersPerDegreeLat = 111_320.0

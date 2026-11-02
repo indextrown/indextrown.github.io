@@ -34,8 +34,9 @@ Custom Layer 공식 예제를 열어보면 `MTLDevice`, `shader`, `pipeline`, `p
 12. 예제 1 - 서울, 부산, 광주를 잇는 삼각형
 13. 예제 2 - 시간에 따라 깜빡이는 삼각형 (uniform, triggerRepaint)
 14. 예제 3 - 공식 예제 읽기 (미터 단위 3D 큐브, Globe)
-15. 실전에서 부딪히는 문제들
-16. 아무것도 안 보일 때 체크리스트
+15. Source + Layer와 비교 - Custom Layer는 CPU를 덜 쓸까? (실측)
+16. 실전에서 부딪히는 문제들
+17. 아무것도 안 보일 때 체크리스트
 {: start="12"}
 
 > 이 글은 **Mapbox Maps SDK for iOS v11** 기준입니다. (소스 기준 11.34 ~ 11.35) `CustomLayer`는 `@_spi(Experimental)`로 표시된 실험적 API라 이후 버전에서 바뀔 수 있습니다.
@@ -73,6 +74,18 @@ GPU가 직접 그릴 수 있는 도형(primitive)은 딱 세 가지입니다.
 - **점(point)**, **선(line)**, **삼각형(triangle)**
 - 사각형은 삼각형 2개, 원은 삼각형 여러 개를 이어 붙여서 만듭니다.
 - 3D 큐브는 면 6개 × 삼각형 2개 = **삼각형 12개**, 꼭짓점으로 세면 12 × 3 = **36개**입니다.
+
+Metal에서는 같은 세 가지 도형을 정점을 잇는 방식에 따라 5가지로 나눕니다. `drawPrimitives(type:)`에 넣는 값입니다.
+
+| `MTLPrimitiveType` | 정점을 해석하는 방식 | 정점 6개(v0~v5)일 때 |
+| --- | --- | --- |
+| `.point` | 정점마다 점 하나 | 점 6개 |
+| `.line` | 2개씩 끊어서 선 | 선 3개 (v0-v1, v2-v3, v4-v5) |
+| `.lineStrip` | 이어서 연결된 선 | 선 5개 (v0-v1-v2-…-v5) |
+| `.triangle` | 3개씩 끊어서 삼각형 | 삼각형 2개 |
+| `.triangleStrip` | 앞의 두 정점을 재사용하며 이어 붙인 삼각형 | 삼각형 4개 |
+
+예제 1은 `.triangle`, 15장 측정 예제와 공식 예제의 움직이는 점들은 `.point`를 씁니다.
 
 이때 각 꼭짓점을 **정점(vertex)** 이라고 부릅니다. 정점은 위치뿐 아니라 색, 텍스처 좌표 같은 정보를 함께 가질 수 있습니다.
 
@@ -171,7 +184,20 @@ fragment float4 myFragment(RasterizerData in [[stage_in]]) {
 | `[[buffer(0)]]` | Swift에서 `setVertexBuffer(_, index: 0)`으로 넘긴 데이터 |
 | `[[position]]` | 이 값이 정점의 최종 위치라고 GPU에게 알려줌 |
 | `[[stage_in]]` | Rasterizer가 보간해서 넘겨준 데이터 |
-| `constant` | 읽기 전용 GPU 메모리 공간 |
+| `constant` | 읽기 전용 GPU 메모리 공간 (uniform, 정점 데이터를 읽기만 할 때) |
+| `device` | 읽고 쓸 수 있는 GPU 메모리 공간 (셰이더가 버퍼에 결과를 쓸 때) |
+| `thread`, `threadgroup` | 실행 하나만 쓰는 지역 변수 / compute 셰이더에서 그룹이 공유하는 메모리 |
+| `[[point_size]]` | `.point`로 그릴 때 점의 크기(픽셀). Vertex Shader 출력에 지정 |
+| `[[point_coord]]` | `.point`로 그릴 때 점 안에서의 위치(0~1). 사각형 점을 원으로 깎을 때 사용 |
+| `discard_fragment()` | 이 픽셀은 그리지 않고 버림 |
+
+셰이더 함수는 세 종류입니다. 이 글에서는 앞의 두 가지만 씁니다.
+
+| 함수 종류 | 실행 단위 | 용도 |
+| --- | --- | --- |
+| `vertex` | 정점마다 | 위치 계산 (렌더링 파이프라인 ②) |
+| `fragment` | 픽셀마다 | 색 계산 (렌더링 파이프라인 ④) |
+| `kernel` | 내가 정한 개수만큼 | 그리기와 무관한 범용 계산(compute). 수십만 개 입자의 물리 계산 등 |
 
 Swift 코드와 셰이더는 **`[[buffer(n)]]`의 번호로 연결**된다는 점이 가장 중요합니다. Swift에서 `index: 1`로 넘긴 데이터는 셰이더의 `[[buffer(1)]]` 파라미터로 들어옵니다.
 
@@ -354,7 +380,7 @@ Metal 코드를 처음 보면 `MTL`로 시작하는 타입이 너무 많아서 �
 | `colorAttachments[0].texture` | 색을 그릴 텍스처 (최종적으로 화면에 보일 이미지) |
 | `depthAttachment`, `stencilAttachment` | 깊이, 스텐실 값을 저장할 텍스처 |
 | `loadAction` | 그리기 시작할 때 기존 내용을 어떻게 할지: `.clear`(지움), `.load`(유지), `.dontCare` |
-| `storeAction` | 다 그린 뒤 결과를 저장할지: `.store`, `.dontCare` |
+| `storeAction` | 다 그린 뒤 결과를 저장할지: `.store`(저장), `.dontCare`(버림), `.multisampleResolve`, `.storeAndMultisampleResolve`(멀티샘플 안티앨리어싱용), `.unknown`, `.customSampleDepthStore` |
 
 Custom Layer에서 **반드시 Mapbox가 넘겨준 descriptor로 Encoder를 만들어야 하는 이유**가 여기 있습니다. Mapbox의 descriptor는 이미 그려진 지도(바다, 도로)를 유지하도록 설정되어 있습니다. 실제로 찍어보면 color와 depth 모두 `loadAction`이 `.load`입니다. (12장에서 확인합니다) 만약 직접 descriptor를 만들어 `loadAction = .clear`로 그리면, 내 삼각형만 남고 그 아래 지도는 지워집니다.
 
@@ -393,6 +419,8 @@ depthCompareFunction = .less  →  0.55 < 0.40 ? 아니오  →  안 그림 (건
 | `isDepthWriteEnabled = true` | 그린 뒤 내 깊이를 기록 | 뒤에 그려질 것을 가리고 싶을 때 |
 | `depthCompareFunction = .always` | 비교 없이 항상 그림 | 평평한 2D 도형 (예제 1) |
 
+비교 함수(`MTLCompareFunction`)는 8가지입니다. `.never`(항상 버림), `.less`, `.equal`, `.lessEqual`, `.greater`, `.notEqual`, `.greaterEqual`, `.always`(항상 통과). "새 깊이 ○ 기존 깊이"가 참일 때 그립니다.
+
 Custom Layer는 Mapbox와 **같은 깊이 버퍼를 공유**합니다. 그래서 깊이 테스트를 켜면 Mapbox의 3D 건물(fill-extrusion) 뒤에 있는 내 큐브가 자연스럽게 가려집니다. 반대로 평평한 도형에서 깊이 테스트를 켜면 지면과 깊이 값이 거의 같아 픽셀이 지글지글 깨져 보이는 **z-fighting**이 생길 수 있어서, 예제 1에서는 `.always`로 끕니다.
 
 ### 블렌딩 (Blending)
@@ -414,6 +442,13 @@ Custom Layer는 Mapbox와 **같은 깊이 버퍼를 공유**합니다. 그래서
         = (0.70 + 0.30, 0.245 + 0.30, 0.14 + 0.30)
         = (1.00, 0.545, 0.44)   ← 흰 바탕에 70% 주황이 비친 색
 ```
+
+블렌딩 공식에 들어가는 값은 두 가지 종류에서 고릅니다.
+
+| 항목 | 종류 |
+| --- | --- |
+| 섞는 비율 `MTLBlendFactor` | `.zero`, `.one`, `.sourceColor`, `.oneMinusSourceColor`, `.sourceAlpha`, `.oneMinusSourceAlpha`, `.destinationColor`, `.oneMinusDestinationColor`, `.destinationAlpha`, `.oneMinusDestinationAlpha`, `.sourceAlphaSaturated`, `.blendColor` 등 |
+| 섞는 연산 `MTLBlendOperation` | `.add`(기본), `.subtract`, `.reverseSubtract`, `.min`, `.max` |
 
 rgb에 alpha를 **미리 곱해두는 방식을 premultiplied alpha**라고 합니다. 일반 방식(`source = .sourceAlpha`)과 결과는 같지만, 여러 반투명 레이어를 겹치거나 텍스처를 확대, 축소할 때 가장자리에 검은 테두리가 생기지 않아 그래픽스에서 널리 쓰입니다. 공식 예제도 `destinationRGBBlendFactor = .oneMinusSourceAlpha`에 source는 기본값(`.one`)을 사용하는 premultiplied 방식입니다. 중요한 것은 **셰이더 출력과 블렌딩 설정이 짝을 이뤄야 한다**는 점입니다. 셰이더는 premultiplied로 내보내는데 블렌딩은 `.sourceAlpha`로 설정하면 alpha가 두 번 곱해져 색이 어둡게 나옵니다.
 
@@ -526,7 +561,7 @@ Custom Layer가 진짜 필요한 경우는 이런 것들입니다.
 
 일반 Layer에서 당연하게 쓰던 기능들이 Custom Layer에서는 동작하지 않습니다. 직접 구현해야 하는 목록이라고 보면 됩니다.
 
-- **`queryRenderedFeatures`로 조회되지 않습니다.** Mapbox는 내가 무엇을 그렸는지 모릅니다. 탭 감지는 직접 해야 합니다. (15장에서 다룹니다)
+- **`queryRenderedFeatures`로 조회되지 않습니다.** Mapbox는 내가 무엇을 그렸는지 모릅니다. 탭 감지는 직접 해야 합니다. (16장에서 다룹니다)
 - **Expression, data-driven styling이 없습니다.** 데이터에 따라 색을 바꾸려면 정점 데이터나 uniform으로 직접 넘겨야 합니다.
 - **라벨 충돌 회피(collision)가 없습니다.** 내 그래픽은 라벨 배치에 영향을 주지 않습니다.
 - **투영, 지형 대응을 직접 해야 합니다.** Globe, terrain에서 올바른 위치에 그리려면 `parameters.projection`, `elevationData`를 직접 활용해야 합니다.
@@ -590,7 +625,20 @@ protocol CustomLayerHost: NSObjectProtocol {
 
 ### 선택 메서드
 
-이 외에 `prerender(_:mtlCommandBuffer:)`, `renderToTile(_:mtlRenderCommandEncoder:)` 같은 선택 메서드도 있습니다. 지형(terrain)이나 Globe 위에 텍스처처럼 덮어 그릴 때 쓰는 실험적 기능이라, 이 글에서는 다루지 않고 이후 딥다이브 주제로 남겨두겠습니다.
+SDK 헤더(`MBMCustomLayerHost.h`)에 정의된 메서드를 모두 정리하면 다음과 같습니다.
+
+| 메서드 | 필수 | 그래픽스 API | 역할 |
+| --- | --- | --- | --- |
+| `renderingWillStart(_:colorPixelFormat:depthStencilPixelFormat:)` | 필수 | Metal | 리소스 준비 |
+| `render(_:mtlCommandBuffer:mtlRenderPassDescriptor:)` | 필수 | Metal | 매 프레임 그리기 |
+| `renderingWillEnd()` | 필수 | 공통 | 정리 |
+| `prerender(_:mtlCommandBuffer:)` | 선택 (실험적) | Metal | 본 렌더링 전에 실행. 반환하는 설정으로 렌더링 방식 지정 |
+| `renderToTile(_:mtlRenderCommandEncoder:)` | 선택 (실험적) | Metal | 지형(terrain)이나 Globe 위에 덮어씌울 타일 텍스처에 그리기 |
+| `renderingWillStartOpenGL()` | 선택 | OpenGL | OpenGL 백엔드일 때 준비 |
+| `renderOpenGL(_:)` | 선택 | OpenGL | OpenGL 백엔드일 때 그리기 |
+| `openGLContextLost()` | 선택 | OpenGL | OpenGL 컨텍스트가 사라졌을 때 |
+
+iOS의 Mapbox는 Metal로 그리므로 OpenGL 메서드는 구현하지 않아도 됩니다. Apple이 OpenGL을 deprecated 했기 때문에 선택 메서드로 남아 있습니다. `prerender`, `renderToTile`은 지형, Globe 위에 텍스처처럼 덮어 그릴 때 쓰는 실험적 기능이라 이후 딥다이브 주제로 남겨두겠습니다.
 
 &nbsp;
 
@@ -609,7 +657,17 @@ protocol CustomLayerHost: NSObjectProtocol {
 | `projectionMatrix` | World 좌표 → Clip space 변환 행렬. `[NSNumber]` 16개 |
 | `depthRange` | 3D 콘텐츠에 쓸 깊이 범위 |
 | `elevationData` | 지형(terrain)이 켜져 있을 때 고도 정보 |
+| `renderToTilesIDs` | (실험적) 지형, Globe에 덮어씌울 타일 목록. `renderToTile`과 함께 사용 |
 | `projection` | 현재 지도 투영(Mercator, Globe)에 맞는 변환 도우미 |
+
+`projection`(`CustomLayerMapProjection`)이 제공하는 도우미는 4가지입니다. 14장의 공식 예제가 Globe에 대응할 때 이것들을 씁니다.
+
+| 메서드 | 역할 |
+| --- | --- |
+| `convertMercatorModelMatrix(forMatrix:ignoreDistortion:)` | Mercator 기준으로 만든 Model 행렬을 현재 투영에 맞게 변환 |
+| `getModelMatrix()` | 현재 투영의 로컬 좌표(Globe면 지구 중심 기준 ECEF)를 World 좌표로 바꾸는 행렬 |
+| `getTransitionPhase()` | 현재 투영과 Mercator 사이 전환 진행도 0 ~ 1 (Globe 상태면 1, 확대할수록 0으로) |
+| `getTransitionMatrix()` | 전환 중에 Mercator 쪽 위치를 보간 목적지로 쓰기 위한 행렬 |
 
 가장 많이 쓰는 것은 `projectionMatrix`와 `zoom`입니다. `projectionMatrix`는 `[NSNumber]` 16개로 오기 때문에 `simd_float4x4`로 바꿔서 사용합니다. 값은 **열 우선(column-major)** 순서로 들어 있어서 4개씩 끊어 열(column)로 만들면 됩니다.
 
@@ -1157,7 +1215,147 @@ out.position = mix(pos_merc, pos_ecef, t);
 
 &nbsp;
 
-## 15. 실전에서 부딪히는 문제들
+## 15. Source + Layer와 비교 - Custom Layer는 CPU를 덜 쓸까?
+
+"Custom Layer를 쓰면 기존 Source + Layer보다 CPU를 덜 쓰고 GPU를 쓴다"는 말을 자주 듣습니다. 직접 측정해 보면 **맞지만 조건이 붙습니다.** 먼저 오해 하나를 정리하고 시작하겠습니다.
+
+> 두 방식 모두 **실제로 그리는 일은 GPU가 합니다.** Mapbox의 circle, line, fill Layer도 Metal로 그립니다. 차이는 그리기 전 단계, 즉 **"데이터를 GPU가 그릴 수 있는 형태로 준비하는 일"과 "움직이는 위치를 계산하는 일"을 누가, 얼마나 자주 하느냐**입니다.
+
+<img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/cpu-gpu-compare.svg" alt="Source + Layer와 Custom Layer의 CPU, GPU 분업" style="width: 100%;">
+
+### Source + Layer는 데이터가 바뀔 때 CPU가 무슨 일을 할까
+
+GeoJSON Source에 데이터를 넣으면 Mapbox 엔진은 GPU에 넘기기 전에 이런 일을 합니다. 모두 CPU 작업입니다.
+
+| 단계 | 하는 일 |
+| --- | --- |
+| ① Feature 생성 | 앱이 Swift에서 좌표를 계산하고 `Feature` 객체 N개를 만듦 |
+| ② 변환 | Swift 객체를 엔진(C++)이 쓰는 형태로 변환 |
+| ③ 타일 분할 | 데이터를 줌, 타일 단위로 잘라 둠 (Vector Tile처럼 다루기 위해) |
+| ④ Bucket 생성 | 타일마다 Layer의 Expression을 Feature별로 평가하고, GPU용 정점을 만듦. circle은 점마다 사각형, line은 이음새(join)와 끝(cap), fill은 삼각형 분할, symbol은 글자 배치와 충돌 계산 |
+| ⑤ 업로드 | 만들어진 정점 버퍼를 GPU 메모리로 |
+| ⑥ 그리기 | GPU가 정점을 그대로 그림 |
+
+이 구조는 **데이터가 가끔 바뀔 때 매우 효율적**입니다. ①~⑤는 데이터가 바뀔 때 한 번만 하고, 그 뒤에는 카메라를 움직여도 GPU가 같은 버퍼를 새 행렬로 다시 그리기만 하면 됩니다. Expression, 클러스터링, 라벨 충돌 처리, `queryRenderedFeatures`가 모두 이 준비 단계 덕분에 공짜로 생깁니다.
+
+문제는 **데이터가 매 프레임 바뀔 때**입니다. 점 위치가 1초에 60번 바뀌면 ①~⑤도 1초에 60번 반복됩니다. CPU 비용이 **점 개수 × 갱신 횟수**에 비례합니다.
+
+### Custom Layer에서는 무엇이 달라질까
+
+Custom Layer에는 ③, ④ 단계가 없습니다. 내가 GPU가 바로 읽을 정점 데이터를 직접 만들어 넘기기 때문입니다. 여기에 **움직임 계산을 Vertex Shader로 옮기면** 매 프레임 CPU가 하는 일이 거의 사라집니다.
+
+- **시작할 때 1번**: 점마다 기준 위치와 위상(phase)을 `MTLBuffer`로 올려 둡니다.
+- **매 프레임 CPU**: 행렬 16개 숫자와 시간 1개를 uniform으로 넘기고 draw call 1번. **점이 3000개든 2만 개든 같은 양**입니다.
+- **매 프레임 GPU**: Vertex Shader가 점 N개에 대해 `기준 위치 + 반경 × (cos(시간 + 위상), sin(시간 + 위상))`을 **동시에** 계산합니다. 4장에서 본 "병렬로 실행되는 순수 함수"가 그대로 쓰입니다.
+
+즉 CPU가 줄어드는 이유는 Custom Layer라서가 아니라, **N에 비례하는 계산을 CPU에서 GPU로 옮겼고, 엔진의 준비 단계(③, ④)를 건너뛰었기 때문**입니다.
+
+### 실제로 측정하기
+
+같은 시뮬레이터(iPhone 16 Pro, SDK 11.34.1, Release 빌드)에서 서울 상공에 점을 뿌리고, 모든 점이 반경 300m 원을 그리며 계속 움직이게 했습니다. 앱 프로세스의 누적 CPU 시간을 10초 간격으로 읽어 평균 CPU 사용률을 계산했고, 3000개는 3번, 2만 개는 2번 반복했습니다.
+
+| 점 개수 | 방식 | CPU (평균) | 렌더링 FPS |
+| --- | --- | --- | --- |
+| 3,000 | 기준선: GeoJSON, 움직이지 않음 | 약 1% | 0 (다시 그릴 일이 없음) |
+| 3,000 | A. GeoJSON, **매 프레임(60Hz)** `updateGeoJSONSource` | **약 99%** (95 ~ 107%) | 60 |
+| 3,000 | A'. GeoJSON, **1초에 1번** 갱신 | 약 6% | 20 |
+| 3,000 | B. Custom Layer, 셰이더에서 위치 계산 | **약 8%** (7.6 ~ 9.5%) | 60 |
+| 20,000 | A. GeoJSON, 60Hz 갱신 | **111 ~ 130%** | **9 ~ 18 (끊김)** |
+| 20,000 | A'. GeoJSON, 1초에 1번 갱신 | 약 20% | 18 |
+| 20,000 | B. Custom Layer | **약 9 ~ 14%** | **60** |
+
+- 같은 60fps 애니메이션에서 **A는 CPU 코어 하나를 거의 다 쓰고(약 99%), B는 약 8%** 를 씁니다.
+- 점을 2만 개로 늘리면 A는 100%를 넘어(여러 코어 사용) 프레임이 9 ~ 18fps로 떨어지지만, **B는 CPU가 거의 그대로이고 60fps를 유지**합니다. 늘어난 계산을 GPU가 병렬로 흡수했기 때문입니다.
+- A'처럼 갱신을 1초에 1번으로 줄이면 GeoJSON도 CPU가 크게 줄어듭니다. 대신 점이 1초마다 **뚝뚝 끊어져 이동**합니다. 선박 위치(AIS)처럼 데이터 자체가 몇 초에 한 번 오는 경우라면 A'로도 충분합니다.
+
+<details class="notion-toggle-list" markdown="1">
+<summary>측정에 쓴 Custom Layer 셰이더 코드 보기</summary>
+
+```cpp
+struct BenchVertex { float2 position; float phase; float pad; };   // Mercator 기준 위치 + 위상
+struct BenchUniforms { float4x4 mvp; float time; float radius; float pointSize; float pad; };
+struct BenchOut { float4 position [[position]]; float pointSize [[point_size]]; };
+
+vertex BenchOut benchVertex(uint vid [[vertex_id]],
+                            constant BenchVertex *vertices [[buffer(0)]],
+                            constant BenchUniforms &u [[buffer(1)]]) {
+    BenchVertex v = vertices[vid];
+    float angle = u.time + v.phase;
+    float2 p = v.position + u.radius * float2(cos(angle), sin(angle));   // 위치 계산을 GPU에서
+    BenchOut out;
+    out.position = u.mvp * float4(p, 0.0, 1.0);
+    out.pointSize = u.pointSize;                                         // 점 크기 (픽셀)
+    return out;
+}
+
+fragment float4 benchFragment(BenchOut in [[stage_in]], float2 pc [[point_coord]]) {
+    if (length(pc - 0.5) > 0.5) discard_fragment();   // 사각형 점을 원으로 깎기
+    return float4(1.0, 0.55, 0.0, 1.0);
+}
+```
+
+</details>
+
+<details class="notion-toggle-list" markdown="1">
+<summary>측정에 쓴 두 방식의 Swift 코드 보기 (핵심 부분 발췌)</summary>
+
+```swift
+// A. GeoJSON: 매 프레임 CPU에서 좌표 계산 → Source 갱신
+@objc private func tick() {
+    let t = CACurrentMediaTime() - start
+    let features = points.map { base, phase in
+        Feature(geometry: Point(CLLocationCoordinate2D(
+            latitude: base.latitude + rLat * sin(t + phase),
+            longitude: base.longitude + rLng * cos(t + phase))))
+    }
+    mapView.mapboxMap.updateGeoJSONSource(withId: "bench", geoJSON: .featureCollection(FeatureCollection(features: features)))
+}
+
+// B. Custom Layer: 데이터는 그대로, 다시 그리기만 요청
+@objc private func tick() {
+    mapView.mapboxMap.triggerRepaint()
+}
+
+// B의 render(): N과 무관하게 uniform 하나와 draw call 1번
+func render(_ parameters: CustomLayerRenderParameters, mtlCommandBuffer: MTLCommandBuffer, mtlRenderPassDescriptor: MTLRenderPassDescriptor) {
+    guard let encoder = mtlCommandBuffer.makeRenderCommandEncoder(descriptor: mtlRenderPassDescriptor) else { return }
+    let worldSize = Float(Projection.worldSize(scale: pow(2, parameters.zoom)))
+    var uniforms = BenchUniforms(
+        mvp: parameters.projectionMatrix.simdFloat4x4 * simd_float4x4(diagonal: SIMD4<Float>(worldSize, worldSize, 1, 1)),
+        time: Float(CACurrentMediaTime() - start),
+        radius: radiusInMercator,
+        pointSize: Float(6 * UIScreen.main.scale))
+    // ... viewport, pipeline 설정 (예제 1과 같음)
+    encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)          // 시작할 때 1번 만든 버퍼
+    encoder.setVertexBytes(&uniforms, length: MemoryLayout<BenchUniforms>.stride, index: 1)
+    encoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: count)
+    encoder.endEncoding()
+}
+```
+
+</details>
+
+### 측정 결과를 읽을 때 주의할 점
+
+- **Mac 위의 시뮬레이터 수치입니다.** 실제 기기에서는 절댓값이 다르고, 휴대폰 CPU가 Mac보다 느리므로 A의 부담은 더 커질 가능성이 큽니다. 두 방식의 **상대적인 차이**로 읽어 주세요.
+- **GPU 사용량은 재지 않았습니다.** B는 그만큼 GPU에 일을 넘긴 것이지만, 점 2만 개의 삼각함수 계산은 GPU 입장에서 매우 작은 일입니다.
+- **완전히 같은 그림은 아닙니다.** CircleLayer는 테두리, 안티앨리어싱, Expression 평가까지 해 주는 반면 측정용 셰이더는 단색 점만 그립니다.
+- **Custom Layer라고 항상 CPU가 적은 것은 아닙니다.** 매 프레임 Swift에서 N개 위치를 계산해 버퍼를 다시 채우면 CPU는 다시 N에 비례합니다. (③, ④가 없어서 GeoJSON보다는 가볍습니다) 14장의 공식 예제 "움직이는 점들"이 실제로 이 방식입니다. 점 128개라 문제가 없을 뿐입니다.
+
+### 그래서 언제 무엇을 쓸까
+
+| 상황 | 추천 | 이유 |
+| --- | --- | --- |
+| 데이터가 가끔 바뀜 (조회 결과, 가게 목록) | Source + Layer | 준비 비용은 한 번뿐이고 Expression, 클러스터링, 탭 조회가 공짜 |
+| 몇 초에 한 번 위치가 갱신됨 (AIS 선박, 차량 위치) | Source + Layer, 갱신 주기에 맞춰 `updateGeoJSONSource` | 1Hz 갱신이면 측정상 CPU 6 ~ 20% |
+| 수천 ~ 수만 개가 **매 프레임 부드럽게** 움직임 (파티클, 바람, 해류, 궤적 보간) | **Custom Layer + 셰이더에서 위치 계산** | CPU가 N과 무관하게 일정, 60fps 유지 |
+| 매 프레임 움직이지만 수백 개 이하 | 어느 쪽이든 가능 | 차이가 체감되지 않음. 기능이 많은 Source + Layer가 편함 |
+
+Custom Layer의 성능 이점은 **"GPU에서 계산할 수 있는 움직임"** 이 있을 때 생깁니다. 옮길 계산이 없다면 기능을 포기하고 복잡도만 얻게 되니, 9장의 "언제 Custom Layer를 써야 할까" 표와 함께 판단하면 됩니다.
+
+&nbsp;
+
+## 16. 실전에서 부딪히는 문제들
 
 예제를 실제 기능으로 옮기면 곧바로 만나는 문제들입니다.
 
@@ -1262,7 +1460,7 @@ SDK 변경 이력에 따르면 Mapbox는 `CustomLayerHost` 구현체를 **강한
 
 &nbsp;
 
-## 16. 아무것도 안 보일 때 체크리스트
+## 17. 아무것도 안 보일 때 체크리스트
 
 Custom Layer는 실수해도 에러 없이 **그냥 아무것도 안 보이는** 경우가 많습니다. 아래를 순서대로 확인해 보세요.
 
@@ -1307,6 +1505,7 @@ Custom Layer는 실수해도 에러 없이 **그냥 아무것도 안 보이는**
 | Triple buffering | CPU와 GPU가 같은 버퍼를 동시에 쓰지 않도록 버퍼를 돌려쓰는 기법 |
 | 깊이 버퍼 | 픽셀마다 가장 가까운 것의 거리를 저장해 가려짐을 처리 |
 | Premultiplied alpha | rgb에 alpha를 미리 곱해두는 색 표현, 블렌딩 설정과 짝을 이룸 |
+| Bucket | Mapbox가 타일마다 만드는 GPU용 정점 묶음. Source + Layer의 CPU 비용 대부분이 여기서 생김 |
 | CustomLayer | Source 없이 Layer 배열에 자리 잡는 Layer |
 | CustomLayerHost | Metal로 직접 그리는 렌더러. Start(1번) → Render(매 프레임) → End(1번) |
 | projectionMatrix | Mapbox가 매 프레임 주는 World → Clip space 행렬 |

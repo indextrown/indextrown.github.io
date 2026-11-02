@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" width="960" height="560" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker></defs>
+  <rect x="1" y="1" width="958" height="558" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">점이 움직일 때, 누가 무슨 일을 할까</text>
+  <text x="40" y="72" font-size="14" fill="#64748b">두 방식 모두 그리기는 GPU가 합니다. 차이는 "그릴 준비"와 "위치 계산"을 어디서 하느냐입니다</text>
+
+  <!-- legend -->
+  <rect x="640" y="90" width="14" height="14" rx="3" fill="#dbeafe" stroke="#3b82f6"/><text x="660" y="102" font-size="12" fill="#334155">CPU 작업</text>
+  <rect x="740" y="90" width="14" height="14" rx="3" fill="#ffedd5" stroke="#ea580c"/><text x="760" y="102" font-size="12" fill="#334155">GPU 작업</text>
+
+  <!-- Lane A -->
+  <text x="40" y="132" font-size="16" font-weight="700" fill="#0f172a">A. GeoJSON Source + CircleLayer</text>
+  <text x="330" y="132" font-size="13" fill="#dc2626">데이터가 바뀔 때마다 ①~⑤를 전부 다시</text>
+  <g font-size="12" text-anchor="middle">
+    <rect x="40" y="148" width="130" height="78" rx="8" fill="#dbeafe" stroke="#3b82f6"/><text x="105" y="172" font-weight="700" fill="#1e3a8a">① Feature 생성</text><text x="105" y="192" fill="#334155">Swift에서 좌표 계산</text><text x="105" y="210" fill="#334155">점 N개 객체 생성</text>
+    <rect x="186" y="148" width="130" height="78" rx="8" fill="#dbeafe" stroke="#3b82f6"/><text x="251" y="172" font-weight="700" fill="#1e3a8a">② 변환</text><text x="251" y="192" fill="#334155">Swift → 엔진(C++)</text><text x="251" y="210" fill="#334155">GeoJSON 파싱</text>
+    <rect x="332" y="148" width="130" height="78" rx="8" fill="#dbeafe" stroke="#3b82f6"/><text x="397" y="172" font-weight="700" fill="#1e3a8a">③ 타일 분할</text><text x="397" y="192" fill="#334155">줌, 타일 단위로</text><text x="397" y="210" fill="#334155">데이터 자르기</text>
+    <rect x="478" y="148" width="150" height="78" rx="8" fill="#dbeafe" stroke="#3b82f6"/><text x="553" y="172" font-weight="700" fill="#1e3a8a">④ Bucket 생성</text><text x="553" y="192" fill="#334155">Expression 평가</text><text x="553" y="210" fill="#334155">점마다 사각형 정점 생성</text>
+    <rect x="644" y="148" width="120" height="78" rx="8" fill="#dbeafe" stroke="#3b82f6"/><text x="704" y="172" font-weight="700" fill="#1e3a8a">⑤ 업로드</text><text x="704" y="192" fill="#334155">새 정점 버퍼를</text><text x="704" y="210" fill="#334155">GPU 메모리로</text>
+    <rect x="780" y="148" width="140" height="78" rx="8" fill="#ffedd5" stroke="#ea580c"/><text x="850" y="172" font-weight="700" fill="#9a3412">⑥ 그리기</text><text x="850" y="192" fill="#334155">받은 정점을</text><text x="850" y="210" fill="#334155">그대로 그림</text>
+  </g>
+  <g stroke="#64748b" stroke-width="1.5" marker-end="url(#a)"><line x1="171" y1="187" x2="183" y2="187"/><line x1="317" y1="187" x2="329" y2="187"/><line x1="463" y1="187" x2="475" y2="187"/><line x1="629" y1="187" x2="641" y2="187"/><line x1="765" y1="187" x2="777" y2="187"/></g>
+  <rect x="40" y="236" width="724" height="30" rx="6" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="402" y="256" font-size="13" fill="#b91c1c" text-anchor="middle" font-weight="700">CPU 비용 ≈ 점 개수(N) × 갱신 횟수 (60Hz면 1초에 60번)</text>
+
+  <!-- Lane B -->
+  <text x="40" y="312" font-size="16" font-weight="700" fill="#0f172a">B. Custom Layer (위치 계산을 Vertex Shader에서)</text>
+  <g font-size="12" text-anchor="middle">
+    <rect x="40" y="330" width="200" height="78" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-dasharray="5 4"/><text x="140" y="354" font-weight="700" fill="#1e3a8a">시작할 때 1번만</text><text x="140" y="374" fill="#334155">기준 위치 + 위상 N개를</text><text x="140" y="392" fill="#334155">MTLBuffer로 업로드</text>
+    <rect x="270" y="330" width="220" height="78" rx="8" fill="#dbeafe" stroke="#3b82f6"/><text x="380" y="354" font-weight="700" fill="#1e3a8a">매 프레임 (CPU)</text><text x="380" y="374" fill="#334155">uniform만 전달: 행렬 16개 +</text><text x="380" y="392" fill="#334155">시간 1개 → N과 무관하게 일정</text>
+    <rect x="520" y="330" width="400" height="78" rx="8" fill="#ffedd5" stroke="#ea580c"/><text x="720" y="354" font-weight="700" fill="#9a3412">매 프레임 (GPU)</text><text x="720" y="374" fill="#334155">Vertex Shader가 N개 정점을 동시에 실행:</text><text x="720" y="392" fill="#334155">위치 = 기준 + 반경 × (cos(시간+위상), sin(시간+위상)) → 그리기</text>
+  </g>
+  <g stroke="#64748b" stroke-width="1.5" marker-end="url(#a)"><line x1="241" y1="369" x2="267" y2="369"/><line x1="491" y1="369" x2="517" y2="369"/></g>
+  <rect x="270" y="418" width="650" height="30" rx="6" fill="#f0fdf4" stroke="#bbf7d0"/>
+  <text x="595" y="438" font-size="13" fill="#15803d" text-anchor="middle" font-weight="700">CPU 비용 ≈ 일정 (N이 늘어나면 GPU가 병렬로 흡수)</text>
+
+  <!-- measured -->
+  <rect x="40" y="466" width="880" height="72" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="60" y="492" font-size="13" font-weight="700" fill="#334155">실측 (iPhone 16 Pro 시뮬레이터, 점이 반경 300m 원을 그리며 계속 이동)</text>
+  <text x="60" y="516" font-size="13" fill="#334155">점 3,000개:  A(60Hz 갱신) CPU 약 99%, 60fps   ·   B CPU 약 8%, 60fps</text>
+  <text x="60" y="534" font-size="13" fill="#334155">점 20,000개: A(60Hz 갱신) CPU 111~130%, 9~18fps로 끊김   ·   B CPU 약 9~14%, 60fps 유지</text>
+</svg>
