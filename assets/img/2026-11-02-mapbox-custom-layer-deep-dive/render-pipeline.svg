@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" width="960" height="420" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker>
+    <pattern id="grid" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M12,0 L0,0 0,12" fill="none" stroke="#e2e8f0"/></pattern>
+  </defs>
+  <rect x="1" y="1" width="958" height="418" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">렌더링 파이프라인</text>
+  <text x="235" y="48" font-size="14" fill="#64748b">삼각형 하나가 화면의 픽셀이 되기까지</text>
+
+  <!-- boxes -->
+  <rect x="24" y="80" width="168" height="270" rx="12" fill="#f8fafc" stroke="#cbd5e1"/>
+  <rect x="212" y="80" width="168" height="270" rx="12" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+  <rect x="400" y="80" width="168" height="270" rx="12" fill="#f8fafc" stroke="#cbd5e1"/>
+  <rect x="588" y="80" width="168" height="270" rx="12" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+  <rect x="776" y="80" width="168" height="270" rx="12" fill="#f8fafc" stroke="#cbd5e1"/>
+
+  <g font-size="15" font-weight="700" fill="#0f172a">
+    <text x="40" y="108">① Vertex 데이터</text>
+    <text x="228" y="108" fill="#c2410c">② Vertex Shader</text>
+    <text x="416" y="108">③ Rasterizer</text>
+    <text x="604" y="108" fill="#c2410c">④ Fragment Shader</text>
+    <text x="792" y="108">⑤ 화면</text>
+  </g>
+  <g font-size="12" fill="#64748b">
+    <text x="40" y="128">CPU → GPU (MTLBuffer)</text>
+    <text x="228" y="128" fill="#ea580c">정점마다 1번 실행</text>
+    <text x="416" y="128">GPU가 자동 처리</text>
+    <text x="604" y="128" fill="#ea580c">픽셀마다 1번 실행</text>
+    <text x="792" y="128">Depth test · Blending</text>
+  </g>
+
+  <!-- 1: raw vertices as list -->
+  <g font-size="11" fill="#334155" font-family="Menlo,monospace">
+    <rect x="40" y="145" width="136" height="110" rx="6" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="50" y="167">v0 (0.8527, 0.3873)</text>
+    <text x="50" y="187">v1 (0.8585, 0.3955)</text>
+    <text x="50" y="207">v2 (0.8524, 0.3956)</text>
+    <text x="50" y="235" fill="#94a3b8">+ color …</text>
+  </g>
+  <!-- 2: positioned points in clip box -->
+  <rect x="236" y="145" width="120" height="110" fill="#ffffff" stroke="#fdba74" stroke-dasharray="4 3"/>
+  <g fill="#ea580c"><circle cx="270" cy="165" r="5"/><circle cx="335" cy="235" r="5"/><circle cx="258" cy="232" r="5"/></g>
+  <text x="296" y="272" font-size="11" fill="#9a3412" text-anchor="middle">"화면 어디에?" 위치 계산</text>
+  <!-- 3: raster grid -->
+  <rect x="424" y="145" width="120" height="110" fill="url(#grid)" stroke="#cbd5e1"/>
+  <g fill="#cbd5e1">
+    <rect x="460" y="157" width="12" height="12"/>
+    <rect x="460" y="169" width="12" height="12"/><rect x="472" y="169" width="12" height="12"/>
+    <rect x="448" y="181" width="12" height="12"/><rect x="460" y="181" width="12" height="12"/><rect x="472" y="181" width="12" height="12"/><rect x="484" y="181" width="12" height="12"/>
+    <rect x="448" y="193" width="12" height="12"/><rect x="460" y="193" width="12" height="12"/><rect x="472" y="193" width="12" height="12"/><rect x="484" y="193" width="12" height="12"/><rect x="496" y="193" width="12" height="12"/>
+    <rect x="448" y="205" width="12" height="12"/><rect x="460" y="205" width="12" height="12"/><rect x="472" y="205" width="12" height="12"/><rect x="484" y="205" width="12" height="12"/><rect x="496" y="205" width="12" height="12"/><rect x="508" y="205" width="12" height="12"/>
+    <rect x="436" y="217" width="12" height="12"/><rect x="448" y="217" width="12" height="12"/><rect x="460" y="217" width="12" height="12"/><rect x="472" y="217" width="12" height="12"/><rect x="484" y="217" width="12" height="12"/><rect x="496" y="217" width="12" height="12"/><rect x="508" y="217" width="12" height="12"/><rect x="520" y="217" width="12" height="12"/>
+  </g>
+  <polygon points="466,160 530,228 440,228" fill="none" stroke="#64748b" stroke-width="1.5"/>
+  <text x="484" y="272" font-size="11" fill="#475569" text-anchor="middle">삼각형이 덮는 픽셀 찾기</text>
+  <!-- 4: colored grid -->
+  <rect x="612" y="145" width="120" height="110" fill="url(#grid)" stroke="#fdba74"/>
+  <g>
+    <rect x="648" y="157" width="12" height="12" fill="#f97316"/>
+    <rect x="648" y="169" width="12" height="12" fill="#f97316"/><rect x="660" y="169" width="12" height="12" fill="#fb923c"/>
+    <rect x="636" y="181" width="12" height="12" fill="#f97316"/><rect x="648" y="181" width="12" height="12" fill="#fb923c"/><rect x="660" y="181" width="12" height="12" fill="#fb923c"/><rect x="672" y="181" width="12" height="12" fill="#fdba74"/>
+    <rect x="636" y="193" width="12" height="12" fill="#fb923c"/><rect x="648" y="193" width="12" height="12" fill="#fb923c"/><rect x="660" y="193" width="12" height="12" fill="#fdba74"/><rect x="672" y="193" width="12" height="12" fill="#fdba74"/><rect x="684" y="193" width="12" height="12" fill="#fed7aa"/>
+    <rect x="636" y="205" width="12" height="12" fill="#fb923c"/><rect x="648" y="205" width="12" height="12" fill="#fdba74"/><rect x="660" y="205" width="12" height="12" fill="#fdba74"/><rect x="672" y="205" width="12" height="12" fill="#fed7aa"/><rect x="684" y="205" width="12" height="12" fill="#fed7aa"/><rect x="696" y="205" width="12" height="12" fill="#ffedd5"/>
+    <rect x="624" y="217" width="12" height="12" fill="#fb923c"/><rect x="636" y="217" width="12" height="12" fill="#fdba74"/><rect x="648" y="217" width="12" height="12" fill="#fdba74"/><rect x="660" y="217" width="12" height="12" fill="#fed7aa"/><rect x="672" y="217" width="12" height="12" fill="#fed7aa"/><rect x="684" y="217" width="12" height="12" fill="#ffedd5"/><rect x="696" y="217" width="12" height="12" fill="#ffedd5"/><rect x="708" y="217" width="12" height="12" fill="#ffedd5"/>
+  </g>
+  <text x="672" y="272" font-size="11" fill="#9a3412" text-anchor="middle">"무슨 색으로?" 색 계산</text>
+  <!-- 5: final on map -->
+  <rect x="800" y="145" width="120" height="110" rx="4" fill="#e2e8f0"/>
+  <path d="M800,145 L830,145 L838,200 L822,255 L800,255 Z" fill="#bfdbfe"/>
+  <path d="M820,240 L920,170" stroke="#fbbf24" stroke-width="4"/>
+  <polygon points="854,160 912,228 826,228" fill="#f97316" fill-opacity="0.75"/>
+  <text x="860" y="272" font-size="11" fill="#475569" text-anchor="middle">지도 위에 합성</text>
+
+  <g stroke="#64748b" stroke-width="2" marker-end="url(#a)">
+    <line x1="193" y1="215" x2="209" y2="215"/><line x1="381" y1="215" x2="397" y2="215"/><line x1="569" y1="215" x2="585" y2="215"/><line x1="757" y1="215" x2="773" y2="215"/>
+  </g>
+  <g font-size="11" fill="#475569">
+    <text x="40" y="300">Swift 코드에서 준비</text><text x="40" y="318">(Mercator 좌표, 색)</text>
+    <text x="228" y="300" fill="#c2410c">내가 작성 (MSL)</text><text x="228" y="318">좌표 변환, 결과는 clip space</text>
+    <text x="416" y="300">프로그래밍 불가</text><text x="416" y="318">정점 사이 값은 보간</text>
+    <text x="604" y="300" fill="#c2410c">내가 작성 (MSL)</text><text x="604" y="318">float4 색을 return</text>
+    <text x="792" y="300">파이프라인 설정으로</text><text x="792" y="318">동작 결정</text>
+  </g>
+  <rect x="24" y="370" width="14" height="14" rx="3" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+  <text x="46" y="382" font-size="12" fill="#475569">주황색 = 셰이더 (GPU에서 실행되는 내가 작성하는 프로그램)</text>
+  <rect x="440" y="370" width="14" height="14" rx="3" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="462" y="382" font-size="12" fill="#475569">회색 = 고정 기능 또는 CPU 쪽 준비</text>
+</svg>

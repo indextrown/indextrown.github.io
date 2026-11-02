@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 300" width="960" height="300" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+  <rect x="1" y="1" width="958" height="298" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">GPU가 그릴 수 있는 것은 점, 선, 삼각형뿐입니다</text>
+  <g font-size="14" font-weight="700" fill="#334155" text-anchor="middle">
+    <text x="108" y="268">점 (point)</text>
+    <text x="294" y="268">선 (line)</text>
+    <text x="480" y="268">삼각형 (triangle)</text>
+    <text x="666" y="268">사각형 = 삼각형 2개</text>
+    <text x="852" y="268">원 = 삼각형 여러 개</text>
+  </g>
+  <g fill="#f8fafc" stroke="#e2e8f0"><rect x="24" y="80" width="168" height="160" rx="10"/><rect x="210" y="80" width="168" height="160" rx="10"/><rect x="396" y="80" width="168" height="160" rx="10"/><rect x="582" y="80" width="168" height="160" rx="10"/><rect x="768" y="80" width="168" height="160" rx="10"/></g>
+  <!-- points -->
+  <g fill="#2563eb"><circle cx="70" cy="125" r="6"/><circle cx="140" cy="110" r="6"/><circle cx="100" cy="190" r="6"/><circle cx="155" cy="180" r="6"/></g>
+  <!-- line -->
+  <polyline points="235,200 280,120 320,170 355,105" fill="none" stroke="#2563eb" stroke-width="4"/>
+  <g fill="#2563eb"><circle cx="235" cy="200" r="5"/><circle cx="280" cy="120" r="5"/><circle cx="320" cy="170" r="5"/><circle cx="355" cy="105" r="5"/></g>
+  <!-- triangle -->
+  <polygon points="480,100 545,215 415,215" fill="#fdba74" stroke="#ea580c" stroke-width="2"/>
+  <g fill="#ea580c"><circle cx="480" cy="100" r="5"/><circle cx="545" cy="215" r="5"/><circle cx="415" cy="215" r="5"/></g>
+  <g font-size="12" fill="#9a3412"><text x="490" y="100">v0</text><text x="535" y="234">v1</text><text x="405" y="234">v2</text></g>
+  <!-- quad -->
+  <polygon points="610,105 720,105 610,215" fill="#fdba74" stroke="#ea580c" stroke-width="2"/>
+  <polygon points="720,105 720,215 610,215" fill="#fed7aa" stroke="#ea580c" stroke-width="2"/>
+  <text x="640" y="150" font-size="13" fill="#9a3412">①</text><text x="685" y="190" font-size="13" fill="#9a3412">②</text>
+  <!-- circle fan -->
+  <g stroke="#ea580c" stroke-width="1.5">
+    <polygon points="852,160 852,100 894,118" fill="#fdba74"/><polygon points="852,160 894,118 912,160" fill="#fed7aa"/>
+    <polygon points="852,160 912,160 894,202" fill="#fdba74"/><polygon points="852,160 894,202 852,220" fill="#fed7aa"/>
+    <polygon points="852,160 852,220 810,202" fill="#fdba74"/><polygon points="852,160 810,202 792,160" fill="#fed7aa"/>
+    <polygon points="852,160 792,160 810,118" fill="#fdba74"/><polygon points="852,160 810,118 852,100" fill="#fed7aa"/>
+  </g>
+</svg>
