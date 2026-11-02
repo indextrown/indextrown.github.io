@@ -131,6 +131,9 @@ iPhone 15 Pro Max 화면은 1290 × 2796 ≈ 360만 픽셀입니다. 삼각형�
 
 Metal에서는 **MSL(Metal Shading Language)** 이라는 C++ 기반 언어로 작성하고, `.metal` 파일에 넣으면 Xcode가 빌드할 때 함께 컴파일해줍니다.
 
+<details class="notion-toggle-list" markdown="1">
+<summary>MSL 셰이더 기본 구조 코드 보기</summary>
+
 ```cpp
 #include <metal_stdlib>
 using namespace metal;
@@ -155,6 +158,8 @@ fragment float4 myFragment(RasterizerData in [[stage_in]]) {
     return in.color; // 이 픽셀의 색 (r, g, b, a)
 }
 ```
+
+</details>
 
 처음 보면 낯선 문법이 몇 가지 있습니다.
 
@@ -275,6 +280,9 @@ clipPosition = Projection × View × Model × vertexPosition
 
 이동(translation)은 4번째 열에 들어갑니다. 공식 예제의 이동 행렬을 보면 위치값이 마지막 열(`columns.3`)에 들어 있습니다.
 
+<details class="notion-toggle-list" markdown="1">
+<summary>공식 예제의 이동 행렬 코드 보기</summary>
+
 ```swift
 // 공식 예제 createTranslationMatrix 중
 simd_float4x4([
@@ -284,6 +292,8 @@ simd_float4x4([
     simd_float4(worldPos.x, worldPos.y, z, 1) // columns.3 ← 이동량
 ])
 ```
+
+</details>
 
 `w = 1`인 점에 이 행렬을 곱하면 `x + worldPos.x`, `y + worldPos.y`가 됩니다. 반대로 `w = 0`이면 이동이 적용되지 않습니다. 그래서 위치는 `w = 1`, 방향(벡터)은 `w = 0`으로 표현합니다.
 
@@ -450,6 +460,9 @@ Custom Layer는 두 부분으로 나뉩니다.
 
 SDK 소스에서 `CustomLayer`의 정의를 보면 다음과 같습니다.
 
+<details class="notion-toggle-list" markdown="1">
+<summary>CustomLayer 구조체 정의 코드 보기</summary>
+
 ```swift
 @_spi(Experimental)
 public struct CustomLayer: Layer, Equatable {
@@ -462,6 +475,8 @@ public struct CustomLayer: Layer, Equatable {
     public var renderer: CustomLayerHost
 }
 ```
+
+</details>
 
 이전 글에서 배운 `CircleLayer`, `FillLayer`와 비교해 보면 차이가 분명합니다.
 
@@ -525,6 +540,9 @@ Custom Layer가 진짜 필요한 경우는 이런 것들입니다.
 
 `CustomLayerHost` 프로토콜의 필수 메서드는 3개입니다.
 
+<details class="notion-toggle-list" markdown="1">
+<summary>CustomLayerHost 프로토콜 코드 보기</summary>
+
 ```swift
 protocol CustomLayerHost: NSObjectProtocol {
     func renderingWillStart(_ metalDevice: MTLDevice,
@@ -538,6 +556,8 @@ protocol CustomLayerHost: NSObjectProtocol {
     func renderingWillEnd()
 }
 ```
+
+</details>
 
 ### renderingWillStart - 한 번, 무거운 준비
 
@@ -593,6 +613,9 @@ protocol CustomLayerHost: NSObjectProtocol {
 
 가장 많이 쓰는 것은 `projectionMatrix`와 `zoom`입니다. `projectionMatrix`는 `[NSNumber]` 16개로 오기 때문에 `simd_float4x4`로 바꿔서 사용합니다. 값은 **열 우선(column-major)** 순서로 들어 있어서 4개씩 끊어 열(column)로 만들면 됩니다.
 
+<details class="notion-toggle-list" markdown="1">
+<summary>projectionMatrix 변환 extension 코드 보기</summary>
+
 ```swift
 extension Array where Element == NSNumber {
     var simdFloat4x4: simd_float4x4 {
@@ -605,6 +628,8 @@ extension Array where Element == NSNumber {
     }
 }
 ```
+
+</details>
 
 `width`, `height`가 point 단위라는 점도 기억해야 합니다. Metal의 Viewport는 실제 픽셀 단위이므로 화면 배율(scale)을 곱해야 합니다. 이걸 빠뜨리면 그림이 화면의 1/3 크기로 구석에 그려집니다.
 
@@ -632,6 +657,9 @@ CustomLayerViewController.swift
 
 Swift와 셰이더가 **같은 메모리 구조**를 사용해야 합니다. 정점 하나는 Mercator 위치(x, y)와 색(r, g, b, a)을 가집니다.
 
+<details class="notion-toggle-list" markdown="1">
+<summary>Swift 정점 구조체 코드 보기</summary>
+
 ```swift
 // Swift
 struct TriangleVertex {
@@ -639,6 +667,11 @@ struct TriangleVertex {
     var color: SIMD4<Float>    // r, g, b, a (0 ~ 1)
 }
 ```
+
+</details>
+
+<details class="notion-toggle-list" markdown="1">
+<summary>MSL 정점 구조체 코드 보기</summary>
 
 ```cpp
 // MSL
@@ -648,11 +681,16 @@ struct TriangleVertex {
 };
 ```
 
+</details>
+
 `float4`는 16바이트 정렬이 필요해서, 두 언어 모두 `position`(8바이트) 뒤에 8바이트 패딩을 넣고 `color`를 16바이트 위치에 둡니다. 그래서 `MemoryLayout<TriangleVertex>.stride`는 32입니다. 구조가 어긋나면 GPU가 엉뚱한 바이트를 읽어 삼각형이 깨지므로, 타입을 바꿀 때는 양쪽을 함께 바꿔야 합니다.
 
 > 공식 예제처럼 C 헤더(`.h`) 하나에 구조체를 정의하고 Swift(Bridging Header)와 셰이더 양쪽에서 include하면 이 불일치를 원천적으로 막을 수 있습니다.
 
 ### Step 2. 셰이더 작성 (TriangleShaders.metal)
+
+<details class="notion-toggle-list" markdown="1">
+<summary>TriangleShaders.metal 전체 코드 보기</summary>
 
 ```cpp
 #include <metal_stdlib>
@@ -686,11 +724,16 @@ fragment float4 triangleFragment(RasterizerData in [[stage_in]]) {
 }
 ```
 
+</details>
+
 Vertex Shader는 앞에서 본 좌표의 여정을 코드 한 줄로 끝냅니다. `mvp`는 Swift에서 `projectionMatrix × modelMatrix`를 미리 곱해서 넘겨줄 것입니다.
 
 Fragment Shader에서 rgb에 alpha를 곱하는 것을 **premultiplied alpha**라고 합니다. 아래 Pipeline의 블렌딩 설정(`source = one`, `destination = oneMinusSourceAlpha`)과 짝을 이루는 방식으로, 공식 예제도 같은 블렌딩 설정을 사용합니다.
 
 ### Step 3. CustomLayerHost 구현 (TriangleLayerHost.swift)
+
+<details class="notion-toggle-list" markdown="1">
+<summary>TriangleLayerHost.swift 전체 코드 보기</summary>
 
 ```swift
 import UIKit
@@ -813,6 +856,8 @@ final class TriangleLayerHost: NSObject, CustomLayerHost {
 }
 ```
 
+</details>
+
 코드를 파이프라인 관점에서 다시 읽어보면 다음과 같습니다.
 
 | 코드 | 파이프라인 단계 |
@@ -826,6 +871,9 @@ final class TriangleLayerHost: NSObject, CustomLayerHost {
 `setVertexBytes`는 작은 데이터(4KB 미만)를 버퍼 없이 바로 넘기는 API입니다. 행렬처럼 매 프레임 바뀌는 작은 uniform을 넘길 때 편리합니다.
 
 ### Step 4. 지도에 추가 (CustomLayerViewController.swift)
+
+<details class="notion-toggle-list" markdown="1">
+<summary>CustomLayerViewController.swift 전체 코드 보기</summary>
 
 ```swift
 import UIKit
@@ -860,6 +908,8 @@ final class CustomLayerViewController: UIViewController {
 }
 ```
 
+</details>
+
 `.below("road-label")` 덕분에 삼각형은 도로 위에, 도로 이름 라벨 아래에 그려집니다. 이전 글에서 배운 Layer 순서 개념이 Custom Layer에도 그대로 적용됩니다.
 
 SwiftUI처럼 선언형 Style DSL을 쓴다면 공식 예제처럼 이렇게 추가할 수도 있습니다.
@@ -874,13 +924,13 @@ mapView.mapboxMap.setMapStyleContent {
 
 이 예제는 iOS 시뮬레이터(Mapbox Maps SDK 11.34.1)에서 직접 실행해 확인했습니다. 토큰 없이도 돌아가도록 배경 Layer만 있는 로컬 Style JSON을 사용했고, 위치가 정확한지 확인하기 위해 **같은 세 도시를 일반 Layer로도 함께 그렸습니다.** 검은 점은 `CircleLayer`, 검은 선은 `LineLayer`이고, 색이 칠해진 삼각형이 Custom Layer입니다.
 
-<div style="display: flex; gap: 12px; flex-wrap: wrap;">
-  <figure style="flex: 1; min-width: 240px; margin: 0;">
-    <img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/result-flat.png" alt="평면 지도에서 실행 결과" style="width: 100%; border: 1px solid #e2e8f0; border-radius: 8px;">
+<div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+  <figure style="width: 240px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/result-flat.png" alt="평면 지도에서 실행 결과" style="width: 100%;">
     <figcaption style="font-size: 0.8em; text-align: center;">줌 6, 기울기 0°</figcaption>
   </figure>
-  <figure style="flex: 1; min-width: 240px; margin: 0;">
-    <img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/result-pitch.png" alt="기울이고 회전한 지도에서 실행 결과" style="width: 100%; border: 1px solid #e2e8f0; border-radius: 8px;">
+  <figure style="width: 240px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/result-pitch.png" alt="기울이고 회전한 지도에서 실행 결과" style="width: 100%;">
     <figcaption style="font-size: 0.8em; text-align: center;">기울기 55°, 회전 30°</figcaption>
   </figure>
 </div>
@@ -913,7 +963,7 @@ v11의 기본 스타일들은 줌이 낮을 때 지구를 공 모양으로 보�
 
 실제로 투영만 `.globe`로 바꿔서 실행하면 어떻게 될까요?
 
-<img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/result-globe.png" alt="Globe 투영에서 실행 결과" style="width: 50%; border: 1px solid #e2e8f0; border-radius: 8px;">
+<p style="text-align: center;"><img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/result-globe.png" alt="Globe 투영에서 실행 결과" style="width: 240px;"></p>
 
 일반 Layer로 그린 점과 선은 Mapbox가 Globe에 맞게 다시 계산하므로 제자리에 있습니다. 하지만 **Custom Layer 삼각형은 아예 사라집니다.** Globe에서 `projectionMatrix`가 기대하는 입력은 평면 World 좌표가 아니기 때문에, 우리가 넘긴 좌표가 엉뚱한 Clip space 좌표로 계산되어 화면 밖으로 잘려나간 것으로 보입니다. Custom Layer는 투영을 직접 책임져야 한다는 것을 보여주는 결과입니다.
 
@@ -936,6 +986,9 @@ Globe에 대응하려면 `parameters.projection`이 제공하는 도우미(`conv
 
 ### Fragment Shader에 시간 받기
 
+<details class="notion-toggle-list" markdown="1">
+<summary>pulseFragment 셰이더 코드 보기</summary>
+
 ```cpp
 fragment float4 pulseFragment(RasterizerData in [[stage_in]],
                               constant float &time [[buffer(0)]]) {
@@ -945,7 +998,12 @@ fragment float4 pulseFragment(RasterizerData in [[stage_in]],
 }
 ```
 
+</details>
+
 `renderingWillStart`에서 fragment 함수 이름을 `"pulseFragment"`로 바꾸고, `render`에서 시간을 넘겨줍니다.
+
+<details class="notion-toggle-list" markdown="1">
+<summary>render()에 시간 넘기는 코드 보기</summary>
 
 ```swift
 private let startTime = CACurrentMediaTime()
@@ -955,11 +1013,16 @@ var time = Float(CACurrentMediaTime() - startTime)
 encoder.setFragmentBytes(&time, length: MemoryLayout<Float>.stride, index: 0) // → fragment의 [[buffer(0)]]
 ```
 
+</details>
+
 Vertex와 Fragment는 버퍼 번호 공간이 따로입니다. `setVertexBytes(index: 0)`과 `setFragmentBytes(index: 0)`은 서로 다른 슬롯입니다.
 
 ### 계속 다시 그리게 만들기 - triggerRepaint
 
 여기까지만 하면 삼각형이 깜빡이지 않습니다. **Mapbox는 지도에 변화가 없으면 다시 그리지 않기** 때문입니다. 배터리를 아끼기 위한 당연한 동작이지만, 애니메이션을 하려면 매 프레임 "다시 그려줘"라고 요청해야 합니다.
+
+<details class="notion-toggle-list" markdown="1">
+<summary>CADisplayLink로 다시 그리는 코드 보기</summary>
 
 ```swift
 private var displayLink: CADisplayLink?
@@ -981,7 +1044,25 @@ override func viewWillDisappear(_ animated: Bool) {
 }
 ```
 
+</details>
+
 `CADisplayLink`는 화면 주사율에 맞춰 호출되는 타이머이고, `triggerRepaint()`는 Mapbox에게 다음 프레임을 그리라고 요청합니다. 그러면 `render`가 매 프레임 호출되면서 새 시간 값이 셰이더로 전달됩니다.
+
+### 실행 결과
+
+예제 1과 같은 시뮬레이터 환경에서 위 코드를 그대로 실행하고 화면을 녹화했습니다. 영상은 깜빡임 한 주기(약 2.1초)를 반복 재생합니다.
+
+<p style="text-align: center;"><video src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/result-pulse.mp4" poster="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/result-pulse-poster.png" autoplay loop muted playsinline style="width: 240px;"></video></p>
+
+같은 셰이더로 `CADisplayLink`가 **있을 때와 없을 때**를 비교해 보면 `triggerRepaint()`의 역할이 숫자로 드러납니다.
+
+| | DisplayLink + `triggerRepaint()` | 셰이더만 교체 (DisplayLink 없음) |
+| --- | --- | --- |
+| `render()` 호출 | 1초에 정확히 60번씩 계속 | 시작 직후 2번 호출 후 멈춤 |
+| 화면 | 숨 쉬듯 깜빡임 | 한 장면에서 멈춤 |
+| 화면 녹화 결과 | 4초 영상 | 화면 변화가 없어 프레임 1장만 녹화됨 |
+
+녹화 영상에서 삼각형 중심 픽셀의 색을 0.17초 간격으로 뽑아보면, 가장 진할 때 RGB (155, 171, 172)에서 가장 옅을 때 (208, 217, 224)까지 부드럽게 오르내리고, 약 2.1초마다 같은 값으로 돌아옵니다. 셰이더의 `sin(time * 3.0)` 주기인 2π / 3 ≈ 2.09초와 일치합니다. 셰이더 코드는 그대로인데 **"누가 프레임을 요청하느냐"에 따라 애니메이션이 되기도 하고 멈추기도 한다**는 것이 이 예제의 핵심입니다.
 
 > 애니메이션이 필요 없을 때는 DisplayLink를 멈추는 것이 좋습니다. 매 프레임 지도 전체를 다시 그리는 것은 공짜가 아닙니다.
 
@@ -991,7 +1072,27 @@ override func viewWillDisappear(_ animated: Bool) {
 
 Mapbox 공식 저장소의 `CustomLayerExample.swift`는 두 가지를 그립니다. 지금까지 배운 개념으로 핵심만 읽어보겠습니다.
 
-### 헬싱키 위의 1km 큐브
+이 예제도 공식 코드의 렌더링 부분은 그대로 두고 같은 시뮬레이터에서 실행했습니다. 바꾼 것은 Examples 앱 전용 의존성 스텁, 토큰 없는 로컬 스타일, 카메라 위치뿐입니다.
+
+<div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+  <figure style="width: 240px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/official-cube.png" alt="공식 예제 큐브" style="width: 100%;">
+    <figcaption style="font-size: 0.8em; text-align: center;">헬싱키 상공의 큐브 (기울기 50°)</figcaption>
+  </figure>
+  <figure style="width: 240px; margin: 0;">
+    <video src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/official-globe.mp4" poster="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/official-globe-poster.png" autoplay loop muted playsinline style="width: 100%;"></video>
+    <figcaption style="font-size: 0.8em; text-align: center;">Globe 위의 큐브와 움직이는 점들</figcaption>
+  </figure>
+</div>
+
+&nbsp;
+
+왼쪽 화면에서 노란 점들이 큐브 앞을 지날 때는 보이고 뒤로 지나갈 때는 가려지는 것을 볼 수 있습니다. 7장에서 본 **깊이 테스트**가 실제로 동작하는 모습입니다. 오른쪽은 예제 1에서는 삼각형이 사라졌던 **Globe 투영에서도 제자리에 그려지는** 모습입니다.
+
+### 헬싱키 위의 큐브
+
+<details class="notion-toggle-list" markdown="1">
+<summary>공식 예제 renderCubesInMeters 코드 보기</summary>
 
 ```swift
 private func renderCubesInMeters(parameters: CustomLayerRenderParameters,
@@ -1020,11 +1121,15 @@ private func renderCubesInMeters(parameters: CustomLayerRenderParameters,
 }
 ```
 
+</details>
+
 예제 1과 비교하면 차이가 보입니다.
 
 - **Model 행렬이 더 복잡합니다.** 예제 1은 `× worldSize` 스케일 하나였지만, 여기서는 "헬싱키 위치로 이동(translation)"과 "1000미터를 픽셀로 변환하는 스케일"을 곱합니다. Mercator 투영에서는 위도에 따라 1미터가 차지하는 픽셀 수가 달라지기 때문에 `Projection.metersPerPoint(for:zoom:)`로 위도별 값을 계산합니다.
 - **`convertMercatorModelMatrix`** 가 들어갑니다. Mercator 기준으로 만든 Model 행렬을 현재 투영(Globe 포함)에 맞게 바꿔주는 도우미입니다. 예제 1에서 Globe를 피하려고 투영을 고정했던 문제를 이렇게 해결합니다.
 - **깊이 테스트를 켭니다.** 큐브는 3D라서 앞면이 뒷면을 가려야 하므로 `depthCompareFunction = .less`, `isDepthWriteEnabled = true`를 사용합니다.
+
+> **실행해 보고 알게 된 점: 이 큐브는 1km가 아니라 약 1000km입니다.** 설정값은 `cubeSize: 1_000`(미터)이지만, 정점 데이터를 만드는 `cubeVertexDataFrom`이 이미 ±500 범위(한 변 1000 단위)로 큐브를 만듭니다. 여기에 Model 행렬이 다시 "1000미터를 픽셀로" 바꾸는 스케일을 곱하므로, 결과적으로 1000 × 1000m = **1000km** 크기가 됩니다. 처음에 헬싱키를 줌 13으로 확대했더니 아무것도 보이지 않았던 이유가 이것입니다. 카메라가 거대한 큐브 안쪽에 들어가 있었던 것입니다. 정점은 "단위 크기(±0.5)"로 만들고 크기는 Model 행렬에서만 정한다는 원칙을 지켜야, `cubeSize`가 이름 그대로 동작합니다.
 
 ### 베를린에서 도쿄까지 움직이는 점들
 
@@ -1033,6 +1138,9 @@ private func renderCubesInMeters(parameters: CustomLayerRenderParameters,
 - `pos_merc`: 평면 Mercator 기준 위치
 - `pos_ecef`: 지구 중심 기준 3D 위치 (ECEF, Globe용)
 
+<details class="notion-toggle-list" markdown="1">
+<summary>Globe 전환 셰이더 코드 보기</summary>
+
 ```cpp
 float4 pos_merc = uniforms.u_matrix_merc * float4(vertices[vertexID].pos_merc, 1.0);
 float4 pos_ecef = uniforms.u_matrix_ecef * float4(vertices[vertexID].pos_ecef, 1.0);
@@ -1040,6 +1148,8 @@ float4 pos_ecef = uniforms.u_matrix_ecef * float4(vertices[vertexID].pos_ecef, 1
 float t = clamp(uniforms.u_transition, 0.0, 1.0);
 out.position = mix(pos_merc, pos_ecef, t);
 ```
+
+</details>
 
 줌을 바꾸면 지도가 Globe와 평면 사이를 부드럽게 오가는데, 그 진행도를 `parameters.projection.getTransitionPhase()`로 받아 셰이더에서 `mix`로 두 위치를 섞습니다. 셰이더가 "정점 위치를 계산하는 프로그램"이라는 것을 잘 보여주는 예입니다.
 
@@ -1054,6 +1164,9 @@ out.position = mix(pos_merc, pos_ecef, t);
 ### 탭 감지 - 내가 그린 도형을 눌렀을까?
 
 Custom Layer는 `queryRenderedFeatures`에 잡히지 않으므로 직접 판정해야 합니다. 방법은 "탭한 화면 좌표 → 지도 좌표 → Mercator"로 바꾼 뒤, 도형 안에 있는지 수학으로 확인하는 것입니다.
+
+<details class="notion-toggle-list" markdown="1">
+<summary>탭 감지 전체 코드 보기</summary>
 
 ```swift
 @objc private func handleTap(_ gesture: UITapGestureRecognizer) {
@@ -1084,6 +1197,8 @@ private func contains(_ p: MercatorCoordinate, in t: [MercatorCoordinate]) -> Bo
 }
 ```
 
+</details>
+
 판정을 Mercator 좌표에서 하는 이유는 정점 버퍼와 같은 평면이기 때문입니다. 위경도는 구 위의 각도라서 넓은 영역에서는 직선이 직선이 아니게 됩니다. 도형이 많다면 화면 근처의 것만 먼저 걸러내는 공간 인덱스(그리드, R-tree)를 함께 쓰면 좋습니다.
 
 ### 데이터가 바뀔 때 - 버퍼를 언제, 어디서 바꿀까
@@ -1091,6 +1206,9 @@ private func contains(_ p: MercatorCoordinate, in t: [MercatorCoordinate]) -> Bo
 데이터(예: 서버에서 받은 좌표)는 보통 메인 스레드에서 바뀝니다. 그리고 12장에서 확인했듯 iOS에서 `render()`도 메인 스레드에서 호출됐습니다. 하지만 이는 SDK 문서가 보장하는 계약이 아니라 현재 구현에서 관찰된 동작이고, 6장에서 본 것처럼 **GPU는 이전 프레임의 버퍼를 아직 읽고 있을 수 있습니다.** 그래서 "같은 스레드니까 괜찮겠지" 하고 기존 버퍼를 바로 덮어쓰는 것은 위험합니다.
 
 안전한 패턴은 "**메인 스레드에서는 새 데이터만 준비하고, 버퍼 교체는 render 쪽에서 한 번에**" 하는 것입니다.
+
+<details class="notion-toggle-list" markdown="1">
+<summary>버퍼 교체 패턴 전체 코드 보기</summary>
 
 ```swift
 final class TriangleLayerHost: NSObject, CustomLayerHost {
@@ -1123,6 +1241,8 @@ final class TriangleLayerHost: NSObject, CustomLayerHost {
     }
 }
 ```
+
+</details>
 
 `renderingWillStart`에서 받은 `MTLDevice`를 보관해 두면 이후에도 버퍼를 만들 수 있습니다. 데이터가 매 프레임 바뀐다면 버퍼를 매번 새로 만드는 대신 6장에서 본 triple buffering으로 넘어가면 됩니다. 데이터를 바꾼 뒤에는 지도가 멈춰 있을 수 있으므로 `triggerRepaint()`를 한 번 호출해 주세요.
 
