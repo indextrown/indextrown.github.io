@@ -19,21 +19,24 @@ Custom Layer 공식 예제를 열어보면 `MTLDevice`, `shader`, `pipeline`, `p
 4. 셰이더란 무엇인가
 5. 좌표의 여정과 행렬
 6. Metal의 핵심 객체들
+7. 깊이 버퍼와 블렌딩
 
 **Part 2. Mapbox Custom Layer 해부**
 
-7. CustomLayer와 CustomLayerHost
-8. 생명주기 - renderingWillStart, render, renderingWillEnd
-9. CustomLayerRenderParameters - 매 프레임 받는 카메라 정보
-{: start="7"}
+8. Mapbox는 한 프레임을 어떻게 그릴까
+9. CustomLayer와 CustomLayerHost
+10. 생명주기 - renderingWillStart, render, renderingWillEnd
+11. CustomLayerRenderParameters - 매 프레임 받는 카메라 정보
+{: start="8"}
 
-**Part 3. 예제**
+**Part 3. 예제와 실전**
 
-10. 예제 1 - 서울, 부산, 광주를 잇는 삼각형
-11. 예제 2 - 시간에 따라 깜빡이는 삼각형 (uniform, triggerRepaint)
-12. 예제 3 - 공식 예제 읽기 (미터 단위 3D 큐브, Globe)
-13. 아무것도 안 보일 때 체크리스트
-{: start="10"}
+12. 예제 1 - 서울, 부산, 광주를 잇는 삼각형
+13. 예제 2 - 시간에 따라 깜빡이는 삼각형 (uniform, triggerRepaint)
+14. 예제 3 - 공식 예제 읽기 (미터 단위 3D 큐브, Globe)
+15. 실전에서 부딪히는 문제들
+16. 아무것도 안 보일 때 체크리스트
+{: start="12"}
 
 > 이 글은 **Mapbox Maps SDK for iOS v11** 기준입니다. (소스 기준 11.34 ~ 11.35) `CustomLayer`는 `@_spi(Experimental)`로 표시된 실험적 API라 이후 버전에서 바뀔 수 있습니다.
 
@@ -93,7 +96,32 @@ GPU가 직접 그릴 수 있는 도형(primitive)은 딱 세 가지입니다.
 
 핵심은 **②와 ④만 내가 프로그래밍하고, 나머지는 GPU가 알아서** 한다는 점입니다.
 
-③ Rasterizer의 **보간(interpolation)** 도 기억해 두면 좋습니다. 정점 3개에 빨강, 파랑, 초록을 주면 삼각형 내부 픽셀은 거리에 따라 색이 섞인 그라데이션이 됩니다. 정점 3개에만 값을 줬는데 수천 개 픽셀의 값이 자동으로 채워지는 것입니다.
+### 보간 - 정점 3개의 값으로 수천 개 픽셀을 채우는 법
+
+③ Rasterizer의 **보간(interpolation)** 은 Custom Layer 결과물을 이해하는 데 꼭 필요한 개념입니다.
+
+정점 3개에 빨강, 파랑, 초록을 주면 삼각형 내부 픽셀은 거리에 따라 색이 섞인 그라데이션이 됩니다. 정점에만 값을 줬는데 그 사이 픽셀의 값이 자동으로 채워지는 것입니다.
+
+```text
+           v0 (빨강)
+           /\
+          /  \
+         / P  \        P는 v0에 가까우니까 빨강이 많이 섞임
+        /      \       P = 0.6 × 빨강 + 0.3 × 파랑 + 0.1 × 초록
+       /________\
+ v2 (초록)      v1 (파랑)
+```
+
+GPU는 픽셀 P가 세 꼭짓점에 각각 얼마나 가까운지를 비율(합이 1인 세 개의 가중치)로 계산합니다. 이 비율을 **무게중심 좌표(barycentric coordinates)** 라고 하며, Vertex Shader가 출력한 값(색, 텍스처 좌표 등) 전부를 이 비율로 섞어서 Fragment Shader에 넘겨줍니다. Fragment Shader 파라미터에 `[[stage_in]]`이 붙는 이유가 이것입니다. "앞 단계에서 보간되어 들어온 값"이라는 뜻입니다.
+
+### 얼마나 많이 실행될까
+
+| 단계 | 실행 횟수 (삼각형 1개 기준) |
+| --- | --- |
+| Vertex Shader | 정점 수만큼, **3번** |
+| Fragment Shader | 삼각형이 덮는 픽셀 수만큼, 화면의 1/4을 덮으면 **약 100만 번** |
+
+iPhone 15 Pro Max 화면은 1290 × 2796 ≈ 360만 픽셀입니다. 삼각형이 화면의 1/4만 덮어도 Fragment Shader는 한 프레임에 약 90만 번, 120Hz라면 1초에 1억 번 넘게 실행됩니다. 그래서 **Fragment Shader에 무거운 계산을 넣으면 바로 프레임이 떨어지고**, 정점마다 한 번이면 되는 계산은 Vertex Shader로 옮기는 것이 기본 최적화입니다.
 
 &nbsp;
 
@@ -146,6 +174,22 @@ Swift 코드와 셰이더는 **`[[buffer(n)]]`의 번호로 연결**된다는 �
 
 정점마다 다른 값(위치, 색)과 달리 **모든 정점과 픽셀이 똑같이 사용하는 값**도 있습니다. 카메라 행렬, 현재 시간 같은 것들입니다. 그래픽스에서는 이런 값을 **uniform**이라고 부릅니다. Metal에서는 별도 문법 없이 버퍼로 넘기지만, 개념상 구분해 두면 공식 예제의 `GlobeUniforms`, `u_matrix` 같은 이름을 읽을 때 도움이 됩니다.
 
+| 데이터 종류 | 예시 | 변하는 단위 | 넘기는 방법 |
+| --- | --- | --- | --- |
+| 정점 속성 (attribute) | 위치, 색 | 정점마다 다름 | `MTLBuffer` + `[[vertex_id]]`로 인덱싱 |
+| uniform | MVP 행렬, 시간 | 한 번의 draw 안에서 모두 같음 | `setVertexBytes`, `setFragmentBytes` |
+| 보간된 값 (varying) | Fragment로 넘어간 색 | 픽셀마다 다름 | Vertex Shader의 출력 → `[[stage_in]]` |
+
+### 셰이더는 "병렬로 실행되는 순수 함수"다
+
+Swift 코드에 익숙하다면 셰이더를 처음 짤 때 이 제약이 가장 낯섭니다.
+
+- **실행끼리 서로를 모릅니다.** Fragment Shader 100만 번은 동시에, 순서 없이 실행됩니다. 옆 픽셀의 결과를 읽거나, "이전 프레임에 계산한 값"을 변수에 저장해 둘 수 없습니다.
+- **입력이 같으면 출력도 같습니다.** 그래서 애니메이션을 하려면 시간처럼 "변하는 값"을 매 프레임 uniform으로 넣어줘야 합니다. 셰이더가 스스로 시간을 셀 수는 없습니다.
+- **분기(if)는 비쌀 수 있습니다.** GPU는 여러 실행(thread)을 한 묶음으로 같은 명령을 동시에 처리합니다. 같은 묶음 안에서 어떤 픽셀은 if, 어떤 픽셀은 else로 가면 양쪽을 모두 실행하고 결과를 버리는 식으로 처리합니다. 그래서 셰이더에서는 `if` 대신 `mix`, `step`, `clamp` 같은 수학 함수를 자주 씁니다.
+
+이 관점으로 보면 셰이더는 "**입력(정점 1개 또는 픽셀 1개 + uniform) → 출력(위치 또는 색)** 을 계산하는 작은 순수 함수"이고, GPU는 이 함수를 수십만 개 동시에 돌리는 기계입니다.
+
 &nbsp;
 
 ## 5. 좌표의 여정과 행렬
@@ -166,6 +210,11 @@ let mercator = Projection.latLngToMercatorXY(coordinate: CLLocationCoordinate2D(
 ```
 
 이 값은 카메라와 상관없이 고정이므로 **한 번만 계산**해두면 됩니다.
+
+Mercator 좌표에서 알아둘 성질이 두 가지 있습니다.
+
+- **y는 아래로 갈수록 커집니다.** 북쪽(위)이 0, 남쪽(아래)이 1입니다. 수학 그래프와 반대이고 UIKit 좌표계와 같은 방향입니다. 서울(0.3873)이 부산(0.3955)보다 y가 작은 이유입니다.
+- **위도가 높을수록 늘어납니다.** Mercator는 둥근 지구를 원통에 펼치기 때문에 위도 φ에서 길이가 `1 / cos(φ)`배로 늘어납니다. 적도에서 1km인 크기가 서울(약 37.5°)에서는 약 1.26배, 위도 60°에서는 2배로 그려집니다. 지도에서 그린란드가 아프리카만큼 커 보이는 이유입니다. "1000미터짜리 큐브"처럼 **미터 단위로 크기를 정하려면 위도별로 이 배율을 반영**해야 하고, 공식 예제가 `Projection.metersPerPoint(for:zoom:)`를 쓰는 이유가 바로 이것입니다.
 
 ### ② Mercator → World 좌표 (픽셀)
 
@@ -208,6 +257,50 @@ clipPosition = Projection × View × Model × vertexPosition
 - **왜 4×4일까?** 3D 좌표 (x, y, z)에 1을 붙여 (x, y, z, 1)로 만들면 이동(translation)까지 행렬 곱 하나로 표현할 수 있습니다. 이 네 번째 값을 `w`라고 하며, 이런 좌표를 **동차 좌표(homogeneous coordinates)** 라고 합니다. 셰이더에서 `float4(position, 0.0, 1.0)`처럼 마지막에 1을 붙이는 이유입니다.
 - **곱하는 순서가 중요합니다.** 행렬 곱은 교환법칙이 성립하지 않습니다. 오른쪽부터 적용된다고 읽으면 됩니다. Model을 먼저 적용하고, 그다음 projectionMatrix를 적용합니다.
 
+### 행렬 곱을 직접 계산해보기
+
+막연하게 느껴지는 행렬을 숫자로 한 번 따라가 보겠습니다. 줌 6에서 `worldSize`는 512 × 2⁶ = 32768입니다. 예제 1에서 쓸 Model 행렬은 x, y만 `worldSize`배 키우는 **스케일 행렬**입니다.
+
+```text
+ Model 행렬               서울 정점 (Mercator)       결과 (World 좌표)
+┌                    ┐   ┌        ┐               ┌          ┐
+│ 32768   0    0   0 │   │ 0.8527 │               │ 27941.3  │
+│   0   32768  0   0 │ × │ 0.3873 │       =       │ 12691.0  │
+│   0     0    1   0 │   │ 0      │               │ 0        │
+│   0     0    0   1 │   │ 1      │               │ 1        │
+└                    ┘   └        ┘               └          ┘
+```
+
+0 ~ 1 범위의 Mercator 좌표가 줌 6 기준 픽셀 좌표 (27941, 12691)이 되었습니다. 이 값에 `projectionMatrix`를 한 번 더 곱하면 Clip space 좌표가 됩니다.
+
+이동(translation)은 4번째 열에 들어갑니다. 공식 예제의 이동 행렬을 보면 위치값이 마지막 열(`columns.3`)에 들어 있습니다.
+
+```swift
+// 공식 예제 createTranslationMatrix 중
+simd_float4x4([
+    simd_float4(1, 0, 0, 0),                 // columns.0
+    simd_float4(0, 1, 0, 0),                 // columns.1
+    simd_float4(0, 0, 1, 0),                 // columns.2
+    simd_float4(worldPos.x, worldPos.y, z, 1) // columns.3 ← 이동량
+])
+```
+
+`w = 1`인 점에 이 행렬을 곱하면 `x + worldPos.x`, `y + worldPos.y`가 됩니다. 반대로 `w = 0`이면 이동이 적용되지 않습니다. 그래서 위치는 `w = 1`, 방향(벡터)은 `w = 0`으로 표현합니다.
+
+### 열 우선(column-major) 저장
+
+`simd_float4x4([a, b, c, d])` 이니셜라이저는 **열(column) 4개**를 받습니다. 위 코드는 눈으로 보기에는 행처럼 적혀 있지만 실제로는 열입니다. Metal, simd, Mapbox의 `projectionMatrix` 배열 모두 열 우선이라서, 16개 숫자를 4개씩 끊어 그대로 열로 넣으면 됩니다. 행 우선으로 착각해서 넣으면 행렬이 전치(transpose)되어 이동량이 엉뚱한 곳에 들어가고, 화면에 아무것도 안 보이게 됩니다.
+
+### w와 원근 나눗셈
+
+Vertex Shader의 출력이 `float3`가 아니라 `float4`인 이유도 여기서 나옵니다. GPU는 Vertex Shader가 끝난 직후 **x, y, z를 w로 나눕니다.** 이를 **원근 나눗셈(perspective divide)** 이라고 합니다.
+
+```text
+clip (x, y, z, w)  →  NDC (x/w, y/w, z/w)
+```
+
+지도를 기울이면(pitch) 멀리 있는 점일수록 `projectionMatrix`가 w를 크게 만들고, w로 나누면서 x, y가 작아집니다. **멀리 있는 것이 작게 보이는 원근감**이 이 나눗셈 한 번으로 만들어집니다. 우리가 직접 나눌 필요는 없고, `projectionMatrix`를 곱한 결과를 그대로 넘기기만 하면 됩니다.
+
 &nbsp;
 
 ## 6. Metal의 핵심 객체들
@@ -233,12 +326,86 @@ Metal 코드를 처음 보면 `MTL`로 시작하는 타입이 너무 많아서 �
 
 > 비싼 객체(Pipeline, Buffer)는 **한 번만 만들고**, 매 프레임에는 **기록(encode)만** 하는 것이 Metal 성능의 기본 원칙입니다. 이 원칙이 그대로 Custom Layer의 생명주기 구조가 됩니다.
 
-### 깊이 테스트와 블렌딩
+### Encoder의 draw는 "기록"일 뿐이다
 
-파이프라인 마지막 단계에서 쓰이는 두 가지 개념도 알아두겠습니다.
+처음 Metal을 배울 때 가장 많이 헷갈리는 부분입니다. `encoder.drawPrimitives(...)`를 호출하는 순간 삼각형이 그려지는 것이 아닙니다. Command Buffer에 **"나중에 이걸 그려라"라는 명령이 한 줄 추가**될 뿐입니다. 실제로 GPU가 그리는 것은 Command Buffer가 `commit`된 이후입니다.
 
-- **깊이 테스트(Depth test)**: 3D에서 가까운 물체가 먼 물체를 가리도록, 픽셀마다 깊이 값을 비교해서 더 가까운 것만 남깁니다. 큐브 같은 3D 물체에서는 필수이고, 평평한 2D 도형은 끄는 경우가 많습니다.
-- **블렌딩(Blending)**: 반투명한 색을 그 아래에 이미 그려진 색과 섞는 규칙입니다. 지도 위에 반투명 도형을 올리려면 켜야 합니다.
+이 차이 때문에 두 가지 결과가 생깁니다.
+
+- `render()` 안에서 `print`를 찍어도 그 시점에는 아직 아무것도 그려지지 않은 상태입니다.
+- draw 호출 하나하나를 **draw call**이라고 부르며, draw call마다 상태 확인과 명령 기록 비용이 듭니다. 점 1000개를 draw call 1000번으로 그리는 것보다, 버퍼 하나에 담아 draw call 1번으로 그리는 것이 훨씬 빠릅니다.
+
+### Render Pass - 어디에, 어떻게 이어 그릴까
+
+`MTLRenderPassDescriptor`는 "이번에 그릴 도화지"를 설명합니다.
+
+| 항목 | 의미 |
+| --- | --- |
+| `colorAttachments[0].texture` | 색을 그릴 텍스처 (최종적으로 화면에 보일 이미지) |
+| `depthAttachment`, `stencilAttachment` | 깊이, 스텐실 값을 저장할 텍스처 |
+| `loadAction` | 그리기 시작할 때 기존 내용을 어떻게 할지: `.clear`(지움), `.load`(유지), `.dontCare` |
+| `storeAction` | 다 그린 뒤 결과를 저장할지: `.store`, `.dontCare` |
+
+Custom Layer에서 **반드시 Mapbox가 넘겨준 descriptor로 Encoder를 만들어야 하는 이유**가 여기 있습니다. Mapbox의 descriptor는 이미 그려진 지도(바다, 도로)를 유지하도록 설정되어 있습니다. 실제로 찍어보면 color와 depth 모두 `loadAction`이 `.load`입니다. (12장에서 확인합니다) 만약 직접 descriptor를 만들어 `loadAction = .clear`로 그리면, 내 삼각형만 남고 그 아래 지도는 지워집니다.
+
+### CPU와 GPU는 동시에 일한다
+
+<img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/cpu-gpu-timeline.svg" alt="CPU와 GPU 타임라인" style="width: 100%;">
+
+CPU가 `commit`하면 GPU가 그 프레임을 그리기 시작하고, CPU는 기다리지 않고 바로 **다음 프레임을 기록**합니다. 두 프로세서가 한 프레임씩 엇갈려서 동시에 일하는 구조입니다.
+
+이 구조에서 생기는 함정이 있습니다. 매 프레임 같은 `MTLBuffer`의 내용을 CPU에서 덮어쓰면, GPU가 아직 읽고 있는 이전 프레임의 데이터가 중간에 바뀔 수 있습니다. 이 경우 도형이 깜빡이거나 깨집니다.
+
+- **작은 데이터**(행렬, 시간 등 4KB 미만)는 `setVertexBytes`, `setFragmentBytes`로 넘깁니다. 기록하는 시점에 값이 복사되기 때문에 안전합니다. 예제에서 MVP 행렬을 이렇게 넘기는 이유입니다.
+- **큰 데이터가 매 프레임 바뀐다면** 버퍼를 2~3개 만들어 돌려쓰는 **triple buffering**을 사용합니다. 프레임 1은 버퍼 A, 프레임 2는 버퍼 B, 프레임 3은 버퍼 C를 쓰고, GPU가 A를 다 읽은 뒤에 다시 A를 씁니다.
+- **가끔 바뀐다면** 새 `MTLBuffer`를 만들어 교체하는 것이 가장 단순합니다.
+
+&nbsp;
+
+## 7. 깊이 버퍼와 블렌딩
+
+파이프라인 마지막 ⑤ 단계에서 "이 픽셀을 정말 칠할지, 칠한다면 기존 색과 어떻게 섞을지"를 결정합니다. Custom Layer 코드에서 `depthStencilState`와 블렌딩 설정이 바로 이 단계를 제어합니다.
+
+### 깊이 버퍼 (Depth buffer)
+
+화면의 픽셀마다 **"지금까지 그려진 것 중 가장 가까운 것의 거리"** 를 0 ~ 1 값으로 저장해 둔 텍스처입니다.
+
+```text
+픽셀 P에 이미 그려진 건물:   depth = 0.40
+새로 그리려는 큐브의 면:      depth = 0.55   (더 멂)
+
+depthCompareFunction = .less  →  0.55 < 0.40 ? 아니오  →  안 그림 (건물에 가려짐)
+```
+
+| 설정 | 의미 | 언제 |
+| --- | --- | --- |
+| `depthCompareFunction = .less` | 기존보다 가까울 때만 그림 | 3D 물체 (큐브, 모델) |
+| `isDepthWriteEnabled = true` | 그린 뒤 내 깊이를 기록 | 뒤에 그려질 것을 가리고 싶을 때 |
+| `depthCompareFunction = .always` | 비교 없이 항상 그림 | 평평한 2D 도형 (예제 1) |
+
+Custom Layer는 Mapbox와 **같은 깊이 버퍼를 공유**합니다. 그래서 깊이 테스트를 켜면 Mapbox의 3D 건물(fill-extrusion) 뒤에 있는 내 큐브가 자연스럽게 가려집니다. 반대로 평평한 도형에서 깊이 테스트를 켜면 지면과 깊이 값이 거의 같아 픽셀이 지글지글 깨져 보이는 **z-fighting**이 생길 수 있어서, 예제 1에서는 `.always`로 끕니다.
+
+### 블렌딩 (Blending)
+
+반투명한 색을 이미 그려진 색 위에 칠할 때 두 색을 섞는 공식입니다.
+
+```text
+결과 = 새 색(source) × sourceFactor + 기존 색(destination) × destinationFactor
+```
+
+예제 1의 설정(`source = .one`, `destination = .oneMinusSourceAlpha`)으로 흰 바탕 위에 투명도 0.7인 주황색(1.0, 0.35, 0.2)을 칠해 보겠습니다.
+
+```text
+① Fragment Shader가 rgb에 alpha를 미리 곱해서 반환 (premultiplied)
+   source = (1.0 × 0.7, 0.35 × 0.7, 0.2 × 0.7) = (0.70, 0.245, 0.14), alpha 0.7
+
+② 블렌딩
+   결과 = source × 1 + 흰색(1, 1, 1) × (1 - 0.7)
+        = (0.70 + 0.30, 0.245 + 0.30, 0.14 + 0.30)
+        = (1.00, 0.545, 0.44)   ← 흰 바탕에 70% 주황이 비친 색
+```
+
+rgb에 alpha를 **미리 곱해두는 방식을 premultiplied alpha**라고 합니다. 일반 방식(`source = .sourceAlpha`)과 결과는 같지만, 여러 반투명 레이어를 겹치거나 텍스처를 확대, 축소할 때 가장자리에 검은 테두리가 생기지 않아 그래픽스에서 널리 쓰입니다. 공식 예제도 `destinationRGBBlendFactor = .oneMinusSourceAlpha`에 source는 기본값(`.one`)을 사용하는 premultiplied 방식입니다. 중요한 것은 **셰이더 출력과 블렌딩 설정이 짝을 이뤄야 한다**는 점입니다. 셰이더는 premultiplied로 내보내는데 블렌딩은 `.sourceAlpha`로 설정하면 alpha가 두 번 곱해져 색이 어둡게 나옵니다.
 
 &nbsp;
 
@@ -248,7 +415,33 @@ Metal 코드를 처음 보면 `MTL`로 시작하는 타입이 너무 많아서 �
 
 # Part 2. Mapbox Custom Layer 해부
 
-## 7. CustomLayer와 CustomLayerHost
+## 8. Mapbox는 한 프레임을 어떻게 그릴까
+
+Custom Layer API를 보기 전에, Mapbox 자신이 지도를 어떻게 그리는지부터 보겠습니다. 이 그림이 머릿속에 있으면 Custom Layer의 모든 규칙(왜 commit하면 안 되는지, 왜 descriptor를 그대로 써야 하는지, 왜 triggerRepaint가 필요한지)이 자연스럽게 이해됩니다.
+
+<img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/frame-anatomy.svg" alt="Mapbox 프레임 구조" style="width: 100%;">
+
+1. **다시 그릴 이유가 생깁니다.** 카메라가 움직였거나, 타일이 새로 도착했거나, Source 데이터가 바뀌었거나, `triggerRepaint()`가 호출된 경우입니다. 이유가 없으면 Mapbox는 아무것도 그리지 않습니다.
+2. **Mapbox가 Command Buffer 하나를 준비합니다.** 이번 프레임의 모든 그리기 명령이 여기에 기록됩니다.
+3. **Layer 배열을 아래에서부터 순서대로 돌면서** 각 Layer의 그리기 명령을 기록합니다. Vector Tile 기반 Layer는 화면에 보이는 타일마다 draw call이 생깁니다.
+4. **내 Custom Layer 차례가 오면** Mapbox는 `render(parameters, mtlCommandBuffer, mtlRenderPassDescriptor)`를 호출합니다. 나는 같은 Command Buffer에, 같은 도화지(render pass)를 이어서 쓰는 Encoder를 만들어 내 명령을 끼워 넣습니다.
+5. 내 차례가 끝나면 Mapbox가 나머지 Layer(라벨 등)를 이어서 기록합니다.
+6. **마지막 Layer까지 기록이 끝나면 Mapbox가 commit**하고, GPU가 실제로 그린 뒤 화면에 표시합니다.
+
+이 흐름에서 Custom Layer의 규칙이 그대로 나옵니다.
+
+| 규칙 | 이유 |
+| --- | --- |
+| Command Buffer를 commit하지 않는다 | 내 뒤의 Layer들이 아직 기록되지 않았음 |
+| Mapbox가 준 descriptor로 Encoder를 만든다 | 앞 Layer들이 그린 내용을 유지한 채 이어 그려야 함 |
+| `endEncoding()`을 반드시 호출한다 | 다음 Layer가 Encoder를 만들 수 있어야 함 |
+| `render()`는 가볍게 유지한다 | 프레임 전체 기록 시간에 그대로 더해짐 |
+| 애니메이션은 `triggerRepaint()` | 변화가 없으면 프레임 자체가 시작되지 않음 |
+| Layer 위치(`.below`, `slot`)가 곧 그려지는 순서 | Layer 배열을 순서대로 돌기 때문 |
+
+&nbsp;
+
+## 9. CustomLayer와 CustomLayerHost
 
 Custom Layer는 두 부분으로 나뉩니다.
 
@@ -280,9 +473,53 @@ public struct CustomLayer: Layer, Equatable {
 
 즉 Custom Layer는 **Layer 배열에서 한 자리를 차지한다는 점은 같지만, 그 자리에서 무엇을 그릴지는 전부 내가 정하는** Layer입니다. Layer 순서가 있기 때문에 도로 위, 라벨 아래처럼 지도 요소 사이에 내 그래픽을 끼워 넣을 수 있습니다. 이것이 지도 위에 `UIView`나 별도의 `MTKView`를 겹쳐 올리는 방식과 가장 큰 차이입니다.
 
+### 지도 위에 MTKView를 겹치면 안 될까?
+
+"Metal로 그릴 거면 그냥 지도 위에 투명한 `MTKView`를 올려도 되지 않나?"라는 생각이 들 수 있습니다. 가능은 하지만 차이가 큽니다.
+
+| | 지도 위에 MTKView 오버레이 | Custom Layer |
+| --- | --- | --- |
+| 그려지는 위치 | 항상 지도 전체(라벨 포함) **위** | Layer 순서 안 원하는 위치 (도로 위, 라벨 아래 등) |
+| 카메라 동기화 | 카메라 이벤트를 받아 직접 맞춰야 해서 한 프레임씩 밀리기 쉬움 | 같은 프레임 안에서 같은 행렬로 그려서 항상 일치 |
+| 3D 건물과 가려짐 | 깊이 정보가 없어 처리 불가 | 같은 깊이 버퍼를 공유해 자연스럽게 가려짐 |
+| 렌더링 비용 | 화면 합성(compositing)이 한 번 더 필요 | 지도와 같은 도화지에 한 번에 그림 |
+
+### 언제 Custom Layer를 써야 할까
+
+Custom Layer는 강력하지만 가장 많은 일을 직접 해야 합니다. 원하는 결과를 다른 Layer로 만들 수 있다면 그쪽이 거의 항상 낫습니다.
+
+| 하고 싶은 것 | 먼저 고려할 방법 |
+| --- | --- |
+| 마커, 아이콘, 라벨 | Annotation, `SymbolLayer` |
+| 데이터 수천 개를 값에 따라 다른 색, 크기로 | `CircleLayer`, `SymbolLayer` + Expression |
+| 영역 채우기, 경로 | `FillLayer`, `LineLayer` |
+| 3D 건물, 돌출된 면 | `FillExtrusionLayer` |
+| 3D 모델(glTF) 배치 | `ModelLayer` |
+| 밀집도 표현 | `HeatmapLayer` |
+| 버튼, 말풍선 같은 UI | View Annotation |
+| **위 방법으로 표현할 수 없는 그래픽** | **Custom Layer** |
+
+Custom Layer가 진짜 필요한 경우는 이런 것들입니다.
+
+- 바람, 해류처럼 **수만 개의 입자가 매 프레임 움직이는 시각화** (파티클)
+- 물결, 빛 번짐, 왜곡 같은 **셰이더 효과**
+- 레이더 스캔, 소나 영역처럼 **시간에 따라 변하는 특수한 도형**
+- 직접 만든 3D 메시, 포인트 클라우드
+- 이미 Metal로 작성된 렌더링 엔진을 지도에 통합
+
+### Custom Layer가 해주지 않는 것들
+
+일반 Layer에서 당연하게 쓰던 기능들이 Custom Layer에서는 동작하지 않습니다. 직접 구현해야 하는 목록이라고 보면 됩니다.
+
+- **`queryRenderedFeatures`로 조회되지 않습니다.** Mapbox는 내가 무엇을 그렸는지 모릅니다. 탭 감지는 직접 해야 합니다. (15장에서 다룹니다)
+- **Expression, data-driven styling이 없습니다.** 데이터에 따라 색을 바꾸려면 정점 데이터나 uniform으로 직접 넘겨야 합니다.
+- **라벨 충돌 회피(collision)가 없습니다.** 내 그래픽은 라벨 배치에 영향을 주지 않습니다.
+- **투영, 지형 대응을 직접 해야 합니다.** Globe, terrain에서 올바른 위치에 그리려면 `parameters.projection`, `elevationData`를 직접 활용해야 합니다.
+- **실험적 API입니다.** `@_spi(Experimental)`이므로 SDK 업데이트 때 바뀔 수 있습니다.
+
 &nbsp;
 
-## 8. 생명주기 - renderingWillStart, render, renderingWillEnd
+## 10. 생명주기 - renderingWillStart, render, renderingWillEnd
 
 <img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/lifecycle.svg" alt="CustomLayer 생명주기" style="width: 100%;">
 
@@ -337,7 +574,7 @@ protocol CustomLayerHost: NSObjectProtocol {
 
 &nbsp;
 
-## 9. CustomLayerRenderParameters - 매 프레임 받는 카메라 정보
+## 11. CustomLayerRenderParameters - 매 프레임 받는 카메라 정보
 
 `render`의 첫 번째 파라미터에는 지금 이 프레임의 카메라 정보가 담겨 있습니다.
 
@@ -377,9 +614,9 @@ extension Array where Element == NSNumber {
 
 &nbsp;
 
-# Part 3. 예제
+# Part 3. 예제와 실전
 
-## 10. 예제 1 - 서울, 부산, 광주를 잇는 삼각형
+## 12. 예제 1 - 서울, 부산, 광주를 잇는 삼각형
 
 지금까지 배운 내용을 모두 모아서, 서울, 부산, 광주를 꼭짓점으로 하는 반투명 삼각형을 지도에 그려보겠습니다. 지도를 움직이고 확대하면 삼각형도 지도에 붙어서 함께 움직여야 합니다.
 
@@ -633,15 +870,52 @@ mapView.mapboxMap.setMapStyleContent {
 }
 ```
 
-### 실행 결과 이해하기
+### 실제로 실행해서 검증하기
 
-실행하면 한반도 위에 서울, 부산, 광주를 잇는 삼각형이 보이고, 내부는 세 꼭짓점의 색(주황, 파랑, 초록)이 자연스럽게 섞인 그라데이션으로 채워집니다. 정점 3개에만 색을 줬는데 그라데이션이 생기는 것은 ③ Rasterizer의 보간 덕분입니다.
+이 예제는 iOS 시뮬레이터(Mapbox Maps SDK 11.34.1)에서 직접 실행해 확인했습니다. 토큰 없이도 돌아가도록 배경 Layer만 있는 로컬 Style JSON을 사용했고, 위치가 정확한지 확인하기 위해 **같은 세 도시를 일반 Layer로도 함께 그렸습니다.** 검은 점은 `CircleLayer`, 검은 선은 `LineLayer`이고, 색이 칠해진 삼각형이 Custom Layer입니다.
 
-지도를 움직이거나 회전, 기울이면 삼각형도 함께 움직입니다. Mapbox가 매 프레임 새 `projectionMatrix`와 `zoom`을 넘겨주고, 우리는 그걸로 MVP를 다시 만들기 때문입니다.
+<div style="display: flex; gap: 12px; flex-wrap: wrap;">
+  <figure style="flex: 1; min-width: 240px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/result-flat.png" alt="평면 지도에서 실행 결과" style="width: 100%; border: 1px solid #e2e8f0; border-radius: 8px;">
+    <figcaption style="font-size: 0.8em; text-align: center;">줌 6, 기울기 0°</figcaption>
+  </figure>
+  <figure style="flex: 1; min-width: 240px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/result-pitch.png" alt="기울이고 회전한 지도에서 실행 결과" style="width: 100%; border: 1px solid #e2e8f0; border-radius: 8px;">
+    <figcaption style="font-size: 0.8em; text-align: center;">기울기 55°, 회전 30°</figcaption>
+  </figure>
+</div>
+
+&nbsp;
+
+확인한 내용은 다음과 같습니다.
+
+- **위치**: 삼각형 꼭짓점이 `CircleLayer`의 점과 정확히 겹칩니다. 지도를 기울이고 회전해도 어긋나지 않습니다. Mercator × `worldSize` × `projectionMatrix` 계산이 Mapbox 내부 계산과 같다는 뜻입니다.
+- **보간**: 정점 3개에만 색(주황, 파랑, 초록)을 줬는데 내부가 그라데이션으로 채워집니다. ③ Rasterizer의 보간 결과입니다.
+- **Layer 순서**: Custom Layer를 `.below("ref-line")`로 넣었기 때문에 검은 선이 삼각형 위에 그려집니다.
+
+`render()` 안에서 값을 찍어보면 앞에서 설명한 개념들이 숫자로 확인됩니다.
+
+| 찍어본 값 | 결과 | 의미 |
+| --- | --- | --- |
+| `parameters.width`, `height` | 402 × 874 | **point** 단위 (iPhone 16 Pro) |
+| 그릴 텍스처 크기 | 1206 × 2622 | 실제 **pixel** 단위, 3배. Viewport에 scale을 곱해야 하는 이유 |
+| `colorPixelFormat` | 80 | `.bgra8Unorm` |
+| `depthStencilPixelFormat` | 260 | `.depth32Float_stencil8` (깊이 + 스텐실 공용) |
+| color, depth의 `loadAction` | `.load` | 앞 Layer들이 그린 내용과 깊이를 유지한 채 이어 그림 |
+| `render()` 호출 스레드 | 메인 스레드 | iOS 시뮬레이터에서 확인 |
+| 지도를 가만히 둔 7초 동안 `render()` 호출 | 3번 | 변화가 없으면 다시 그리지 않음 |
+
+`depthStencilPixelFormat` 하나를 깊이와 스텐실 양쪽에 그대로 넣는 이유도 여기서 알 수 있습니다. 하나의 텍스처가 깊이(32bit float)와 스텐실(8bit)을 함께 담는 포맷이기 때문입니다.
 
 ### 왜 Globe에서는 다르게 해야 할까
 
-v11의 기본 투영은 줌이 낮을 때 지구를 공 모양으로 보여주는 **Globe**입니다. 이 예제는 평면 Mercator를 가정하고 MVP를 만들었기 때문에, Globe 상태에서는 위치가 맞지 않습니다. 그래서 `setProjection(StyleProjection(name: .mercator))`로 투영을 고정했습니다.
+v11의 기본 스타일들은 줌이 낮을 때 지구를 공 모양으로 보여주는 **Globe** 투영을 사용합니다. 이 예제는 평면 Mercator를 가정하고 MVP를 만들었기 때문에 Globe에서는 맞지 않습니다. 그래서 `setProjection(StyleProjection(name: .mercator))`로 투영을 고정했습니다.
+
+실제로 투영만 `.globe`로 바꿔서 실행하면 어떻게 될까요?
+
+<img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/result-globe.png" alt="Globe 투영에서 실행 결과" style="width: 50%; border: 1px solid #e2e8f0; border-radius: 8px;">
+
+일반 Layer로 그린 점과 선은 Mapbox가 Globe에 맞게 다시 계산하므로 제자리에 있습니다. 하지만 **Custom Layer 삼각형은 아예 사라집니다.** Globe에서 `projectionMatrix`가 기대하는 입력은 평면 World 좌표가 아니기 때문에, 우리가 넘긴 좌표가 엉뚱한 Clip space 좌표로 계산되어 화면 밖으로 잘려나간 것으로 보입니다. Custom Layer는 투영을 직접 책임져야 한다는 것을 보여주는 결과입니다.
 
 Globe에 대응하려면 `parameters.projection`이 제공하는 도우미(`convertMercatorModelMatrix`, `getTransitionMatrix`, `getTransitionPhase` 등)를 써야 합니다. 예제 3에서 공식 코드로 살펴보겠습니다.
 
@@ -653,7 +927,7 @@ Globe에 대응하려면 `parameters.projection`이 제공하는 도우미(`conv
 
 &nbsp;
 
-## 11. 예제 2 - 시간에 따라 깜빡이는 삼각형
+## 13. 예제 2 - 시간에 따라 깜빡이는 삼각형
 
 이번에는 시간을 uniform으로 넘겨서 삼각형이 숨 쉬듯 깜빡이게 만들어 보겠습니다. 이 예제에서 배울 것은 두 가지입니다.
 
@@ -713,7 +987,7 @@ override func viewWillDisappear(_ animated: Bool) {
 
 &nbsp;
 
-## 12. 예제 3 - 공식 예제 읽기 (미터 단위 3D 큐브, Globe)
+## 14. 예제 3 - 공식 예제 읽기 (미터 단위 3D 큐브, Globe)
 
 Mapbox 공식 저장소의 `CustomLayerExample.swift`는 두 가지를 그립니다. 지금까지 배운 개념으로 핵심만 읽어보겠습니다.
 
@@ -773,7 +1047,102 @@ out.position = mix(pos_merc, pos_ecef, t);
 
 &nbsp;
 
-## 13. 아무것도 안 보일 때 체크리스트
+## 15. 실전에서 부딪히는 문제들
+
+예제를 실제 기능으로 옮기면 곧바로 만나는 문제들입니다.
+
+### 탭 감지 - 내가 그린 도형을 눌렀을까?
+
+Custom Layer는 `queryRenderedFeatures`에 잡히지 않으므로 직접 판정해야 합니다. 방법은 "탭한 화면 좌표 → 지도 좌표 → Mercator"로 바꾼 뒤, 도형 안에 있는지 수학으로 확인하는 것입니다.
+
+```swift
+@objc private func handleTap(_ gesture: UITapGestureRecognizer) {
+    // 1. 화면 좌표 → 위경도 (카메라 회전, 기울기까지 Mapbox가 계산)
+    let coordinate = mapView.mapboxMap.coordinate(for: gesture.location(in: mapView))
+
+    // 2. 위경도 → Mercator (정점 버퍼와 같은 좌표계)
+    let p = Projection.latLngToMercatorXY(coordinate: coordinate)
+    let triangle = triangleCoordinates.map { Projection.latLngToMercatorXY(coordinate: $0) }
+
+    // 3. 삼각형 안인지 판정
+    if contains(p, in: triangle) {
+        print("삼각형을 탭했습니다")
+    }
+}
+
+/// 세 변에 대해 점이 모두 같은 쪽에 있으면 삼각형 안
+private func contains(_ p: MercatorCoordinate, in t: [MercatorCoordinate]) -> Bool {
+    func cross(_ a: MercatorCoordinate, _ b: MercatorCoordinate, _ c: MercatorCoordinate) -> Double {
+        (a.x - c.x) * (b.y - c.y) - (b.x - c.x) * (a.y - c.y)
+    }
+    let d1 = cross(p, t[0], t[1])
+    let d2 = cross(p, t[1], t[2])
+    let d3 = cross(p, t[2], t[0])
+    let hasNegative = d1 < 0 || d2 < 0 || d3 < 0
+    let hasPositive = d1 > 0 || d2 > 0 || d3 > 0
+    return !(hasNegative && hasPositive)
+}
+```
+
+판정을 Mercator 좌표에서 하는 이유는 정점 버퍼와 같은 평면이기 때문입니다. 위경도는 구 위의 각도라서 넓은 영역에서는 직선이 직선이 아니게 됩니다. 도형이 많다면 화면 근처의 것만 먼저 걸러내는 공간 인덱스(그리드, R-tree)를 함께 쓰면 좋습니다.
+
+### 데이터가 바뀔 때 - 버퍼를 언제, 어디서 바꿀까
+
+데이터(예: 서버에서 받은 좌표)는 보통 메인 스레드에서 바뀝니다. 그리고 12장에서 확인했듯 iOS에서 `render()`도 메인 스레드에서 호출됐습니다. 하지만 이는 SDK 문서가 보장하는 계약이 아니라 현재 구현에서 관찰된 동작이고, 6장에서 본 것처럼 **GPU는 이전 프레임의 버퍼를 아직 읽고 있을 수 있습니다.** 그래서 "같은 스레드니까 괜찮겠지" 하고 기존 버퍼를 바로 덮어쓰는 것은 위험합니다.
+
+안전한 패턴은 "**메인 스레드에서는 새 데이터만 준비하고, 버퍼 교체는 render 쪽에서 한 번에**" 하는 것입니다.
+
+```swift
+final class TriangleLayerHost: NSObject, CustomLayerHost {
+    private var device: MTLDevice?
+    private var vertexBuffer: MTLBuffer?
+
+    private let lock = NSLock()
+    private var pendingVertices: [TriangleVertex]?   // 메인 스레드가 넣어두는 새 데이터
+
+    /// 메인 스레드에서 호출
+    func update(vertices: [TriangleVertex]) {
+        lock.lock(); pendingVertices = vertices; lock.unlock()
+    }
+
+    func renderingWillStart(_ metalDevice: MTLDevice, colorPixelFormat: UInt, depthStencilPixelFormat: UInt) {
+        device = metalDevice
+        // ... pipeline 생성
+    }
+
+    func render(_ parameters: CustomLayerRenderParameters, mtlCommandBuffer: MTLCommandBuffer, mtlRenderPassDescriptor: MTLRenderPassDescriptor) {
+        lock.lock(); let newVertices = pendingVertices; pendingVertices = nil; lock.unlock()
+
+        if let newVertices, let device {
+            // 기존 버퍼를 덮어쓰지 않고 새 버퍼로 교체 → GPU가 읽고 있는 이전 버퍼는 안전
+            vertexBuffer = device.makeBuffer(bytes: newVertices,
+                                             length: MemoryLayout<TriangleVertex>.stride * newVertices.count,
+                                             options: [])
+        }
+        // ... 이하 동일
+    }
+}
+```
+
+`renderingWillStart`에서 받은 `MTLDevice`를 보관해 두면 이후에도 버퍼를 만들 수 있습니다. 데이터가 매 프레임 바뀐다면 버퍼를 매번 새로 만드는 대신 6장에서 본 triple buffering으로 넘어가면 됩니다. 데이터를 바꾼 뒤에는 지도가 멈춰 있을 수 있으므로 `triggerRepaint()`를 한 번 호출해 주세요.
+
+### 스타일이 바뀌면 Custom Layer도 사라진다
+
+`loadStyle`로 스타일을 바꾸면 Layer 배열 전체가 새 스타일로 교체되므로 Custom Layer도 함께 사라집니다. `onStyleLoaded`에서 다시 추가하는 구조로 만들어야 합니다.
+
+이때 **renderer 객체는 새로 만들지 말고 재사용**하는 것이 좋습니다. 공식 예제도 renderer를 프로퍼티로 보관하라고 주석으로 강조합니다. renderer를 매번 새로 만들면 셰이더 로드, Pipeline 생성을 다시 해야 하고, 갖고 있던 데이터도 처음부터 다시 만들어야 합니다.
+
+### 메모리 - renderer는 강하게 잡힌다
+
+SDK 변경 이력에 따르면 Mapbox는 `CustomLayerHost` 구현체를 **강한 참조(strong reference)** 로 보관합니다. 그래서 renderer가 `MapView`나 ViewController를 강하게 참조하면 순환 참조가 생겨 화면을 닫아도 메모리가 해제되지 않습니다.
+
+- renderer는 그리기에 필요한 데이터만 갖고, 지도나 화면 객체는 참조하지 않습니다.
+- 꼭 필요하다면 `weak`로 참조합니다.
+- `CADisplayLink`도 target을 강하게 잡으므로 화면이 사라질 때 `invalidate()`해야 합니다.
+
+&nbsp;
+
+## 16. 아무것도 안 보일 때 체크리스트
 
 Custom Layer는 실수해도 에러 없이 **그냥 아무것도 안 보이는** 경우가 많습니다. 아래를 순서대로 확인해 보세요.
 
@@ -809,8 +1178,15 @@ Custom Layer는 실수해도 에러 없이 **그냥 아무것도 안 보이는**
 | Vertex Shader | 정점마다 실행, 화면 위치(Clip space) 계산 |
 | Fragment Shader | 픽셀마다 실행, 색 계산 |
 | Uniform | 모든 정점, 픽셀이 공유하는 값 (행렬, 시간 등) |
+| 보간 (barycentric) | 정점 값을 세 꼭짓점과의 거리 비율로 섞어 픽셀마다 채우는 것 |
 | Clip space | GPU의 표준 좌표 공간, -1 ~ 1 |
 | MVP 행렬 | Model × View × Projection, 좌표 변환을 합친 행렬 |
+| 원근 나눗셈 | Clip 좌표를 w로 나눠 멀리 있는 것을 작게 만드는 단계 |
+| Draw call | Command Buffer에 기록되는 그리기 명령 하나. 호출 시점에는 기록만 됨 |
+| Render pass | 어느 텍스처에, 기존 내용을 유지(load)할지 지울지(clear) 정한 "도화지" |
+| Triple buffering | CPU와 GPU가 같은 버퍼를 동시에 쓰지 않도록 버퍼를 돌려쓰는 기법 |
+| 깊이 버퍼 | 픽셀마다 가장 가까운 것의 거리를 저장해 가려짐을 처리 |
+| Premultiplied alpha | rgb에 alpha를 미리 곱해두는 색 표현, 블렌딩 설정과 짝을 이룸 |
 | CustomLayer | Source 없이 Layer 배열에 자리 잡는 Layer |
 | CustomLayerHost | Metal로 직접 그리는 렌더러. Start(1번) → Render(매 프레임) → End(1번) |
 | projectionMatrix | Mapbox가 매 프레임 주는 World → Clip space 행렬 |
