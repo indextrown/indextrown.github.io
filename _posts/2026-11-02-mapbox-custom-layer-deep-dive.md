@@ -452,6 +452,23 @@ Custom Layer는 Mapbox와 **같은 깊이 버퍼를 공유**합니다. 그래서
 
 rgb에 alpha를 **미리 곱해두는 방식을 premultiplied alpha**라고 합니다. 일반 방식(`source = .sourceAlpha`)과 결과는 같지만, 여러 반투명 레이어를 겹치거나 텍스처를 확대, 축소할 때 가장자리에 검은 테두리가 생기지 않아 그래픽스에서 널리 쓰입니다. 공식 예제도 `destinationRGBBlendFactor = .oneMinusSourceAlpha`에 source는 기본값(`.one`)을 사용하는 premultiplied 방식입니다. 중요한 것은 **셰이더 출력과 블렌딩 설정이 짝을 이뤄야 한다**는 점입니다. 셰이더는 premultiplied로 내보내는데 블렌딩은 `.sourceAlpha`로 설정하면 alpha가 두 번 곱해져 색이 어둡게 나옵니다.
 
+실제로 예제 1의 셰이더(premultiplied 출력)는 그대로 두고 `sourceRGBBlendFactor`만 바꿔서 실행해 보면 차이가 바로 보입니다.
+
+<div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+  <figure style="width: 240px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/sim-order-below.jpg" alt="셰이더와 짝이 맞음: source = .one" style="width: 100%;">
+    <figcaption style="font-size: 0.8em; text-align: center;">셰이더와 짝이 맞음: source = .one</figcaption>
+  </figure>
+  <figure style="width: 240px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/sim-blend-wrong.jpg" alt="짝이 안 맞음: source = .sourceAlpha" style="width: 100%;">
+    <figcaption style="font-size: 0.8em; text-align: center;">짝이 안 맞음: source = .sourceAlpha</figcaption>
+  </figure>
+</div>
+
+&nbsp;
+
+오른쪽은 rgb에 alpha(0.7)가 한 번 더 곱해져서 0.7 × 0.7 = 0.49만큼만 색이 들어가고, 그만큼 어둡고 탁해졌습니다. 에러는 나지 않기 때문에 "색이 왜 칙칙하지?" 싶을 때 가장 먼저 의심할 부분입니다.
+
 &nbsp;
 
 ---
@@ -970,6 +987,23 @@ final class CustomLayerViewController: UIViewController {
 
 `.below("road-label")` 덕분에 삼각형은 도로 위에, 도로 이름 라벨 아래에 그려집니다. 이전 글에서 배운 Layer 순서 개념이 Custom Layer에도 그대로 적용됩니다.
 
+실제 지도 위에서 확인해 보겠습니다. OpenStreetMap 배경 위에 도시 이름을 일반 `SymbolLayer`(`city-labels`)로 올리고, Custom Layer를 넣는 위치만 바꿨습니다. 배경 지도 © OpenStreetMap contributors.
+
+<div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+  <figure style="width: 240px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/sim-order-top.jpg" alt="addLayer(layer): 맨 위" style="width: 100%;">
+    <figcaption style="font-size: 0.8em; text-align: center;">addLayer(layer): 맨 위</figcaption>
+  </figure>
+  <figure style="width: 240px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/sim-order-below.jpg" alt="addLayer(layer, layerPosition: .below(city-labels))" style="width: 100%;">
+    <figcaption style="font-size: 0.8em; text-align: center;">addLayer(layer, layerPosition: .below("city-labels"))</figcaption>
+  </figure>
+</div>
+
+&nbsp;
+
+왼쪽은 Custom Layer가 Layer 배열의 맨 끝, 즉 가장 위에 그려져서 삼각형 안의 "대전", "전주" 라벨이 반투명 삼각형에 덮여 흐려졌습니다. 오른쪽은 라벨 Layer 바로 아래에 끼워 넣어서 라벨이 선명하게 위로 올라왔습니다. 8장에서 본 것처럼 Custom Layer도 **Layer 배열 순서대로 같은 도화지에 이어 그리기 때문**입니다. 지도 위에 `MTKView`를 겹치는 방식으로는 이렇게 라벨 아래에 끼워 넣을 수 없습니다.
+
 SwiftUI처럼 선언형 Style DSL을 쓴다면 공식 예제처럼 이렇게 추가할 수도 있습니다.
 
 ```swift
@@ -1268,6 +1302,23 @@ Custom Layer에는 ③, ④ 단계가 없습니다. 내가 GPU가 바로 읽을 
 - 점을 2만 개로 늘리면 A는 100%를 넘어(여러 코어 사용) 프레임이 9 ~ 18fps로 떨어지지만, **B는 CPU가 거의 그대로이고 60fps를 유지**합니다. 늘어난 계산을 GPU가 병렬로 흡수했기 때문입니다.
 - A'처럼 갱신을 1초에 1번으로 줄이면 GeoJSON도 CPU가 크게 줄어듭니다. 대신 점이 1초마다 **뚝뚝 끊어져 이동**합니다. 선박 위치(AIS)처럼 데이터 자체가 몇 초에 한 번 오는 경우라면 A'로도 충분합니다.
 
+아래는 점 2만 개를 두 방식으로 움직이면서 화면을 녹화한 것입니다. 개별 점이 보이도록 카메라만 줌 14로 확대했고, 화면 밖의 점까지 2만 개를 모두 계산하는 것은 같습니다.
+
+<div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+  <figure style="width: 240px; margin: 0;">
+    <video src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/sim-bench-geojson.mp4" poster="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/sim-bench-geojson-poster.jpg" autoplay loop muted playsinline style="width: 100%;"></video>
+    <figcaption style="font-size: 0.8em; text-align: center;">A. GeoJSON 60Hz 갱신 (녹화 중 5~23fps)</figcaption>
+  </figure>
+  <figure style="width: 240px; margin: 0;">
+    <video src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/sim-bench-custom.mp4" poster="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/sim-bench-custom-poster.jpg" autoplay loop muted playsinline style="width: 100%;"></video>
+    <figcaption style="font-size: 0.8em; text-align: center;">B. Custom Layer (녹화 중 60fps)</figcaption>
+  </figure>
+</div>
+
+&nbsp;
+
+B는 모든 점이 반경 300m 원을 그리며 부드럽게 돕니다. A는 화면 대부분이 비어 있다가 **일부 타일만 늦게 나타나고, 나타난 뒤에도 멈춰 있는 시간이 깁니다.** 새 데이터가 들어올 때마다 타일 분할, Bucket 생성을 다시 하는데, 그 작업이 끝나기 전에 다음 갱신이 계속 들어와서 화면에 반영될 타일이 제때 준비되지 못하는 것으로 보입니다. 위 측정(줌 11.3)보다 증상이 심한 것은, 확대할수록 같은 데이터를 더 높은 줌의 타일로 다시 잘라야 하기 때문으로 보입니다.
+
 <details class="notion-toggle-list" markdown="1">
 <summary>측정에 쓴 Custom Layer 셰이더 코드 보기</summary>
 
@@ -1399,6 +1450,49 @@ private func contains(_ p: MercatorCoordinate, in t: [MercatorCoordinate]) -> Bo
 
 판정을 Mercator 좌표에서 하는 이유는 정점 버퍼와 같은 평면이기 때문입니다. 위경도는 구 위의 각도라서 넓은 영역에서는 직선이 직선이 아니게 됩니다. 도형이 많다면 화면 근처의 것만 먼저 걸러내는 공간 인덱스(그리드, R-tree)를 함께 쓰면 좋습니다.
 
+위 판정 코드를 그대로 써서 삼각형을 탭하면, 렌더러의 `highlighted` 값을 1로 바꾸고 `triggerRepaint()`를 호출하도록 했습니다. Fragment Shader는 이 값을 uniform으로 받아 원래 색과 노란색을 `mix`합니다.
+
+<details class="notion-toggle-list" markdown="1">
+<summary>탭 강조 셰이더와 처리 코드 보기</summary>
+
+```cpp
+fragment float4 highlightFragment(RasterizerData in [[stage_in]],
+                                  constant float &highlight [[buffer(1)]]) {
+    float4 c = mix(in.color, float4(1.0, 0.85, 0.1, 0.9), highlight);   // 0이면 원래 색, 1이면 노랑
+    return float4(c.rgb * c.a, c.a);
+}
+```
+
+```swift
+// 렌더러: render() 안에서 uniform으로 넘김
+var highlighted: Float = 0
+// ...
+var hl = highlighted
+encoder.setFragmentBytes(&hl, length: MemoryLayout<Float>.stride, index: 1)
+
+// 화면: 판정 결과로 상태만 바꾸고 다시 그리기 요청
+let hit = contains(p, in: triangle)
+renderer.highlighted = hit ? 1 : 0
+mapView.mapboxMap.triggerRepaint()
+```
+
+</details>
+
+<div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+  <figure style="width: 240px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/sim-tap-before.jpg" alt="탭 전" style="width: 100%;">
+    <figcaption style="font-size: 0.8em; text-align: center;">탭 전</figcaption>
+  </figure>
+  <figure style="width: 240px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/sim-tap-after.jpg" alt="삼각형 안쪽을 탭한 후 (hit = true)" style="width: 100%;">
+    <figcaption style="font-size: 0.8em; text-align: center;">삼각형 안쪽을 탭한 후 (hit = true)</figcaption>
+  </figure>
+</div>
+
+&nbsp;
+
+`queryRenderedFeatures`가 없어도, **좌표 변환(화면 → 위경도 → Mercator) + 수학 판정 + uniform 하나**로 일반 Layer의 feature-state 강조와 같은 효과를 만들 수 있습니다. 데이터(정점 버퍼)는 전혀 바꾸지 않았다는 점도 feature-state와 같습니다.
+
 ### 데이터가 바뀔 때 - 버퍼를 언제, 어디서 바꿀까
 
 데이터(예: 서버에서 받은 좌표)는 보통 메인 스레드에서 바뀝니다. 그리고 12장에서 확인했듯 iOS에서 `render()`도 메인 스레드에서 호출됐습니다. 하지만 이는 SDK 문서가 보장하는 계약이 아니라 현재 구현에서 관찰된 동작이고, 6장에서 본 것처럼 **GPU는 이전 프레임의 버퍼를 아직 읽고 있을 수 있습니다.** 그래서 "같은 스레드니까 괜찮겠지" 하고 기존 버퍼를 바로 덮어쓰는 것은 위험합니다.
@@ -1475,6 +1569,24 @@ Custom Layer는 실수해도 에러 없이 **그냥 아무것도 안 보이는**
 | 모양이 깨짐 | Swift 구조체와 MSL 구조체의 메모리 레이아웃 불일치 |
 | 애니메이션이 멈춤 | `triggerRepaint()`를 호출하지 않음 |
 | 줌을 당기면 떨림 | `Float` 정밀도 문제 (Relative To Center 고려) |
+
+표의 두 가지를 실제로 재현하면 이렇게 보입니다.
+
+<div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+  <figure style="width: 240px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/sim-bug-viewport.jpg" alt="Viewport에 화면 배율(3배)을 곱하지 않음" style="width: 100%;">
+    <figcaption style="font-size: 0.8em; text-align: center;">Viewport에 화면 배율(3배)을 곱하지 않음</figcaption>
+  </figure>
+  <figure style="width: 240px; margin: 0;">
+    <img src="/assets/img/2026-11-02-mapbox-custom-layer-deep-dive/sim-bug-layout.jpg" alt="정점을 [Float]로 꽉 채워 담음 (메모리 배치 불일치)" style="width: 100%;">
+    <figcaption style="font-size: 0.8em; text-align: center;">정점을 [Float]로 꽉 채워 담음 (메모리 배치 불일치)</figcaption>
+  </figure>
+</div>
+
+&nbsp;
+
+- **왼쪽**: `parameters.width`(point 단위)를 그대로 Viewport에 넣어서, 실제 픽셀(3배) 화면의 왼쪽 위 1/3 영역에만 그려졌습니다. 모양과 색은 정상인데 위치와 크기만 틀린 것이 특징입니다.
+- **오른쪽**: Swift에서 정점을 `[Float]`(x, y, r, g, b, a 6개 = 24바이트)로 담았는데, 셰이더 구조체는 패딩 때문에 정점 하나를 32바이트로 읽습니다. 두 번째 정점부터 엉뚱한 바이트를 위치와 색으로 읽어서 서울에서 화면 밖으로 뻗는 한 가지 색의 도형이 되었습니다. 12장 Step 1에서 `MemoryLayout<TriangleVertex>.stride`가 32인지 확인한 이유입니다.
 
 **Xcode GPU Frame Capture**도 꼭 써보세요. 디버그 바의 카메라 모양 버튼으로 한 프레임을 캡처하면 Mapbox의 Layer별 draw call 목록 사이에서 `"Triangle Custom Layer"`라는 label로 내 Encoder를 찾을 수 있습니다. 정점 버퍼에 들어간 값, 행렬 값, 셰이더 출력까지 직접 확인할 수 있어서 "왜 안 보이지?"를 추측이 아니라 눈으로 확인할 수 있습니다. 코드에서 `encoder.label`을 지정한 이유가 바로 이것입니다.
 
