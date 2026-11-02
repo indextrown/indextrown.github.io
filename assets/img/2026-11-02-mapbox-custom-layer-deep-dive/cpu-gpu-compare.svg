@@ -36,7 +36,7 @@
 
   <!-- measured -->
   <rect x="40" y="466" width="880" height="72" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
-  <text x="60" y="492" font-size="13" font-weight="700" fill="#334155">실측 (iPhone 16 Pro 시뮬레이터, 점이 반경 300m 원을 그리며 계속 이동)</text>
-  <text x="60" y="516" font-size="13" fill="#334155">점 3,000개:  A(60Hz 갱신) CPU 약 99%, 60fps   ·   B CPU 약 8%, 60fps</text>
-  <text x="60" y="534" font-size="13" fill="#334155">점 20,000개: A(60Hz 갱신) CPU 111~130%, 9~18fps로 끊김   ·   B CPU 약 9~14%, 60fps 유지</text>
+  <text x="60" y="492" font-size="13" font-weight="700" fill="#334155">실측 CPU (iPhone 16 Pro 시뮬레이터, 60fps 애니메이션, 3회 평균, 100% = 코어 1개)</text>
+  <text x="60" y="516" font-size="13" fill="#334155">A (GeoJSON 60Hz 갱신):  1천 개 약 56%  →  3천 개 약 91%  →  1만 개 약 259%  →  2만 개 약 600%</text>
+  <text x="60" y="534" font-size="13" fill="#334155">B (Custom Layer, GPU에서 계산):  1천 ~ 2만 개 모두 약 12% (대부분 60fps로 다시 그리는 고정 비용)</text>
 </svg>
