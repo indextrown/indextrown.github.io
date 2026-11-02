@@ -1,0 +1,1425 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>[Mapbox] 처음 배우는 Mapbox 핵심 개념 - GeoJSON, Feature, Source, Layer - DongHyeon Kim’s Blog</title>
+<meta name="description" content="Mapbox로 지도에 무언가를 그리는 5가지 방법  Mapbox iOS SDK에서 지도 위에 마커나 경로 같은 데이터를 올리는 방법은 크게 5가지입니다.                 방법       설명       어울리는 상황                       Marker       SwiftUI Map 안에 좌표만 넣으면 기본 핀을 그려주는 가장 간단한 API       프로토타입, 핀 몇 개                 Annotation       PointAnnotation, PolylineAnnotation 등을 Annotation Manager로 추가       마커 수십 개 정도, 빠른 구현                 View Annotation       지도 좌표에 UIKit/SwiftUI 뷰를 그대로 띄움       말풍선, 버튼이 있는 카드 등 인터랙티브한 UI                 Style Layer (Source + Layer)       데이터(Source)와 그리는 방법(Layer)을 Style에 직접 추가       데이터 수백~수천 개, 클러스터링, 데이터에 따른 스타일                 Custom Layer       CustomLayer에 Metal 렌더링 코드를 직접 작성해 지도 렌더링 파이프라인에 끼워 넣음       3D 모델, 파티클, 셰이더 효과 등 기본 Layer로 표현할 수 없는 그래픽           Marker와 Annotation이 쉬워 보이지만, 사실 이 둘도 내부적으로는 Source와 Layer를 만들어서 그립니다. 즉 Source + Layer 방식이 Mapbox가 지도를 그리는 가장 기본 원리이고, 나머지는 이를 편하게 감싼 API에 가깝습니다. 단, 두 가지는 예외입니다.     View Annotation은 지도 렌더링과 별개로 지도 위에 실제 UIView를 올리는 방식입니다.   Custom Layer는 Layer 배열에 들어가 순서는 다른 Layer와 함께 관리되지만, Source 없이 내가 직접 Metal로 그리는 방식입니다. 가장 자유롭지만 가장 저수준이라, 이 부분은 별도 글에서 딥다이브할 예정입니다.   그래서 이 글에서는 Source + Layer 방식부터 공부하겠습니다. 이 구조를 이해하면 나머지 방법은 “이걸 대신 해주는 도구구나” 하고 자연스럽게 이해할 수 있습니다.          Source + Layer 방식을 공부하다 보면 Source, Layer, Feature, GeoJSON, Style, Expression 같은 단어가 한꺼번에 쏟아집니다. 각각은 어렵지 않지만 서로 어떤 관계인지 모르면 코드가 왜 그렇게 생겼는지 이해하기 어렵습니다.  이 글에서는 아래 순서로 개념을 하나씩 쌓아 올려 보겠습니다.     지도는 어떻게 그려질까 - 좌표와 타일   Geometry - 점, 선, 면   GeoJSON - 지리 데이터를 담는 포맷   Feature - 데이터 한 건   Style - 지도 전체의 설계도   Source - 데이터를 어디서 가져올까   Layer - 데이터를 어떻게 그릴까   Expression - 데이터에 따라 다르게 그리기   상호작용 - 지도에서 Feature 찾기   다시 보는 Annotation - 결국 Source + Layer   예제 코드는 iOS용 Mapbox Maps SDK v11 기준입니다.          한 장으로 먼저 보기  세부 내용에 들어가기 전에 “지도 위에 카페 마커를 그린다”는 예시로 전체 구조를 먼저 보겠습니다.  전체 구조    같은 구조를 트리로 펼쳐보면 다음과 같습니다.  MapView  └── Style (지도 전체 설계도, JSON 문서 하나)       │       ├── Sources (데이터 저장소, id → source 딕셔너리)       │    │       │    ├── &quot;composite&quot; : vector          ← Mapbox가 제공하는 기본 지도 데이터       │    │     ├── source-layer &quot;water&quot;     → 물 Feature들 (Polygon)       │    │     ├── source-layer &quot;road&quot;      → 도로 Feature들 (LineString)       │    │     └── source-layer &quot;building&quot;  → 건물 Feature들 (Polygon)       │    │       │    └── &quot;cafes&quot; : geojson              ← 내가 추가한 데이터       │          └── FeatureCollection       │                ├── Feature       │                │     ├── id: 1       │                │     ├── geometry: Point [126.978, 37.566]       │                │     └── properties: { name: &quot;A카페&quot;, category: &quot;cafe&quot; }       │                └── Feature       │                      ├── id: 2       │                      ├── geometry: Point [126.985, 37.570]       │                      └── properties: { name: &quot;B식당&quot;, category: &quot;restaurant&quot; }       │       └── Layers (그리는 방법, 배열 순서 = 그려지는 순서)            ├── [0] background   type: background                          ← 가장 아래            ├── [1] water        type: fill    source: composite / water            ├── [2] road         type: line    source: composite / road            ├── [3] building     type: fill    source: composite / building            ├── [4] cafe-circles type: circle  source: cafes            └── [5] cafe-labels  type: symbol  source: cafes                ← 가장 위   이 그림에서 알 수 있는 사실들을 정리해보면 다음과 같습니다.     우리가 보는 기본 지도(바다, 도로, 건물)도 Source + Layer로 그려진 것입니다. 내가 추가하는 카페 데이터와 구조가 똑같습니다.   Source는 딕셔너리(id로 찾음), Layer는 배열(순서가 중요함)입니다.   Layer는 Source를 직접 들고 있지 않고 id 문자열로 참조합니다. (source: &quot;cafes&quot;)   Vector Source는 안에 여러 묶음(source-layer)이 있어서, Layer가 source와 source-layer를 함께 지정합니다.   background Layer처럼 Source 없이 그려지는 예외도 있습니다.   Layer는 쌓아서 그린다  Layer 배열의 순서는 곧 그려지는 순서입니다. 투명한 필름에 하나씩 그림을 그리고 아래부터 차곡차곡 쌓는다고 생각하면 쉽습니다.    그래서 내가 추가한 카페 Layer는 기본 지도 위에 올라가고, 순서를 잘못 잡으면 경로선이 도로 이름을 덮어버리는 일이 생깁니다. 이 부분은 7장에서 다시 다룹니다.  데이터가 화면에 나오기까지       앱이 가진 데이터를 GeoJSON(Feature 묶음) 형태로 만듭니다.   이 데이터를 Source로 Style에 등록합니다. 이 시점까지 화면에는 아무 변화가 없습니다.   그 Source를 참조하는 Layer를 추가하는 순간 지도에 그려집니다.   Layer는 각 Feature의 properties를 읽어서(Expression) 색, 크기, 글자를 다르게 그릴 수 있습니다.   코드로 보면 딱 이 세 단계입니다. 자세한 문법은 뒤에서 하나씩 다룹니다.  // 1. 데이터 만들기 (Feature) var cafe = Feature(geometry: Point(CLLocationCoordinate2D(latitude: 37.566, longitude: 126.978))) cafe.properties = [&quot;name&quot;: &quot;A카페&quot;, &quot;category&quot;: &quot;cafe&quot;]  // 2. Source 등록 (아직 안 보임) var source = GeoJSONSource(id: &quot;cafes&quot;) source.data = .featureCollection(FeatureCollection(features: [cafe])) try mapView.mapboxMap.addSource(source)  // 3. Layer 추가 (이제 보임) var layer = CircleLayer(id: &quot;cafe-circles&quot;, source: &quot;cafes&quot;) layer.circleColor = .constant(StyleColor(.brown)) try mapView.mapboxMap.addLayer(layer)   각 개념의 역할                 개념       질문       역할       예시                       Style       지도 전체를 어떻게 구성할까?       Source와 Layer를 모두 담는 설계도       streets-v12, 내가 만든 커스텀 스타일                 Source       무엇을 그릴까?       데이터와 데이터를 가져오는 방법       &quot;cafes&quot; GeoJSON, &quot;composite&quot; Vector                 Feature       그중 하나는 무엇인가?       위치(geometry) + 정보(properties) 한 건       A카페 한 곳, 도로 한 구간                 GeoJSON       데이터를 어떤 형식으로 적을까?       Feature를 표현하는 JSON 포맷       { &quot;type&quot;: &quot;Feature&quot;, ... }                 Layer       어떻게 그릴까?       Source를 어떤 모양, 색으로 그릴지       circle, line, fill, symbol                 Expression       데이터마다 다르게 그리려면?       properties, 줌에 따라 값을 계산하는 식       category별 색상, 줌별 크기           Source와 Layer의 관계  Source와 Layer는 1 : N 관계입니다.                        ┌──→ cafe-circles  (circle)  : 위치를 원으로  Source &quot;cafes&quot;  ─────┼──→ cafe-labels   (symbol)  : 이름을 글자로                       └──→ cafe-heatmap  (heatmap) : 밀집도를 히트맵으로      하나의 Source를 여러 Layer가 공유할 수 있습니다. 데이터는 한 번만 넣고 표현만 여러 개 만드는 구조입니다.   반대로 하나의 Layer는 오직 하나의 Source만 참조할 수 있습니다.   데이터가 바뀌면 Source만 갱신하면 되고, 이를 참조하는 모든 Layer가 자동으로 다시 그려집니다.   반대로 모양만 바꾸고 싶으면 Layer 속성만 바꾸면 되고, 데이터는 건드리지 않아도 됩니다.   이렇게 데이터(Source)와 표현(Layer)을 분리한 것이 Mapbox 구조의 핵심이고, 이 글 전체가 이 한 문장을 풀어서 설명하는 내용입니다.          1. 지도는 어떻게 그려질까 - 좌표와 타일  좌표: 경도(longitude), 위도(latitude)  지구 위의 한 점은 위도와 경도로 나타냅니다.     위도(latitude): 적도 기준 남북 위치, -90 ~ 90   경도(longitude): 그리니치 기준 동서 위치, -180 ~ 180   서울시청은 대략 위도 37.5665, 경도 126.9780 입니다.  여기서 가장 많이 실수하는 부분이 있습니다. iOS의 CLLocationCoordinate2D는 (latitude, longitude) 순서이지만 GeoJSON과 Mapbox Style 스펙은 [longitude, latitude] 순서입니다.  // iOS: 위도, 경도 CLLocationCoordinate2D(latitude: 37.5665, longitude: 126.9780)   // GeoJSON: 경도, 위도 [126.9780, 37.5665]   순서를 바꿔 넣으면 서울 마커가 남극 근처 바다에 찍히는 걸 볼 수 있습니다.  줌 레벨과 타일  지도는 한 장의 거대한 이미지가 아니라 타일(Tile) 이라는 작은 정사각형 조각들을 이어 붙여서 보여줍니다.     줌 레벨 0에서는 전 세계가 타일 1장입니다.   줌이 1 올라갈 때마다 타일 하나가 4장으로 쪼개집니다. (줌 z에서 타일 수 = 4^z)   화면에 보이는 영역의 타일만 내려받기 때문에 전 세계 지도를 빠르게 보여줄 수 있습니다.   타일은 두 종류가 있습니다.                 종류       내용       특징                       Raster Tile       이미 그려진 PNG/JPG 이미지       스타일 변경 불가, 위성사진 등에 사용                 Vector Tile       도형 데이터(점, 선, 면 + 속성)       기기에서 직접 그림, 스타일을 자유롭게 변경 가능           Mapbox 지도는 기본적으로 Vector Tile입니다. 데이터만 내려받고 “어떻게 그릴지”는 기기가 Style을 보고 결정합니다. 그래서 같은 데이터로 다크 모드, 내비게이션용 지도 등 전혀 다른 모양을 만들 수 있습니다. 이 “데이터와 그리는 방법의 분리”가 뒤에 나올 Source와 Layer 개념의 출발점입니다.          2. Geometry - 점, 선, 면  지도 위의 모든 데이터는 결국 세 가지 도형 중 하나입니다.                 Geometry       의미       예시                       Point       점 하나       카페 위치, 버스 정류장                 LineString       점들을 이은 선       도로, 이동 경로, 버스 노선                 Polygon       닫힌 면       건물, 공원, 행정구역           여기에 여러 개를 묶은 MultiPoint, MultiLineString, MultiPolygon과, 서로 다른 Geometry를 묶는 GeometryCollection이 있습니다. 예를 들어 섬이 여러 개인 행정구역은 MultiPolygon으로 표현합니다.  어떤 Geometry인지에 따라 사용할 수 있는 Layer 종류가 달라지므로 기억해두면 좋습니다.          3. GeoJSON - 지리 데이터를 담는 포맷  GeoJSON은 지리 데이터를 JSON으로 표현하기 위한 표준 포맷(RFC 7946)입니다. Mapbox뿐 아니라 Google Maps, Leaflet, PostGIS 등 거의 모든 지도 도구가 지원합니다.  Geometry 표현  { &quot;type&quot;: &quot;Point&quot;, &quot;coordinates&quot;: [126.9780, 37.5665] }   {   &quot;type&quot;: &quot;LineString&quot;,   &quot;coordinates&quot;: [     [126.9780, 37.5665],     [126.9820, 37.5700],     [126.9900, 37.5710]   ] }   {   &quot;type&quot;: &quot;Polygon&quot;,   &quot;coordinates&quot;: [     [       [126.97, 37.56],       [126.99, 37.56],       [126.99, 37.58],       [126.97, 37.58],       [126.97, 37.56]     ]   ] }   Polygon은 두 가지를 주의해야 합니다.     좌표 배열이 한 겹 더 감싸져 있습니다. 첫 번째 배열은 바깥 테두리, 그다음 배열들은 구멍(hole)입니다.   첫 좌표와 마지막 좌표가 같아야 닫힌 도형이 됩니다.   Feature와 FeatureCollection  Geometry만으로는 “이 점이 무엇인지” 알 수 없습니다. 그래서 GeoJSON은 Geometry에 속성을 붙인 Feature, 그리고 Feature들을 묶은 FeatureCollection을 제공합니다.  {   &quot;type&quot;: &quot;FeatureCollection&quot;,   &quot;features&quot;: [     {       &quot;type&quot;: &quot;Feature&quot;,       &quot;id&quot;: 1,       &quot;geometry&quot;: { &quot;type&quot;: &quot;Point&quot;, &quot;coordinates&quot;: [126.9780, 37.5665] },       &quot;properties&quot;: { &quot;name&quot;: &quot;A카페&quot;, &quot;category&quot;: &quot;cafe&quot;, &quot;rating&quot;: 4.5 }     },     {       &quot;type&quot;: &quot;Feature&quot;,       &quot;id&quot;: 2,       &quot;geometry&quot;: { &quot;type&quot;: &quot;Point&quot;, &quot;coordinates&quot;: [126.9850, 37.5700] },       &quot;properties&quot;: { &quot;name&quot;: &quot;B식당&quot;, &quot;category&quot;: &quot;restaurant&quot;, &quot;rating&quot;: 3.8 }     }   ] }   정리하면 GeoJSON은 아래 계층 구조를 가집니다.  FeatureCollection  └── Feature (여러 개)       ├── id          (선택)       ├── geometry    → 어디에, 어떤 모양으로       └── properties  → 무엇인지 (자유로운 key-value)           4. Feature - 데이터 한 건  Feature는 지도 위의 “물체 하나”입니다. 카페 하나, 도로 한 구간, 건물 하나가 각각 Feature입니다.  Feature는 GeoJSON에서만 쓰는 말이 아니라 Mapbox 전체에서 쓰이는 개념입니다. Vector Tile 안의 도로, 건물 데이터도 모두 Feature이고, 사용자가 지도를 탭했을 때 돌려받는 것도 Feature입니다.  Feature에서 중요한 것은 properties입니다. 뒤에서 볼 Expression은 이 properties 값을 읽어서 색상, 크기, 텍스트를 결정합니다. 즉 “데이터에 무엇을 넣어두느냐”가 “지도를 얼마나 다양하게 그릴 수 있느냐”를 결정합니다.  iOS에서는 Mapbox SDK에 포함된 Turf 라이브러리로 Feature를 만듭니다.  import MapboxMaps  var cafe = Feature(geometry: Point(CLLocationCoordinate2D(latitude: 37.5665, longitude: 126.9780))) cafe.identifier = .number(1) cafe.properties = [     &quot;name&quot;: &quot;A카페&quot;,     &quot;category&quot;: &quot;cafe&quot;,     &quot;rating&quot;: 4.5 ]  let collection = FeatureCollection(features: [cafe])   Swift 코드에서는 CLLocationCoordinate2D를 쓰기 때문에 위도, 경도 순서로 넣어도 SDK가 GeoJSON 순서로 변환해줍니다. 직접 JSON 문자열이나 파일을 다룰 때만 [경도, 위도] 순서를 신경 쓰면 됩니다.          5. Style - 지도 전체의 설계도  Style은 지도를 어떻게 보여줄지를 정의한 JSON 문서입니다. Mapbox Studio에서 만든 스타일이나 mapbox://styles/mapbox/streets-v12 같은 기본 스타일이 모두 이 JSON입니다.  Style JSON의 뼈대는 아래와 같습니다.  {   &quot;version&quot;: 8,   &quot;name&quot;: &quot;My Style&quot;,   &quot;sprite&quot;: &quot;mapbox://sprites/...&quot;,   &quot;glyphs&quot;: &quot;mapbox://fonts/{fontstack}/{range}.pbf&quot;,   &quot;sources&quot;: {     &quot;cafes&quot;: { &quot;type&quot;: &quot;geojson&quot;, &quot;data&quot;: &quot;https://example.com/cafes.geojson&quot; }   },   &quot;layers&quot;: [     { &quot;id&quot;: &quot;background&quot;, &quot;type&quot;: &quot;background&quot;, &quot;paint&quot;: { &quot;background-color&quot;: &quot;#f5f5f5&quot; } },     { &quot;id&quot;: &quot;cafe-circles&quot;, &quot;type&quot;: &quot;circle&quot;, &quot;source&quot;: &quot;cafes&quot;, &quot;paint&quot;: { &quot;circle-radius&quot;: 6 } }   ] }                  키       역할                       sources       사용할 데이터 목록 (딕셔너리, id → source)                 layers       그리는 방법 목록 (배열, 순서 중요)                 sprite       아이콘 이미지 모음                 glyphs       라벨에 쓸 폰트           결국 Mapbox로 지도를 커스터마이징한다는 것은 이 Style에 Source와 Layer를 추가, 수정, 삭제하는 것입니다. 코드로 addSource, addLayer를 호출하는 것도 런타임에 이 JSON을 고치는 일과 같습니다.     v11의 기본 스타일인 Mapbox Standard는 내부 Layer를 직접 노출하지 않고, slot과 설정값(config)으로 커스터마이징하는 방식입니다. 개념 학습 단계에서는 streets-v12처럼 Layer 구조가 그대로 보이는 클래식 스타일로 실습하면 이해하기 더 쉽습니다.           6. Source - 데이터를 어디서 가져올까  Source는 지도에 그릴 데이터와 그 데이터를 가져오는 방법을 정의합니다. Source 자체는 화면에 그려지지 않습니다.                 Source type       데이터       사용 예                       vector       Vector Tile       Mapbox 기본 지도 데이터, 대용량 데이터                 raster       Raster Tile 이미지       위성사진, 외부 타일 서버                 raster-dem       고도 데이터       3D 지형, 음영 기복                 geojson       GeoJSON       앱에서 직접 만든 마커, 경로 등                 image       이미지 한 장       특정 영역에 평면도 덮어씌우기           처음에는 geojson과 vector 두 가지만 알아도 충분합니다.  GeoJSON Source  앱에서 가진 데이터를 지도에 올릴 때 가장 많이 사용합니다.  var source = GeoJSONSource(id: &quot;cafes&quot;) source.data = .featureCollection(collection) // 또는 원격 파일: source.data = .url(URL(string: &quot;https://example.com/cafes.geojson&quot;)!)  try mapView.mapboxMap.addSource(source)   데이터가 바뀌면 Source를 새로 만들지 않고 데이터만 갱신합니다.  mapView.mapboxMap.updateGeoJSONSource(withId: &quot;cafes&quot;, geoJSON: .featureCollection(newCollection))   GeoJSON Source는 cluster 옵션으로 가까운 점들을 자동으로 묶는 클러스터링 기능도 제공합니다.  source.cluster = true source.clusterRadius = 50 source.clusterMaxZoom = 14   Vector Source와 source-layer  Vector Tile 하나에는 도로, 건물, 물 등 여러 종류의 데이터가 함께 들어 있습니다. 이 안의 데이터 묶음을 source-layer라고 부릅니다.  Vector Source &quot;composite&quot; (Mapbox Streets)  ├── source-layer &quot;road&quot;  ├── source-layer &quot;building&quot;  ├── source-layer &quot;water&quot;  └── source-layer &quot;poi_label&quot;   그래서 Vector Source를 쓰는 Layer는 source와 함께 sourceLayer를 지정해야 합니다.  var buildings = FillLayer(id: &quot;my-buildings&quot;, source: &quot;composite&quot;) buildings.sourceLayer = &quot;building&quot;   이름이 비슷해서 헷갈리는데, source-layer는 데이터 안의 분류이고 Layer는 그리는 방법입니다. 둘은 완전히 다른 개념입니다.          7. Layer - 데이터를 어떻게 그릴까  Layer는 Source의 Feature들을 화면에 어떤 모양으로 그릴지 정합니다.  Layer 종류                 Layer type       그리는 것       어울리는 Geometry                       background       지도 배경색       (Source 없음)                 fill       면 채우기       Polygon                 line       선       LineString, Polygon 테두리                 circle       원       Point                 symbol       아이콘, 텍스트       Point, LineString(도로명처럼 선을 따라)                 fill-extrusion       3D로 솟은 면       Polygon (3D 건물)                 heatmap       밀도 히트맵       Point                 raster       래스터 이미지       raster source                 hillshade       지형 음영       raster-dem source           같은 데이터라도 Layer를 바꾸면 전혀 다르게 보입니다. 카페 위치(Point)를 circle로 그리면 점, symbol로 그리면 아이콘과 이름, heatmap으로 그리면 카페 밀집 지역이 됩니다.  layout과 paint  Layer의 속성은 두 그룹으로 나뉩니다.                 그룹       의미       예시                       layout       배치, 구조에 관한 속성       visibility, text-field, icon-image, line-cap                 paint       색, 크기 등 칠하는 속성       circle-color, fill-opacity, line-width           Swift SDK에서는 그룹 구분 없이 프로퍼티로 바로 접근할 수 있지만, Style JSON을 읽을 때는 이 구분이 보입니다.  Layer 추가하기  앞에서 만든 cafes Source 하나로 원과 라벨 두 개의 Layer를 만들어 보겠습니다.  var circleLayer = CircleLayer(id: &quot;cafe-circles&quot;, source: &quot;cafes&quot;) circleLayer.circleRadius = .constant(8) circleLayer.circleColor = .constant(StyleColor(.systemBrown)) circleLayer.circleStrokeWidth = .constant(2) circleLayer.circleStrokeColor = .constant(StyleColor(.white))  var labelLayer = SymbolLayer(id: &quot;cafe-labels&quot;, source: &quot;cafes&quot;) labelLayer.textField = .expression(Exp(.get) { &quot;name&quot; }) labelLayer.textSize = .constant(12) labelLayer.textOffset = .constant([0, 1.5])  try mapView.mapboxMap.addLayer(circleLayer) try mapView.mapboxMap.addLayer(labelLayer)   Source와 Layer는 Style이 로드된 뒤에 추가해야 합니다.  mapView.mapboxMap.onStyleLoaded.observeNext { [weak self] _ in     self?.addCafeLayers() }.store(in: &amp;cancelables)   Layer 순서  Layer는 배열 순서대로 아래에서 위로 그려집니다. 나중에 추가한 Layer가 위에 올라갑니다. 그래서 경로선을 추가했는데 도로 라벨까지 덮어버리는 일이 생깁니다. 이럴 때는 위치를 지정합니다.  try mapView.mapboxMap.addLayer(routeLayer, layerPosition: .below(&quot;road-label&quot;))           8. Expression - 데이터에 따라 다르게 그리기  지금까지는 모든 카페를 같은 색으로 그렸습니다. Expression을 쓰면 Feature의 properties나 줌 레벨에 따라 스타일을 다르게 줄 수 있습니다. (Data-driven styling)  Expression은 JSON 배열 형태의 작은 언어입니다. 첫 번째 원소가 연산자입니다.  [&quot;get&quot;, &quot;name&quot;]   자주 쓰는 Expression은 아래와 같습니다.                 Expression       역할                       get       properties 값 읽기                 match       값에 따라 분기 (switch)                 case       조건에 따라 분기 (if-else)                 interpolate       값 사이를 부드럽게 보간                 zoom       현재 줌 레벨                 ==, &gt;, all, any       비교, 논리 연산 (filter에 자주 사용)           match - 카테고리별 색상  [&quot;match&quot;, [&quot;get&quot;, &quot;category&quot;],   &quot;cafe&quot;, &quot;#8B5A2B&quot;,   &quot;restaurant&quot;, &quot;#E53935&quot;,   &quot;#9E9E9E&quot; ]   circleLayer.circleColor = .expression(     Exp(.match) {         Exp(.get) { &quot;category&quot; }         &quot;cafe&quot;         UIColor.brown         &quot;restaurant&quot;         UIColor.red         UIColor.gray // default     } )   interpolate - 줌에 따라 크기 바꾸기  줌 10에서는 반지름 4, 줌 16에서는 반지름 12가 되고 그 사이는 자연스럽게 커집니다.  circleLayer.circleRadius = .expression(     Exp(.interpolate) {         Exp(.linear)         Exp(.zoom)         10         4         16         12     } )   filter - 일부 Feature만 그리기  Layer의 filter에 Expression을 넣으면 조건에 맞는 Feature만 그립니다.  // 평점 4.0 이상인 카페만 circleLayer.filter = Exp(.all) {     Exp(.eq) { Exp(.get) { &quot;category&quot; }; &quot;cafe&quot; }     Exp(.gte) { Exp(.get) { &quot;rating&quot; }; 4.0 } }   필터 UI를 만들 때 데이터를 다시 만들지 않고 Layer의 filter만 바꾸면 되기 때문에 효율적입니다.          9. 상호작용 - 지도에서 Feature 찾기  사용자가 지도를 탭했을 때 “무엇을 탭했는지” 알려면 Feature를 조회해야 합니다.                 API       대상                       queryRenderedFeatures       현재 화면에 그려진 Feature (Layer 기준)                 querySourceFeatures       Source에 있는 Feature (화면 표시 여부와 무관)           let point = gesture.location(in: mapView) let options = RenderedQueryOptions(layerIds: [&quot;cafe-circles&quot;], filter: nil)  mapView.mapboxMap.queryRenderedFeatures(with: point, options: options) { result in     guard case .success(let features) = result,           let feature = features.first?.queriedFeature.feature,           case .string(let name) = feature.properties?[&quot;name&quot;] else { return }     print(&quot;탭한 카페:&quot;, name) }   선택된 카페만 강조하고 싶을 때는 Feature State를 사용합니다. 데이터를 다시 넣지 않고 특정 Feature에 selected: true 같은 상태만 붙인 뒤 Expression의 feature-state로 읽어 스타일을 바꿉니다. 이를 위해 Feature에 id가 있어야 합니다.          10. 다시 보는 Annotation - 결국 Source + Layer  글 처음에 소개한 Annotation API를 이제 다시 보겠습니다. Source/Layer를 직접 다루지 않아도 마커를 찍을 수 있습니다.  let manager = mapView.annotations.makePointAnnotationManager() var annotation = PointAnnotation(coordinate: CLLocationCoordinate2D(latitude: 37.5665, longitude: 126.9780)) annotation.image = .init(image: UIImage(named: &quot;pin&quot;)!, name: &quot;pin&quot;) manager.annotations = [annotation]   Annotation Manager는 내부적으로 GeoJSON Source 하나와 Layer 하나를 만들고, annotations 배열이 바뀔 때마다 Source의 데이터를 갱신합니다. 지금까지 배운 구조를 감싸 놓은 편의 API인 셈입니다.  그래서 처음에는 Annotation으로 빠르게 시작하더라도, 데이터가 많아지거나 클러스터링, Expression 기반 스타일이 필요해지면 Source + Layer 방식으로 옮겨가게 됩니다. 이때 이 글의 개념들이 그대로 쓰입니다.          정리                 개념       한 줄 정의       비유                       Geometry       점, 선, 면 도형       모양                 GeoJSON       지리 데이터를 담는 JSON 포맷       데이터 파일 형식                 Feature       Geometry + properties, 데이터 한 건       엑셀의 한 행                 Source       데이터 묶음과 가져오는 방법       재료                 Layer       Source를 그리는 방법       레시피                 Expression       데이터, 줌에 따라 스타일을 바꾸는 식       레시피의 조건문                 Style       Source + Layer 전체를 담은 설계도       요리책           Mapbox의 핵심은 데이터(Source)와 표현(Layer)의 분리입니다. 데이터는 한 번 넣어두고, 어떻게 보여줄지는 Layer와 Expression으로 자유롭게 바꿀 수 있습니다. 새로운 기능을 만들 때 “이건 데이터를 바꿔야 하는 일인가, 그리는 방법을 바꿔야 하는 일인가”를 먼저 생각해보면 어떤 API를 써야 할지 쉽게 정리됩니다.     참고     Mapbox Style Specification   Mapbox Maps SDK for iOS   RFC 7946 - The GeoJSON Format   geojson.io - GeoJSON을 직접 그려보고 확인할 수 있는 도구">
+
+
+  <meta name="author" content="Dong Hyeon">
+  
+  <meta property="article:author" content="Dong Hyeon">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="DongHyeon Kim's Blog">
+<meta property="og:title" content="[Mapbox] 처음 배우는 Mapbox 핵심 개념 - GeoJSON, Feature, Source, Layer">
+<meta property="og:url" content="http://localhost:4000/mapbox-basic-concepts/">
+
+
+  <meta property="og:description" content="Mapbox로 지도에 무언가를 그리는 5가지 방법  Mapbox iOS SDK에서 지도 위에 마커나 경로 같은 데이터를 올리는 방법은 크게 5가지입니다.                 방법       설명       어울리는 상황                       Marker       SwiftUI Map 안에 좌표만 넣으면 기본 핀을 그려주는 가장 간단한 API       프로토타입, 핀 몇 개                 Annotation       PointAnnotation, PolylineAnnotation 등을 Annotation Manager로 추가       마커 수십 개 정도, 빠른 구현                 View Annotation       지도 좌표에 UIKit/SwiftUI 뷰를 그대로 띄움       말풍선, 버튼이 있는 카드 등 인터랙티브한 UI                 Style Layer (Source + Layer)       데이터(Source)와 그리는 방법(Layer)을 Style에 직접 추가       데이터 수백~수천 개, 클러스터링, 데이터에 따른 스타일                 Custom Layer       CustomLayer에 Metal 렌더링 코드를 직접 작성해 지도 렌더링 파이프라인에 끼워 넣음       3D 모델, 파티클, 셰이더 효과 등 기본 Layer로 표현할 수 없는 그래픽           Marker와 Annotation이 쉬워 보이지만, 사실 이 둘도 내부적으로는 Source와 Layer를 만들어서 그립니다. 즉 Source + Layer 방식이 Mapbox가 지도를 그리는 가장 기본 원리이고, 나머지는 이를 편하게 감싼 API에 가깝습니다. 단, 두 가지는 예외입니다.     View Annotation은 지도 렌더링과 별개로 지도 위에 실제 UIView를 올리는 방식입니다.   Custom Layer는 Layer 배열에 들어가 순서는 다른 Layer와 함께 관리되지만, Source 없이 내가 직접 Metal로 그리는 방식입니다. 가장 자유롭지만 가장 저수준이라, 이 부분은 별도 글에서 딥다이브할 예정입니다.   그래서 이 글에서는 Source + Layer 방식부터 공부하겠습니다. 이 구조를 이해하면 나머지 방법은 “이걸 대신 해주는 도구구나” 하고 자연스럽게 이해할 수 있습니다.          Source + Layer 방식을 공부하다 보면 Source, Layer, Feature, GeoJSON, Style, Expression 같은 단어가 한꺼번에 쏟아집니다. 각각은 어렵지 않지만 서로 어떤 관계인지 모르면 코드가 왜 그렇게 생겼는지 이해하기 어렵습니다.  이 글에서는 아래 순서로 개념을 하나씩 쌓아 올려 보겠습니다.     지도는 어떻게 그려질까 - 좌표와 타일   Geometry - 점, 선, 면   GeoJSON - 지리 데이터를 담는 포맷   Feature - 데이터 한 건   Style - 지도 전체의 설계도   Source - 데이터를 어디서 가져올까   Layer - 데이터를 어떻게 그릴까   Expression - 데이터에 따라 다르게 그리기   상호작용 - 지도에서 Feature 찾기   다시 보는 Annotation - 결국 Source + Layer   예제 코드는 iOS용 Mapbox Maps SDK v11 기준입니다.          한 장으로 먼저 보기  세부 내용에 들어가기 전에 “지도 위에 카페 마커를 그린다”는 예시로 전체 구조를 먼저 보겠습니다.  전체 구조    같은 구조를 트리로 펼쳐보면 다음과 같습니다.  MapView  └── Style (지도 전체 설계도, JSON 문서 하나)       │       ├── Sources (데이터 저장소, id → source 딕셔너리)       │    │       │    ├── &quot;composite&quot; : vector          ← Mapbox가 제공하는 기본 지도 데이터       │    │     ├── source-layer &quot;water&quot;     → 물 Feature들 (Polygon)       │    │     ├── source-layer &quot;road&quot;      → 도로 Feature들 (LineString)       │    │     └── source-layer &quot;building&quot;  → 건물 Feature들 (Polygon)       │    │       │    └── &quot;cafes&quot; : geojson              ← 내가 추가한 데이터       │          └── FeatureCollection       │                ├── Feature       │                │     ├── id: 1       │                │     ├── geometry: Point [126.978, 37.566]       │                │     └── properties: { name: &quot;A카페&quot;, category: &quot;cafe&quot; }       │                └── Feature       │                      ├── id: 2       │                      ├── geometry: Point [126.985, 37.570]       │                      └── properties: { name: &quot;B식당&quot;, category: &quot;restaurant&quot; }       │       └── Layers (그리는 방법, 배열 순서 = 그려지는 순서)            ├── [0] background   type: background                          ← 가장 아래            ├── [1] water        type: fill    source: composite / water            ├── [2] road         type: line    source: composite / road            ├── [3] building     type: fill    source: composite / building            ├── [4] cafe-circles type: circle  source: cafes            └── [5] cafe-labels  type: symbol  source: cafes                ← 가장 위   이 그림에서 알 수 있는 사실들을 정리해보면 다음과 같습니다.     우리가 보는 기본 지도(바다, 도로, 건물)도 Source + Layer로 그려진 것입니다. 내가 추가하는 카페 데이터와 구조가 똑같습니다.   Source는 딕셔너리(id로 찾음), Layer는 배열(순서가 중요함)입니다.   Layer는 Source를 직접 들고 있지 않고 id 문자열로 참조합니다. (source: &quot;cafes&quot;)   Vector Source는 안에 여러 묶음(source-layer)이 있어서, Layer가 source와 source-layer를 함께 지정합니다.   background Layer처럼 Source 없이 그려지는 예외도 있습니다.   Layer는 쌓아서 그린다  Layer 배열의 순서는 곧 그려지는 순서입니다. 투명한 필름에 하나씩 그림을 그리고 아래부터 차곡차곡 쌓는다고 생각하면 쉽습니다.    그래서 내가 추가한 카페 Layer는 기본 지도 위에 올라가고, 순서를 잘못 잡으면 경로선이 도로 이름을 덮어버리는 일이 생깁니다. 이 부분은 7장에서 다시 다룹니다.  데이터가 화면에 나오기까지       앱이 가진 데이터를 GeoJSON(Feature 묶음) 형태로 만듭니다.   이 데이터를 Source로 Style에 등록합니다. 이 시점까지 화면에는 아무 변화가 없습니다.   그 Source를 참조하는 Layer를 추가하는 순간 지도에 그려집니다.   Layer는 각 Feature의 properties를 읽어서(Expression) 색, 크기, 글자를 다르게 그릴 수 있습니다.   코드로 보면 딱 이 세 단계입니다. 자세한 문법은 뒤에서 하나씩 다룹니다.  // 1. 데이터 만들기 (Feature) var cafe = Feature(geometry: Point(CLLocationCoordinate2D(latitude: 37.566, longitude: 126.978))) cafe.properties = [&quot;name&quot;: &quot;A카페&quot;, &quot;category&quot;: &quot;cafe&quot;]  // 2. Source 등록 (아직 안 보임) var source = GeoJSONSource(id: &quot;cafes&quot;) source.data = .featureCollection(FeatureCollection(features: [cafe])) try mapView.mapboxMap.addSource(source)  // 3. Layer 추가 (이제 보임) var layer = CircleLayer(id: &quot;cafe-circles&quot;, source: &quot;cafes&quot;) layer.circleColor = .constant(StyleColor(.brown)) try mapView.mapboxMap.addLayer(layer)   각 개념의 역할                 개념       질문       역할       예시                       Style       지도 전체를 어떻게 구성할까?       Source와 Layer를 모두 담는 설계도       streets-v12, 내가 만든 커스텀 스타일                 Source       무엇을 그릴까?       데이터와 데이터를 가져오는 방법       &quot;cafes&quot; GeoJSON, &quot;composite&quot; Vector                 Feature       그중 하나는 무엇인가?       위치(geometry) + 정보(properties) 한 건       A카페 한 곳, 도로 한 구간                 GeoJSON       데이터를 어떤 형식으로 적을까?       Feature를 표현하는 JSON 포맷       { &quot;type&quot;: &quot;Feature&quot;, ... }                 Layer       어떻게 그릴까?       Source를 어떤 모양, 색으로 그릴지       circle, line, fill, symbol                 Expression       데이터마다 다르게 그리려면?       properties, 줌에 따라 값을 계산하는 식       category별 색상, 줌별 크기           Source와 Layer의 관계  Source와 Layer는 1 : N 관계입니다.                        ┌──→ cafe-circles  (circle)  : 위치를 원으로  Source &quot;cafes&quot;  ─────┼──→ cafe-labels   (symbol)  : 이름을 글자로                       └──→ cafe-heatmap  (heatmap) : 밀집도를 히트맵으로      하나의 Source를 여러 Layer가 공유할 수 있습니다. 데이터는 한 번만 넣고 표현만 여러 개 만드는 구조입니다.   반대로 하나의 Layer는 오직 하나의 Source만 참조할 수 있습니다.   데이터가 바뀌면 Source만 갱신하면 되고, 이를 참조하는 모든 Layer가 자동으로 다시 그려집니다.   반대로 모양만 바꾸고 싶으면 Layer 속성만 바꾸면 되고, 데이터는 건드리지 않아도 됩니다.   이렇게 데이터(Source)와 표현(Layer)을 분리한 것이 Mapbox 구조의 핵심이고, 이 글 전체가 이 한 문장을 풀어서 설명하는 내용입니다.          1. 지도는 어떻게 그려질까 - 좌표와 타일  좌표: 경도(longitude), 위도(latitude)  지구 위의 한 점은 위도와 경도로 나타냅니다.     위도(latitude): 적도 기준 남북 위치, -90 ~ 90   경도(longitude): 그리니치 기준 동서 위치, -180 ~ 180   서울시청은 대략 위도 37.5665, 경도 126.9780 입니다.  여기서 가장 많이 실수하는 부분이 있습니다. iOS의 CLLocationCoordinate2D는 (latitude, longitude) 순서이지만 GeoJSON과 Mapbox Style 스펙은 [longitude, latitude] 순서입니다.  // iOS: 위도, 경도 CLLocationCoordinate2D(latitude: 37.5665, longitude: 126.9780)   // GeoJSON: 경도, 위도 [126.9780, 37.5665]   순서를 바꿔 넣으면 서울 마커가 남극 근처 바다에 찍히는 걸 볼 수 있습니다.  줌 레벨과 타일  지도는 한 장의 거대한 이미지가 아니라 타일(Tile) 이라는 작은 정사각형 조각들을 이어 붙여서 보여줍니다.     줌 레벨 0에서는 전 세계가 타일 1장입니다.   줌이 1 올라갈 때마다 타일 하나가 4장으로 쪼개집니다. (줌 z에서 타일 수 = 4^z)   화면에 보이는 영역의 타일만 내려받기 때문에 전 세계 지도를 빠르게 보여줄 수 있습니다.   타일은 두 종류가 있습니다.                 종류       내용       특징                       Raster Tile       이미 그려진 PNG/JPG 이미지       스타일 변경 불가, 위성사진 등에 사용                 Vector Tile       도형 데이터(점, 선, 면 + 속성)       기기에서 직접 그림, 스타일을 자유롭게 변경 가능           Mapbox 지도는 기본적으로 Vector Tile입니다. 데이터만 내려받고 “어떻게 그릴지”는 기기가 Style을 보고 결정합니다. 그래서 같은 데이터로 다크 모드, 내비게이션용 지도 등 전혀 다른 모양을 만들 수 있습니다. 이 “데이터와 그리는 방법의 분리”가 뒤에 나올 Source와 Layer 개념의 출발점입니다.          2. Geometry - 점, 선, 면  지도 위의 모든 데이터는 결국 세 가지 도형 중 하나입니다.                 Geometry       의미       예시                       Point       점 하나       카페 위치, 버스 정류장                 LineString       점들을 이은 선       도로, 이동 경로, 버스 노선                 Polygon       닫힌 면       건물, 공원, 행정구역           여기에 여러 개를 묶은 MultiPoint, MultiLineString, MultiPolygon과, 서로 다른 Geometry를 묶는 GeometryCollection이 있습니다. 예를 들어 섬이 여러 개인 행정구역은 MultiPolygon으로 표현합니다.  어떤 Geometry인지에 따라 사용할 수 있는 Layer 종류가 달라지므로 기억해두면 좋습니다.          3. GeoJSON - 지리 데이터를 담는 포맷  GeoJSON은 지리 데이터를 JSON으로 표현하기 위한 표준 포맷(RFC 7946)입니다. Mapbox뿐 아니라 Google Maps, Leaflet, PostGIS 등 거의 모든 지도 도구가 지원합니다.  Geometry 표현  { &quot;type&quot;: &quot;Point&quot;, &quot;coordinates&quot;: [126.9780, 37.5665] }   {   &quot;type&quot;: &quot;LineString&quot;,   &quot;coordinates&quot;: [     [126.9780, 37.5665],     [126.9820, 37.5700],     [126.9900, 37.5710]   ] }   {   &quot;type&quot;: &quot;Polygon&quot;,   &quot;coordinates&quot;: [     [       [126.97, 37.56],       [126.99, 37.56],       [126.99, 37.58],       [126.97, 37.58],       [126.97, 37.56]     ]   ] }   Polygon은 두 가지를 주의해야 합니다.     좌표 배열이 한 겹 더 감싸져 있습니다. 첫 번째 배열은 바깥 테두리, 그다음 배열들은 구멍(hole)입니다.   첫 좌표와 마지막 좌표가 같아야 닫힌 도형이 됩니다.   Feature와 FeatureCollection  Geometry만으로는 “이 점이 무엇인지” 알 수 없습니다. 그래서 GeoJSON은 Geometry에 속성을 붙인 Feature, 그리고 Feature들을 묶은 FeatureCollection을 제공합니다.  {   &quot;type&quot;: &quot;FeatureCollection&quot;,   &quot;features&quot;: [     {       &quot;type&quot;: &quot;Feature&quot;,       &quot;id&quot;: 1,       &quot;geometry&quot;: { &quot;type&quot;: &quot;Point&quot;, &quot;coordinates&quot;: [126.9780, 37.5665] },       &quot;properties&quot;: { &quot;name&quot;: &quot;A카페&quot;, &quot;category&quot;: &quot;cafe&quot;, &quot;rating&quot;: 4.5 }     },     {       &quot;type&quot;: &quot;Feature&quot;,       &quot;id&quot;: 2,       &quot;geometry&quot;: { &quot;type&quot;: &quot;Point&quot;, &quot;coordinates&quot;: [126.9850, 37.5700] },       &quot;properties&quot;: { &quot;name&quot;: &quot;B식당&quot;, &quot;category&quot;: &quot;restaurant&quot;, &quot;rating&quot;: 3.8 }     }   ] }   정리하면 GeoJSON은 아래 계층 구조를 가집니다.  FeatureCollection  └── Feature (여러 개)       ├── id          (선택)       ├── geometry    → 어디에, 어떤 모양으로       └── properties  → 무엇인지 (자유로운 key-value)           4. Feature - 데이터 한 건  Feature는 지도 위의 “물체 하나”입니다. 카페 하나, 도로 한 구간, 건물 하나가 각각 Feature입니다.  Feature는 GeoJSON에서만 쓰는 말이 아니라 Mapbox 전체에서 쓰이는 개념입니다. Vector Tile 안의 도로, 건물 데이터도 모두 Feature이고, 사용자가 지도를 탭했을 때 돌려받는 것도 Feature입니다.  Feature에서 중요한 것은 properties입니다. 뒤에서 볼 Expression은 이 properties 값을 읽어서 색상, 크기, 텍스트를 결정합니다. 즉 “데이터에 무엇을 넣어두느냐”가 “지도를 얼마나 다양하게 그릴 수 있느냐”를 결정합니다.  iOS에서는 Mapbox SDK에 포함된 Turf 라이브러리로 Feature를 만듭니다.  import MapboxMaps  var cafe = Feature(geometry: Point(CLLocationCoordinate2D(latitude: 37.5665, longitude: 126.9780))) cafe.identifier = .number(1) cafe.properties = [     &quot;name&quot;: &quot;A카페&quot;,     &quot;category&quot;: &quot;cafe&quot;,     &quot;rating&quot;: 4.5 ]  let collection = FeatureCollection(features: [cafe])   Swift 코드에서는 CLLocationCoordinate2D를 쓰기 때문에 위도, 경도 순서로 넣어도 SDK가 GeoJSON 순서로 변환해줍니다. 직접 JSON 문자열이나 파일을 다룰 때만 [경도, 위도] 순서를 신경 쓰면 됩니다.          5. Style - 지도 전체의 설계도  Style은 지도를 어떻게 보여줄지를 정의한 JSON 문서입니다. Mapbox Studio에서 만든 스타일이나 mapbox://styles/mapbox/streets-v12 같은 기본 스타일이 모두 이 JSON입니다.  Style JSON의 뼈대는 아래와 같습니다.  {   &quot;version&quot;: 8,   &quot;name&quot;: &quot;My Style&quot;,   &quot;sprite&quot;: &quot;mapbox://sprites/...&quot;,   &quot;glyphs&quot;: &quot;mapbox://fonts/{fontstack}/{range}.pbf&quot;,   &quot;sources&quot;: {     &quot;cafes&quot;: { &quot;type&quot;: &quot;geojson&quot;, &quot;data&quot;: &quot;https://example.com/cafes.geojson&quot; }   },   &quot;layers&quot;: [     { &quot;id&quot;: &quot;background&quot;, &quot;type&quot;: &quot;background&quot;, &quot;paint&quot;: { &quot;background-color&quot;: &quot;#f5f5f5&quot; } },     { &quot;id&quot;: &quot;cafe-circles&quot;, &quot;type&quot;: &quot;circle&quot;, &quot;source&quot;: &quot;cafes&quot;, &quot;paint&quot;: { &quot;circle-radius&quot;: 6 } }   ] }                  키       역할                       sources       사용할 데이터 목록 (딕셔너리, id → source)                 layers       그리는 방법 목록 (배열, 순서 중요)                 sprite       아이콘 이미지 모음                 glyphs       라벨에 쓸 폰트           결국 Mapbox로 지도를 커스터마이징한다는 것은 이 Style에 Source와 Layer를 추가, 수정, 삭제하는 것입니다. 코드로 addSource, addLayer를 호출하는 것도 런타임에 이 JSON을 고치는 일과 같습니다.     v11의 기본 스타일인 Mapbox Standard는 내부 Layer를 직접 노출하지 않고, slot과 설정값(config)으로 커스터마이징하는 방식입니다. 개념 학습 단계에서는 streets-v12처럼 Layer 구조가 그대로 보이는 클래식 스타일로 실습하면 이해하기 더 쉽습니다.           6. Source - 데이터를 어디서 가져올까  Source는 지도에 그릴 데이터와 그 데이터를 가져오는 방법을 정의합니다. Source 자체는 화면에 그려지지 않습니다.                 Source type       데이터       사용 예                       vector       Vector Tile       Mapbox 기본 지도 데이터, 대용량 데이터                 raster       Raster Tile 이미지       위성사진, 외부 타일 서버                 raster-dem       고도 데이터       3D 지형, 음영 기복                 geojson       GeoJSON       앱에서 직접 만든 마커, 경로 등                 image       이미지 한 장       특정 영역에 평면도 덮어씌우기           처음에는 geojson과 vector 두 가지만 알아도 충분합니다.  GeoJSON Source  앱에서 가진 데이터를 지도에 올릴 때 가장 많이 사용합니다.  var source = GeoJSONSource(id: &quot;cafes&quot;) source.data = .featureCollection(collection) // 또는 원격 파일: source.data = .url(URL(string: &quot;https://example.com/cafes.geojson&quot;)!)  try mapView.mapboxMap.addSource(source)   데이터가 바뀌면 Source를 새로 만들지 않고 데이터만 갱신합니다.  mapView.mapboxMap.updateGeoJSONSource(withId: &quot;cafes&quot;, geoJSON: .featureCollection(newCollection))   GeoJSON Source는 cluster 옵션으로 가까운 점들을 자동으로 묶는 클러스터링 기능도 제공합니다.  source.cluster = true source.clusterRadius = 50 source.clusterMaxZoom = 14   Vector Source와 source-layer  Vector Tile 하나에는 도로, 건물, 물 등 여러 종류의 데이터가 함께 들어 있습니다. 이 안의 데이터 묶음을 source-layer라고 부릅니다.  Vector Source &quot;composite&quot; (Mapbox Streets)  ├── source-layer &quot;road&quot;  ├── source-layer &quot;building&quot;  ├── source-layer &quot;water&quot;  └── source-layer &quot;poi_label&quot;   그래서 Vector Source를 쓰는 Layer는 source와 함께 sourceLayer를 지정해야 합니다.  var buildings = FillLayer(id: &quot;my-buildings&quot;, source: &quot;composite&quot;) buildings.sourceLayer = &quot;building&quot;   이름이 비슷해서 헷갈리는데, source-layer는 데이터 안의 분류이고 Layer는 그리는 방법입니다. 둘은 완전히 다른 개념입니다.          7. Layer - 데이터를 어떻게 그릴까  Layer는 Source의 Feature들을 화면에 어떤 모양으로 그릴지 정합니다.  Layer 종류                 Layer type       그리는 것       어울리는 Geometry                       background       지도 배경색       (Source 없음)                 fill       면 채우기       Polygon                 line       선       LineString, Polygon 테두리                 circle       원       Point                 symbol       아이콘, 텍스트       Point, LineString(도로명처럼 선을 따라)                 fill-extrusion       3D로 솟은 면       Polygon (3D 건물)                 heatmap       밀도 히트맵       Point                 raster       래스터 이미지       raster source                 hillshade       지형 음영       raster-dem source           같은 데이터라도 Layer를 바꾸면 전혀 다르게 보입니다. 카페 위치(Point)를 circle로 그리면 점, symbol로 그리면 아이콘과 이름, heatmap으로 그리면 카페 밀집 지역이 됩니다.  layout과 paint  Layer의 속성은 두 그룹으로 나뉩니다.                 그룹       의미       예시                       layout       배치, 구조에 관한 속성       visibility, text-field, icon-image, line-cap                 paint       색, 크기 등 칠하는 속성       circle-color, fill-opacity, line-width           Swift SDK에서는 그룹 구분 없이 프로퍼티로 바로 접근할 수 있지만, Style JSON을 읽을 때는 이 구분이 보입니다.  Layer 추가하기  앞에서 만든 cafes Source 하나로 원과 라벨 두 개의 Layer를 만들어 보겠습니다.  var circleLayer = CircleLayer(id: &quot;cafe-circles&quot;, source: &quot;cafes&quot;) circleLayer.circleRadius = .constant(8) circleLayer.circleColor = .constant(StyleColor(.systemBrown)) circleLayer.circleStrokeWidth = .constant(2) circleLayer.circleStrokeColor = .constant(StyleColor(.white))  var labelLayer = SymbolLayer(id: &quot;cafe-labels&quot;, source: &quot;cafes&quot;) labelLayer.textField = .expression(Exp(.get) { &quot;name&quot; }) labelLayer.textSize = .constant(12) labelLayer.textOffset = .constant([0, 1.5])  try mapView.mapboxMap.addLayer(circleLayer) try mapView.mapboxMap.addLayer(labelLayer)   Source와 Layer는 Style이 로드된 뒤에 추가해야 합니다.  mapView.mapboxMap.onStyleLoaded.observeNext { [weak self] _ in     self?.addCafeLayers() }.store(in: &amp;cancelables)   Layer 순서  Layer는 배열 순서대로 아래에서 위로 그려집니다. 나중에 추가한 Layer가 위에 올라갑니다. 그래서 경로선을 추가했는데 도로 라벨까지 덮어버리는 일이 생깁니다. 이럴 때는 위치를 지정합니다.  try mapView.mapboxMap.addLayer(routeLayer, layerPosition: .below(&quot;road-label&quot;))           8. Expression - 데이터에 따라 다르게 그리기  지금까지는 모든 카페를 같은 색으로 그렸습니다. Expression을 쓰면 Feature의 properties나 줌 레벨에 따라 스타일을 다르게 줄 수 있습니다. (Data-driven styling)  Expression은 JSON 배열 형태의 작은 언어입니다. 첫 번째 원소가 연산자입니다.  [&quot;get&quot;, &quot;name&quot;]   자주 쓰는 Expression은 아래와 같습니다.                 Expression       역할                       get       properties 값 읽기                 match       값에 따라 분기 (switch)                 case       조건에 따라 분기 (if-else)                 interpolate       값 사이를 부드럽게 보간                 zoom       현재 줌 레벨                 ==, &gt;, all, any       비교, 논리 연산 (filter에 자주 사용)           match - 카테고리별 색상  [&quot;match&quot;, [&quot;get&quot;, &quot;category&quot;],   &quot;cafe&quot;, &quot;#8B5A2B&quot;,   &quot;restaurant&quot;, &quot;#E53935&quot;,   &quot;#9E9E9E&quot; ]   circleLayer.circleColor = .expression(     Exp(.match) {         Exp(.get) { &quot;category&quot; }         &quot;cafe&quot;         UIColor.brown         &quot;restaurant&quot;         UIColor.red         UIColor.gray // default     } )   interpolate - 줌에 따라 크기 바꾸기  줌 10에서는 반지름 4, 줌 16에서는 반지름 12가 되고 그 사이는 자연스럽게 커집니다.  circleLayer.circleRadius = .expression(     Exp(.interpolate) {         Exp(.linear)         Exp(.zoom)         10         4         16         12     } )   filter - 일부 Feature만 그리기  Layer의 filter에 Expression을 넣으면 조건에 맞는 Feature만 그립니다.  // 평점 4.0 이상인 카페만 circleLayer.filter = Exp(.all) {     Exp(.eq) { Exp(.get) { &quot;category&quot; }; &quot;cafe&quot; }     Exp(.gte) { Exp(.get) { &quot;rating&quot; }; 4.0 } }   필터 UI를 만들 때 데이터를 다시 만들지 않고 Layer의 filter만 바꾸면 되기 때문에 효율적입니다.          9. 상호작용 - 지도에서 Feature 찾기  사용자가 지도를 탭했을 때 “무엇을 탭했는지” 알려면 Feature를 조회해야 합니다.                 API       대상                       queryRenderedFeatures       현재 화면에 그려진 Feature (Layer 기준)                 querySourceFeatures       Source에 있는 Feature (화면 표시 여부와 무관)           let point = gesture.location(in: mapView) let options = RenderedQueryOptions(layerIds: [&quot;cafe-circles&quot;], filter: nil)  mapView.mapboxMap.queryRenderedFeatures(with: point, options: options) { result in     guard case .success(let features) = result,           let feature = features.first?.queriedFeature.feature,           case .string(let name) = feature.properties?[&quot;name&quot;] else { return }     print(&quot;탭한 카페:&quot;, name) }   선택된 카페만 강조하고 싶을 때는 Feature State를 사용합니다. 데이터를 다시 넣지 않고 특정 Feature에 selected: true 같은 상태만 붙인 뒤 Expression의 feature-state로 읽어 스타일을 바꿉니다. 이를 위해 Feature에 id가 있어야 합니다.          10. 다시 보는 Annotation - 결국 Source + Layer  글 처음에 소개한 Annotation API를 이제 다시 보겠습니다. Source/Layer를 직접 다루지 않아도 마커를 찍을 수 있습니다.  let manager = mapView.annotations.makePointAnnotationManager() var annotation = PointAnnotation(coordinate: CLLocationCoordinate2D(latitude: 37.5665, longitude: 126.9780)) annotation.image = .init(image: UIImage(named: &quot;pin&quot;)!, name: &quot;pin&quot;) manager.annotations = [annotation]   Annotation Manager는 내부적으로 GeoJSON Source 하나와 Layer 하나를 만들고, annotations 배열이 바뀔 때마다 Source의 데이터를 갱신합니다. 지금까지 배운 구조를 감싸 놓은 편의 API인 셈입니다.  그래서 처음에는 Annotation으로 빠르게 시작하더라도, 데이터가 많아지거나 클러스터링, Expression 기반 스타일이 필요해지면 Source + Layer 방식으로 옮겨가게 됩니다. 이때 이 글의 개념들이 그대로 쓰입니다.          정리                 개념       한 줄 정의       비유                       Geometry       점, 선, 면 도형       모양                 GeoJSON       지리 데이터를 담는 JSON 포맷       데이터 파일 형식                 Feature       Geometry + properties, 데이터 한 건       엑셀의 한 행                 Source       데이터 묶음과 가져오는 방법       재료                 Layer       Source를 그리는 방법       레시피                 Expression       데이터, 줌에 따라 스타일을 바꾸는 식       레시피의 조건문                 Style       Source + Layer 전체를 담은 설계도       요리책           Mapbox의 핵심은 데이터(Source)와 표현(Layer)의 분리입니다. 데이터는 한 번 넣어두고, 어떻게 보여줄지는 Layer와 Expression으로 자유롭게 바꿀 수 있습니다. 새로운 기능을 만들 때 “이건 데이터를 바꿔야 하는 일인가, 그리는 방법을 바꿔야 하는 일인가”를 먼저 생각해보면 어떤 API를 써야 할지 쉽게 정리됩니다.     참고     Mapbox Style Specification   Mapbox Maps SDK for iOS   RFC 7946 - The GeoJSON Format   geojson.io - GeoJSON을 직접 그려보고 확인할 수 있는 도구">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2026-11-02T00:00:00+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:4000/mapbox-basic-concepts/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "indextrown",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+<!-- 여기에 analytics 추가 -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="DongHyeon Kim's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+<!--JQ cloud-->
+<link rel="stylesheet" href="/assets/css/jqcloud.min.css">
+
+<!-- pseudocode.js -->
+<script src="/assets/pseudocode.js-2.4.1/pseudocode.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/assets/pseudocode.js-2.4.1/pseudocode.css">
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-neo.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic-coding.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+    
+  <script type="text/javascript" async
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Mermaid.js를 로드 기능 추가 - [index] -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <!-- <a class="site-logo" href="/">
+          <img src="/assets/logos/logo.svg" alt="DongHyeon Kim's Blog"></a> -->
+        <a class="site-title" href="/">
+          @dong_h_kim
+          <span class="site-subtitle">iOS Developer Blog</span>
+        </a>
+        <!-- Dark mode toggle -->
+        <!-- <input type="checkbox" id="switch" name="theme">
+        <label for="switch" class="switch_label">
+          <span class="onf_btn"></span>
+        </label> -->
+        <input id="switch" class="theme-toggle__checkbox" name="theme" type="checkbox">
+<label class="switch_label theme-toggle" for="switch" aria-label="Toggle dark mode">
+  <span class="theme-toggle__button onf_btn" aria-hidden="true"></span>
+</label>
+
+
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Articles</a>
+            </li><li class="masthead__menu-item">
+              <a href="/projects/">Projects</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+  var $header = $('masthead'); //헤더를 변수에 넣기
+  var $page = $('.initial-content'); //색상이 변할 부분
+  var $window = $(window);
+  var pageOffsetTop = $page.offset().top;//색상 변할 부분의 top값 구하기
+  
+  $window.resize(function(){ //반응형을 대비하여 리사이즈시 top값을 다시 계산
+    pageOffsetTop = $page.offset().top;
+  });
+  
+  $window.on('scroll', function(){ //스크롤시
+    var scrolled = $window.scrollTop() >= pageOffsetTop; //스크롤된 상태; true or false
+    $header.toggleClass('down', scrolled); //클래스 토글
+  });
+});
+
+// var menuToggleButton = document.querySelector("button.toggle");
+// var menuTarget = document.querySelector(".side-menu");
+// var menuBlock = document.querySelector("menu");
+
+// function toggleMenuVisibility(){
+// 	menuTarget.classList.toggle("side-menu--active");
+// 	animateCSS(".menu", "fadeIn");
+// }
+
+// function animateCSS(element, animationName, callback) {
+//     var node = document.querySelector(element)
+//     node.classList.add('animated', animationName)
+
+//     function handleAnimationEnd() {
+//         node.classList.remove('animated', animationName)
+//         node.removeEventListener('animationend', handleAnimationEnd)
+
+//         if (typeof callback === 'function') callback()
+//     }
+
+//     node.addEventListener('animationend', handleAnimationEnd)
+// }
+
+// menuToggleButton.addEventListener('click', toggleMenuVisibility);
+
+// Dark mode toggle
+
+var checkbox = document.querySelector('input[name=theme]');
+
+// 페이지 로드 시 로컬 스토리지에서 테마 설정을 불러옵니다.
+if (localStorage.getItem('theme') === 'dark') {
+  checkbox.checked = true;
+  document.body.classList.add('dark');
+} else {
+  checkbox.checked = false;
+  document.body.classList.remove('dark');
+}
+
+checkbox.addEventListener('change', function() {
+  // 테마를 토글하고 로컬 스토리지에 저장합니다.
+  // trans();
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+});
+
+
+// let trans = () => {
+//   document.documentElement.classList.add('transition');
+//   window.setTimeout(() => {
+//     document.documentElement.classList.remove('transition');
+//   }, 500);
+// }
+</script>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[Mapbox] 처음 배우는 Mapbox 핵심 개념 - GeoJSON, Feature, Source, Layer">
+    <meta itemprop="description" content="Mapbox로 지도에 무언가를 그리는 5가지 방법Mapbox iOS SDK에서 지도 위에 마커나 경로 같은 데이터를 올리는 방법은 크게 5가지입니다.            방법      설명      어울리는 상황                  Marker      SwiftUI Map 안에 좌표만 넣으면 기본 핀을 그려주는 가장 간단한 API      프로토타입, 핀 몇 개              Annotation      PointAnnotation, PolylineAnnotation 등을 Annotation Manager로 추가      마커 수십 개 정도, 빠른 구현              View Annotation      지도 좌표에 UIKit/SwiftUI 뷰를 그대로 띄움      말풍선, 버튼이 있는 카드 등 인터랙티브한 UI              Style Layer (Source + Layer)      데이터(Source)와 그리는 방법(Layer)을 Style에 직접 추가      데이터 수백~수천 개, 클러스터링, 데이터에 따른 스타일              Custom Layer      CustomLayer에 Metal 렌더링 코드를 직접 작성해 지도 렌더링 파이프라인에 끼워 넣음      3D 모델, 파티클, 셰이더 효과 등 기본 Layer로 표현할 수 없는 그래픽      Marker와 Annotation이 쉬워 보이지만, 사실 이 둘도 내부적으로는 Source와 Layer를 만들어서 그립니다. 즉 Source + Layer 방식이 Mapbox가 지도를 그리는 가장 기본 원리이고, 나머지는 이를 편하게 감싼 API에 가깝습니다. 단, 두 가지는 예외입니다.  View Annotation은 지도 렌더링과 별개로 지도 위에 실제 UIView를 올리는 방식입니다.  Custom Layer는 Layer 배열에 들어가 순서는 다른 Layer와 함께 관리되지만, Source 없이 내가 직접 Metal로 그리는 방식입니다. 가장 자유롭지만 가장 저수준이라, 이 부분은 별도 글에서 딥다이브할 예정입니다.그래서 이 글에서는 Source + Layer 방식부터 공부하겠습니다. 이 구조를 이해하면 나머지 방법은 “이걸 대신 해주는 도구구나” 하고 자연스럽게 이해할 수 있습니다.  Source + Layer 방식을 공부하다 보면 Source, Layer, Feature, GeoJSON, Style, Expression 같은 단어가 한꺼번에 쏟아집니다. 각각은 어렵지 않지만 서로 어떤 관계인지 모르면 코드가 왜 그렇게 생겼는지 이해하기 어렵습니다.이 글에서는 아래 순서로 개념을 하나씩 쌓아 올려 보겠습니다.  지도는 어떻게 그려질까 - 좌표와 타일  Geometry - 점, 선, 면  GeoJSON - 지리 데이터를 담는 포맷  Feature - 데이터 한 건  Style - 지도 전체의 설계도  Source - 데이터를 어디서 가져올까  Layer - 데이터를 어떻게 그릴까  Expression - 데이터에 따라 다르게 그리기  상호작용 - 지도에서 Feature 찾기  다시 보는 Annotation - 결국 Source + Layer예제 코드는 iOS용 Mapbox Maps SDK v11 기준입니다.  한 장으로 먼저 보기세부 내용에 들어가기 전에 “지도 위에 카페 마커를 그린다”는 예시로 전체 구조를 먼저 보겠습니다.전체 구조같은 구조를 트리로 펼쳐보면 다음과 같습니다.MapView └── Style (지도 전체 설계도, JSON 문서 하나)      │      ├── Sources (데이터 저장소, id → source 딕셔너리)      │    │      │    ├── &quot;composite&quot; : vector          ← Mapbox가 제공하는 기본 지도 데이터      │    │     ├── source-layer &quot;water&quot;     → 물 Feature들 (Polygon)      │    │     ├── source-layer &quot;road&quot;      → 도로 Feature들 (LineString)      │    │     └── source-layer &quot;building&quot;  → 건물 Feature들 (Polygon)      │    │      │    └── &quot;cafes&quot; : geojson              ← 내가 추가한 데이터      │          └── FeatureCollection      │                ├── Feature      │                │     ├── id: 1      │                │     ├── geometry: Point [126.978, 37.566]      │                │     └── properties: { name: &quot;A카페&quot;, category: &quot;cafe&quot; }      │                └── Feature      │                      ├── id: 2      │                      ├── geometry: Point [126.985, 37.570]      │                      └── properties: { name: &quot;B식당&quot;, category: &quot;restaurant&quot; }      │      └── Layers (그리는 방법, 배열 순서 = 그려지는 순서)           ├── [0] background   type: background                          ← 가장 아래           ├── [1] water        type: fill    source: composite / water           ├── [2] road         type: line    source: composite / road           ├── [3] building     type: fill    source: composite / building           ├── [4] cafe-circles type: circle  source: cafes           └── [5] cafe-labels  type: symbol  source: cafes                ← 가장 위이 그림에서 알 수 있는 사실들을 정리해보면 다음과 같습니다.  우리가 보는 기본 지도(바다, 도로, 건물)도 Source + Layer로 그려진 것입니다. 내가 추가하는 카페 데이터와 구조가 똑같습니다.  Source는 딕셔너리(id로 찾음), Layer는 배열(순서가 중요함)입니다.  Layer는 Source를 직접 들고 있지 않고 id 문자열로 참조합니다. (source: &quot;cafes&quot;)  Vector Source는 안에 여러 묶음(source-layer)이 있어서, Layer가 source와 source-layer를 함께 지정합니다.  background Layer처럼 Source 없이 그려지는 예외도 있습니다.Layer는 쌓아서 그린다Layer 배열의 순서는 곧 그려지는 순서입니다. 투명한 필름에 하나씩 그림을 그리고 아래부터 차곡차곡 쌓는다고 생각하면 쉽습니다.그래서 내가 추가한 카페 Layer는 기본 지도 위에 올라가고, 순서를 잘못 잡으면 경로선이 도로 이름을 덮어버리는 일이 생깁니다. 이 부분은 7장에서 다시 다룹니다.데이터가 화면에 나오기까지  앱이 가진 데이터를 GeoJSON(Feature 묶음) 형태로 만듭니다.  이 데이터를 Source로 Style에 등록합니다. 이 시점까지 화면에는 아무 변화가 없습니다.  그 Source를 참조하는 Layer를 추가하는 순간 지도에 그려집니다.  Layer는 각 Feature의 properties를 읽어서(Expression) 색, 크기, 글자를 다르게 그릴 수 있습니다.코드로 보면 딱 이 세 단계입니다. 자세한 문법은 뒤에서 하나씩 다룹니다.// 1. 데이터 만들기 (Feature)var cafe = Feature(geometry: Point(CLLocationCoordinate2D(latitude: 37.566, longitude: 126.978)))cafe.properties = [&quot;name&quot;: &quot;A카페&quot;, &quot;category&quot;: &quot;cafe&quot;]// 2. Source 등록 (아직 안 보임)var source = GeoJSONSource(id: &quot;cafes&quot;)source.data = .featureCollection(FeatureCollection(features: [cafe]))try mapView.mapboxMap.addSource(source)// 3. Layer 추가 (이제 보임)var layer = CircleLayer(id: &quot;cafe-circles&quot;, source: &quot;cafes&quot;)layer.circleColor = .constant(StyleColor(.brown))try mapView.mapboxMap.addLayer(layer)각 개념의 역할            개념      질문      역할      예시                  Style      지도 전체를 어떻게 구성할까?      Source와 Layer를 모두 담는 설계도      streets-v12, 내가 만든 커스텀 스타일              Source      무엇을 그릴까?      데이터와 데이터를 가져오는 방법      &quot;cafes&quot; GeoJSON, &quot;composite&quot; Vector              Feature      그중 하나는 무엇인가?      위치(geometry) + 정보(properties) 한 건      A카페 한 곳, 도로 한 구간              GeoJSON      데이터를 어떤 형식으로 적을까?      Feature를 표현하는 JSON 포맷      { &quot;type&quot;: &quot;Feature&quot;, ... }              Layer      어떻게 그릴까?      Source를 어떤 모양, 색으로 그릴지      circle, line, fill, symbol              Expression      데이터마다 다르게 그리려면?      properties, 줌에 따라 값을 계산하는 식      category별 색상, 줌별 크기      Source와 Layer의 관계Source와 Layer는 1 : N 관계입니다.                      ┌──→ cafe-circles  (circle)  : 위치를 원으로 Source &quot;cafes&quot;  ─────┼──→ cafe-labels   (symbol)  : 이름을 글자로                      └──→ cafe-heatmap  (heatmap) : 밀집도를 히트맵으로  하나의 Source를 여러 Layer가 공유할 수 있습니다. 데이터는 한 번만 넣고 표현만 여러 개 만드는 구조입니다.  반대로 하나의 Layer는 오직 하나의 Source만 참조할 수 있습니다.  데이터가 바뀌면 Source만 갱신하면 되고, 이를 참조하는 모든 Layer가 자동으로 다시 그려집니다.  반대로 모양만 바꾸고 싶으면 Layer 속성만 바꾸면 되고, 데이터는 건드리지 않아도 됩니다.이렇게 데이터(Source)와 표현(Layer)을 분리한 것이 Mapbox 구조의 핵심이고, 이 글 전체가 이 한 문장을 풀어서 설명하는 내용입니다.  1. 지도는 어떻게 그려질까 - 좌표와 타일좌표: 경도(longitude), 위도(latitude)지구 위의 한 점은 위도와 경도로 나타냅니다.  위도(latitude): 적도 기준 남북 위치, -90 ~ 90  경도(longitude): 그리니치 기준 동서 위치, -180 ~ 180서울시청은 대략 위도 37.5665, 경도 126.9780 입니다.여기서 가장 많이 실수하는 부분이 있습니다. iOS의 CLLocationCoordinate2D는 (latitude, longitude) 순서이지만 GeoJSON과 Mapbox Style 스펙은 [longitude, latitude] 순서입니다.// iOS: 위도, 경도CLLocationCoordinate2D(latitude: 37.5665, longitude: 126.9780)// GeoJSON: 경도, 위도[126.9780, 37.5665]순서를 바꿔 넣으면 서울 마커가 남극 근처 바다에 찍히는 걸 볼 수 있습니다.줌 레벨과 타일지도는 한 장의 거대한 이미지가 아니라 타일(Tile) 이라는 작은 정사각형 조각들을 이어 붙여서 보여줍니다.  줌 레벨 0에서는 전 세계가 타일 1장입니다.  줌이 1 올라갈 때마다 타일 하나가 4장으로 쪼개집니다. (줌 z에서 타일 수 = 4^z)  화면에 보이는 영역의 타일만 내려받기 때문에 전 세계 지도를 빠르게 보여줄 수 있습니다.타일은 두 종류가 있습니다.            종류      내용      특징                  Raster Tile      이미 그려진 PNG/JPG 이미지      스타일 변경 불가, 위성사진 등에 사용              Vector Tile      도형 데이터(점, 선, 면 + 속성)      기기에서 직접 그림, 스타일을 자유롭게 변경 가능      Mapbox 지도는 기본적으로 Vector Tile입니다. 데이터만 내려받고 “어떻게 그릴지”는 기기가 Style을 보고 결정합니다. 그래서 같은 데이터로 다크 모드, 내비게이션용 지도 등 전혀 다른 모양을 만들 수 있습니다. 이 “데이터와 그리는 방법의 분리”가 뒤에 나올 Source와 Layer 개념의 출발점입니다.  2. Geometry - 점, 선, 면지도 위의 모든 데이터는 결국 세 가지 도형 중 하나입니다.            Geometry      의미      예시                  Point      점 하나      카페 위치, 버스 정류장              LineString      점들을 이은 선      도로, 이동 경로, 버스 노선              Polygon      닫힌 면      건물, 공원, 행정구역      여기에 여러 개를 묶은 MultiPoint, MultiLineString, MultiPolygon과, 서로 다른 Geometry를 묶는 GeometryCollection이 있습니다. 예를 들어 섬이 여러 개인 행정구역은 MultiPolygon으로 표현합니다.어떤 Geometry인지에 따라 사용할 수 있는 Layer 종류가 달라지므로 기억해두면 좋습니다.  3. GeoJSON - 지리 데이터를 담는 포맷GeoJSON은 지리 데이터를 JSON으로 표현하기 위한 표준 포맷(RFC 7946)입니다. Mapbox뿐 아니라 Google Maps, Leaflet, PostGIS 등 거의 모든 지도 도구가 지원합니다.Geometry 표현{ &quot;type&quot;: &quot;Point&quot;, &quot;coordinates&quot;: [126.9780, 37.5665] }{  &quot;type&quot;: &quot;LineString&quot;,  &quot;coordinates&quot;: [    [126.9780, 37.5665],    [126.9820, 37.5700],    [126.9900, 37.5710]  ]}{  &quot;type&quot;: &quot;Polygon&quot;,  &quot;coordinates&quot;: [    [      [126.97, 37.56],      [126.99, 37.56],      [126.99, 37.58],      [126.97, 37.58],      [126.97, 37.56]    ]  ]}Polygon은 두 가지를 주의해야 합니다.  좌표 배열이 한 겹 더 감싸져 있습니다. 첫 번째 배열은 바깥 테두리, 그다음 배열들은 구멍(hole)입니다.  첫 좌표와 마지막 좌표가 같아야 닫힌 도형이 됩니다.Feature와 FeatureCollectionGeometry만으로는 “이 점이 무엇인지” 알 수 없습니다. 그래서 GeoJSON은 Geometry에 속성을 붙인 Feature, 그리고 Feature들을 묶은 FeatureCollection을 제공합니다.{  &quot;type&quot;: &quot;FeatureCollection&quot;,  &quot;features&quot;: [    {      &quot;type&quot;: &quot;Feature&quot;,      &quot;id&quot;: 1,      &quot;geometry&quot;: { &quot;type&quot;: &quot;Point&quot;, &quot;coordinates&quot;: [126.9780, 37.5665] },      &quot;properties&quot;: { &quot;name&quot;: &quot;A카페&quot;, &quot;category&quot;: &quot;cafe&quot;, &quot;rating&quot;: 4.5 }    },    {      &quot;type&quot;: &quot;Feature&quot;,      &quot;id&quot;: 2,      &quot;geometry&quot;: { &quot;type&quot;: &quot;Point&quot;, &quot;coordinates&quot;: [126.9850, 37.5700] },      &quot;properties&quot;: { &quot;name&quot;: &quot;B식당&quot;, &quot;category&quot;: &quot;restaurant&quot;, &quot;rating&quot;: 3.8 }    }  ]}정리하면 GeoJSON은 아래 계층 구조를 가집니다.FeatureCollection └── Feature (여러 개)      ├── id          (선택)      ├── geometry    → 어디에, 어떤 모양으로      └── properties  → 무엇인지 (자유로운 key-value)  4. Feature - 데이터 한 건Feature는 지도 위의 “물체 하나”입니다. 카페 하나, 도로 한 구간, 건물 하나가 각각 Feature입니다.Feature는 GeoJSON에서만 쓰는 말이 아니라 Mapbox 전체에서 쓰이는 개념입니다. Vector Tile 안의 도로, 건물 데이터도 모두 Feature이고, 사용자가 지도를 탭했을 때 돌려받는 것도 Feature입니다.Feature에서 중요한 것은 properties입니다. 뒤에서 볼 Expression은 이 properties 값을 읽어서 색상, 크기, 텍스트를 결정합니다. 즉 “데이터에 무엇을 넣어두느냐”가 “지도를 얼마나 다양하게 그릴 수 있느냐”를 결정합니다.iOS에서는 Mapbox SDK에 포함된 Turf 라이브러리로 Feature를 만듭니다.import MapboxMapsvar cafe = Feature(geometry: Point(CLLocationCoordinate2D(latitude: 37.5665, longitude: 126.9780)))cafe.identifier = .number(1)cafe.properties = [    &quot;name&quot;: &quot;A카페&quot;,    &quot;category&quot;: &quot;cafe&quot;,    &quot;rating&quot;: 4.5]let collection = FeatureCollection(features: [cafe])Swift 코드에서는 CLLocationCoordinate2D를 쓰기 때문에 위도, 경도 순서로 넣어도 SDK가 GeoJSON 순서로 변환해줍니다. 직접 JSON 문자열이나 파일을 다룰 때만 [경도, 위도] 순서를 신경 쓰면 됩니다.  5. Style - 지도 전체의 설계도Style은 지도를 어떻게 보여줄지를 정의한 JSON 문서입니다. Mapbox Studio에서 만든 스타일이나 mapbox://styles/mapbox/streets-v12 같은 기본 스타일이 모두 이 JSON입니다.Style JSON의 뼈대는 아래와 같습니다.{  &quot;version&quot;: 8,  &quot;name&quot;: &quot;My Style&quot;,  &quot;sprite&quot;: &quot;mapbox://sprites/...&quot;,  &quot;glyphs&quot;: &quot;mapbox://fonts/{fontstack}/{range}.pbf&quot;,  &quot;sources&quot;: {    &quot;cafes&quot;: { &quot;type&quot;: &quot;geojson&quot;, &quot;data&quot;: &quot;https://example.com/cafes.geojson&quot; }  },  &quot;layers&quot;: [    { &quot;id&quot;: &quot;background&quot;, &quot;type&quot;: &quot;background&quot;, &quot;paint&quot;: { &quot;background-color&quot;: &quot;#f5f5f5&quot; } },    { &quot;id&quot;: &quot;cafe-circles&quot;, &quot;type&quot;: &quot;circle&quot;, &quot;source&quot;: &quot;cafes&quot;, &quot;paint&quot;: { &quot;circle-radius&quot;: 6 } }  ]}            키      역할                  sources      사용할 데이터 목록 (딕셔너리, id → source)              layers      그리는 방법 목록 (배열, 순서 중요)              sprite      아이콘 이미지 모음              glyphs      라벨에 쓸 폰트      결국 Mapbox로 지도를 커스터마이징한다는 것은 이 Style에 Source와 Layer를 추가, 수정, 삭제하는 것입니다. 코드로 addSource, addLayer를 호출하는 것도 런타임에 이 JSON을 고치는 일과 같습니다.  v11의 기본 스타일인 Mapbox Standard는 내부 Layer를 직접 노출하지 않고, slot과 설정값(config)으로 커스터마이징하는 방식입니다. 개념 학습 단계에서는 streets-v12처럼 Layer 구조가 그대로 보이는 클래식 스타일로 실습하면 이해하기 더 쉽습니다.  6. Source - 데이터를 어디서 가져올까Source는 지도에 그릴 데이터와 그 데이터를 가져오는 방법을 정의합니다. Source 자체는 화면에 그려지지 않습니다.            Source type      데이터      사용 예                  vector      Vector Tile      Mapbox 기본 지도 데이터, 대용량 데이터              raster      Raster Tile 이미지      위성사진, 외부 타일 서버              raster-dem      고도 데이터      3D 지형, 음영 기복              geojson      GeoJSON      앱에서 직접 만든 마커, 경로 등              image      이미지 한 장      특정 영역에 평면도 덮어씌우기      처음에는 geojson과 vector 두 가지만 알아도 충분합니다.GeoJSON Source앱에서 가진 데이터를 지도에 올릴 때 가장 많이 사용합니다.var source = GeoJSONSource(id: &quot;cafes&quot;)source.data = .featureCollection(collection)// 또는 원격 파일: source.data = .url(URL(string: &quot;https://example.com/cafes.geojson&quot;)!)try mapView.mapboxMap.addSource(source)데이터가 바뀌면 Source를 새로 만들지 않고 데이터만 갱신합니다.mapView.mapboxMap.updateGeoJSONSource(withId: &quot;cafes&quot;, geoJSON: .featureCollection(newCollection))GeoJSON Source는 cluster 옵션으로 가까운 점들을 자동으로 묶는 클러스터링 기능도 제공합니다.source.cluster = truesource.clusterRadius = 50source.clusterMaxZoom = 14Vector Source와 source-layerVector Tile 하나에는 도로, 건물, 물 등 여러 종류의 데이터가 함께 들어 있습니다. 이 안의 데이터 묶음을 source-layer라고 부릅니다.Vector Source &quot;composite&quot; (Mapbox Streets) ├── source-layer &quot;road&quot; ├── source-layer &quot;building&quot; ├── source-layer &quot;water&quot; └── source-layer &quot;poi_label&quot;그래서 Vector Source를 쓰는 Layer는 source와 함께 sourceLayer를 지정해야 합니다.var buildings = FillLayer(id: &quot;my-buildings&quot;, source: &quot;composite&quot;)buildings.sourceLayer = &quot;building&quot;이름이 비슷해서 헷갈리는데, source-layer는 데이터 안의 분류이고 Layer는 그리는 방법입니다. 둘은 완전히 다른 개념입니다.  7. Layer - 데이터를 어떻게 그릴까Layer는 Source의 Feature들을 화면에 어떤 모양으로 그릴지 정합니다.Layer 종류            Layer type      그리는 것      어울리는 Geometry                  background      지도 배경색      (Source 없음)              fill      면 채우기      Polygon              line      선      LineString, Polygon 테두리              circle      원      Point              symbol      아이콘, 텍스트      Point, LineString(도로명처럼 선을 따라)              fill-extrusion      3D로 솟은 면      Polygon (3D 건물)              heatmap      밀도 히트맵      Point              raster      래스터 이미지      raster source              hillshade      지형 음영      raster-dem source      같은 데이터라도 Layer를 바꾸면 전혀 다르게 보입니다. 카페 위치(Point)를 circle로 그리면 점, symbol로 그리면 아이콘과 이름, heatmap으로 그리면 카페 밀집 지역이 됩니다.layout과 paintLayer의 속성은 두 그룹으로 나뉩니다.            그룹      의미      예시                  layout      배치, 구조에 관한 속성      visibility, text-field, icon-image, line-cap              paint      색, 크기 등 칠하는 속성      circle-color, fill-opacity, line-width      Swift SDK에서는 그룹 구분 없이 프로퍼티로 바로 접근할 수 있지만, Style JSON을 읽을 때는 이 구분이 보입니다.Layer 추가하기앞에서 만든 cafes Source 하나로 원과 라벨 두 개의 Layer를 만들어 보겠습니다.var circleLayer = CircleLayer(id: &quot;cafe-circles&quot;, source: &quot;cafes&quot;)circleLayer.circleRadius = .constant(8)circleLayer.circleColor = .constant(StyleColor(.systemBrown))circleLayer.circleStrokeWidth = .constant(2)circleLayer.circleStrokeColor = .constant(StyleColor(.white))var labelLayer = SymbolLayer(id: &quot;cafe-labels&quot;, source: &quot;cafes&quot;)labelLayer.textField = .expression(Exp(.get) { &quot;name&quot; })labelLayer.textSize = .constant(12)labelLayer.textOffset = .constant([0, 1.5])try mapView.mapboxMap.addLayer(circleLayer)try mapView.mapboxMap.addLayer(labelLayer)Source와 Layer는 Style이 로드된 뒤에 추가해야 합니다.mapView.mapboxMap.onStyleLoaded.observeNext { [weak self] _ in    self?.addCafeLayers()}.store(in: &amp;cancelables)Layer 순서Layer는 배열 순서대로 아래에서 위로 그려집니다. 나중에 추가한 Layer가 위에 올라갑니다. 그래서 경로선을 추가했는데 도로 라벨까지 덮어버리는 일이 생깁니다. 이럴 때는 위치를 지정합니다.try mapView.mapboxMap.addLayer(routeLayer, layerPosition: .below(&quot;road-label&quot;))  8. Expression - 데이터에 따라 다르게 그리기지금까지는 모든 카페를 같은 색으로 그렸습니다. Expression을 쓰면 Feature의 properties나 줌 레벨에 따라 스타일을 다르게 줄 수 있습니다. (Data-driven styling)Expression은 JSON 배열 형태의 작은 언어입니다. 첫 번째 원소가 연산자입니다.[&quot;get&quot;, &quot;name&quot;]자주 쓰는 Expression은 아래와 같습니다.            Expression      역할                  get      properties 값 읽기              match      값에 따라 분기 (switch)              case      조건에 따라 분기 (if-else)              interpolate      값 사이를 부드럽게 보간              zoom      현재 줌 레벨              ==, &gt;, all, any      비교, 논리 연산 (filter에 자주 사용)      match - 카테고리별 색상[&quot;match&quot;, [&quot;get&quot;, &quot;category&quot;],  &quot;cafe&quot;, &quot;#8B5A2B&quot;,  &quot;restaurant&quot;, &quot;#E53935&quot;,  &quot;#9E9E9E&quot;]circleLayer.circleColor = .expression(    Exp(.match) {        Exp(.get) { &quot;category&quot; }        &quot;cafe&quot;        UIColor.brown        &quot;restaurant&quot;        UIColor.red        UIColor.gray // default    })interpolate - 줌에 따라 크기 바꾸기줌 10에서는 반지름 4, 줌 16에서는 반지름 12가 되고 그 사이는 자연스럽게 커집니다.circleLayer.circleRadius = .expression(    Exp(.interpolate) {        Exp(.linear)        Exp(.zoom)        10        4        16        12    })filter - 일부 Feature만 그리기Layer의 filter에 Expression을 넣으면 조건에 맞는 Feature만 그립니다.// 평점 4.0 이상인 카페만circleLayer.filter = Exp(.all) {    Exp(.eq) { Exp(.get) { &quot;category&quot; }; &quot;cafe&quot; }    Exp(.gte) { Exp(.get) { &quot;rating&quot; }; 4.0 }}필터 UI를 만들 때 데이터를 다시 만들지 않고 Layer의 filter만 바꾸면 되기 때문에 효율적입니다.  9. 상호작용 - 지도에서 Feature 찾기사용자가 지도를 탭했을 때 “무엇을 탭했는지” 알려면 Feature를 조회해야 합니다.            API      대상                  queryRenderedFeatures      현재 화면에 그려진 Feature (Layer 기준)              querySourceFeatures      Source에 있는 Feature (화면 표시 여부와 무관)      let point = gesture.location(in: mapView)let options = RenderedQueryOptions(layerIds: [&quot;cafe-circles&quot;], filter: nil)mapView.mapboxMap.queryRenderedFeatures(with: point, options: options) { result in    guard case .success(let features) = result,          let feature = features.first?.queriedFeature.feature,          case .string(let name) = feature.properties?[&quot;name&quot;] else { return }    print(&quot;탭한 카페:&quot;, name)}선택된 카페만 강조하고 싶을 때는 Feature State를 사용합니다. 데이터를 다시 넣지 않고 특정 Feature에 selected: true 같은 상태만 붙인 뒤 Expression의 feature-state로 읽어 스타일을 바꿉니다. 이를 위해 Feature에 id가 있어야 합니다.  10. 다시 보는 Annotation - 결국 Source + Layer글 처음에 소개한 Annotation API를 이제 다시 보겠습니다. Source/Layer를 직접 다루지 않아도 마커를 찍을 수 있습니다.let manager = mapView.annotations.makePointAnnotationManager()var annotation = PointAnnotation(coordinate: CLLocationCoordinate2D(latitude: 37.5665, longitude: 126.9780))annotation.image = .init(image: UIImage(named: &quot;pin&quot;)!, name: &quot;pin&quot;)manager.annotations = [annotation]Annotation Manager는 내부적으로 GeoJSON Source 하나와 Layer 하나를 만들고, annotations 배열이 바뀔 때마다 Source의 데이터를 갱신합니다. 지금까지 배운 구조를 감싸 놓은 편의 API인 셈입니다.그래서 처음에는 Annotation으로 빠르게 시작하더라도, 데이터가 많아지거나 클러스터링, Expression 기반 스타일이 필요해지면 Source + Layer 방식으로 옮겨가게 됩니다. 이때 이 글의 개념들이 그대로 쓰입니다.  정리            개념      한 줄 정의      비유                  Geometry      점, 선, 면 도형      모양              GeoJSON      지리 데이터를 담는 JSON 포맷      데이터 파일 형식              Feature      Geometry + properties, 데이터 한 건      엑셀의 한 행              Source      데이터 묶음과 가져오는 방법      재료              Layer      Source를 그리는 방법      레시피              Expression      데이터, 줌에 따라 스타일을 바꾸는 식      레시피의 조건문              Style      Source + Layer 전체를 담은 설계도      요리책      Mapbox의 핵심은 데이터(Source)와 표현(Layer)의 분리입니다. 데이터는 한 번 넣어두고, 어떻게 보여줄지는 Layer와 Expression으로 자유롭게 바꿀 수 있습니다. 새로운 기능을 만들 때 “이건 데이터를 바꿔야 하는 일인가, 그리는 방법을 바꿔야 하는 일인가”를 먼저 생각해보면 어떤 API를 써야 할지 쉽게 정리됩니다. 참고  Mapbox Style Specification  Mapbox Maps SDK for iOS  RFC 7946 - The GeoJSON Format  geojson.io - GeoJSON을 직접 그려보고 확인할 수 있는 도구">
+    <meta itemprop="datePublished" content="2026-11-02T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/mapbox-basic-concepts/" class="u-url" itemprop="url">[Mapbox] 처음 배우는 Mapbox 핵심 개념 - GeoJSON, Feature, Source, Layer
+</a>
+          </h1>
+          <footer class="page__meta">
+            
+  
+
+
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags : </strong>
+    <span class="archive__item-tags">
+    
+    
+    
+      <a class="posttag tagged" href="/posts/?tag=Mapbox">Mapbox</a>
+    
+    
+    </span>  
+  </p>
+
+
+
+<!--  -->
+            
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Date :</strong> <time class="dt-published" datetime="2026-11-02T00:00:00+00:00">November 2, 2026</time></p>
+
+          </footer>
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <h2 id="mapbox로-지도에-무언가를-그리는-5가지-방법">Mapbox로 지도에 무언가를 그리는 5가지 방법</h2>
+
+<p>Mapbox iOS SDK에서 지도 위에 마커나 경로 같은 데이터를 올리는 방법은 크게 5가지입니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>방법</th>
+      <th>설명</th>
+      <th>어울리는 상황</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Marker</td>
+      <td>SwiftUI <code class="language-plaintext highlighter-rouge">Map</code> 안에 좌표만 넣으면 기본 핀을 그려주는 가장 간단한 API</td>
+      <td>프로토타입, 핀 몇 개</td>
+    </tr>
+    <tr>
+      <td>Annotation</td>
+      <td><code class="language-plaintext highlighter-rouge">PointAnnotation</code>, <code class="language-plaintext highlighter-rouge">PolylineAnnotation</code> 등을 Annotation Manager로 추가</td>
+      <td>마커 수십 개 정도, 빠른 구현</td>
+    </tr>
+    <tr>
+      <td>View Annotation</td>
+      <td>지도 좌표에 UIKit/SwiftUI 뷰를 그대로 띄움</td>
+      <td>말풍선, 버튼이 있는 카드 등 인터랙티브한 UI</td>
+    </tr>
+    <tr>
+      <td>Style Layer (Source + Layer)</td>
+      <td>데이터(Source)와 그리는 방법(Layer)을 Style에 직접 추가</td>
+      <td>데이터 수백~수천 개, 클러스터링, 데이터에 따른 스타일</td>
+    </tr>
+    <tr>
+      <td>Custom Layer</td>
+      <td><code class="language-plaintext highlighter-rouge">CustomLayer</code>에 Metal 렌더링 코드를 직접 작성해 지도 렌더링 파이프라인에 끼워 넣음</td>
+      <td>3D 모델, 파티클, 셰이더 효과 등 기본 Layer로 표현할 수 없는 그래픽</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Marker와 Annotation이 쉬워 보이지만, 사실 이 둘도 내부적으로는 <strong>Source와 Layer를 만들어서</strong> 그립니다. 즉 Source + Layer 방식이 Mapbox가 지도를 그리는 가장 기본 원리이고, 나머지는 이를 편하게 감싼 API에 가깝습니다. 단, 두 가지는 예외입니다.</p>
+
+<ul>
+  <li><strong>View Annotation</strong>은 지도 렌더링과 별개로 지도 위에 실제 UIView를 올리는 방식입니다.</li>
+  <li><strong>Custom Layer</strong>는 Layer 배열에 들어가 순서는 다른 Layer와 함께 관리되지만, Source 없이 내가 직접 Metal로 그리는 방식입니다. 가장 자유롭지만 가장 저수준이라, 이 부분은 별도 글에서 딥다이브할 예정입니다.</li>
+</ul>
+
+<p>그래서 이 글에서는 <strong>Source + Layer 방식부터</strong> 공부하겠습니다. 이 구조를 이해하면 나머지 방법은 “이걸 대신 해주는 도구구나” 하고 자연스럽게 이해할 수 있습니다.</p>
+
+<p> </p>
+
+<hr />
+
+<p> </p>
+
+<p>Source + Layer 방식을 공부하다 보면 <code class="language-plaintext highlighter-rouge">Source</code>, <code class="language-plaintext highlighter-rouge">Layer</code>, <code class="language-plaintext highlighter-rouge">Feature</code>, <code class="language-plaintext highlighter-rouge">GeoJSON</code>, <code class="language-plaintext highlighter-rouge">Style</code>, <code class="language-plaintext highlighter-rouge">Expression</code> 같은 단어가 한꺼번에 쏟아집니다. 각각은 어렵지 않지만 <strong>서로 어떤 관계인지</strong> 모르면 코드가 왜 그렇게 생겼는지 이해하기 어렵습니다.</p>
+
+<p>이 글에서는 아래 순서로 개념을 하나씩 쌓아 올려 보겠습니다.</p>
+
+<ol>
+  <li>지도는 어떻게 그려질까 - 좌표와 타일</li>
+  <li>Geometry - 점, 선, 면</li>
+  <li>GeoJSON - 지리 데이터를 담는 포맷</li>
+  <li>Feature - 데이터 한 건</li>
+  <li>Style - 지도 전체의 설계도</li>
+  <li>Source - 데이터를 어디서 가져올까</li>
+  <li>Layer - 데이터를 어떻게 그릴까</li>
+  <li>Expression - 데이터에 따라 다르게 그리기</li>
+  <li>상호작용 - 지도에서 Feature 찾기</li>
+  <li>다시 보는 Annotation - 결국 Source + Layer</li>
+</ol>
+
+<p>예제 코드는 iOS용 <strong>Mapbox Maps SDK v11</strong> 기준입니다.</p>
+
+<p> </p>
+
+<hr />
+
+<p> </p>
+
+<h2 id="한-장으로-먼저-보기">한 장으로 먼저 보기</h2>
+
+<p>세부 내용에 들어가기 전에 “지도 위에 카페 마커를 그린다”는 예시로 전체 구조를 먼저 보겠습니다.</p>
+
+<h3 id="전체-구조">전체 구조</h3>
+
+<p><img src="/assets/img/2026-11-02-mapbox-basic-concepts/structure.svg" alt="Mapbox 구조 한눈에 보기" style="width: 100%;" /></p>
+
+<p>같은 구조를 트리로 펼쳐보면 다음과 같습니다.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>MapView
+ └── Style (지도 전체 설계도, JSON 문서 하나)
+      │
+      ├── Sources (데이터 저장소, id → source 딕셔너리)
+      │    │
+      │    ├── "composite" : vector          ← Mapbox가 제공하는 기본 지도 데이터
+      │    │     ├── source-layer "water"     → 물 Feature들 (Polygon)
+      │    │     ├── source-layer "road"      → 도로 Feature들 (LineString)
+      │    │     └── source-layer "building"  → 건물 Feature들 (Polygon)
+      │    │
+      │    └── "cafes" : geojson              ← 내가 추가한 데이터
+      │          └── FeatureCollection
+      │                ├── Feature
+      │                │     ├── id: 1
+      │                │     ├── geometry: Point [126.978, 37.566]
+      │                │     └── properties: { name: "A카페", category: "cafe" }
+      │                └── Feature
+      │                      ├── id: 2
+      │                      ├── geometry: Point [126.985, 37.570]
+      │                      └── properties: { name: "B식당", category: "restaurant" }
+      │
+      └── Layers (그리는 방법, 배열 순서 = 그려지는 순서)
+           ├── [0] background   type: background                          ← 가장 아래
+           ├── [1] water        type: fill    source: composite / water
+           ├── [2] road         type: line    source: composite / road
+           ├── [3] building     type: fill    source: composite / building
+           ├── [4] cafe-circles type: circle  source: cafes
+           └── [5] cafe-labels  type: symbol  source: cafes                ← 가장 위
+</code></pre></div></div>
+
+<p>이 그림에서 알 수 있는 사실들을 정리해보면 다음과 같습니다.</p>
+
+<ul>
+  <li>우리가 보는 <strong>기본 지도(바다, 도로, 건물)도 Source + Layer로 그려진 것</strong>입니다. 내가 추가하는 카페 데이터와 구조가 똑같습니다.</li>
+  <li>Source는 <strong>딕셔너리</strong>(id로 찾음), Layer는 <strong>배열</strong>(순서가 중요함)입니다.</li>
+  <li>Layer는 Source를 직접 들고 있지 않고 <strong>id 문자열로 참조</strong>합니다. (<code class="language-plaintext highlighter-rouge">source: "cafes"</code>)</li>
+  <li>Vector Source는 안에 여러 묶음(source-layer)이 있어서, Layer가 <code class="language-plaintext highlighter-rouge">source</code>와 <code class="language-plaintext highlighter-rouge">source-layer</code>를 함께 지정합니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">background</code> Layer처럼 Source 없이 그려지는 예외도 있습니다.</li>
+</ul>
+
+<h3 id="layer는-쌓아서-그린다">Layer는 쌓아서 그린다</h3>
+
+<p>Layer 배열의 순서는 곧 그려지는 순서입니다. 투명한 필름에 하나씩 그림을 그리고 아래부터 차곡차곡 쌓는다고 생각하면 쉽습니다.</p>
+
+<p><img src="/assets/img/2026-11-02-mapbox-basic-concepts/layers.svg" alt="Layer를 쌓아 그리는 구조" style="width: 100%;" /></p>
+
+<p>그래서 내가 추가한 카페 Layer는 기본 지도 위에 올라가고, 순서를 잘못 잡으면 경로선이 도로 이름을 덮어버리는 일이 생깁니다. 이 부분은 7장에서 다시 다룹니다.</p>
+
+<h3 id="데이터가-화면에-나오기까지">데이터가 화면에 나오기까지</h3>
+
+<p><img src="/assets/img/2026-11-02-mapbox-basic-concepts/pipeline.svg" alt="데이터가 화면에 나오기까지" style="width: 100%;" /></p>
+
+<ol>
+  <li>앱이 가진 데이터를 <strong>GeoJSON(Feature 묶음)</strong> 형태로 만듭니다.</li>
+  <li>이 데이터를 <strong>Source</strong>로 Style에 등록합니다. 이 시점까지 화면에는 아무 변화가 없습니다.</li>
+  <li>그 Source를 참조하는 <strong>Layer</strong>를 추가하는 순간 지도에 그려집니다.</li>
+  <li>Layer는 각 Feature의 <strong>properties</strong>를 읽어서(Expression) 색, 크기, 글자를 다르게 그릴 수 있습니다.</li>
+</ol>
+
+<p>코드로 보면 딱 이 세 단계입니다. 자세한 문법은 뒤에서 하나씩 다룹니다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 1. 데이터 만들기 (Feature)</span>
+<span class="k">var</span> <span class="nv">cafe</span> <span class="o">=</span> <span class="kt">Feature</span><span class="p">(</span><span class="nv">geometry</span><span class="p">:</span> <span class="kt">Point</span><span class="p">(</span><span class="kt">CLLocationCoordinate2D</span><span class="p">(</span><span class="nv">latitude</span><span class="p">:</span> <span class="mf">37.566</span><span class="p">,</span> <span class="nv">longitude</span><span class="p">:</span> <span class="mf">126.978</span><span class="p">)))</span>
+<span class="n">cafe</span><span class="o">.</span><span class="n">properties</span> <span class="o">=</span> <span class="p">[</span><span class="s">"name"</span><span class="p">:</span> <span class="s">"A카페"</span><span class="p">,</span> <span class="s">"category"</span><span class="p">:</span> <span class="s">"cafe"</span><span class="p">]</span>
+
+<span class="c1">// 2. Source 등록 (아직 안 보임)</span>
+<span class="k">var</span> <span class="nv">source</span> <span class="o">=</span> <span class="kt">GeoJSONSource</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="s">"cafes"</span><span class="p">)</span>
+<span class="n">source</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="o">.</span><span class="nf">featureCollection</span><span class="p">(</span><span class="kt">FeatureCollection</span><span class="p">(</span><span class="nv">features</span><span class="p">:</span> <span class="p">[</span><span class="n">cafe</span><span class="p">]))</span>
+<span class="k">try</span> <span class="n">mapView</span><span class="o">.</span><span class="n">mapboxMap</span><span class="o">.</span><span class="nf">addSource</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+
+<span class="c1">// 3. Layer 추가 (이제 보임)</span>
+<span class="k">var</span> <span class="nv">layer</span> <span class="o">=</span> <span class="kt">CircleLayer</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="s">"cafe-circles"</span><span class="p">,</span> <span class="nv">source</span><span class="p">:</span> <span class="s">"cafes"</span><span class="p">)</span>
+<span class="n">layer</span><span class="o">.</span><span class="n">circleColor</span> <span class="o">=</span> <span class="o">.</span><span class="nf">constant</span><span class="p">(</span><span class="kt">StyleColor</span><span class="p">(</span><span class="o">.</span><span class="n">brown</span><span class="p">))</span>
+<span class="k">try</span> <span class="n">mapView</span><span class="o">.</span><span class="n">mapboxMap</span><span class="o">.</span><span class="nf">addLayer</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="각-개념의-역할">각 개념의 역할</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>개념</th>
+      <th>질문</th>
+      <th>역할</th>
+      <th>예시</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Style</td>
+      <td>지도 전체를 어떻게 구성할까?</td>
+      <td>Source와 Layer를 모두 담는 설계도</td>
+      <td><code class="language-plaintext highlighter-rouge">streets-v12</code>, 내가 만든 커스텀 스타일</td>
+    </tr>
+    <tr>
+      <td>Source</td>
+      <td>무엇을 그릴까?</td>
+      <td>데이터와 데이터를 가져오는 방법</td>
+      <td><code class="language-plaintext highlighter-rouge">"cafes"</code> GeoJSON, <code class="language-plaintext highlighter-rouge">"composite"</code> Vector</td>
+    </tr>
+    <tr>
+      <td>Feature</td>
+      <td>그중 하나는 무엇인가?</td>
+      <td>위치(geometry) + 정보(properties) 한 건</td>
+      <td>A카페 한 곳, 도로 한 구간</td>
+    </tr>
+    <tr>
+      <td>GeoJSON</td>
+      <td>데이터를 어떤 형식으로 적을까?</td>
+      <td>Feature를 표현하는 JSON 포맷</td>
+      <td><code class="language-plaintext highlighter-rouge">{ "type": "Feature", ... }</code></td>
+    </tr>
+    <tr>
+      <td>Layer</td>
+      <td>어떻게 그릴까?</td>
+      <td>Source를 어떤 모양, 색으로 그릴지</td>
+      <td>circle, line, fill, symbol</td>
+    </tr>
+    <tr>
+      <td>Expression</td>
+      <td>데이터마다 다르게 그리려면?</td>
+      <td>properties, 줌에 따라 값을 계산하는 식</td>
+      <td>category별 색상, 줌별 크기</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="source와-layer의-관계">Source와 Layer의 관계</h3>
+
+<p>Source와 Layer는 <strong>1 : N</strong> 관계입니다.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                      ┌──→ cafe-circles  (circle)  : 위치를 원으로
+ Source "cafes"  ─────┼──→ cafe-labels   (symbol)  : 이름을 글자로
+                      └──→ cafe-heatmap  (heatmap) : 밀집도를 히트맵으로
+</code></pre></div></div>
+
+<ul>
+  <li>하나의 Source를 여러 Layer가 공유할 수 있습니다. 데이터는 한 번만 넣고 표현만 여러 개 만드는 구조입니다.</li>
+  <li>반대로 하나의 Layer는 <strong>오직 하나의 Source</strong>만 참조할 수 있습니다.</li>
+  <li>데이터가 바뀌면 Source만 갱신하면 되고, 이를 참조하는 모든 Layer가 자동으로 다시 그려집니다.</li>
+  <li>반대로 모양만 바꾸고 싶으면 Layer 속성만 바꾸면 되고, 데이터는 건드리지 않아도 됩니다.</li>
+</ul>
+
+<p>이렇게 <strong>데이터(Source)와 표현(Layer)을 분리</strong>한 것이 Mapbox 구조의 핵심이고, 이 글 전체가 이 한 문장을 풀어서 설명하는 내용입니다.</p>
+
+<p> </p>
+
+<hr />
+
+<p> </p>
+
+<h2 id="1-지도는-어떻게-그려질까---좌표와-타일">1. 지도는 어떻게 그려질까 - 좌표와 타일</h2>
+
+<h3 id="좌표-경도longitude-위도latitude">좌표: 경도(longitude), 위도(latitude)</h3>
+
+<p>지구 위의 한 점은 <strong>위도</strong>와 <strong>경도</strong>로 나타냅니다.</p>
+
+<ul>
+  <li>위도(latitude): 적도 기준 남북 위치, -90 ~ 90</li>
+  <li>경도(longitude): 그리니치 기준 동서 위치, -180 ~ 180</li>
+</ul>
+
+<p>서울시청은 대략 위도 <code class="language-plaintext highlighter-rouge">37.5665</code>, 경도 <code class="language-plaintext highlighter-rouge">126.9780</code> 입니다.</p>
+
+<p>여기서 가장 많이 실수하는 부분이 있습니다. iOS의 <code class="language-plaintext highlighter-rouge">CLLocationCoordinate2D</code>는 <code class="language-plaintext highlighter-rouge">(latitude, longitude)</code> 순서이지만 <strong>GeoJSON과 Mapbox Style 스펙은 <code class="language-plaintext highlighter-rouge">[longitude, latitude]</code> 순서</strong>입니다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// iOS: 위도, 경도</span>
+<span class="kt">CLLocationCoordinate2D</span><span class="p">(</span><span class="nv">latitude</span><span class="p">:</span> <span class="mf">37.5665</span><span class="p">,</span> <span class="nv">longitude</span><span class="p">:</span> <span class="mf">126.9780</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span><span class="w"> </span><span class="err">GeoJSON:</span><span class="w"> </span><span class="err">경도,</span><span class="w"> </span><span class="err">위도</span><span class="w">
+</span><span class="p">[</span><span class="mf">126.9780</span><span class="p">,</span><span class="w"> </span><span class="mf">37.5665</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<p>순서를 바꿔 넣으면 서울 마커가 남극 근처 바다에 찍히는 걸 볼 수 있습니다.</p>
+
+<h3 id="줌-레벨과-타일">줌 레벨과 타일</h3>
+
+<p>지도는 한 장의 거대한 이미지가 아니라 <strong>타일(Tile)</strong> 이라는 작은 정사각형 조각들을 이어 붙여서 보여줍니다.</p>
+
+<ul>
+  <li>줌 레벨 0에서는 전 세계가 타일 1장입니다.</li>
+  <li>줌이 1 올라갈 때마다 타일 하나가 4장으로 쪼개집니다. (줌 z에서 타일 수 = 4^z)</li>
+  <li>화면에 보이는 영역의 타일만 내려받기 때문에 전 세계 지도를 빠르게 보여줄 수 있습니다.</li>
+</ul>
+
+<p>타일은 두 종류가 있습니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>종류</th>
+      <th>내용</th>
+      <th>특징</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Raster Tile</td>
+      <td>이미 그려진 PNG/JPG 이미지</td>
+      <td>스타일 변경 불가, 위성사진 등에 사용</td>
+    </tr>
+    <tr>
+      <td>Vector Tile</td>
+      <td>도형 데이터(점, 선, 면 + 속성)</td>
+      <td>기기에서 직접 그림, 스타일을 자유롭게 변경 가능</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Mapbox 지도는 기본적으로 <strong>Vector Tile</strong>입니다. 데이터만 내려받고 “어떻게 그릴지”는 기기가 Style을 보고 결정합니다. 그래서 같은 데이터로 다크 모드, 내비게이션용 지도 등 전혀 다른 모양을 만들 수 있습니다. 이 “데이터와 그리는 방법의 분리”가 뒤에 나올 Source와 Layer 개념의 출발점입니다.</p>
+
+<p> </p>
+
+<hr />
+
+<p> </p>
+
+<h2 id="2-geometry---점-선-면">2. Geometry - 점, 선, 면</h2>
+
+<p>지도 위의 모든 데이터는 결국 세 가지 도형 중 하나입니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Geometry</th>
+      <th>의미</th>
+      <th>예시</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Point</td>
+      <td>점 하나</td>
+      <td>카페 위치, 버스 정류장</td>
+    </tr>
+    <tr>
+      <td>LineString</td>
+      <td>점들을 이은 선</td>
+      <td>도로, 이동 경로, 버스 노선</td>
+    </tr>
+    <tr>
+      <td>Polygon</td>
+      <td>닫힌 면</td>
+      <td>건물, 공원, 행정구역</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>여기에 여러 개를 묶은 <code class="language-plaintext highlighter-rouge">MultiPoint</code>, <code class="language-plaintext highlighter-rouge">MultiLineString</code>, <code class="language-plaintext highlighter-rouge">MultiPolygon</code>과, 서로 다른 Geometry를 묶는 <code class="language-plaintext highlighter-rouge">GeometryCollection</code>이 있습니다. 예를 들어 섬이 여러 개인 행정구역은 <code class="language-plaintext highlighter-rouge">MultiPolygon</code>으로 표현합니다.</p>
+
+<p>어떤 Geometry인지에 따라 사용할 수 있는 Layer 종류가 달라지므로 기억해두면 좋습니다.</p>
+
+<p> </p>
+
+<hr />
+
+<p> </p>
+
+<h2 id="3-geojson---지리-데이터를-담는-포맷">3. GeoJSON - 지리 데이터를 담는 포맷</h2>
+
+<p><strong>GeoJSON</strong>은 지리 데이터를 JSON으로 표현하기 위한 표준 포맷(RFC 7946)입니다. Mapbox뿐 아니라 Google Maps, Leaflet, PostGIS 등 거의 모든 지도 도구가 지원합니다.</p>
+
+<h3 id="geometry-표현">Geometry 표현</h3>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w"> </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Point"</span><span class="p">,</span><span class="w"> </span><span class="nl">"coordinates"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">126.9780</span><span class="p">,</span><span class="w"> </span><span class="mf">37.5665</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LineString"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"coordinates"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">[</span><span class="mf">126.9780</span><span class="p">,</span><span class="w"> </span><span class="mf">37.5665</span><span class="p">],</span><span class="w">
+    </span><span class="p">[</span><span class="mf">126.9820</span><span class="p">,</span><span class="w"> </span><span class="mf">37.5700</span><span class="p">],</span><span class="w">
+    </span><span class="p">[</span><span class="mf">126.9900</span><span class="p">,</span><span class="w"> </span><span class="mf">37.5710</span><span class="p">]</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Polygon"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"coordinates"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">[</span><span class="w">
+      </span><span class="p">[</span><span class="mf">126.97</span><span class="p">,</span><span class="w"> </span><span class="mf">37.56</span><span class="p">],</span><span class="w">
+      </span><span class="p">[</span><span class="mf">126.99</span><span class="p">,</span><span class="w"> </span><span class="mf">37.56</span><span class="p">],</span><span class="w">
+      </span><span class="p">[</span><span class="mf">126.99</span><span class="p">,</span><span class="w"> </span><span class="mf">37.58</span><span class="p">],</span><span class="w">
+      </span><span class="p">[</span><span class="mf">126.97</span><span class="p">,</span><span class="w"> </span><span class="mf">37.58</span><span class="p">],</span><span class="w">
+      </span><span class="p">[</span><span class="mf">126.97</span><span class="p">,</span><span class="w"> </span><span class="mf">37.56</span><span class="p">]</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Polygon은 두 가지를 주의해야 합니다.</p>
+
+<ul>
+  <li>좌표 배열이 한 겹 더 감싸져 있습니다. 첫 번째 배열은 바깥 테두리, 그다음 배열들은 구멍(hole)입니다.</li>
+  <li>첫 좌표와 마지막 좌표가 <strong>같아야</strong> 닫힌 도형이 됩니다.</li>
+</ul>
+
+<h3 id="feature와-featurecollection">Feature와 FeatureCollection</h3>
+
+<p>Geometry만으로는 “이 점이 무엇인지” 알 수 없습니다. 그래서 GeoJSON은 Geometry에 속성을 붙인 <strong>Feature</strong>, 그리고 Feature들을 묶은 <strong>FeatureCollection</strong>을 제공합니다.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FeatureCollection"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"features"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Feature"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"geometry"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Point"</span><span class="p">,</span><span class="w"> </span><span class="nl">"coordinates"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">126.9780</span><span class="p">,</span><span class="w"> </span><span class="mf">37.5665</span><span class="p">]</span><span class="w"> </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"A카페"</span><span class="p">,</span><span class="w"> </span><span class="nl">"category"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cafe"</span><span class="p">,</span><span class="w"> </span><span class="nl">"rating"</span><span class="p">:</span><span class="w"> </span><span class="mf">4.5</span><span class="w"> </span><span class="p">}</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Feature"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"geometry"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Point"</span><span class="p">,</span><span class="w"> </span><span class="nl">"coordinates"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">126.9850</span><span class="p">,</span><span class="w"> </span><span class="mf">37.5700</span><span class="p">]</span><span class="w"> </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"B식당"</span><span class="p">,</span><span class="w"> </span><span class="nl">"category"</span><span class="p">:</span><span class="w"> </span><span class="s2">"restaurant"</span><span class="p">,</span><span class="w"> </span><span class="nl">"rating"</span><span class="p">:</span><span class="w"> </span><span class="mf">3.8</span><span class="w"> </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>정리하면 GeoJSON은 아래 계층 구조를 가집니다.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FeatureCollection
+ └── Feature (여러 개)
+      ├── id          (선택)
+      ├── geometry    → 어디에, 어떤 모양으로
+      └── properties  → 무엇인지 (자유로운 key-value)
+</code></pre></div></div>
+
+<p> </p>
+
+<hr />
+
+<p> </p>
+
+<h2 id="4-feature---데이터-한-건">4. Feature - 데이터 한 건</h2>
+
+<p><strong>Feature</strong>는 지도 위의 “물체 하나”입니다. 카페 하나, 도로 한 구간, 건물 하나가 각각 Feature입니다.</p>
+
+<p>Feature는 GeoJSON에서만 쓰는 말이 아니라 Mapbox 전체에서 쓰이는 개념입니다. Vector Tile 안의 도로, 건물 데이터도 모두 Feature이고, 사용자가 지도를 탭했을 때 돌려받는 것도 Feature입니다.</p>
+
+<p>Feature에서 중요한 것은 <strong>properties</strong>입니다. 뒤에서 볼 Expression은 이 properties 값을 읽어서 색상, 크기, 텍스트를 결정합니다. 즉 <strong>“데이터에 무엇을 넣어두느냐”가 “지도를 얼마나 다양하게 그릴 수 있느냐”를 결정</strong>합니다.</p>
+
+<p>iOS에서는 Mapbox SDK에 포함된 Turf 라이브러리로 Feature를 만듭니다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">MapboxMaps</span>
+
+<span class="k">var</span> <span class="nv">cafe</span> <span class="o">=</span> <span class="kt">Feature</span><span class="p">(</span><span class="nv">geometry</span><span class="p">:</span> <span class="kt">Point</span><span class="p">(</span><span class="kt">CLLocationCoordinate2D</span><span class="p">(</span><span class="nv">latitude</span><span class="p">:</span> <span class="mf">37.5665</span><span class="p">,</span> <span class="nv">longitude</span><span class="p">:</span> <span class="mf">126.9780</span><span class="p">)))</span>
+<span class="n">cafe</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="o">.</span><span class="nf">number</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">cafe</span><span class="o">.</span><span class="n">properties</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">"name"</span><span class="p">:</span> <span class="s">"A카페"</span><span class="p">,</span>
+    <span class="s">"category"</span><span class="p">:</span> <span class="s">"cafe"</span><span class="p">,</span>
+    <span class="s">"rating"</span><span class="p">:</span> <span class="mf">4.5</span>
+<span class="p">]</span>
+
+<span class="k">let</span> <span class="nv">collection</span> <span class="o">=</span> <span class="kt">FeatureCollection</span><span class="p">(</span><span class="nv">features</span><span class="p">:</span> <span class="p">[</span><span class="n">cafe</span><span class="p">])</span>
+</code></pre></div></div>
+
+<p>Swift 코드에서는 <code class="language-plaintext highlighter-rouge">CLLocationCoordinate2D</code>를 쓰기 때문에 위도, 경도 순서로 넣어도 SDK가 GeoJSON 순서로 변환해줍니다. 직접 JSON 문자열이나 파일을 다룰 때만 <code class="language-plaintext highlighter-rouge">[경도, 위도]</code> 순서를 신경 쓰면 됩니다.</p>
+
+<p> </p>
+
+<hr />
+
+<p> </p>
+
+<h2 id="5-style---지도-전체의-설계도">5. Style - 지도 전체의 설계도</h2>
+
+<p><strong>Style</strong>은 지도를 어떻게 보여줄지를 정의한 JSON 문서입니다. Mapbox Studio에서 만든 스타일이나 <code class="language-plaintext highlighter-rouge">mapbox://styles/mapbox/streets-v12</code> 같은 기본 스타일이 모두 이 JSON입니다.</p>
+
+<p>Style JSON의 뼈대는 아래와 같습니다.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"My Style"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"sprite"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mapbox://sprites/..."</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"glyphs"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mapbox://fonts/{fontstack}/{range}.pbf"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"sources"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"cafes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"geojson"</span><span class="p">,</span><span class="w"> </span><span class="nl">"data"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://example.com/cafes.geojson"</span><span class="w"> </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"layers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"background"</span><span class="p">,</span><span class="w"> </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"background"</span><span class="p">,</span><span class="w"> </span><span class="nl">"paint"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"background-color"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#f5f5f5"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cafe-circles"</span><span class="p">,</span><span class="w"> </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"circle"</span><span class="p">,</span><span class="w"> </span><span class="nl">"source"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cafes"</span><span class="p">,</span><span class="w"> </span><span class="nl">"paint"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"circle-radius"</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>키</th>
+      <th>역할</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">sources</code></td>
+      <td>사용할 데이터 목록 (딕셔너리, id → source)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">layers</code></td>
+      <td>그리는 방법 목록 (배열, 순서 중요)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">sprite</code></td>
+      <td>아이콘 이미지 모음</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">glyphs</code></td>
+      <td>라벨에 쓸 폰트</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>결국 Mapbox로 지도를 커스터마이징한다는 것은 <strong>이 Style에 Source와 Layer를 추가, 수정, 삭제하는 것</strong>입니다. 코드로 <code class="language-plaintext highlighter-rouge">addSource</code>, <code class="language-plaintext highlighter-rouge">addLayer</code>를 호출하는 것도 런타임에 이 JSON을 고치는 일과 같습니다.</p>
+
+<blockquote>
+  <p>v11의 기본 스타일인 <strong>Mapbox Standard</strong>는 내부 Layer를 직접 노출하지 않고, <code class="language-plaintext highlighter-rouge">slot</code>과 설정값(config)으로 커스터마이징하는 방식입니다. 개념 학습 단계에서는 <code class="language-plaintext highlighter-rouge">streets-v12</code>처럼 Layer 구조가 그대로 보이는 클래식 스타일로 실습하면 이해하기 더 쉽습니다.</p>
+</blockquote>
+
+<p> </p>
+
+<hr />
+
+<p> </p>
+
+<h2 id="6-source---데이터를-어디서-가져올까">6. Source - 데이터를 어디서 가져올까</h2>
+
+<p><strong>Source</strong>는 지도에 그릴 데이터와 그 데이터를 가져오는 방법을 정의합니다. Source 자체는 화면에 그려지지 않습니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Source type</th>
+      <th>데이터</th>
+      <th>사용 예</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">vector</code></td>
+      <td>Vector Tile</td>
+      <td>Mapbox 기본 지도 데이터, 대용량 데이터</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">raster</code></td>
+      <td>Raster Tile 이미지</td>
+      <td>위성사진, 외부 타일 서버</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">raster-dem</code></td>
+      <td>고도 데이터</td>
+      <td>3D 지형, 음영 기복</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">geojson</code></td>
+      <td>GeoJSON</td>
+      <td>앱에서 직접 만든 마커, 경로 등</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">image</code></td>
+      <td>이미지 한 장</td>
+      <td>특정 영역에 평면도 덮어씌우기</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>처음에는 <code class="language-plaintext highlighter-rouge">geojson</code>과 <code class="language-plaintext highlighter-rouge">vector</code> 두 가지만 알아도 충분합니다.</p>
+
+<h3 id="geojson-source">GeoJSON Source</h3>
+
+<p>앱에서 가진 데이터를 지도에 올릴 때 가장 많이 사용합니다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="nv">source</span> <span class="o">=</span> <span class="kt">GeoJSONSource</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="s">"cafes"</span><span class="p">)</span>
+<span class="n">source</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="o">.</span><span class="nf">featureCollection</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
+<span class="c1">// 또는 원격 파일: source.data = .url(URL(string: "https://example.com/cafes.geojson")!)</span>
+
+<span class="k">try</span> <span class="n">mapView</span><span class="o">.</span><span class="n">mapboxMap</span><span class="o">.</span><span class="nf">addSource</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>데이터가 바뀌면 Source를 새로 만들지 않고 데이터만 갱신합니다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mapView</span><span class="o">.</span><span class="n">mapboxMap</span><span class="o">.</span><span class="nf">updateGeoJSONSource</span><span class="p">(</span><span class="nv">withId</span><span class="p">:</span> <span class="s">"cafes"</span><span class="p">,</span> <span class="nv">geoJSON</span><span class="p">:</span> <span class="o">.</span><span class="nf">featureCollection</span><span class="p">(</span><span class="n">newCollection</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>GeoJSON Source는 <code class="language-plaintext highlighter-rouge">cluster</code> 옵션으로 가까운 점들을 자동으로 묶는 <strong>클러스터링</strong> 기능도 제공합니다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">source</span><span class="o">.</span><span class="n">cluster</span> <span class="o">=</span> <span class="kc">true</span>
+<span class="n">source</span><span class="o">.</span><span class="n">clusterRadius</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">source</span><span class="o">.</span><span class="n">clusterMaxZoom</span> <span class="o">=</span> <span class="mi">14</span>
+</code></pre></div></div>
+
+<h3 id="vector-source와-source-layer">Vector Source와 source-layer</h3>
+
+<p>Vector Tile 하나에는 도로, 건물, 물 등 여러 종류의 데이터가 함께 들어 있습니다. 이 안의 데이터 묶음을 <strong>source-layer</strong>라고 부릅니다.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Vector Source "composite" (Mapbox Streets)
+ ├── source-layer "road"
+ ├── source-layer "building"
+ ├── source-layer "water"
+ └── source-layer "poi_label"
+</code></pre></div></div>
+
+<p>그래서 Vector Source를 쓰는 Layer는 <code class="language-plaintext highlighter-rouge">source</code>와 함께 <code class="language-plaintext highlighter-rouge">sourceLayer</code>를 지정해야 합니다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="nv">buildings</span> <span class="o">=</span> <span class="kt">FillLayer</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="s">"my-buildings"</span><span class="p">,</span> <span class="nv">source</span><span class="p">:</span> <span class="s">"composite"</span><span class="p">)</span>
+<span class="n">buildings</span><span class="o">.</span><span class="n">sourceLayer</span> <span class="o">=</span> <span class="s">"building"</span>
+</code></pre></div></div>
+
+<p>이름이 비슷해서 헷갈리는데, <strong>source-layer는 데이터 안의 분류</strong>이고 <strong>Layer는 그리는 방법</strong>입니다. 둘은 완전히 다른 개념입니다.</p>
+
+<p> </p>
+
+<hr />
+
+<p> </p>
+
+<h2 id="7-layer---데이터를-어떻게-그릴까">7. Layer - 데이터를 어떻게 그릴까</h2>
+
+<p><strong>Layer</strong>는 Source의 Feature들을 화면에 어떤 모양으로 그릴지 정합니다.</p>
+
+<h3 id="layer-종류">Layer 종류</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Layer type</th>
+      <th>그리는 것</th>
+      <th>어울리는 Geometry</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">background</code></td>
+      <td>지도 배경색</td>
+      <td>(Source 없음)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">fill</code></td>
+      <td>면 채우기</td>
+      <td>Polygon</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">line</code></td>
+      <td>선</td>
+      <td>LineString, Polygon 테두리</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">circle</code></td>
+      <td>원</td>
+      <td>Point</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">symbol</code></td>
+      <td>아이콘, 텍스트</td>
+      <td>Point, LineString(도로명처럼 선을 따라)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">fill-extrusion</code></td>
+      <td>3D로 솟은 면</td>
+      <td>Polygon (3D 건물)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">heatmap</code></td>
+      <td>밀도 히트맵</td>
+      <td>Point</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">raster</code></td>
+      <td>래스터 이미지</td>
+      <td>raster source</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">hillshade</code></td>
+      <td>지형 음영</td>
+      <td>raster-dem source</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>같은 데이터라도 Layer를 바꾸면 전혀 다르게 보입니다. 카페 위치(Point)를 <code class="language-plaintext highlighter-rouge">circle</code>로 그리면 점, <code class="language-plaintext highlighter-rouge">symbol</code>로 그리면 아이콘과 이름, <code class="language-plaintext highlighter-rouge">heatmap</code>으로 그리면 카페 밀집 지역이 됩니다.</p>
+
+<h3 id="layout과-paint">layout과 paint</h3>
+
+<p>Layer의 속성은 두 그룹으로 나뉩니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>그룹</th>
+      <th>의미</th>
+      <th>예시</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>layout</td>
+      <td>배치, 구조에 관한 속성</td>
+      <td><code class="language-plaintext highlighter-rouge">visibility</code>, <code class="language-plaintext highlighter-rouge">text-field</code>, <code class="language-plaintext highlighter-rouge">icon-image</code>, <code class="language-plaintext highlighter-rouge">line-cap</code></td>
+    </tr>
+    <tr>
+      <td>paint</td>
+      <td>색, 크기 등 칠하는 속성</td>
+      <td><code class="language-plaintext highlighter-rouge">circle-color</code>, <code class="language-plaintext highlighter-rouge">fill-opacity</code>, <code class="language-plaintext highlighter-rouge">line-width</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Swift SDK에서는 그룹 구분 없이 프로퍼티로 바로 접근할 수 있지만, Style JSON을 읽을 때는 이 구분이 보입니다.</p>
+
+<h3 id="layer-추가하기">Layer 추가하기</h3>
+
+<p>앞에서 만든 <code class="language-plaintext highlighter-rouge">cafes</code> Source 하나로 원과 라벨 두 개의 Layer를 만들어 보겠습니다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="nv">circleLayer</span> <span class="o">=</span> <span class="kt">CircleLayer</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="s">"cafe-circles"</span><span class="p">,</span> <span class="nv">source</span><span class="p">:</span> <span class="s">"cafes"</span><span class="p">)</span>
+<span class="n">circleLayer</span><span class="o">.</span><span class="n">circleRadius</span> <span class="o">=</span> <span class="o">.</span><span class="nf">constant</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">circleLayer</span><span class="o">.</span><span class="n">circleColor</span> <span class="o">=</span> <span class="o">.</span><span class="nf">constant</span><span class="p">(</span><span class="kt">StyleColor</span><span class="p">(</span><span class="o">.</span><span class="n">systemBrown</span><span class="p">))</span>
+<span class="n">circleLayer</span><span class="o">.</span><span class="n">circleStrokeWidth</span> <span class="o">=</span> <span class="o">.</span><span class="nf">constant</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">circleLayer</span><span class="o">.</span><span class="n">circleStrokeColor</span> <span class="o">=</span> <span class="o">.</span><span class="nf">constant</span><span class="p">(</span><span class="kt">StyleColor</span><span class="p">(</span><span class="o">.</span><span class="n">white</span><span class="p">))</span>
+
+<span class="k">var</span> <span class="nv">labelLayer</span> <span class="o">=</span> <span class="kt">SymbolLayer</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="s">"cafe-labels"</span><span class="p">,</span> <span class="nv">source</span><span class="p">:</span> <span class="s">"cafes"</span><span class="p">)</span>
+<span class="n">labelLayer</span><span class="o">.</span><span class="n">textField</span> <span class="o">=</span> <span class="o">.</span><span class="nf">expression</span><span class="p">(</span><span class="kt">Exp</span><span class="p">(</span><span class="o">.</span><span class="k">get</span><span class="p">)</span> <span class="p">{</span> <span class="s">"name"</span> <span class="p">})</span>
+<span class="n">labelLayer</span><span class="o">.</span><span class="n">textSize</span> <span class="o">=</span> <span class="o">.</span><span class="nf">constant</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">labelLayer</span><span class="o">.</span><span class="n">textOffset</span> <span class="o">=</span> <span class="o">.</span><span class="nf">constant</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">])</span>
+
+<span class="k">try</span> <span class="n">mapView</span><span class="o">.</span><span class="n">mapboxMap</span><span class="o">.</span><span class="nf">addLayer</span><span class="p">(</span><span class="n">circleLayer</span><span class="p">)</span>
+<span class="k">try</span> <span class="n">mapView</span><span class="o">.</span><span class="n">mapboxMap</span><span class="o">.</span><span class="nf">addLayer</span><span class="p">(</span><span class="n">labelLayer</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Source와 Layer는 Style이 로드된 뒤에 추가해야 합니다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mapView</span><span class="o">.</span><span class="n">mapboxMap</span><span class="o">.</span><span class="n">onStyleLoaded</span><span class="o">.</span><span class="n">observeNext</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">_</span> <span class="k">in</span>
+    <span class="k">self</span><span class="p">?</span><span class="o">.</span><span class="nf">addCafeLayers</span><span class="p">()</span>
+<span class="p">}</span><span class="o">.</span><span class="nf">store</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">cancelables</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="layer-순서">Layer 순서</h3>
+
+<p>Layer는 <strong>배열 순서대로 아래에서 위로</strong> 그려집니다. 나중에 추가한 Layer가 위에 올라갑니다. 그래서 경로선을 추가했는데 도로 라벨까지 덮어버리는 일이 생깁니다. 이럴 때는 위치를 지정합니다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span> <span class="n">mapView</span><span class="o">.</span><span class="n">mapboxMap</span><span class="o">.</span><span class="nf">addLayer</span><span class="p">(</span><span class="n">routeLayer</span><span class="p">,</span> <span class="nv">layerPosition</span><span class="p">:</span> <span class="o">.</span><span class="nf">below</span><span class="p">(</span><span class="s">"road-label"</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p> </p>
+
+<hr />
+
+<p> </p>
+
+<h2 id="8-expression---데이터에-따라-다르게-그리기">8. Expression - 데이터에 따라 다르게 그리기</h2>
+
+<p>지금까지는 모든 카페를 같은 색으로 그렸습니다. <strong>Expression</strong>을 쓰면 Feature의 properties나 줌 레벨에 따라 스타일을 다르게 줄 수 있습니다. (Data-driven styling)</p>
+
+<p>Expression은 JSON 배열 형태의 작은 언어입니다. 첫 번째 원소가 연산자입니다.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="s2">"get"</span><span class="p">,</span><span class="w"> </span><span class="s2">"name"</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<p>자주 쓰는 Expression은 아래와 같습니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Expression</th>
+      <th>역할</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get</code></td>
+      <td>properties 값 읽기</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">match</code></td>
+      <td>값에 따라 분기 (switch)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">case</code></td>
+      <td>조건에 따라 분기 (if-else)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">interpolate</code></td>
+      <td>값 사이를 부드럽게 보간</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">zoom</code></td>
+      <td>현재 줌 레벨</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">==</code>, <code class="language-plaintext highlighter-rouge">&gt;</code>, <code class="language-plaintext highlighter-rouge">all</code>, <code class="language-plaintext highlighter-rouge">any</code></td>
+      <td>비교, 논리 연산 (filter에 자주 사용)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="match---카테고리별-색상">match - 카테고리별 색상</h3>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="s2">"match"</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="s2">"get"</span><span class="p">,</span><span class="w"> </span><span class="s2">"category"</span><span class="p">],</span><span class="w">
+  </span><span class="s2">"cafe"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#8B5A2B"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"restaurant"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#E53935"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"#9E9E9E"</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">circleLayer</span><span class="o">.</span><span class="n">circleColor</span> <span class="o">=</span> <span class="o">.</span><span class="nf">expression</span><span class="p">(</span>
+    <span class="kt">Exp</span><span class="p">(</span><span class="o">.</span><span class="n">match</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">Exp</span><span class="p">(</span><span class="o">.</span><span class="k">get</span><span class="p">)</span> <span class="p">{</span> <span class="s">"category"</span> <span class="p">}</span>
+        <span class="s">"cafe"</span>
+        <span class="kt">UIColor</span><span class="o">.</span><span class="n">brown</span>
+        <span class="s">"restaurant"</span>
+        <span class="kt">UIColor</span><span class="o">.</span><span class="n">red</span>
+        <span class="kt">UIColor</span><span class="o">.</span><span class="n">gray</span> <span class="c1">// default</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="interpolate---줌에-따라-크기-바꾸기">interpolate - 줌에 따라 크기 바꾸기</h3>
+
+<p>줌 10에서는 반지름 4, 줌 16에서는 반지름 12가 되고 그 사이는 자연스럽게 커집니다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">circleLayer</span><span class="o">.</span><span class="n">circleRadius</span> <span class="o">=</span> <span class="o">.</span><span class="nf">expression</span><span class="p">(</span>
+    <span class="kt">Exp</span><span class="p">(</span><span class="o">.</span><span class="n">interpolate</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">Exp</span><span class="p">(</span><span class="o">.</span><span class="n">linear</span><span class="p">)</span>
+        <span class="kt">Exp</span><span class="p">(</span><span class="o">.</span><span class="n">zoom</span><span class="p">)</span>
+        <span class="mi">10</span>
+        <span class="mi">4</span>
+        <span class="mi">16</span>
+        <span class="mi">12</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="filter---일부-feature만-그리기">filter - 일부 Feature만 그리기</h3>
+
+<p>Layer의 <code class="language-plaintext highlighter-rouge">filter</code>에 Expression을 넣으면 조건에 맞는 Feature만 그립니다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 평점 4.0 이상인 카페만</span>
+<span class="n">circleLayer</span><span class="o">.</span><span class="n">filter</span> <span class="o">=</span> <span class="kt">Exp</span><span class="p">(</span><span class="o">.</span><span class="n">all</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">Exp</span><span class="p">(</span><span class="o">.</span><span class="n">eq</span><span class="p">)</span> <span class="p">{</span> <span class="kt">Exp</span><span class="p">(</span><span class="o">.</span><span class="k">get</span><span class="p">)</span> <span class="p">{</span> <span class="s">"category"</span> <span class="p">};</span> <span class="s">"cafe"</span> <span class="p">}</span>
+    <span class="kt">Exp</span><span class="p">(</span><span class="o">.</span><span class="n">gte</span><span class="p">)</span> <span class="p">{</span> <span class="kt">Exp</span><span class="p">(</span><span class="o">.</span><span class="k">get</span><span class="p">)</span> <span class="p">{</span> <span class="s">"rating"</span> <span class="p">};</span> <span class="mf">4.0</span> <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>필터 UI를 만들 때 데이터를 다시 만들지 않고 Layer의 filter만 바꾸면 되기 때문에 효율적입니다.</p>
+
+<p> </p>
+
+<hr />
+
+<p> </p>
+
+<h2 id="9-상호작용---지도에서-feature-찾기">9. 상호작용 - 지도에서 Feature 찾기</h2>
+
+<p>사용자가 지도를 탭했을 때 “무엇을 탭했는지” 알려면 Feature를 조회해야 합니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>API</th>
+      <th>대상</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">queryRenderedFeatures</code></td>
+      <td>현재 화면에 <strong>그려진</strong> Feature (Layer 기준)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">querySourceFeatures</code></td>
+      <td>Source에 있는 Feature (화면 표시 여부와 무관)</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">point</span> <span class="o">=</span> <span class="n">gesture</span><span class="o">.</span><span class="nf">location</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="n">mapView</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">options</span> <span class="o">=</span> <span class="kt">RenderedQueryOptions</span><span class="p">(</span><span class="nv">layerIds</span><span class="p">:</span> <span class="p">[</span><span class="s">"cafe-circles"</span><span class="p">],</span> <span class="nv">filter</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+
+<span class="n">mapView</span><span class="o">.</span><span class="n">mapboxMap</span><span class="o">.</span><span class="nf">queryRenderedFeatures</span><span class="p">(</span><span class="nv">with</span><span class="p">:</span> <span class="n">point</span><span class="p">,</span> <span class="nv">options</span><span class="p">:</span> <span class="n">options</span><span class="p">)</span> <span class="p">{</span> <span class="n">result</span> <span class="k">in</span>
+    <span class="k">guard</span> <span class="k">case</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="k">let</span> <span class="nv">features</span><span class="p">)</span> <span class="o">=</span> <span class="n">result</span><span class="p">,</span>
+          <span class="k">let</span> <span class="nv">feature</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">first</span><span class="p">?</span><span class="o">.</span><span class="n">queriedFeature</span><span class="o">.</span><span class="n">feature</span><span class="p">,</span>
+          <span class="k">case</span> <span class="o">.</span><span class="nf">string</span><span class="p">(</span><span class="k">let</span> <span class="nv">name</span><span class="p">)</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">properties</span><span class="p">?[</span><span class="s">"name"</span><span class="p">]</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"탭한 카페:"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>선택된 카페만 강조하고 싶을 때는 <strong>Feature State</strong>를 사용합니다. 데이터를 다시 넣지 않고 특정 Feature에 <code class="language-plaintext highlighter-rouge">selected: true</code> 같은 상태만 붙인 뒤 Expression의 <code class="language-plaintext highlighter-rouge">feature-state</code>로 읽어 스타일을 바꿉니다. 이를 위해 Feature에 <code class="language-plaintext highlighter-rouge">id</code>가 있어야 합니다.</p>
+
+<p> </p>
+
+<hr />
+
+<p> </p>
+
+<h2 id="10-다시-보는-annotation---결국-source--layer">10. 다시 보는 Annotation - 결국 Source + Layer</h2>
+
+<p>글 처음에 소개한 <strong>Annotation</strong> API를 이제 다시 보겠습니다. Source/Layer를 직접 다루지 않아도 마커를 찍을 수 있습니다.</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="nv">manager</span> <span class="o">=</span> <span class="n">mapView</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="nf">makePointAnnotationManager</span><span class="p">()</span>
+<span class="k">var</span> <span class="nv">annotation</span> <span class="o">=</span> <span class="kt">PointAnnotation</span><span class="p">(</span><span class="nv">coordinate</span><span class="p">:</span> <span class="kt">CLLocationCoordinate2D</span><span class="p">(</span><span class="nv">latitude</span><span class="p">:</span> <span class="mf">37.5665</span><span class="p">,</span> <span class="nv">longitude</span><span class="p">:</span> <span class="mf">126.9780</span><span class="p">))</span>
+<span class="n">annotation</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">image</span><span class="p">:</span> <span class="kt">UIImage</span><span class="p">(</span><span class="nv">named</span><span class="p">:</span> <span class="s">"pin"</span><span class="p">)</span><span class="o">!</span><span class="p">,</span> <span class="nv">name</span><span class="p">:</span> <span class="s">"pin"</span><span class="p">)</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="p">[</span><span class="n">annotation</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>Annotation Manager는 내부적으로 GeoJSON Source 하나와 Layer 하나를 만들고, <code class="language-plaintext highlighter-rouge">annotations</code> 배열이 바뀔 때마다 Source의 데이터를 갱신합니다. 지금까지 배운 구조를 감싸 놓은 편의 API인 셈입니다.</p>
+
+<p>그래서 처음에는 Annotation으로 빠르게 시작하더라도, 데이터가 많아지거나 클러스터링, Expression 기반 스타일이 필요해지면 Source + Layer 방식으로 옮겨가게 됩니다. 이때 이 글의 개념들이 그대로 쓰입니다.</p>
+
+<p> </p>
+
+<hr />
+
+<p> </p>
+
+<h2 id="정리">정리</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>개념</th>
+      <th>한 줄 정의</th>
+      <th>비유</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Geometry</td>
+      <td>점, 선, 면 도형</td>
+      <td>모양</td>
+    </tr>
+    <tr>
+      <td>GeoJSON</td>
+      <td>지리 데이터를 담는 JSON 포맷</td>
+      <td>데이터 파일 형식</td>
+    </tr>
+    <tr>
+      <td>Feature</td>
+      <td>Geometry + properties, 데이터 한 건</td>
+      <td>엑셀의 한 행</td>
+    </tr>
+    <tr>
+      <td>Source</td>
+      <td>데이터 묶음과 가져오는 방법</td>
+      <td>재료</td>
+    </tr>
+    <tr>
+      <td>Layer</td>
+      <td>Source를 그리는 방법</td>
+      <td>레시피</td>
+    </tr>
+    <tr>
+      <td>Expression</td>
+      <td>데이터, 줌에 따라 스타일을 바꾸는 식</td>
+      <td>레시피의 조건문</td>
+    </tr>
+    <tr>
+      <td>Style</td>
+      <td>Source + Layer 전체를 담은 설계도</td>
+      <td>요리책</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Mapbox의 핵심은 <strong>데이터(Source)와 표현(Layer)의 분리</strong>입니다. 데이터는 한 번 넣어두고, 어떻게 보여줄지는 Layer와 Expression으로 자유롭게 바꿀 수 있습니다. 새로운 기능을 만들 때 “이건 데이터를 바꿔야 하는 일인가, 그리는 방법을 바꿔야 하는 일인가”를 먼저 생각해보면 어떤 API를 써야 할지 쉽게 정리됩니다.</p>
+
+<p> </p>
+
+<h3 id="참고">참고</h3>
+
+<ul>
+  <li><a href="https://docs.mapbox.com/style-spec/guides/">Mapbox Style Specification</a></li>
+  <li><a href="https://docs.mapbox.com/ios/maps/guides/">Mapbox Maps SDK for iOS</a></li>
+  <li><a href="https://datatracker.ietf.org/doc/html/rfc7946">RFC 7946 - The GeoJSON Format</a></li>
+  <li><a href="https://geojson.io">geojson.io</a> - GeoJSON을 직접 그려보고 확인할 수 있는 도구</li>
+</ul>
+
+        
+      </section>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/swift-file-system/" class="pagination--pager" title="Swift File System
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://github.com/indextrown" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2026 indextrown. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+<script src="/assets/js/jqcloud.min.js" charset="utf-8"></script>
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+    <script>
+  'use strict';
+
+  var theme = localStorage.getItem('theme');
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'indextrown/indextrown.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+
+    if (theme === 'dark') {
+      script.setAttribute('theme', 'github-dark');
+    } else {
+      script.setAttribute('theme', 'github-light');
+    }
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+
+    <aside class="sidebar__home">
+      <a href="/posts">
+        <div style="font-size: 0.5rem;"><i class="fas fa-h-square fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__top">
+      <a href="#site-nav">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-up fa-5x"></i></div>
+      </a>
+    </aside>
+
+    <aside class="sidebar__bottom">
+      <a href="#footer">
+        <div style="font-size: 0.5rem;"><i class="fas fa-caret-square-down fa-5x"></i></div>
+      </a>
+    </aside>
+
+  </body>
+</html>

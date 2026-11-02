@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 330" width="960" height="330" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker></defs>
+  <rect x="1" y="1" width="958" height="328" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">데이터가 화면에 나오기까지</text>
+
+  <!-- 1 data -->
+  <rect x="30" y="80" width="190" height="190" rx="12" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="50" y="110" font-size="16" font-weight="700" fill="#334155">① 데이터</text>
+  <text x="50" y="140" font-size="13" fill="#475569">• GeoJSON 파일</text>
+  <text x="50" y="162" font-size="13" fill="#475569">• 서버 API 응답</text>
+  <text x="50" y="184" font-size="13" fill="#475569">• 앱 내부 모델</text>
+  <rect x="50" y="205" width="150" height="45" rx="8" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="125" y="225" font-size="12" fill="#9a3412" text-anchor="middle">Feature × N</text>
+  <text x="125" y="242" font-size="11" fill="#9a3412" text-anchor="middle">geometry + properties</text>
+
+  <!-- 2 source -->
+  <rect x="270" y="80" width="190" height="190" rx="12" fill="#eff6ff" stroke="#3b82f6"/>
+  <text x="290" y="110" font-size="16" font-weight="700" fill="#1d4ed8">② Source</text>
+  <text x="290" y="135" font-size="12" fill="#2563eb" font-family="Menlo,monospace">addSource()</text>
+  <text x="290" y="165" font-size="13" fill="#334155">id "cafes"로 등록</text>
+  <text x="290" y="187" font-size="13" fill="#334155">데이터만 보관</text>
+  <rect x="290" y="205" width="150" height="45" rx="8" fill="#ffffff" stroke="#93c5fd" stroke-dasharray="4 3"/>
+  <text x="365" y="233" font-size="13" fill="#64748b" text-anchor="middle">화면 변화 없음</text>
+
+  <!-- 3 layer -->
+  <rect x="510" y="80" width="190" height="190" rx="12" fill="#fffbeb" stroke="#f59e0b"/>
+  <text x="530" y="110" font-size="16" font-weight="700" fill="#b45309">③ Layer</text>
+  <text x="530" y="135" font-size="12" fill="#d97706" font-family="Menlo,monospace">addLayer()</text>
+  <text x="530" y="165" font-size="13" fill="#334155">source: "cafes" 참조</text>
+  <text x="530" y="187" font-size="13" fill="#334155">circle / symbol 등</text>
+  <rect x="530" y="205" width="150" height="45" rx="8" fill="#ffffff" stroke="#fcd34d"/>
+  <text x="605" y="225" font-size="12" fill="#92400e" text-anchor="middle">properties를 읽어</text>
+  <text x="605" y="242" font-size="12" fill="#92400e" text-anchor="middle">색 · 크기 · 글자 결정</text>
+
+  <!-- 4 screen -->
+  <rect x="750" y="80" width="180" height="190" rx="12" fill="#f0fdf4" stroke="#22c55e"/>
+  <text x="770" y="110" font-size="16" font-weight="700" fill="#15803d">④ 화면</text>
+  <rect x="768" y="125" width="144" height="128" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <path d="M768,145 L800,140 L810,175 L790,253 L768,253 Z" fill="#bfdbfe"/>
+  <path d="M790,220 L912,190" stroke="#fbbf24" stroke-width="5" fill="none"/>
+  <path d="M860,125 L875,253" stroke="#fbbf24" stroke-width="4" fill="none"/>
+  <rect x="885" y="140" width="18" height="12" fill="#cbd5e1" stroke="#94a3b8"/>
+  <rect x="820" y="232" width="20" height="13" fill="#cbd5e1" stroke="#94a3b8"/>
+  <circle cx="830" cy="170" r="7" fill="#8b5a2b" stroke="#fff" stroke-width="2"/>
+  <text x="830" y="192" font-size="11" font-weight="700" fill="#0f172a" text-anchor="middle">A카페</text>
+  <circle cx="890" cy="215" r="7" fill="#e53935" stroke="#fff" stroke-width="2"/>
+  <text x="890" y="237" font-size="11" font-weight="700" fill="#0f172a" text-anchor="middle">B식당</text>
+
+  <g stroke="#64748b" stroke-width="2" marker-end="url(#a)">
+    <line x1="222" y1="175" x2="266" y2="175"/>
+    <line x1="462" y1="175" x2="506" y2="175"/>
+    <line x1="702" y1="175" x2="746" y2="175"/>
+  </g>
+  <text x="480" y="305" font-size="13" fill="#64748b" text-anchor="middle">Source를 등록해도 보이지 않고, 그 Source를 참조하는 Layer를 추가하는 순간 지도에 그려집니다</text>
+</svg>

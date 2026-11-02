@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" width="960" height="620" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+  <defs>
+    <marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/></marker>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker>
+  </defs>
+  <rect x="1" y="1" width="958" height="618" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">Mapbox 구조 한눈에 보기</text>
+  <text x="300" y="48" font-size="14" fill="#64748b">Layer는 Source를 id로 참조합니다</text>
+
+  <!-- Style -->
+  <rect x="30" y="72" width="900" height="505" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-dasharray="6 5"/>
+  <text x="50" y="100" font-size="15" font-weight="700" fill="#334155">Style</text>
+  <text x="100" y="100" font-size="13" fill="#64748b">지도 전체 설계도 (JSON 문서 하나)</text>
+
+  <!-- Sources panel -->
+  <rect x="55" y="115" width="380" height="440" rx="12" fill="#eff6ff" stroke="#3b82f6"/>
+  <text x="75" y="143" font-size="16" font-weight="700" fill="#1d4ed8">Sources</text>
+  <text x="152" y="143" font-size="13" fill="#3b82f6">무엇을 그릴까 · 데이터 (id → source)</text>
+
+  <!-- cafes source -->
+  <rect x="75" y="160" width="340" height="210" rx="10" fill="#ffffff" stroke="#fdba74" stroke-width="1.5"/>
+  <text x="92" y="185" font-size="15" font-weight="700" fill="#0f172a">"cafes"</text>
+  <text x="152" y="185" font-size="13" fill="#ea580c">geojson · 내가 추가한 데이터</text>
+  <text x="95" y="210" font-size="12" fill="#64748b">FeatureCollection</text>
+  <rect x="95" y="220" width="300" height="64" rx="8" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="108" y="240" font-size="13" font-weight="700" fill="#9a3412">Feature #1</text>
+  <text x="108" y="258" font-size="12" fill="#334155">geometry: Point [126.978, 37.566]</text>
+  <text x="108" y="275" font-size="12" fill="#334155">properties: { name: "A카페", category: "cafe" }</text>
+  <rect x="95" y="292" width="300" height="64" rx="8" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="108" y="312" font-size="13" font-weight="700" fill="#9a3412">Feature #2</text>
+  <text x="108" y="330" font-size="12" fill="#334155">geometry: Point [126.985, 37.570]</text>
+  <text x="108" y="347" font-size="12" fill="#334155">properties: { name: "B식당", category: … }</text>
+
+  <!-- composite source -->
+  <rect x="75" y="385" width="340" height="155" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="92" y="410" font-size="15" font-weight="700" fill="#0f172a">"composite"</text>
+  <text x="190" y="410" font-size="13" fill="#2563eb">vector · Mapbox 기본 지도</text>
+  <rect x="95" y="425" width="300" height="28" rx="6" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="108" y="444" font-size="12" fill="#1e3a8a">source-layer "building"  ·  Polygon</text>
+  <rect x="95" y="460" width="300" height="28" rx="6" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="108" y="479" font-size="12" fill="#1e3a8a">source-layer "road"  ·  LineString</text>
+  <rect x="95" y="495" width="300" height="28" rx="6" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="108" y="514" font-size="12" fill="#1e3a8a">source-layer "water"  ·  Polygon</text>
+
+  <!-- Layers panel -->
+  <rect x="525" y="115" width="380" height="440" rx="12" fill="#fffbeb" stroke="#f59e0b"/>
+  <text x="545" y="143" font-size="16" font-weight="700" fill="#b45309">Layers</text>
+  <text x="610" y="143" font-size="13" fill="#d97706">어떻게 그릴까 · 스타일 (배열)</text>
+
+  <g font-size="12">
+    <rect x="545" y="165" width="300" height="50" rx="8" fill="#fff" stroke="#fdba74"/><rect x="545" y="165" width="6" height="50" rx="3" fill="#ea580c"/>
+    <text x="562" y="186" font-size="14" font-weight="700" fill="#0f172a">[5] cafe-labels</text><text x="562" y="204" fill="#64748b">symbol · source: "cafes"</text>
+    <rect x="545" y="227" width="300" height="50" rx="8" fill="#fff" stroke="#fdba74"/><rect x="545" y="227" width="6" height="50" rx="3" fill="#ea580c"/>
+    <text x="562" y="248" font-size="14" font-weight="700" fill="#0f172a">[4] cafe-circles</text><text x="562" y="266" fill="#64748b">circle · source: "cafes"</text>
+    <rect x="545" y="289" width="300" height="50" rx="8" fill="#fff" stroke="#93c5fd"/><rect x="545" y="289" width="6" height="50" rx="3" fill="#2563eb"/>
+    <text x="562" y="310" font-size="14" font-weight="700" fill="#0f172a">[3] building</text><text x="562" y="328" fill="#64748b">fill · composite / building</text>
+    <rect x="545" y="351" width="300" height="50" rx="8" fill="#fff" stroke="#93c5fd"/><rect x="545" y="351" width="6" height="50" rx="3" fill="#2563eb"/>
+    <text x="562" y="372" font-size="14" font-weight="700" fill="#0f172a">[2] road</text><text x="562" y="390" fill="#64748b">line · composite / road</text>
+    <rect x="545" y="413" width="300" height="50" rx="8" fill="#fff" stroke="#93c5fd"/><rect x="545" y="413" width="6" height="50" rx="3" fill="#2563eb"/>
+    <text x="562" y="434" font-size="14" font-weight="700" fill="#0f172a">[1] water</text><text x="562" y="452" fill="#64748b">fill · composite / water</text>
+    <rect x="545" y="475" width="300" height="50" rx="8" fill="#fff" stroke="#cbd5e1"/><rect x="545" y="475" width="6" height="50" rx="3" fill="#94a3b8"/>
+    <text x="562" y="496" font-size="14" font-weight="700" fill="#0f172a">[0] background</text><text x="562" y="514" fill="#64748b">background · source 없음</text>
+  </g>
+
+  <!-- draw order arrow -->
+  <line x1="874" y1="522" x2="874" y2="172" stroke="#64748b" stroke-width="2" marker-end="url(#ag)"/>
+  <text x="868" y="545" font-size="12" fill="#64748b">아래</text>
+  <text x="866" y="162" font-size="12" fill="#64748b" text-anchor="start">위</text>
+
+  <!-- references -->
+  <g fill="none" stroke-width="2">
+    <path d="M545,190 C485,190 485,180 417,180" stroke="#ea580c" marker-end="url(#ao)"/>
+    <path d="M545,252 C470,252 470,196 417,196" stroke="#ea580c" marker-end="url(#ao)"/>
+    <path d="M545,314 C470,314 470,439 397,439" stroke="#2563eb" marker-end="url(#ab)"/>
+    <path d="M545,376 C470,376 470,474 397,474" stroke="#2563eb" marker-end="url(#ab)"/>
+    <path d="M545,438 C470,438 470,509 397,509" stroke="#2563eb" marker-end="url(#ab)"/>
+  </g>
+  <text x="480" y="600" font-size="12" fill="#64748b" text-anchor="middle">Source 하나를 여러 Layer가 공유할 수 있고, Layer 하나는 Source 하나만 참조합니다</text>
+</svg>
