@@ -1,6 +1,14 @@
 [
     
         {
+        "title"    : "[Mapbox] Custom Layer 딥다이브 - 셰이더 처음부터 지도 위 삼각형까지",
+        "category" : "",
+        "tags"     : "Mapbox",
+        "url"      : "/mapbox-custom-layer-deep-dive/",
+        "date"     : "2026-11-02 00:00:00 +0000"
+        } ,
+    
+        {
         "title"    : "[Mapbox] 처음 배우는 Mapbox 핵심 개념 - GeoJSON, Feature, Source, Layer",
         "category" : "",
         "tags"     : "Mapbox",

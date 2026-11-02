@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 400" width="960" height="400" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker></defs>
+  <rect x="1" y="1" width="958" height="398" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">CPU와 GPU는 동시에 일합니다</text>
+  <text x="40" y="72" font-size="14" fill="#64748b">CPU가 다음 프레임을 기록하는 동안, GPU는 이전 프레임을 그리고 있습니다</text>
+
+  <text x="40" y="132" font-size="15" font-weight="700" fill="#1d4ed8">CPU</text>
+  <text x="40" y="222" font-size="15" font-weight="700" fill="#c2410c">GPU</text>
+  <line x1="110" y1="290" x2="920" y2="290" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="920" y="310" font-size="12" fill="#64748b" text-anchor="end">시간 →</text>
+
+  <g font-size="13" text-anchor="middle" font-weight="700">
+    <rect x="110" y="105" width="170" height="44" rx="8" fill="#dbeafe" stroke="#3b82f6"/><text x="195" y="132" fill="#1e3a8a">프레임 1 기록</text>
+    <rect x="300" y="105" width="170" height="44" rx="8" fill="#dbeafe" stroke="#3b82f6"/><text x="385" y="132" fill="#1e3a8a">프레임 2 기록</text>
+    <rect x="490" y="105" width="170" height="44" rx="8" fill="#dbeafe" stroke="#3b82f6"/><text x="575" y="132" fill="#1e3a8a">프레임 3 기록</text>
+    <rect x="680" y="105" width="170" height="44" rx="8" fill="#dbeafe" stroke="#3b82f6"/><text x="765" y="132" fill="#1e3a8a">프레임 4 기록</text>
+    <rect x="285" y="195" width="185" height="44" rx="8" fill="#ffedd5" stroke="#ea580c"/><text x="377" y="222" fill="#9a3412">프레임 1 그리기</text>
+    <rect x="475" y="195" width="185" height="44" rx="8" fill="#ffedd5" stroke="#ea580c"/><text x="567" y="222" fill="#9a3412">프레임 2 그리기</text>
+    <rect x="665" y="195" width="185" height="44" rx="8" fill="#ffedd5" stroke="#ea580c"/><text x="757" y="222" fill="#9a3412">프레임 3 그리기</text>
+  </g>
+  <g stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a)">
+    <line x1="280" y1="150" x2="292" y2="192"/><line x1="470" y1="150" x2="482" y2="192"/><line x1="660" y1="150" x2="672" y2="192"/>
+  </g>
+  <text x="276" y="178" font-size="11" fill="#64748b" text-anchor="end">commit</text>
+
+  <!-- conflict highlight -->
+  <rect x="300" y="96" width="170" height="152" rx="10" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="385" y="268" font-size="12" fill="#dc2626" text-anchor="middle" font-weight="700">같은 시간에 같은 MTLBuffer를?</text>
+
+  <g font-size="12" fill="#475569">
+    <text x="40" y="340">• 프레임 2를 기록하면서 정점 버퍼를 덮어쓰면, GPU가 아직 읽고 있는 프레임 1의 데이터가 바뀔 수 있습니다. (깜빡임, 깨진 도형)</text>
+    <text x="40" y="362">• 작은 값(행렬, 시간)은 setVertexBytes처럼 기록 시점에 복사되는 API로 넘기면 안전합니다.</text>
+    <text x="40" y="384">• 매 프레임 바뀌는 큰 데이터는 버퍼를 2~3개 만들어 돌려쓰는 방식(triple buffering)을 사용합니다.</text>
+  </g>
+</svg>
