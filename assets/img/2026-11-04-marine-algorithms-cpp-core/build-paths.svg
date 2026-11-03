@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 380" width="960" height="380" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker></defs>
+  <rect x="1" y="1" width="958" height="378" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">같은 소스, 빌드 두 갈래</text>
+
+  <rect x="340" y="76" width="280" height="96" rx="12" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="360" y="104" font-size="16" font-weight="700" fill="#334155">소스 (한 벌)</text>
+  <text x="360" y="128" font-size="12" fill="#475569" font-family="Menlo,monospace">src/geodesy/*.cpp</text>
+  <text x="360" y="148" font-size="12" fill="#475569" font-family="Menlo,monospace">bindings/c/marine_c.cpp</text>
+
+  <line x1="420" y1="174" x2="250" y2="214" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="540" y1="174" x2="710" y2="214" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="40" y="218" width="420" height="140" rx="12" fill="#f0fdf4" stroke="#22c55e"/>
+  <text x="60" y="246" font-size="16" font-weight="700" fill="#15803d">CMake</text>
+  <text x="130" y="246" font-size="13" fill="#475569">C++ 테스트, 앞으로 Android NDK</text>
+  <text x="60" y="274" font-size="12" fill="#334155" font-family="Menlo,monospace">marine (코어) → marine_c (다리층)</text>
+  <text x="60" y="296" font-size="12" fill="#334155" font-family="Menlo,monospace">-Wall -Wextra -Werror -ffp-contract=off</text>
+  <text x="60" y="318" font-size="12" fill="#334155" font-family="Menlo,monospace">MARINE_SANITIZE=ON → ASan + UBSan</text>
+  <text x="60" y="340" font-size="12" fill="#334155" font-family="Menlo,monospace">Catch2 (FetchContent, 테스트에서만)</text>
+
+  <rect x="500" y="218" width="420" height="140" rx="12" fill="#fff7ed" stroke="#f97316"/>
+  <text x="520" y="246" font-size="16" font-weight="700" fill="#c2410c">SwiftPM</text>
+  <text x="600" y="246" font-size="13" fill="#475569">iOS · macOS 앱이 쓰는 길</text>
+  <text x="520" y="274" font-size="12" fill="#334155" font-family="Menlo,monospace">CMarineAlgorithms (C++ + C)</text>
+  <text x="520" y="296" font-size="12" fill="#334155" font-family="Menlo,monospace">  publicHeadersPath: bindings/c/include</text>
+  <text x="520" y="318" font-size="12" fill="#334155" font-family="Menlo,monospace">MarineAlgorithms (Swift 래퍼)</text>
+  <text x="520" y="340" font-size="12" fill="#b91c1c">컴파일 플래그를 줄 수 없음 → 소스에 pragma</text>
+</svg>

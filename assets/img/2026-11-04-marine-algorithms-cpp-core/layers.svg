@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" width="960" height="460" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker></defs>
+  <rect x="1" y="1" width="958" height="458" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">세 층으로 나눈 구조</text>
+
+  <rect x="40" y="80" width="280" height="90" rx="12" fill="#fff7ed" stroke="#f97316"/>
+  <text x="60" y="110" font-size="16" font-weight="700" fill="#c2410c">Swift 바인딩</text>
+  <text x="60" y="134" font-size="12" fill="#ea580c" font-family="Menlo,monospace">bindings/swift/</text>
+  <text x="60" y="156" font-size="13" fill="#475569">값 타입, throws(GeodesyError)</text>
+
+  <rect x="340" y="80" width="280" height="90" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-dasharray="6 4"/>
+  <text x="360" y="110" font-size="16" font-weight="700" fill="#64748b">Kotlin (JNI)</text>
+  <text x="360" y="134" font-size="12" fill="#94a3b8" font-family="Menlo,monospace">bindings/kotlin/</text>
+  <text x="360" y="156" font-size="13" fill="#94a3b8">예정</text>
+
+  <rect x="640" y="80" width="280" height="90" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-dasharray="6 4"/>
+  <text x="660" y="110" font-size="16" font-weight="700" fill="#64748b">WASM</text>
+  <text x="660" y="134" font-size="12" fill="#94a3b8" font-family="Menlo,monospace">bindings/wasm/</text>
+  <text x="660" y="156" font-size="13" fill="#94a3b8">예정</text>
+
+  <line x1="180" y1="172" x2="180" y2="222" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="480" y1="172" x2="480" y2="222" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#a)"/>
+  <line x1="780" y1="172" x2="780" y2="222" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#a)"/>
+  <text x="196" y="203" font-size="12" fill="#64748b">marine_c.h 하나만 본다</text>
+
+  <rect x="40" y="226" width="880" height="90" rx="12" fill="#eff6ff" stroke="#3b82f6"/>
+  <text x="60" y="256" font-size="16" font-weight="700" fill="#1d4ed8">C 다리층</text>
+  <text x="60" y="280" font-size="12" fill="#2563eb" font-family="Menlo,monospace">bindings/c/   extern "C", ma_ 접두사</text>
+  <text x="60" y="302" font-size="13" fill="#334155">POD 구조체 · ma_status + out 포인터 · 예외를 넘기지 않음 · C 타입 ↔ C++ 타입 변환</text>
+
+  <line x1="480" y1="318" x2="480" y2="362" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="40" y="366" width="880" height="74" rx="12" fill="#f0fdf4" stroke="#22c55e"/>
+  <text x="60" y="396" font-size="16" font-weight="700" fill="#15803d">C++23 코어</text>
+  <text x="200" y="396" font-size="12" fill="#16a34a" font-family="Menlo,monospace">include/marine/, src/   namespace marine::geodesy, marine::units</text>
+  <text x="60" y="422" font-size="13" fill="#334155">noexcept 자유 함수 · std::expected로 실패 반환 · 외부 의존성 없음 · SI 단위</text>
+</svg>
