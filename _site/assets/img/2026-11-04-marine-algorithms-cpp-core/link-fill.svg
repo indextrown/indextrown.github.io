@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" width="960" height="600" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker><marker id="p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker></defs>
+<rect x="1" y="1" width="958" height="598" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+<text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">링커가 빈칸을 채우는 모습</text>
+<text x="40" y="74" font-size="13" fill="#64748b">왼쪽: 링크 전 목적 파일 3개 · 오른쪽: 링크 후 실행 파일 app의 __TEXT 영역 (실측 주소)</text>
+<rect x="40" y="100" width="300" height="92" rx="10" fill="#fff7ed" stroke="#f97316"/>
+<text x="54" y="124" font-size="14" font-weight="700" fill="#c2410c">main.o</text>
+<text x="54" y="146" font-size="12" fill="#b91c1c" font-family="Menlo,Consolas,monospace" xml:space="preserve">0xac   94000000  bl ??</text>
+<text x="54" y="165" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">U _mn_haversine_distance</text>
+<rect x="40" y="212" width="300" height="92" rx="10" fill="#eff6ff" stroke="#3b82f6"/>
+<text x="54" y="236" font-size="14" font-weight="700" fill="#1d4ed8">mininav_c.o</text>
+<text x="54" y="258" font-size="12" fill="#b91c1c" font-family="Menlo,Consolas,monospace" xml:space="preserve">0x0    14000000  b  ??</text>
+<text x="54" y="277" font-size="12" fill="#1e40af" font-family="Menlo,Consolas,monospace" xml:space="preserve">U __ZN7mininav18haversine...</text>
+<rect x="40" y="324" width="300" height="72" rx="10" fill="#f0fdf4" stroke="#22c55e"/>
+<text x="54" y="348" font-size="14" font-weight="700" fill="#15803d">nav.o</text>
+<text x="54" y="370" font-size="12" fill="#166534" font-family="Menlo,Consolas,monospace" xml:space="preserve">T __ZN7mininav18haversine...</text>
+<rect x="370" y="190" width="120" height="100" rx="10" fill="#f5f3ff" stroke="#8b5cf6"/>
+<text x="384" y="214" font-size="14" font-weight="700" fill="#6d28d9">ld</text>
+<text x="384" y="236" font-size="12" fill="#5b21b6" xml:space="preserve">이름 짝짓기</text>
+<text x="384" y="255" font-size="12" fill="#5b21b6" xml:space="preserve">주소 배치</text>
+<text x="384" y="274" font-size="12" fill="#5b21b6" xml:space="preserve">빈칸 채우기</text>
+<path d="M342,146 C356,146 356,240 366,240" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<path d="M342,258 C356,258 356,240 366,240" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<path d="M342,360 C356,360 356,240 366,240" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<line x1="492" y1="240" x2="516" y2="240" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<rect x="520" y="100" width="400" height="400" rx="12" fill="#f8fafc" stroke="#94a3b8"/>
+<text x="534" y="124" font-size="14" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">app  (__TEXT,__text)</text>
+<rect x="534" y="132" width="372" height="30" rx="6" fill="#fff7ed" stroke="#f97316"/>
+<text x="544" y="152" font-size="11" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">0x1000006b0</text>
+<text x="648" y="152" font-size="12" fill="#c2410c" font-family="Menlo,Consolas,monospace" font-weight="700" text-anchor="start" xml:space="preserve">_main</text>
+<rect x="534" y="178" width="372" height="30" rx="6" fill="#fff7ed" stroke="#f97316"/>
+<text x="544" y="198" font-size="11" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">0x10000075c</text>
+<text x="648" y="198" font-size="12" fill="#c2410c" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">  bl +148   94000025</text>
+<rect x="534" y="244" width="372" height="30" rx="6" fill="#eff6ff" stroke="#3b82f6"/>
+<text x="544" y="264" font-size="11" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">0x1000007f0</text>
+<text x="648" y="264" font-size="12" fill="#1d4ed8" font-family="Menlo,Consolas,monospace" font-weight="700" text-anchor="start" xml:space="preserve">_mn_haversine_distance</text>
+<rect x="534" y="282" width="372" height="30" rx="6" fill="#eff6ff" stroke="#3b82f6"/>
+<text x="544" y="302" font-size="11" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">0x1000007f0</text>
+<text x="648" y="302" font-size="12" fill="#1d4ed8" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">  b  +92    14000017</text>
+<rect x="534" y="348" width="372" height="30" rx="6" fill="#f0fdf4" stroke="#22c55e"/>
+<text x="544" y="368" font-size="11" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">0x10000084c</text>
+<text x="648" y="368" font-size="12" fill="#15803d" font-family="Menlo,Consolas,monospace" font-weight="700" text-anchor="start" xml:space="preserve">mininav::haversine_distance</text>
+<rect x="534" y="386" width="372" height="30" rx="6" fill="#f0fdf4" stroke="#22c55e"/>
+<text x="544" y="406" font-size="11" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve"></text>
+<text x="648" y="406" font-size="12" fill="#15803d" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">  ... 실제 계산 ...</text>
+<path d="M906,196 C950,196 950,262 910,262" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#p)"/>
+<text x="912" y="232" font-size="11" fill="#7c3aed" font-weight="700" text-anchor="start" xml:space="preserve">148B</text>
+<path d="M906,300 C950,300 950,366 910,366" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#p)"/>
+<text x="912" y="336" font-size="11" fill="#7c3aed" font-weight="700" text-anchor="start" xml:space="preserve">92B</text>
+<text x="534" y="448" font-size="13" fill="#0f172a" font-family="Menlo,Consolas,monospace" font-weight="700" text-anchor="start" xml:space="preserve">./app  →  209543.01573428483</text>
+<text x="534" y="474" font-size="12" fill="#475569" text-anchor="start" xml:space="preserve">Swift → C 다리 → C++ 계산이 한 줄로 이어졌다</text>
+<rect x="40" y="420" width="440" height="150" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+<text x="54" y="444" font-size="12" font-weight="700" fill="#334155">arm64 b / bl 명령 = 앞 6비트 &quot;뛰어라&quot; + 26비트 &quot;몇 칸(×4바이트)&quot;</text>
+<text x="54" y="466" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" xml:space="preserve">              링크 전      링크 후</text>
+<text x="54" y="485" font-size="12" fill="#475569" font-family="Menlo,Consolas,monospace" xml:space="preserve">Swift bl     94000000  →  94000025   0x25=37칸=148B</text>
+<text x="54" y="504" font-size="12" fill="#475569" font-family="Menlo,Consolas,monospace" xml:space="preserve">C 다리 b     14000000  →  14000017   0x17=23칸=92B</text>
+<text x="54" y="523" font-size="12" fill="#7c3aed" font-family="Menlo,Consolas,monospace" font-weight="700" xml:space="preserve">0x75c + 148 = 0x7f0   ·   0x7f0 + 92 = 0x84c</text>
+</svg>

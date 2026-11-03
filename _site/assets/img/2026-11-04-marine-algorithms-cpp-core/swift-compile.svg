@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 1216" width="960" height="1216" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker><marker id="p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker></defs>
+<rect x="1" y="1" width="958" height="1214" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+<text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">Swift 소스가 기계어가 되기까지</text>
+<text x="40" y="74" font-size="13" fill="#64748b">speed.swift를 swiftc로 컴파일할 때 각 단계의 실제 출력 (Swift 6.4, arm64). 전처리 단계가 없다</text>
+<text x="40" y="126" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">소스</text>
+<rect x="250" y="100" width="670" height="100" rx="10" fill="#fff7ed" stroke="#f97316"/>
+<text x="264" y="124" font-size="13" font-weight="700" fill="#c2410c">speed.swift  (6줄)</text>
+<text x="264" y="146" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">func knotsToMetersPerSecond(_ knots: Double) -&gt; Double {</text>
+<text x="264" y="165" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">    knots * 1852.0 / 3600.0</text>
+<text x="264" y="184" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">}</text>
+<line x1="585.0" y1="202" x2="585.0" y2="222" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<text x="40" y="250" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">① 파싱</text>
+<text x="40" y="272" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">swiftc -dump-parse</text>
+<rect x="250" y="224" width="670" height="104" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+<text x="264" y="248" font-size="13" font-weight="700" fill="#334155">글자를 구조(AST)로. 아직 이름도 타입도 모른다</text>
+<text x="264" y="270" font-size="12" fill="#475569" font-family="Menlo,Consolas,monospace" xml:space="preserve">func_decl &quot;knotsToMetersPerSecond(_:)&quot;</text>
+<text x="264" y="289" font-size="12" fill="#475569" font-family="Menlo,Consolas,monospace" xml:space="preserve">  sequence_expr type=&quot;&lt;null&gt;&quot;           ; 연산자 우선순위도 아직 미정</text>
+<text x="264" y="308" font-size="12" fill="#475569" font-family="Menlo,Consolas,monospace" xml:space="preserve">    unresolved_decl_ref_expr name=&quot;knots&quot;</text>
+<line x1="585.0" y1="330" x2="585.0" y2="350" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<text x="40" y="378" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">② 타입 검사</text>
+<text x="40" y="400" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">swiftc -dump-ast</text>
+<rect x="250" y="352" width="670" height="104" rx="10" fill="#fff7ed" stroke="#f97316"/>
+<text x="264" y="376" font-size="13" font-weight="700" fill="#c2410c">타입을 추론하고, * / 가 어느 함수인지 찾는다</text>
+<text x="264" y="398" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">func_decl interface_type=&quot;(Double) -&gt; Double&quot;</text>
+<text x="264" y="417" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">  binary_expr type=&quot;Double&quot;</text>
+<text x="264" y="436" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">    decl=&quot;Swift.(file).Double extension./&quot;   ; / 는 Double의 함수다</text>
+<line x1="585.0" y1="458" x2="585.0" y2="478" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<text x="40" y="506" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">③ SIL 생성</text>
+<text x="40" y="528" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">swiftc -emit-silgen</text>
+<rect x="250" y="480" width="670" height="124" rx="10" fill="#fff7ed" stroke="#f97316"/>
+<text x="264" y="504" font-size="13" font-weight="700" fill="#c2410c">SIL: Swift 전용 중간 코드. 연산자가 진짜 &quot;함수 호출&quot;로 보인다</text>
+<text x="264" y="526" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">sil @$s5speed22knotsToMetersPerSecondyS2dF : $@convention(thin) (Double) -&gt; Double</text>
+<text x="264" y="545" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">%4 = float_literal 0x409CF00000000000 // 1852</text>
+<text x="264" y="564" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">%8 = function_ref static Double.* infix(_:_:)</text>
+<text x="264" y="583" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">%9 = apply %8(%0, %7, %3)                     ; Double.*(knots, 1852) 호출</text>
+<line x1="585.0" y1="606" x2="585.0" y2="626" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<text x="40" y="654" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">④ SIL 최적화</text>
+<text x="40" y="676" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">swiftc -O</text>
+<text x="40" y="694" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">-emit-sil</text>
+<rect x="250" y="628" width="670" height="104" rx="10" fill="#fff7ed" stroke="#f97316"/>
+<text x="264" y="652" font-size="13" font-weight="700" fill="#c2410c">함수 호출을 펼쳐(인라인) 기계에 가까운 연산만 남긴다</text>
+<text x="264" y="674" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">%3 = struct_extract %0, #Double._value     ; Double 상자에서 숫자를 꺼내</text>
+<text x="264" y="693" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">%4 = builtin &quot;fmul_FPIEEE64&quot;(%3, %2)        ; 곱하고</text>
+<text x="264" y="712" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">%6 = builtin &quot;fdiv_FPIEEE64&quot;(%4, %5)        ; 나눈다</text>
+<line x1="585.0" y1="734" x2="585.0" y2="754" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<text x="40" y="782" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">⑤ LLVM IR</text>
+<text x="40" y="804" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">IRGen</text>
+<rect x="250" y="756" width="670" height="104" rx="10" fill="#f5f3ff" stroke="#8b5cf6"/>
+<text x="264" y="780" font-size="13" font-weight="700" fill="#6d28d9">여기서부터 C++와 같은 LLVM을 쓴다</text>
+<text x="264" y="802" font-size="12" fill="#5b21b6" font-family="Menlo,Consolas,monospace" xml:space="preserve">define swiftcc double @&quot;$s5speed22knotsToMetersPerSecondyS2dF&quot;(double %0) {</text>
+<text x="264" y="821" font-size="12" fill="#5b21b6" font-family="Menlo,Consolas,monospace" xml:space="preserve">  %1 = fmul double %0, 1.852000e+03</text>
+<text x="264" y="840" font-size="12" fill="#5b21b6" font-family="Menlo,Consolas,monospace" xml:space="preserve">  %2 = fdiv double %1, 3.600000e+03</text>
+<line x1="585.0" y1="862" x2="585.0" y2="882" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<text x="40" y="910" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">⑥ 백엔드</text>
+<text x="40" y="932" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">LLVM → arm64</text>
+<rect x="250" y="884" width="670" height="84" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+<text x="264" y="908" font-size="13" font-weight="700" fill="#334155">arm64 어셈블리 (9개 명령)</text>
+<text x="264" y="930" font-size="12" fill="#475569" font-family="Menlo,Consolas,monospace" xml:space="preserve">mov/movk x8 (1852.0) ; fmov d1, x8 ; fmul d0, d0, d1</text>
+<text x="264" y="949" font-size="12" fill="#475569" font-family="Menlo,Consolas,monospace" xml:space="preserve">mov/movk x8 (3600.0) ; fmov d1, x8 ; fdiv d0, d0, d1 ; ret</text>
+<line x1="585.0" y1="970" x2="585.0" y2="990" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<text x="40" y="1018" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">⑦ 목적 파일</text>
+<text x="40" y="1040" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">swiftc -c</text>
+<rect x="250" y="992" width="670" height="104" rx="10" fill="#fff7ed" stroke="#f97316"/>
+<text x="264" y="1016" font-size="13" font-weight="700" fill="#c2410c">speed_swift.o  (Mach-O 64-bit object arm64, 2,544바이트)</text>
+<text x="264" y="1038" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">기계어  d2de0008 f2e81388 9e670101 1e610800 ... d65f03c0</text>
+<text x="264" y="1057" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">T _$s5speed22knotsToMetersPerSecondyS2dF   ← Swift도 이름을 바꾼다</text>
+<text x="264" y="1076" font-size="12" fill="#b91c1c" font-family="Menlo,Consolas,monospace" xml:space="preserve">U _$ss5print...   U _swift_allocObject   ← Swift 런타임: 아직 빈칸</text>
+<line x1="585.0" y1="1098" x2="585.0" y2="1118" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<text x="40" y="1146" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">⑧ 링크</text>
+<text x="40" y="1168" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">ld</text>
+<rect x="250" y="1120" width="670" height="62" rx="10" fill="#fff7ed" stroke="#f97316"/>
+<text x="264" y="1144" font-size="13" font-weight="700" fill="#c2410c">speed_swift  (실행 파일, 51KB)  →  ./speed_swift  →  6.173333333333333</text>
+<text x="264" y="1166" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">실행할 때 붙일 라이브러리: libSystem.B.dylib · libswiftCore.dylib</text>
+</svg>

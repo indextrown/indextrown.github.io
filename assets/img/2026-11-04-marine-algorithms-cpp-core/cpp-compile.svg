@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 1208" width="960" height="1208" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker><marker id="p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker></defs>
+<rect x="1" y="1" width="958" height="1206" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+<text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">C++ 소스가 기계어가 되기까지</text>
+<text x="40" y="74" font-size="13" fill="#64748b">speed.cpp를 clang++로 컴파일할 때 각 단계의 실제 출력 (Xcode 27, arm64)</text>
+<text x="40" y="126" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">소스</text>
+<rect x="250" y="100" width="670" height="118" rx="10" fill="#f0fdf4" stroke="#22c55e"/>
+<text x="264" y="124" font-size="13" font-weight="700" fill="#15803d">speed.cpp  (10줄)</text>
+<text x="264" y="146" font-size="12" fill="#166534" font-family="Menlo,Consolas,monospace" xml:space="preserve">#include &lt;cstdio&gt;</text>
+<text x="264" y="165" font-size="12" fill="#166534" font-family="Menlo,Consolas,monospace" xml:space="preserve">double knots_to_mps(double knots) {</text>
+<text x="264" y="184" font-size="12" fill="#166534" font-family="Menlo,Consolas,monospace" xml:space="preserve">    return knots * 1852.0 / 3600.0;</text>
+<text x="264" y="203" font-size="12" fill="#166534" font-family="Menlo,Consolas,monospace" xml:space="preserve">}</text>
+<line x1="585.0" y1="220" x2="585.0" y2="240" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<text x="40" y="268" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">① 전처리</text>
+<text x="40" y="290" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">clang++ -E</text>
+<rect x="250" y="242" width="670" height="84" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+<text x="264" y="266" font-size="13" font-weight="700" fill="#334155">#include를 복사·붙여넣기, #if 정리. C++ 문법은 모른다</text>
+<text x="264" y="288" font-size="12" fill="#475569" font-family="Menlo,Consolas,monospace" xml:space="preserve">&lt;cstdio&gt;가 통째로 들어온다</text>
+<text x="264" y="307" font-size="14" fill="#0f172a" font-family="Menlo,Consolas,monospace" font-weight="700" xml:space="preserve">10줄  →  719줄</text>
+<line x1="585.0" y1="328" x2="585.0" y2="348" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<text x="40" y="376" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">② 파싱·의미 분석</text>
+<text x="40" y="398" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">clang -ast-dump</text>
+<rect x="250" y="350" width="670" height="124" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+<text x="264" y="374" font-size="13" font-weight="700" fill="#334155">글자를 구조(AST)로, 이름과 타입을 확인</text>
+<text x="264" y="396" font-size="12" fill="#475569" font-family="Menlo,Consolas,monospace" xml:space="preserve">FunctionDecl knots_to_mps &#x27;double (double)&#x27;</text>
+<text x="264" y="415" font-size="12" fill="#475569" font-family="Menlo,Consolas,monospace" xml:space="preserve">  ReturnStmt</text>
+<text x="264" y="434" font-size="12" fill="#475569" font-family="Menlo,Consolas,monospace" xml:space="preserve">    BinaryOperator &#x27;double&#x27; &#x27;/&#x27;</text>
+<text x="264" y="453" font-size="12" fill="#475569" font-family="Menlo,Consolas,monospace" xml:space="preserve">      BinaryOperator &#x27;double&#x27; &#x27;*&#x27;  (knots, 1852.0)</text>
+<line x1="585.0" y1="476" x2="585.0" y2="496" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<text x="40" y="524" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">③ LLVM IR 생성</text>
+<text x="40" y="546" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">clang -emit-llvm</text>
+<text x="40" y="564" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">(-O0)</text>
+<rect x="250" y="498" width="670" height="164" rx="10" fill="#f5f3ff" stroke="#8b5cf6"/>
+<text x="264" y="522" font-size="13" font-weight="700" fill="#6d28d9">언어와 CPU에서 독립된 중간 코드. 이름은 이미 _Z12knots_to_mpsd</text>
+<text x="264" y="544" font-size="12" fill="#5b21b6" font-family="Menlo,Consolas,monospace" xml:space="preserve">define double @_Z12knots_to_mpsd(double %0) {</text>
+<text x="264" y="563" font-size="12" fill="#5b21b6" font-family="Menlo,Consolas,monospace" xml:space="preserve">  %2 = alloca double          ; 변수를 메모리에 저장했다가</text>
+<text x="264" y="582" font-size="12" fill="#5b21b6" font-family="Menlo,Consolas,monospace" xml:space="preserve">  store double %0, ptr %2     ; 다시 읽는 날것 그대로의 코드</text>
+<text x="264" y="601" font-size="12" fill="#5b21b6" font-family="Menlo,Consolas,monospace" xml:space="preserve">  %3 = load double, ptr %2</text>
+<text x="264" y="620" font-size="12" fill="#5b21b6" font-family="Menlo,Consolas,monospace" xml:space="preserve">  %4 = fmul double %3, 1.852000e+03</text>
+<text x="264" y="639" font-size="12" fill="#5b21b6" font-family="Menlo,Consolas,monospace" xml:space="preserve">  %5 = fdiv double %4, 3.600000e+03</text>
+<line x1="585.0" y1="664" x2="585.0" y2="684" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<text x="40" y="712" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">④ 최적화</text>
+<text x="40" y="734" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">LLVM (-O2)</text>
+<rect x="250" y="686" width="670" height="104" rx="10" fill="#f5f3ff" stroke="#8b5cf6"/>
+<text x="264" y="710" font-size="13" font-weight="700" fill="#6d28d9">쓸데없는 저장·읽기를 지운다</text>
+<text x="264" y="732" font-size="12" fill="#5b21b6" font-family="Menlo,Consolas,monospace" xml:space="preserve">%2 = fmul double %0, 1.852000e+03</text>
+<text x="264" y="751" font-size="12" fill="#5b21b6" font-family="Menlo,Consolas,monospace" xml:space="preserve">%3 = fdiv double %2, 3.600000e+03     ; ×1852÷3600을 하나로 합치지 않는다</text>
+<text x="264" y="770" font-size="12" fill="#5b21b6" xml:space="preserve">   (부동소수점은 계산 순서를 바꾸면 결과가 달라질 수 있어서)</text>
+<line x1="585.0" y1="792" x2="585.0" y2="812" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<text x="40" y="840" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">⑤ 백엔드</text>
+<text x="40" y="862" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">LLVM → arm64</text>
+<rect x="250" y="814" width="670" height="124" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+<text x="264" y="838" font-size="13" font-weight="700" fill="#334155">arm64 어셈블리 (9개 명령)</text>
+<text x="264" y="860" font-size="12" fill="#475569" font-family="Menlo,Consolas,monospace" xml:space="preserve">mov/movk x8, 0x409CF000...   ; 1852.0을 레지스터에 만든다</text>
+<text x="264" y="879" font-size="12" fill="#475569" font-family="Menlo,Consolas,monospace" xml:space="preserve">fmov d1, x8 ; fmul d0, d0, d1  ; 곱하기</text>
+<text x="264" y="898" font-size="12" fill="#475569" font-family="Menlo,Consolas,monospace" xml:space="preserve">mov/movk x8, 0x40AC2000...   ; 3600.0</text>
+<text x="264" y="917" font-size="12" fill="#475569" font-family="Menlo,Consolas,monospace" xml:space="preserve">fmov d1, x8 ; fdiv d0, d0, d1  ; 나누기 ;  ret</text>
+<line x1="585.0" y1="940" x2="585.0" y2="960" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<text x="40" y="988" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">⑥ 어셈블</text>
+<text x="40" y="1010" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">clang++ -c</text>
+<rect x="250" y="962" width="670" height="104" rx="10" fill="#f0fdf4" stroke="#22c55e"/>
+<text x="264" y="986" font-size="13" font-weight="700" fill="#15803d">speed_cpp.o  (Mach-O 64-bit object arm64, 880바이트)</text>
+<text x="264" y="1008" font-size="12" fill="#166534" font-family="Menlo,Consolas,monospace" xml:space="preserve">기계어  d2de0008 f2e81388 9e670101 1e610800 ... d65f03c0</text>
+<text x="264" y="1027" font-size="12" fill="#166534" font-family="Menlo,Consolas,monospace" xml:space="preserve">심볼   T __Z12knots_to_mpsd   T _main   </text>
+<text x="264" y="1046" font-size="12" fill="#b91c1c" font-family="Menlo,Consolas,monospace" xml:space="preserve">       U _printf   ← 다른 곳(libSystem)에 있는 함수: 아직 빈칸</text>
+<line x1="585.0" y1="1068" x2="585.0" y2="1088" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+<text x="40" y="1116" font-size="15" fill="#0f172a" font-weight="700" text-anchor="start" xml:space="preserve">⑦ 링크</text>
+<text x="40" y="1138" font-size="12" fill="#64748b" font-family="Menlo,Consolas,monospace" text-anchor="start" xml:space="preserve">ld</text>
+<rect x="250" y="1090" width="670" height="84" rx="10" fill="#f0fdf4" stroke="#22c55e"/>
+<text x="264" y="1114" font-size="13" font-weight="700" fill="#15803d">speed_cpp  (실행 파일, 33KB)  →  ./speed_cpp  →  6.173333</text>
+<text x="264" y="1136" font-size="12" fill="#166534" font-family="Menlo,Consolas,monospace" xml:space="preserve">빈칸(_printf)을 채우고, 실행할 때 붙일 라이브러리를 적어 둔다</text>
+<text x="264" y="1155" font-size="12" fill="#166534" font-family="Menlo,Consolas,monospace" xml:space="preserve">libc++.1.dylib · libSystem.B.dylib</text>
+</svg>

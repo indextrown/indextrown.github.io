@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="960" height="520" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker><marker id="p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker></defs>
+<rect x="1" y="1" width="958" height="518" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+<text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">Swift가 보는 C 헤더</text>
+<text x="40" y="74" font-size="13" fill="#64748b">왼쪽 C 헤더를 Swift는 오른쪽처럼 본다 (swift-synthesize-interface로 뽑은 실제 결과, 일부)</text>
+<rect x="40" y="100" width="420" height="390" rx="10" fill="#eff6ff" stroke="#3b82f6"/>
+<text x="54" y="124" font-size="14" font-weight="700" fill="#1d4ed8">mininav_c.h  (C)</text>
+<text x="54" y="146" font-size="12" fill="#1e40af" font-family="Menlo,Consolas,monospace" xml:space="preserve">typedef enum mn_status {</text>
+<text x="54" y="165" font-size="12" fill="#1e40af" font-family="Menlo,Consolas,monospace" xml:space="preserve">    MN_OK = 0,</text>
+<text x="54" y="184" font-size="12" fill="#1e40af" font-family="Menlo,Consolas,monospace" xml:space="preserve">    MN_INVALID_ARGUMENT = 1,</text>
+<text x="54" y="203" font-size="12" fill="#1e40af" font-family="Menlo,Consolas,monospace" xml:space="preserve">} mn_status;</text>
+<text x="54" y="222" font-size="12" fill="#1e40af" font-family="Menlo,Consolas,monospace" xml:space="preserve"></text>
+<text x="54" y="241" font-size="12" fill="#1e40af" font-family="Menlo,Consolas,monospace" xml:space="preserve">typedef struct mn_coordinate {</text>
+<text x="54" y="260" font-size="12" fill="#1e40af" font-family="Menlo,Consolas,monospace" xml:space="preserve">    double latitude;</text>
+<text x="54" y="279" font-size="12" fill="#1e40af" font-family="Menlo,Consolas,monospace" xml:space="preserve">    double longitude;</text>
+<text x="54" y="298" font-size="12" fill="#1e40af" font-family="Menlo,Consolas,monospace" xml:space="preserve">} mn_coordinate;</text>
+<text x="54" y="317" font-size="12" fill="#1e40af" font-family="Menlo,Consolas,monospace" xml:space="preserve"></text>
+<text x="54" y="336" font-size="12" fill="#1e40af" font-family="Menlo,Consolas,monospace" xml:space="preserve">double mn_haversine_distance(</text>
+<text x="54" y="355" font-size="12" fill="#1e40af" font-family="Menlo,Consolas,monospace" xml:space="preserve">    mn_coordinate from, mn_coordinate to);</text>
+<text x="54" y="374" font-size="12" fill="#1e40af" font-family="Menlo,Consolas,monospace" xml:space="preserve"></text>
+<text x="54" y="393" font-size="12" fill="#1e40af" font-family="Menlo,Consolas,monospace" xml:space="preserve">mn_status mn_average_speed(...,</text>
+<text x="54" y="412" font-size="12" fill="#1e40af" font-family="Menlo,Consolas,monospace" xml:space="preserve">    double seconds, double* out);</text>
+<rect x="500" y="100" width="420" height="390" rx="10" fill="#fff7ed" stroke="#f97316"/>
+<text x="514" y="124" font-size="14" font-weight="700" fill="#c2410c">Swift에서 보이는 모습</text>
+<text x="514" y="146" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">struct mn_status: RawRepresentable {</text>
+<text x="514" y="165" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">    var rawValue: UInt32 }</text>
+<text x="514" y="184" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">var MN_OK: mn_status { get }</text>
+<text x="514" y="203" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">var MN_INVALID_ARGUMENT: mn_status { get }</text>
+<text x="514" y="222" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve"></text>
+<text x="514" y="241" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">struct mn_coordinate {</text>
+<text x="514" y="260" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">    init()</text>
+<text x="514" y="279" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">    init(latitude: Double, longitude: Double)</text>
+<text x="514" y="298" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">}</text>
+<text x="514" y="317" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve"></text>
+<text x="514" y="336" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">func mn_haversine_distance(</text>
+<text x="514" y="355" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">    _ from: mn_coordinate,</text>
+<text x="514" y="374" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">    _ to: mn_coordinate) -&gt; Double</text>
+<text x="514" y="393" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve"></text>
+<text x="514" y="412" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">func mn_average_speed(..., _ seconds: Double,</text>
+<text x="514" y="431" font-size="12" fill="#9a3412" font-family="Menlo,Consolas,monospace" xml:space="preserve">    _ out: UnsafeMutablePointer&lt;Double&gt;!) -&gt; mn_status</text>
+<line x1="462" y1="141" x2="496" y2="141" stroke="#7c3aed" stroke-width="2" marker-end="url(#p)"/>
+<line x1="462" y1="237" x2="496" y2="237" stroke="#7c3aed" stroke-width="2" marker-end="url(#p)"/>
+<line x1="462" y1="334" x2="496" y2="334" stroke="#7c3aed" stroke-width="2" marker-end="url(#p)"/>
+<line x1="462" y1="410" x2="496" y2="410" stroke="#7c3aed" stroke-width="2" marker-end="url(#p)"/>
+</svg>

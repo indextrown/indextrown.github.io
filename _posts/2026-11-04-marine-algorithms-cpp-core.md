@@ -20,7 +20,7 @@ tags:
 **Part 1. 먼저 알아둘 개념**
 
 1. 한 장으로 먼저 보기
-2. 소스 코드가 실행 파일이 되기까지 - 컴파일, 링크, 기계어, 목적 파일
+2. 소스 코드가 기계어가 되기까지 - C++ 따로, Swift 따로
 3. `extern "C"`와 C ABI - 왜 굳이 C를 한 번 거치는가
 4. Swift가 C를 가져오는 방법 - 모듈맵과 C++ interop
 
@@ -92,10 +92,12 @@ marine-algorithms/
 | --- | --- | --- |
 | 헤더 / 소스 | 선언(`.h`, `.hpp`)과 구현(`.c`, `.cpp`) | 2장 |
 | 전처리 | `#include`를 복사·붙여넣기하는 등, 컴파일 전에 텍스트를 고치는 단계 | 2장 |
-| 컴파일 | 소스 파일 **하나**를 어셈블리·기계어로 번역하는 단계 | 2장 |
+| 컴파일 | 소스 파일 **하나**를 기계어로 번역하는 단계. 프론트엔드 → 중간 코드 → 백엔드 | 2장 |
 | 기계어 | CPU가 실제로 실행하는 숫자 명령. arm64는 명령 하나가 4바이트 | 2장 |
 | 목적 파일 (`.o`) | 소스 하나를 컴파일한 결과. 기계어 + 심볼 표 + 아직 못 채운 빈칸 메모 | 2장 |
 | 심볼 | 목적 파일 안에서 함수·변수를 가리키는 이름 | 2장 |
+| AST | 소스를 문법 구조대로 나타낸 나무. 컴파일러 프론트엔드가 만든다 | 2장 |
+| 중간 코드 (LLVM IR, SIL) | 언어와 CPU 사이의 공통 언어. SIL은 Swift 전용 | 2장 |
 | 링커 / 링크 | 여러 `.o`를 합치며 이름을 짝짓고 빈칸에 주소를 채워 실행 파일을 만드는 도구와 단계 | 2장 |
 | 정적 / 동적 라이브러리 | `.o` 묶음(`.a`) / 실행할 때 붙는 독립 파일(`.dylib`) | 2장 |
 | name mangling | C++가 오버로딩을 위해 심볼 이름에 네임스페이스·인자 타입을 섞는 것 | 2장 |
@@ -113,167 +115,280 @@ marine-algorithms/
 
 &nbsp;
 
-## 2. 소스 코드가 실행 파일이 되기까지 - 컴파일, 링크, 기계어, 목적 파일
+## 2. 소스 코드가 기계어가 되기까지 - C++ 따로, Swift 따로
 
-Swift만 쓸 때는 Xcode의 ▶ 버튼 하나로 끝나서 잘 보이지 않지만, C++ 라이브러리를 붙이는 순간 그 버튼 뒤에서 일어나는 일을 알아야 합니다. 이 글에 나오는 에러 대부분이 이 과정의 **어느 단계에서** 났는지를 알면 바로 읽히기 때문입니다.
+Swift만 쓸 때는 Xcode의 ▶ 버튼 하나로 끝나서 잘 보이지 않지만, C++ 라이브러리를 붙이는 순간 그 버튼 뒤에서 일어나는 일을 알아야 합니다. 이 글에 나오는 에러 대부분이 **어느 단계에서** 났는지를 알면 바로 읽히기 때문입니다.
 
-그래서 함수 호출 하나를 따라가 보겠습니다. 앱 코드의 이 한 줄이 실제로 CPU에서 C++ 코드로 뛰어들기까지의 여행입니다.
+먼저 언어를 섞지 않고, **C++ 소스가 기계어가 되는 과정**과 **Swift 소스가 기계어가 되는 과정**을 각각 따로 보겠습니다. 두 언어를 잇는 이야기는 그다음입니다.
 
-```swift
-// main.swift
-print(mn_haversine_distance(busan, fukuoka))
-```
+### 컴파일러는 번역가다
 
-등장인물은 파일 세 개입니다. 9장까지 만들 MiniNav의 축소판입니다.
+<img src="/assets/img/2026-11-04-marine-algorithms-cpp-core/compile-overview.svg" alt="소스 코드, 프론트엔드, 중간 코드, 백엔드, 목적 파일과 링크로 이어지는 컴파일 과정 개요" style="width: 100%;">
 
-| 파일 | 언어 | 하는 일 |
+CPU는 `knots * 1852.0` 같은 글자를 읽지 못합니다. CPU가 아는 건 **기계어**, 즉 "레지스터 d0에 d1을 곱하라", "이 주소로 뛰어라" 같은 명령을 숫자로 적은 것뿐입니다. 아이폰과 Apple Silicon Mac의 arm64 CPU에서는 명령 하나가 4바이트 숫자입니다. 예를 들어 `fmul d0, d0, d1`은 `1e610800`입니다.
+
+사람의 글을 이 숫자로 바꾸는 번역가가 **컴파일러**입니다. 언어가 달라도 컴파일러의 뼈대는 비슷합니다.
+
+| 단계 | 하는 일 | 비유 |
 | --- | --- | --- |
-| `nav.cpp` | C++ | 실제 계산 `mininav::haversine_distance` |
-| `mininav_c.cpp` | C++ (C 이름으로 내보냄) | C 함수 `mn_haversine_distance` → C++ 함수로 전달 |
-| `main.swift` | Swift | `mn_haversine_distance`를 부름 |
+| 프론트엔드 | 문법을 분석해 구조(AST)로 만들고, 이름과 타입을 확인 | 원문을 읽고 뜻을 이해하기 |
+| 중간 코드 (IR) | 언어에도 CPU에도 묶이지 않은 단순한 명령으로 바꾸고 최적화 | 뜻을 쉬운 말로 정리하고 군더더기 빼기 |
+| 백엔드 | 특정 CPU(arm64, x86_64)의 어셈블리와 기계어로 | 목표 언어로 옮겨 쓰기 |
+| 목적 파일 → 링크 | 파일마다 번역한 결과(`.o`)를 하나로 묶어 실행 파일로 | 장별로 번역한 원고를 책 한 권으로 묶기 |
 
-<img src="/assets/img/2026-11-04-marine-algorithms-cpp-core/build-pipeline.svg" alt="소스 코드가 전처리, 컴파일, 목적 파일, 링크를 거쳐 실행 파일이 되는 과정" style="width: 100%;">
+프론트엔드는 언어마다 다릅니다(C++는 **Clang**, Swift는 **swiftc**). 중간 코드부터 뒤는 둘 다 **LLVM**이라는 같은 도구를 씁니다. 이 차이와 공통점을 아래에서 하나씩 확인합니다.
 
-> 이 장의 출력은 모두 위 세 파일을 `clang++ -O2 -c`, `swiftc -c`로 직접 컴파일하고 `nm`, `otool`로 열어 본 실제 결과입니다.
+비교가 쉽도록 두 언어로 **똑같은 함수** 하나를 씁니다. 노트(kn)를 m/s로 바꾸는 함수입니다(1노트 = 1시간에 1852m).
 
-### 0. 왜 한 번에 만들지 않고 단계를 나눌까
+> 아래 그림과 출력은 모두 `clang++`, `swiftc`의 단계별 옵션으로 직접 뽑은 실제 결과입니다.
 
-CPU는 `haversine_distance` 같은 글자를 읽지 못합니다. CPU가 아는 건 **기계어**, 즉 "이 레지스터의 값을 저 레지스터로 옮겨라", "이 주소로 뛰어라" 같은 명령을 숫자로 적은 것뿐입니다. arm64 CPU라면 명령 하나가 4바이트 숫자입니다.
+### 2-1. C++ 소스가 기계어가 되기까지
 
-사람이 쓴 소스를 이 숫자로 바꾸는 일을 한 번에 하지 않고 **파일마다 따로 번역(컴파일)한 뒤 마지막에 이어 붙이는(링크)** 이유는 두 가지입니다.
+<img src="/assets/img/2026-11-04-marine-algorithms-cpp-core/cpp-compile.svg" alt="speed.cpp가 전처리, AST, LLVM IR, 최적화, 어셈블리, 목적 파일, 링크를 거치는 과정" style="width: 100%;">
 
-- **빨라집니다.** `nav.cpp` 한 줄을 고치면 `nav.cpp`만 다시 번역하고 이어 붙이기만 다시 하면 됩니다. 파일이 수천 개인 프로젝트에서 이 차이는 몇 분과 몇 초의 차이입니다.
-- **언어가 섞일 수 있습니다.** C++ 파일은 clang이, Swift 파일은 swiftc가 따로 번역해도, 결과물이 모두 같은 형식(목적 파일)이면 마지막에 함께 이어 붙일 수 있습니다. **이 글 전체가 이 성질 위에 서 있습니다.**
+**① 전처리 - `#include`는 복사·붙여넣기다.** C++는 번역 전에 **전처리기**가 먼저 소스를 훑습니다. 전처리기는 C++ 문법을 모릅니다. `#`으로 시작하는 줄만 보고 텍스트를 고칩니다. `#include <cstdio>`는 그 헤더 파일 내용을 그 자리에 그대로 붙여 넣으라는 뜻이라, 10줄짜리 파일이 **719줄**이 됩니다. 컴파일러가 실제로 읽는 건 이 719줄입니다. `#ifdef`는 조건에 맞지 않는 줄을 지우고, `#pragma once`는 같은 헤더가 두 번 붙지 않게 막습니다.
 
-비유하면 책 한 권을 여러 사람이 장(章)별로 나눠 쓰는 것과 같습니다. 각자 자기 장을 쓰고(컴파일), 마지막에 편집자가 한 권으로 묶습니다(링크). 문제는 각 장이 **다른 장을 언급할 때**입니다. "자세한 내용은 김 작가가 쓴 장의 하버사인 공식(p.??)을 보세요"라고 쓰고 싶은데, 그 장이 몇 쪽에 들어갈지는 책을 묶어 봐야 압니다. 이 **"p.??" 빈칸**이 이 장의 주인공입니다.
+**② 파싱·의미 분석 - 글자를 구조로.** Clang이 글자를 읽어 **AST**(추상 구문 트리)라는 나무 구조로 만듭니다. `knots * 1852.0 / 3600.0`은 "`/`의 왼쪽에 `*`가 있고, `*`의 양쪽에 `knots`와 `1852.0`이 있다"는 나무가 됩니다. 이 과정에서 `knots`가 `double`이라는 것, 함수 타입이 `double (double)`이라는 것도 확인합니다. 오타나 타입 오류는 여기서 걸립니다.
 
-### ① 전처리 - `#include`는 복사·붙여넣기다
+**③ LLVM IR 생성 - 중간 코드.** AST를 **LLVM IR**로 바꿉니다. 최적화를 끈(`-O0`) 결과를 보면 매개변수를 메모리에 저장(`store`)했다가 다시 읽는(`load`) 날것 그대로의 코드입니다. 함수 이름이 벌써 `_Z12knots_to_mpsd`로 바뀌어 있는데, 이건 2-4에서 다룹니다.
 
-번역 전에 **전처리기**가 먼저 소스를 훑습니다. 전처리기는 C++ 문법을 모릅니다. `#`으로 시작하는 줄만 보고 텍스트를 고칩니다.
+**④ 최적화.** `-O2`를 켜면 LLVM이 쓸데없는 저장·읽기를 지우고 곱셈과 나눗셈 두 줄만 남깁니다. `× 1852 ÷ 3600`을 `× 0.5144...` 하나로 합치지 **않는** 점이 재미있습니다. 부동소수점은 계산 순서를 바꾸면 마지막 자릿수가 달라질 수 있어서, 컴파일러가 마음대로 합치지 않습니다.
 
-- `#include "mininav/nav.hpp"` → 그 파일 내용을 **그 자리에 그대로 붙여 넣습니다.**
-- `#ifdef __cplusplus` → 조건에 맞지 않는 줄을 지웁니다.
-- `#pragma once` / `#ifndef ... #define` → 같은 헤더가 두 번 붙여 넣어지지 않게 막습니다.
+**⑤ 백엔드 - arm64 어셈블리.** IR을 arm64 명령 9개로 옮깁니다. arm64에는 실수 상수를 바로 곱하는 명령이 없어서, `1852.0`의 비트 모양(`0x409CF00000000000`)을 정수 레지스터에 만들고(`mov`, `movk`) 실수 레지스터로 옮긴 뒤(`fmov`) 곱합니다(`fmul`).
 
-`-E` 옵션으로 전처리 결과만 볼 수 있습니다.
+**⑥ 어셈블 - 기계어와 목적 파일.** 어셈블리를 숫자로 바꾸면 **목적 파일**(`.o`)이 나옵니다. `d2de0008 f2e81388 9e670101 1e610800 ...`이 위 9개 명령의 실제 기계어입니다. 목적 파일에는 기계어와 함께 **심볼 표**가 들어 있습니다. `T __Z12knots_to_mpsd`는 "이 파일이 가진 함수", `U _printf`는 "다른 곳에 있어야 하는 함수"입니다. `printf`는 이 파일에 없으니 부르는 자리가 아직 **빈칸**입니다.
 
-```text
-$ wc -l src/nav.cpp
-      28
-$ clang++ -std=c++2b -E -Iinclude src/nav.cpp | wc -l
-    7185
-```
+**⑦ 링크 - 실행 파일.** 링커(`ld`)가 빈칸 `_printf`를 시스템 라이브러리(`libSystem`)와 연결하고, 실행 파일 `speed_cpp`(33KB)를 만듭니다. 실행하면 `6.173333`이 나옵니다. C++ 표준 라이브러리 `libc++`도 실행할 때 붙습니다.
 
-28줄짜리 파일이 **7,185줄**이 됐습니다. `<expected>`, `<cmath>`, `<numbers>`가 끌고 온 표준 라이브러리 헤더가 통째로 붙었기 때문입니다. 컴파일러가 실제로 읽는 건 이 7,185줄입니다.
-
-이걸 알면 10장의 에러가 이해됩니다. C 헤더에 `#include <expected>`를 넣으면, **C로 읽는** Swift 쪽에서도 그 7천 줄짜리 C++ 코드를 붙여 넣으려다 실패합니다.
-
-### ② 컴파일 - 사람의 말을 어셈블리로
-
-전처리가 끝난 코드를 **컴파일러**가 번역합니다. 바로 숫자로 가지 않고, 사람이 겨우 읽을 수 있는 기계어의 글자 버전인 **어셈블리**를 거칩니다. `-S`로 볼 수 있습니다.
+<details class="notion-toggle-list" markdown="1">
+<summary>C++ 단계별 명령과 실제 출력 보기</summary>
 
 ```text
-$ clang++ -std=c++2b -O2 -S ... mininav_c.cpp
-_mn_haversine_distance:
-	b	__ZN7mininav18haversine_distanceENS_10CoordinateES0_
+$ wc -l speed.cpp
+      10
+$ clang++ -std=c++2b -E speed.cpp | wc -l              # ① 전처리
+     719
+
+$ clang++ -std=c++2b -fsyntax-only -Xclang -ast-dump speed.cpp   # ② AST
+|-FunctionDecl <speed.cpp:4:1, line:6:1> line:4:8 used knots_to_mps 'double (double)'
+| |-ParmVarDecl <col:21, col:28> col:28 used knots 'double'
+| `-CompoundStmt
+|   `-ReturnStmt
+|     `-BinaryOperator 'double' '/'
+|       |-BinaryOperator 'double' '*'
+|       | |-ImplicitCastExpr 'double' <LValueToRValue>
+|       | | `-DeclRefExpr 'double' lvalue ParmVar 'knots' 'double'
+|       | `-FloatingLiteral 'double' 1.852000e+03
+
+$ clang++ -std=c++2b -O0 -S -emit-llvm speed.cpp -o -   # ③ LLVM IR
+define double @_Z12knots_to_mpsd(double noundef %0) #0 {
+  %2 = alloca double, align 8
+  store double %0, ptr %2, align 8
+  %3 = load double, ptr %2, align 8
+  %4 = fmul double %3, 1.852000e+03
+  %5 = fdiv double %4, 3.600000e+03
+  ret double %5
+}
+
+$ clang++ -std=c++2b -O2 -S -emit-llvm speed.cpp -o -   # ④ 최적화
+define noundef double @_Z12knots_to_mpsd(double noundef %0) local_unnamed_addr #0 {
+  %2 = fmul double %0, 1.852000e+03
+  %3 = fdiv double %2, 3.600000e+03
+  ret double %3
+}
+
+$ clang++ -std=c++2b -O2 -S speed.cpp -o -              # ⑤ 어셈블리
+__Z12knots_to_mpsd:
+	mov	x8, #263882790666240            ; =0xf00000000000
+	movk	x8, #16540, lsl #48
+	fmov	d1, x8
+	fmul	d0, d0, d1
+	mov	x8, #35184372088832             ; =0x200000000000
+	movk	x8, #16556, lsl #48
+	fmov	d1, x8
+	fdiv	d0, d0, d1
+	ret
+
+$ clang++ -std=c++2b -O2 -c speed.cpp -o speed_cpp.o    # ⑥ 목적 파일
+$ file speed_cpp.o
+speed_cpp.o: Mach-O 64-bit object arm64
+$ otool -t speed_cpp.o
+0000000000000000 d2de0008 f2e81388 9e670101 1e610800
+0000000000000010 d2c40008 f2e81588 9e670101 1e611800
+0000000000000020 d65f03c0 ...
+$ nm speed_cpp.o
+0000000000000000 T __Z12knots_to_mpsd
+0000000000000024 T _main
+                 U _printf
+
+$ clang++ speed_cpp.o -o speed_cpp && ./speed_cpp       # ⑦ 링크
+6.173333
+$ otool -L speed_cpp
+	/usr/lib/libc++.1.dylib
+	/usr/lib/libSystem.B.dylib
 ```
 
-`mn_haversine_distance`는 C++ 함수를 부르기만 하는 다리라서, 최적화를 켜면 명령이 **딱 하나** 남습니다. `b`(branch)는 "저기로 뛰어라"입니다. 뛸 곳의 이름이 `__ZN7mininav18haversine_distance...`로 이상하게 생긴 건 아래 "심볼 이름" 절에서 다룹니다.
+</details>
 
-여기서 중요한 사실이 하나 있습니다. 컴파일러는 지금 `mininav_c.cpp` **한 파일만** 보고 있습니다. `haversine_distance`가 `nav.cpp`에 있다는 건 모릅니다. 헤더에서 "이런 함수가 어딘가 있다"는 **선언**만 봤을 뿐입니다. 그러니 "저기로 뛰어라"의 **저기가 몇 번지인지 모릅니다.**
+### 2-2. Swift 소스가 기계어가 되기까지
 
-### ③ 어셈블 - 기계어와 목적 파일
+<img src="/assets/img/2026-11-04-marine-algorithms-cpp-core/swift-compile.svg" alt="speed.swift가 파싱, 타입 검사, SIL, SIL 최적화, LLVM IR, 어셈블리, 목적 파일, 링크를 거치는 과정" style="width: 100%;">
 
-어셈블리를 숫자로 바꾸면 **목적 파일**(object file, `.o`)이 나옵니다. 보통 컴파일과 어셈블은 `-c` 한 번에 같이 일어납니다.
+**전처리가 없습니다.** Swift에는 `#include`가 없고, 다른 코드는 `import`로 **모듈** 단위로 가져옵니다. 텍스트를 붙여 넣지 않고, 이미 컴파일된 모듈의 선언 정보를 읽습니다. 그래서 C++처럼 줄 수가 수백 배로 불어나지 않습니다.
+
+**① 파싱 - 구조만 만든다.** swiftc도 먼저 글자를 AST로 만듭니다. 다만 이 단계의 AST에는 `type="<null>"`, `unresolved_decl_ref_expr`가 가득합니다. `knots`가 무엇인지, `*`와 `/` 중 무엇을 먼저 계산할지도 아직 정하지 않았습니다. Swift는 연산자를 라이브러리에서 정의할 수 있어서, 우선순위도 타입 검사 때 정해집니다.
+
+**② 타입 검사 - 이름과 타입을 확정한다.** 여기서 함수 타입이 `(Double) -> Double`로 정해지고, `/`가 **`Double` 타입에 정의된 함수**(`Double extension./`)라는 것을 찾아냅니다. Swift에서 `+ - * /`는 언어에 박힌 기호가 아니라 표준 라이브러리의 함수입니다. 타입 추론, 프로토콜 확인 같은 Swift의 무거운 일이 대부분 이 단계에서 일어납니다.
+
+**③ SIL 생성 - Swift만의 중간 코드.** C++와 가장 다른 단계입니다. swiftc는 LLVM IR로 바로 가지 않고 **SIL**(Swift Intermediate Language)이라는 Swift 전용 중간 코드를 한 번 더 거칩니다. 최적화 전 SIL을 보면 `*`가 정말로 `function_ref static Double.* infix(_:_:)`, 즉 **함수 호출**입니다. `1852.0`도 `Double.init(_builtinFloatLiteral:)` 호출로 만들어집니다.
+
+**④ SIL 최적화 - 호출을 펼친다.** `-O`를 켜면 이 함수 호출들이 **인라인**(호출 대신 함수 몸통을 그 자리에 펼침)되어 `builtin "fmul_FPIEEE64"`, `builtin "fdiv_FPIEEE64"` 같은 기계에 가까운 연산만 남습니다. Swift가 SIL을 따로 두는 이유가 이것입니다. 참조 카운팅(ARC), 제네릭 특수화, 값 타입 복사 제거처럼 **Swift의 뜻을 알아야 할 수 있는 최적화**를 LLVM에 넘기기 전에 해 둡니다.
+
+**⑤ LLVM IR - 여기서부터는 C++와 같은 도구.** 최적화된 SIL을 LLVM IR로 바꿉니다(IRGen). 결과를 보면 `fmul`, `fdiv` 두 줄로, 2-1의 최적화된 C++ IR과 몸통이 같습니다. 다른 점은 `swiftcc`(Swift 호출 규약)와 함수 이름 `$s5speed22knotsToMetersPerSecondyS2dF`입니다.
+
+**⑥ 백엔드, ⑦ 목적 파일.** 이후는 C++와 같은 LLVM 백엔드가 처리합니다. 어셈블리 9개 명령, 기계어 `d2de0008 f2e81388 ...`까지 똑같습니다. 목적 파일의 심볼 표에는 `T _$s5speed22knotsToMetersPerSecondyS2dF`가 있고, `U _$ss5print...`, `U _swift_allocObject` 같은 **Swift 표준 라이브러리와 런타임** 함수가 빈칸으로 남아 있습니다.
+
+**⑧ 링크.** 링커가 빈칸을 Swift 런타임(`libswiftCore`)과 연결해 실행 파일 `speed_swift`(51KB)를 만듭니다. 실행하면 `6.173333333333333`이 나옵니다. C++ 쪽과 자릿수가 다른 건 계산이 달라서가 아니라 `printf("%f")`와 Swift `print`가 숫자를 **보여 주는 방식**이 달라서입니다.
+
+<details class="notion-toggle-list" markdown="1">
+<summary>Swift 단계별 명령과 실제 출력 보기</summary>
 
 ```text
-$ clang++ -std=c++2b -O2 -c ... nav.cpp       -o nav.o
-$ clang++ -std=c++2b -O2 -c ... mininav_c.cpp -o mininav_c.o
-$ file nav.o mininav_c.o
-nav.o:       Mach-O 64-bit object arm64
-mininav_c.o: Mach-O 64-bit object arm64
+$ swiftc -dump-parse speed.swift                       # ① 파싱
+(func_decl range=[speed.swift:2:1 - line:4:1] "knotsToMetersPerSecond(_:)"
+  (result=type_unqualified_ident id="Double" unbound)
+  (parameter_list (parameter "knots"))
+  (brace_stmt
+    (sequence_expr type="<null>"
+      (unresolved_decl_ref_expr type="<null>" name="knots" function_ref=unapplied)
+
+$ swiftc -dump-ast speed.swift                         # ② 타입 검사
+(func_decl "knotsToMetersPerSecond(_:)" interface_type="(Double) -> Double" access=internal
+  (parameter "knots" interface_type="Double"))
+    (binary_expr type="Double"
+      (dot_syntax_call_expr implicit type="(Double, Double) -> Double"
+        (declref_expr decl="Swift.(file).Double extension./" function_ref=single apply)
+
+$ swiftc -emit-silgen speed.swift                      # ③ SIL (최적화 전)
+sil hidden [ossa] @$s5speed22knotsToMetersPerSecondyS2dF : $@convention(thin) (Double) -> Double {
+bb0(%0 : $Double):
+  %4 = float_literal $Builtin.FPIEEE64, 0x409CF00000000000 // 1852
+  // function_ref Double.init(_builtinFloatLiteral:)
+  %7 = apply %6(%4, %5) : ...
+  // function_ref static Double.* infix(_:_:)
+  %8 = function_ref @$sSd1moiyS2d_SdtFZ : $@convention(method) (Double, Double, @thin Double.Type) -> Double
+  %9 = apply %8(%0, %7, %3) : ...
+  ...
+  // function_ref static Double./ infix(_:_:)
+  %15 = apply %14(%9, %13, %2) : ...
+  return %15
+
+$ swiftc -O -emit-sil speed.swift                      # ④ SIL 최적화
+bb0(%0 : $Double):
+  %2 = float_literal $Builtin.FPIEEE64, 0x409CF00000000000 // 1852
+  %3 = struct_extract %0, #Double._value
+  %4 = builtin "fmul_FPIEEE64"(%3, %2) : $Builtin.FPIEEE64
+  %5 = float_literal $Builtin.FPIEEE64, 0x40AC200000000000 // 3600
+  %6 = builtin "fdiv_FPIEEE64"(%4, %5) : $Builtin.FPIEEE64
+  %7 = struct $Double (%6)
+  return %7
+
+$ swiftc -O -emit-ir speed.swift                       # ⑤ LLVM IR
+define hidden swiftcc double @"$s5speed22knotsToMetersPerSecondyS2dF"(double %0) local_unnamed_addr #4 {
+entry:
+  %1 = fmul double %0, 1.852000e+03
+  %2 = fdiv double %1, 3.600000e+03
+  ret double %2
+}
+
+$ swiftc -O -S speed.swift                             # ⑥ 어셈블리
+_$s5speed22knotsToMetersPerSecondyS2dF:
+	mov	x8, #263882790666240            ; =0xf00000000000
+	movk	x8, #16540, lsl #48
+	fmov	d1, x8
+	fmul	d0, d0, d1
+	mov	x8, #35184372088832             ; =0x200000000000
+	movk	x8, #16556, lsl #48
+	fmov	d1, x8
+	fdiv	d0, d0, d1
+	ret
+
+$ swiftc -O -c speed.swift -o speed_swift.o            # ⑦ 목적 파일
+$ nm speed_swift.o
+00000000000000d8 T _$s5speed22knotsToMetersPerSecondyS2dF
+0000000000000000 T _main
+                 U _$ss5print_9separator10terminatoryypd_S2StF
+                 U _swift_allocObject
+                 U _swift_release
+                 ...
+$ nm speed_swift.o | grep knots | swift-demangle
+speed.knotsToMetersPerSecond(Swift.Double) -> Swift.Double
+
+$ swiftc speed_swift.o -o speed_swift && ./speed_swift # ⑧ 링크
+6.173333333333333
+$ otool -L speed_swift
+	/usr/lib/libSystem.B.dylib
+	/usr/lib/swift/libswiftCore.dylib
 ```
 
-`Mach-O`는 Apple 플랫폼의 실행 파일·목적 파일 형식입니다(Linux와 Android는 ELF, Windows는 PE). 목적 파일은 기계어만 담은 파일이 아니라 세 가지를 함께 담은 **반제품**입니다.
+</details>
+
+### 2-3. 나란히 놓고 보기
+
+따로 따라가 본 두 과정을 표로 비교하면 이렇습니다.
+
+| | C++ (`clang++`) | Swift (`swiftc`) |
+| --- | --- | --- |
+| 다른 코드 가져오기 | `#include` - 헤더 텍스트를 **붙여 넣음** (10줄 → 719줄) | `import` - 컴파일된 **모듈**의 선언을 읽음 |
+| 프론트엔드 | 파싱과 의미 분석이 함께 | 파싱(이름·타입 미정) → 타입 검사 |
+| 연산자 `*` `/` | 언어에 내장된 연산 | 표준 라이브러리 `Double`의 함수 |
+| 언어 전용 중간 코드 | 없음 | **SIL** (인라인, ARC, 제네릭 최적화) |
+| 공통 중간 코드 | LLVM IR | LLVM IR |
+| 함수 이름 (심볼) | `__Z12knots_to_mpsd` | `_$s5speed22knotsToMetersPerSecondyS2dF` |
+| 기계어 | `d2de0008 f2e81388 9e670101 1e610800 d2c40008 f2e81588 9e670101 1e611800 d65f03c0` | **바이트 하나까지 같음** |
+| 목적 파일 형식 | Mach-O 64-bit object arm64 | Mach-O 64-bit object arm64 |
+| 실행할 때 붙는 라이브러리 | `libc++`, `libSystem` | `libswiftCore`, `libSystem` |
+
+앞단은 많이 다릅니다. 하지만 같은 일을 하는 함수는 결국 **같은 기계어**가 되고, 결과물은 **같은 형식의 목적 파일**입니다. 다른 점은 함수에 붙은 **이름**입니다. 이 두 사실이 다음 절의 출발점입니다.
+
+### 2-4. 목적 파일 안의 빈칸과 링크
+
+2-1과 2-2에서 목적 파일마다 `U`로 표시된 **빈칸**이 있었습니다. C++의 `U _printf`, Swift의 `U _swift_allocObject`처럼 다른 곳에 있는 함수를 부르는 자리입니다. 컴파일러는 파일 하나만 보고 번역하기 때문에, 남의 함수는 "이런 이름의 함수가 어딘가 있다"는 **선언**만 알고 주소는 모릅니다.
 
 | 목적 파일 안에 든 것 | 뜻 | 보는 명령 |
 | --- | --- | --- |
 | 기계어 (`__TEXT,__text`) | CPU가 실행할 숫자 | `otool -t`, `otool -tv` |
-| 심볼 표 | "내가 가진 함수(T)"와 "남에게 빌려야 하는 함수(U)"의 이름 목록 | `nm` |
+| 심볼 표 | "내가 가진 함수(`T`)"와 "남에게 빌려야 하는 함수(`U`)"의 **이름** 목록 | `nm` |
 | 재배치 정보 | "이 위치는 빈칸이니, 나중에 이 이름의 주소로 채워 달라"는 메모 | `otool -r` |
 
-먼저 기계어를 숫자 그대로 보겠습니다.
+**링커**는 모든 `U`를 다른 파일의 같은 이름 `T`와 **이름으로** 짝짓고, 재배치 메모를 보고 빈칸에 실제 주소를 써 넣습니다. 책을 장별로 나눠 쓰고 "p.??"로 비워 둔 쪽수를, 편집자가 책을 묶으면서 채우는 것과 같습니다.
+
+이 빈칸을 **다른 언어의 목적 파일**이 채워도 링커는 상관하지 않습니다. 2-3에서 본 대로 형식이 같고, 링커는 이름만 보기 때문입니다. 이것이 Swift에서 C++ 코드를 부를 수 있는 원리입니다. 9장까지 만들 MiniNav로 실제로 보겠습니다. Swift의 `main.o`는 C 다리 함수 `_mn_haversine_distance`를, C 다리의 `mininav_c.o`는 C++ 함수 `haversine_distance`를 빈칸으로 들고 있습니다.
+
+<img src="/assets/img/2026-11-04-marine-algorithms-cpp-core/link-fill.svg" alt="링크 전 목적 파일의 빈칸이 링크 후 실제 주소로 채워지는 모습" style="width: 100%;">
 
 ```text
-$ otool -t mininav_c.o
-(__TEXT,__text) section
-0000000000000000 14000000 b40001e0 d100c3ff a9014ff4
-```
-
-맨 앞 `14000000`이 아까 본 `b` 명령 하나입니다. arm64의 `b` 명령은 앞 6비트가 "뛰어라", 나머지 26비트가 "몇 칸 앞으로"입니다. 그런데 그 26비트가 **전부 0**입니다. 어디로 뛸지 모르니 비워 둔 것입니다. 이게 책 비유의 **"p.??"**입니다.
-
-> `otool -tv`로 이 명령을 글자로 풀면 `b _mn_haversine_distance`, 즉 자기 자신으로 뛰는 것처럼 보입니다. "0칸 앞으로"이기 때문입니다. 빈칸을 그대로 해석해서 생기는 착시입니다.
-
-빈칸을 채워야 한다는 사실은 심볼 표와 재배치 정보에 적혀 있습니다.
-
-```text
-$ nm mininav_c.o
-                 U __ZN7mininav13average_speedENS_10CoordinateES0_d
+$ nm main.o | grep mn_                          # Swift 쪽
+                 U _mn_haversine_distance
+$ nm mininav_c.o                                # C 다리 쪽
                  U __ZN7mininav18haversine_distanceENS_10CoordinateES0_
-0000000000000004 T _mn_average_speed
 0000000000000000 T _mn_haversine_distance
-
 $ otool -rv mininav_c.o
 address  pcrel length extern type    scattered symbolnum/value
 00000000 True  long   True   BR26    False     __ZN7mininav18haversine_distanceENS_10CoordinateES0_
-```
 
-- `T _mn_haversine_distance` - 이 파일이 **가진** 함수입니다. 0번지에 있습니다.
-- `U __ZN7mininav18haversine_distance...` - 이 파일이 **빌려야 하는** 함수입니다(Undefined). 주소 칸이 비어 있습니다.
-- 재배치 정보 - "0번지 명령의 26비트(`BR26`)를 `__ZN7mininav18haversine_distance...`의 주소로 채워 달라"는 메모입니다.
-
-### Swift도 똑같다
-
-Swift 파일도 같은 과정을 거쳐 같은 형식의 목적 파일이 됩니다.
-
-```text
-$ swiftc -O -c -import-objc-header mininav_c.h main.swift -o main.o
-$ file main.o
-main.o: Mach-O 64-bit object arm64
-$ nm main.o | grep mn_
-                 U _mn_haversine_distance
-```
-
-swiftc는 C 헤더 `mininav_c.h`를 읽어 "`mn_haversine_distance`라는 C 함수가 어딘가 있다"는 것만 알았습니다. 그래서 `main.o`에도 `U _mn_haversine_distance`라는 빈칸이 남습니다. **Swift 목적 파일과 C++ 목적 파일이 같은 형식이고, 빈칸을 이름으로 적어 둔다**는 것. 이것이 Swift에서 C++ 코드를 부를 수 있는 이유의 전부입니다.
-
-### ④ 링크 - 빈칸을 채우는 편집자
-
-이제 **링커**(Apple 플랫폼에서는 `ld`)가 목적 파일들을 한 권으로 묶습니다. 하는 일은 두 가지입니다.
-
-1. **이름 맞추기** - 모든 `U`를 다른 파일의 같은 이름 `T`와 짝짓습니다.
-   - `main.o`의 `U _mn_haversine_distance` ↔ `mininav_c.o`의 `T _mn_haversine_distance`
-   - `mininav_c.o`의 `U __ZN7mininav18haversine...` ↔ `nav.o`의 `T __ZN7mininav18haversine...`
-2. **빈칸 채우기** - 각 함수를 실행 파일 안 어디에 둘지 정한 뒤, 재배치 정보를 보고 빈칸에 실제 거리를 써 넣습니다.
-
-```text
-$ swiftc main.o mininav_c.o nav.o -lc++ -o app
-$ ./app
+$ swiftc main.o mininav_c.o nav.o -lc++ -o app && ./app
 209543.01573428483
-$ nm app | grep haversine
-000000010000084c T __ZN7mininav18haversine_distanceENS_10CoordinateES0_
-00000001000007f0 T _mn_haversine_distance
-$ otool -t app            # 0x1000007f0 = _mn_haversine_distance
-00000001000007f0 14000017 ...
 ```
 
-링크 전후의 같은 명령을 나란히 놓으면 이렇습니다.
+링크 전후의 같은 명령을 나란히 놓으면 빈칸이 채워진 것이 숫자로 보입니다. arm64의 `b`/`bl`(뛰어라) 명령은 앞 6비트가 명령 종류, 나머지 26비트가 "몇 칸(×4바이트) 앞으로"입니다.
 
-| | 기계어 | 뜻 |
-| --- | --- | --- |
-| 링크 전 `mininav_c.o` | `14000000` | `b` + 0칸 → 어디로 뛸지 모름 |
-| 링크 후 `app` | `14000017` | `b` + 0x17(23)칸 × 4바이트 = 92바이트 앞 → `0x7f0 + 92 = 0x84c` |
+| 명령 | 링크 전 | 링크 후 | 뜻 |
+| --- | --- | --- | --- |
+| Swift `main.o`의 `bl` | `94000000` | `94000025` | 0칸 → 37칸(148바이트) 앞 = `_mn_haversine_distance` |
+| C 다리 `mininav_c.o`의 `b` | `14000000` | `14000017` | 0칸 → 23칸(92바이트) 앞 = `mininav::haversine_distance` |
 
-`0x84c`는 정확히 `nav.o`에서 온 `haversine_distance`가 놓인 주소입니다. **링커가 "p.??"를 "p.92"로 채운 것**입니다. Swift 쪽 `main.o`의 빈칸도 같은 방식으로 `bl _mn_haversine_distance`(0x7f0으로 뛰기)로 채워졌습니다. 이제 앱의 한 줄이 Swift → C 다리 → C++ 계산으로 이어집니다.
+> 링크 전 명령을 `otool -tv`로 풀면 `b _mn_haversine_distance`처럼 자기 자신으로 뛰는 것처럼 보입니다. "0칸 앞으로"를 그대로 해석해서 생기는 착시입니다.
 
 ### 링크가 실패하면 - 빈칸이 남았다
 
@@ -287,7 +402,7 @@ Undefined symbols for architecture arm64:
 ld: symbol(s) not found for architecture arm64
 ```
 
-이 메시지는 이제 그대로 읽힙니다. "`mininav_c.o` 안의 `_mn_haversine_distance` 함수에 **빈칸이 있는데**, `mininav::haversine_distance`라는 이름을 가진 파일을 **아무도 주지 않았다**." 원인은 둘 중 하나입니다.
+"`mininav_c.o` 안의 `_mn_haversine_distance` 함수에 **빈칸이 있는데**, `mininav::haversine_distance`라는 이름을 가진 파일을 **아무도 주지 않았다**"는 뜻입니다. 원인은 둘 중 하나입니다.
 
 - 그 이름을 가진 목적 파일이나 라이브러리를 링크에 넣지 않았다.
 - 넣긴 했는데 **이름이 다르다.** 10장의 `extern "C"` 실수가 이 경우입니다.
@@ -296,14 +411,15 @@ ld: symbol(s) not found for architecture arm64
 
 ### 정적 라이브러리와 동적 라이브러리
 
-목적 파일이 많아지면 묶어서 나눠 줍니다. 묶는 방법이 두 가지입니다.
+목적 파일이 많아지면 묶어서 나눠 줍니다. 묶는 방법은 **빈칸을 언제 채우느냐**에 따라 두 가지입니다.
+
+<img src="/assets/img/2026-11-04-marine-algorithms-cpp-core/static-dynamic.svg" alt="정적 라이브러리는 빌드할 때 복사되고 동적 라이브러리는 실행할 때 연결된다" style="width: 100%;">
 
 | | 정적 라이브러리 (`.a`) | 동적 라이브러리 (`.dylib`, `.so`, `.framework`) |
 | --- | --- | --- |
 | 정체 | 목적 파일 묶음 | 링크까지 끝난 독립 파일 |
-| 빈칸 채우는 때 | **빌드할 때** 링커가 필요한 `.o`를 실행 파일에 복사해 넣음 | **실행할 때** 운영체제(dyld)가 메모리에 올리고 연결 |
-| 실행 파일 크기 | 커짐 | 그대로 |
-| 예 | `libmininav.a`, SwiftPM 기본 라이브러리 타겟 | `libc++.1.dylib`, `libSystem.B.dylib`, `libswiftCore.dylib` |
+| 빈칸 채우는 때 | **빌드할 때** 링커가 필요한 `.o`를 실행 파일에 복사 | **실행할 때** 운영체제(dyld)가 메모리에 올리고 연결 |
+| 예 | `libmininav.a`, SwiftPM 라이브러리 타겟(기본) | `libc++.1.dylib`, `libSystem.B.dylib`, `libswiftCore.dylib` |
 
 ```text
 $ ar rcs libmininav.a nav.o mininav_c.o      # 정적 라이브러리 만들기
@@ -313,20 +429,23 @@ nav.o
 mininav_c.o
 $ swiftc main.o -L. -lmininav -lc++ -o app2 && ./app2
 209543.01573428483
-
-$ otool -L app                                # 실행할 때 붙는 동적 라이브러리
-	/usr/lib/libc++.1.dylib
-	/usr/lib/libSystem.B.dylib
-	/usr/lib/swift/libswiftCore.dylib
 ```
 
-`.a`를 열어 보면 정말 `.o` 두 개가 들어 있습니다. 이름표(`__.SYMDEF`)만 붙은 상자입니다. 링크 명령에 붙던 `-lc++`는 C++ 표준 라이브러리(`libc++`)를 동적 라이브러리로 연결하라는 뜻입니다. `std::expected`나 `<cmath>`를 쓴 C++ 코드를 링크하려면 필요하고, SwiftPM은 C++ 타겟이 있으면 이 옵션을 알아서 붙여 줍니다.
-
-SwiftPM에서 `CMiniNav` 같은 라이브러리 타겟은 기본적으로 **정적으로** 링크됩니다. 그래서 앱에 붙인 C++ 코드는 앱 실행 파일 안에 그대로 들어가고, 따로 배포할 `.dylib`가 생기지 않습니다.
+`.a`를 열어 보면 정말 `.o` 두 개가 들어 있습니다. 링크 명령의 `-lc++`는 C++ 표준 라이브러리(`libc++`)를 동적 라이브러리로 연결하라는 뜻이고, SwiftPM은 C++ 타겟이 있으면 이 옵션을 알아서 붙여 줍니다. SwiftPM에서 `CMiniNav` 같은 라이브러리 타겟은 기본적으로 **정적으로** 링크되어, 앱에 붙인 C++ 코드는 앱 실행 파일 안에 그대로 들어갑니다.
 
 ### 심볼 이름 - name mangling
 
-이제 미뤄 둔 이상한 이름을 볼 차례입니다. 링커는 **오직 이름으로만** 빈칸과 함수를 짝짓습니다. 그런데 MiniNav를 SwiftPM으로 빌드한 목적 파일을 열어 보면 이름이 두 종류입니다.
+마지막으로 2-3 표에서 유일하게 달랐던 **이름**입니다. 링커는 오직 이름으로만 짝짓는데, 두 언어 모두 함수 이름을 그대로 쓰지 않았습니다.
+
+| 언어 | 소스의 이름 | 심볼 이름 | 푸는 도구 |
+| --- | --- | --- | --- |
+| C++ | `knots_to_mps(double)` | `__Z12knots_to_mpsd` | `c++filt` |
+| Swift | `knotsToMetersPerSecond(_:)` | `_$s5speed22knotsToMetersPerSecondyS2dF` | `swift-demangle` |
+| C | `mn_haversine_distance` | `_mn_haversine_distance` | (필요 없음) |
+
+이름에 네임스페이스·모듈(`5speed`), 함수 이름 길이와 글자(`12knots_to_mps`), 인자·반환 타입(C++의 `d` = double, Swift의 `S2d` = Double 두 개, 인자와 반환값)을 섞는 것을 **name mangling**이라고 합니다. 오버로딩 때문입니다. `distance(int)`와 `distance(double)`이 둘 다 있으면, 이름으로만 짝짓는 링커가 둘을 구분하려면 인자 타입이 이름에 들어가야 합니다. C에는 오버로딩이 없어서 이름 앞에 `_` 하나만 붙입니다(Apple 플랫폼 규칙).
+
+MiniNav를 SwiftPM으로 빌드한 목적 파일을 열어 보면 C++ 이름과 C 이름이 섞여 있습니다.
 
 ```text
 $ nm -gU .build/out/Products/Debug/CMiniNav.o
@@ -334,38 +453,29 @@ $ nm -gU .build/out/Products/Debug/CMiniNav.o
 00000000000002e8 T __ZN7mininav18haversine_distanceENS_10CoordinateES0_
 00000000000000a0 T _mn_average_speed
 0000000000000000 T _mn_haversine_distance
-```
-
-- `_mn_haversine_distance` - C 방식 이름입니다. 함수 이름 앞에 `_` 하나만 붙었습니다(Apple 플랫폼 규칙).
-- `__ZN7mininav18haversine_distanceENS_10CoordinateES0_` - C++ 방식 이름입니다. 네임스페이스(`7mininav`), 함수 이름(`18haversine_distance`), 인자 타입(`10Coordinate`, `S0_`)이 모두 이름 안에 들어 있습니다. 이걸 **name mangling**이라고 합니다. `c++filt`로 풀면 원래 모양이 보입니다.
-
-```text
 $ nm -gU CMiniNav.o | c++filt
 mininav::average_speed(mininav::Coordinate, mininav::Coordinate, double)
 mininav::haversine_distance(mininav::Coordinate, mininav::Coordinate)
 ```
 
-C++가 이름을 이렇게 바꾸는 이유는 **오버로딩** 때문입니다. `distance(int)`와 `distance(double)`이 둘 다 있으면, 이름으로만 짝짓는 링커가 둘을 구분할 수 있도록 인자 타입을 이름에 넣어야 합니다. C에는 오버로딩이 없어서 이름을 그대로 씁니다.
-
 <img src="/assets/img/2026-11-04-marine-algorithms-cpp-core/symbols.svg" alt="링커가 심볼 이름으로 함수를 찾는 과정" style="width: 100%;">
 
-여기서 문제가 보입니다. C++의 mangling 규칙은 **언어 표준으로 정해져 있지 않습니다.** clang·gcc가 쓰는 방식(Itanium C++ ABI)과 MSVC 방식이 다르고, 템플릿이나 표준 라이브러리 타입이 끼면 이름이 훨씬 복잡해집니다. Swift, Kotlin(JNI), WASM이 이 이름을 맞춰 부르기는 사실상 불가능합니다. 그래서 다른 언어가 부를 함수는 **C 방식 이름으로 내보내야** 합니다. 그 방법이 다음 장의 `extern "C"`입니다.
+여기서 문제가 보입니다. C++와 Swift의 mangling 규칙은 **서로 다르고**, C++ 규칙은 언어 표준으로 정해져 있지도 않습니다(clang·gcc의 Itanium 방식과 MSVC 방식이 다릅니다). Swift가 C++의 이름을 맞춰 부르기는 사실상 불가능합니다. 반면 C의 이름은 단순하고 모든 언어가 압니다. 그래서 다른 언어가 부를 함수는 **C 방식 이름으로 내보내야** 합니다. 그 방법이 다음 장의 `extern "C"`입니다.
 
 ### 한 번에 정리
 
-| 단계 / 용어 | 입력 → 출력 | 한 줄 요약 | 직접 보는 명령 |
-| --- | --- | --- | --- |
-| 전처리 | `.cpp` → 펼쳐진 소스 | `#include`는 복사·붙여넣기 | `clang++ -E` |
-| 컴파일 | 소스 → 어셈블리 | 파일 하나만 보고 번역. 남의 함수는 선언만 안다 | `clang++ -S` |
-| 어셈블 | 어셈블리 → 목적 파일 | 기계어 + 심볼 표 + 빈칸 메모 | `clang++ -c` |
-| 기계어 | | CPU가 실행하는 숫자. arm64는 명령 하나가 4바이트 | `otool -t` |
-| 목적 파일 (`.o`) | | 아직 빈칸이 있는 반제품. Swift도 C++도 같은 형식(Mach-O) | `file`, `nm` |
-| 심볼 | | 링커가 짝짓는 이름. `T` = 가진 것, `U` = 빌릴 것 | `nm` |
-| 재배치 | | "여기 빈칸, 이 이름의 주소로 채워 줘" | `otool -r` |
-| 링크 | `.o`들 → 실행 파일 | `U`와 `T`를 이름으로 짝짓고 빈칸에 주소를 채움 | `ld` (swiftc, clang이 대신 부름) |
-| 정적 라이브러리 | `.o`들 → `.a` | 빌드할 때 실행 파일 안으로 복사 | `ar` |
-| 동적 라이브러리 | | 실행할 때 운영체제가 연결 | `otool -L` |
-| name mangling | | C++가 이름에 타입을 섞음. 다른 언어는 못 맞춘다 | `c++filt` |
+| 단계 / 용어 | 한 줄 요약 | 직접 보는 명령 |
+| --- | --- | --- |
+| 전처리 (C++만) | `#include`는 복사·붙여넣기 | `clang++ -E` |
+| 파싱 / AST | 글자를 나무 구조로 | `clang -ast-dump`, `swiftc -dump-parse` |
+| 타입 검사 / 의미 분석 | 이름과 타입을 확정 | `swiftc -dump-ast` |
+| SIL (Swift만) | Swift 전용 중간 코드. 인라인·ARC 최적화 | `swiftc -emit-silgen`, `-emit-sil` |
+| LLVM IR | 두 언어 공통 중간 코드 | `-emit-llvm`, `swiftc -emit-ir` |
+| 어셈블리 / 기계어 | CPU 명령의 글자판 / 숫자판. arm64는 명령 하나가 4바이트 | `-S`, `otool -t` |
+| 목적 파일 (`.o`) | 기계어 + 심볼 표 + 빈칸 메모. 두 언어 모두 Mach-O | `file`, `nm`, `otool -r` |
+| 링크 | `U`와 `T`를 **이름으로** 짝짓고 빈칸에 주소를 채움 | `ld` (clang, swiftc가 대신 부름) |
+| 정적 / 동적 라이브러리 | 빌드할 때 복사 / 실행할 때 연결 | `ar`, `otool -L` |
+| name mangling | 이름에 타입을 섞음. C++와 Swift 규칙이 다르다 | `c++filt`, `swift-demangle` |
 
 &nbsp;
 
@@ -446,7 +556,9 @@ SwiftPM은 C/C++ 타겟의 `publicHeadersPath` 폴더를 보고 이 모듈맵을
 - `publicHeadersPath` 폴더의 헤더는 **C 언어로 해석됩니다.** Swift 쪽 기본 설정에서는 C++ interop이 꺼져 있기 때문입니다.
 - 그래서 이 폴더의 헤더에 `#include <expected>`나 `namespace`가 있으면 Swift 쪽에서 모듈을 만들다 실패합니다(10장에서 실제로 재현합니다).
 
-Swift가 C 헤더를 가져오면 C 타입은 이렇게 바뀝니다.
+Swift가 C 헤더를 가져오면 C 타입은 이렇게 바뀝니다. 아래 오른쪽은 `swift-synthesize-interface`로 `CMiniNav` 모듈을 Swift가 어떻게 보는지 뽑은 실제 결과입니다.
+
+<img src="/assets/img/2026-11-04-marine-algorithms-cpp-core/header-import.svg" alt="C 헤더 mininav_c.h와 Swift가 보는 인터페이스 비교" style="width: 100%;">
 
 | C | Swift에서 보이는 모습 |
 | --- | --- |
