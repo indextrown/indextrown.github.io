@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="960" height="520" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker></defs>
+  <rect x="1" y="1" width="958" height="518" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">소스 코드가 실행 파일이 되기까지</text>
+  <text x="40" y="74" font-size="13" fill="#64748b">파일마다 따로 컴파일하고(①~③), 마지막에 한 번 링크한다(④). 괄호 안은 MiniNav 실측값</text>
+
+  <!-- stage headers -->
+  <text x="40"  y="112" font-size="13" font-weight="700" fill="#475569">소스</text>
+  <text x="215" y="112" font-size="13" font-weight="700" fill="#475569">① 전처리</text>
+  <text x="385" y="112" font-size="13" font-weight="700" fill="#475569">② 컴파일 · ③ 어셈블</text>
+  <text x="600" y="112" font-size="13" font-weight="700" fill="#475569">목적 파일 (.o)</text>
+  <text x="800" y="112" font-size="13" font-weight="700" fill="#475569">④ 링크</text>
+
+  <!-- row 1 nav.cpp -->
+  <rect x="40" y="126" width="150" height="62" rx="10" fill="#f0fdf4" stroke="#22c55e"/>
+  <text x="54" y="152" font-size="14" font-weight="700" fill="#15803d" font-family="Menlo,monospace">nav.cpp</text>
+  <text x="54" y="174" font-size="12" fill="#475569">C++ 코어 (28줄)</text>
+  <rect x="215" y="126" width="150" height="62" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="229" y="152" font-size="12" fill="#334155">#include를 펼침</text>
+  <text x="229" y="174" font-size="12" fill="#64748b">(7,185줄)</text>
+  <rect x="385" y="126" width="190" height="62" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="399" y="152" font-size="12" fill="#334155">C++ → 어셈블리 → 기계어</text>
+  <text x="399" y="174" font-size="12" fill="#64748b" font-family="Menlo,monospace">clang++ -c</text>
+  <rect x="600" y="126" width="170" height="62" rx="10" fill="#f0fdf4" stroke="#22c55e"/>
+  <text x="614" y="152" font-size="14" font-weight="700" fill="#15803d" font-family="Menlo,monospace">nav.o</text>
+  <text x="614" y="174" font-size="11" fill="#166534" font-family="Menlo,monospace">T haversine_distance</text>
+
+  <!-- row 2 bridge -->
+  <rect x="40" y="206" width="150" height="62" rx="10" fill="#eff6ff" stroke="#3b82f6"/>
+  <text x="54" y="232" font-size="13" font-weight="700" fill="#1d4ed8" font-family="Menlo,monospace">mininav_c.cpp</text>
+  <text x="54" y="254" font-size="12" fill="#475569">C 다리층 (30줄)</text>
+  <rect x="215" y="206" width="150" height="62" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="229" y="232" font-size="12" fill="#334155">#include를 펼침</text>
+  <text x="229" y="254" font-size="12" fill="#64748b">(4,213줄)</text>
+  <rect x="385" y="206" width="190" height="62" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="399" y="232" font-size="12" fill="#334155">C++ → 어셈블리 → 기계어</text>
+  <text x="399" y="254" font-size="12" fill="#64748b" font-family="Menlo,monospace">clang++ -c</text>
+  <rect x="600" y="206" width="170" height="62" rx="10" fill="#eff6ff" stroke="#3b82f6"/>
+  <text x="614" y="230" font-size="13" font-weight="700" fill="#1d4ed8" font-family="Menlo,monospace">mininav_c.o</text>
+  <text x="614" y="247" font-size="10" fill="#1e40af" font-family="Menlo,monospace">T _mn_haversine_distance</text>
+  <text x="614" y="262" font-size="11" fill="#dc2626" font-family="Menlo,monospace">U haversine_distance</text>
+
+  <!-- row 3 swift -->
+  <rect x="40" y="286" width="150" height="62" rx="10" fill="#fff7ed" stroke="#f97316"/>
+  <text x="54" y="312" font-size="14" font-weight="700" fill="#c2410c" font-family="Menlo,monospace">main.swift</text>
+  <text x="54" y="334" font-size="12" fill="#475569">앱 코드</text>
+  <rect x="215" y="286" width="360" height="62" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="229" y="312" font-size="12" fill="#334155">Swift → 기계어. C 헤더는 "선언"만 읽는다</text>
+  <text x="229" y="334" font-size="12" fill="#64748b" font-family="Menlo,monospace">swiftc -c</text>
+  <rect x="600" y="286" width="170" height="62" rx="10" fill="#fff7ed" stroke="#f97316"/>
+  <text x="614" y="312" font-size="14" font-weight="700" fill="#c2410c" font-family="Menlo,monospace">main.o</text>
+  <text x="614" y="334" font-size="10" fill="#dc2626" font-family="Menlo,monospace">U _mn_haversine_distance</text>
+
+  <!-- arrows rows -->
+  <g stroke="#94a3b8" stroke-width="2" marker-end="url(#a)">
+    <line x1="192" y1="157" x2="212" y2="157"/><line x1="367" y1="157" x2="382" y2="157"/><line x1="577" y1="157" x2="597" y2="157"/>
+    <line x1="192" y1="237" x2="212" y2="237"/><line x1="367" y1="237" x2="382" y2="237"/><line x1="577" y1="237" x2="597" y2="237"/>
+    <line x1="192" y1="317" x2="212" y2="317"/><line x1="577" y1="317" x2="597" y2="317"/>
+  </g>
+  <!-- to linker -->
+  <g stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#a)">
+    <path d="M772,157 C790,157 790,220 798,226"/>
+    <path d="M772,237 L796,237"/>
+    <path d="M772,317 C790,317 790,254 798,248"/>
+  </g>
+  <rect x="800" y="196" width="120" height="82" rx="10" fill="#f5f3ff" stroke="#8b5cf6"/>
+  <text x="814" y="224" font-size="14" font-weight="700" fill="#6d28d9">링커 ld</text>
+  <text x="814" y="246" font-size="11" fill="#475569">U ↔ T 이름 맞추기</text>
+  <text x="814" y="264" font-size="11" fill="#475569">빈칸에 주소 채우기</text>
+  <line x1="860" y1="280" x2="860" y2="380" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="600" y="384" width="320" height="62" rx="10" fill="#f5f3ff" stroke="#8b5cf6"/>
+  <text x="614" y="410" font-size="14" font-weight="700" fill="#6d28d9" font-family="Menlo,monospace">app  (실행 파일, 51KB)</text>
+  <text x="614" y="432" font-size="12" fill="#475569">U가 모두 채워짐 → 실행 가능</text>
+
+  <rect x="40" y="384" width="535" height="62" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-dasharray="6 4"/>
+  <text x="54" y="410" font-size="12" fill="#334155">실행할 때 운영체제가 붙여 주는 동적 라이브러리</text>
+  <text x="54" y="432" font-size="11" fill="#64748b" font-family="Menlo,monospace">libc++.1.dylib · libSystem.B.dylib · libswiftCore.dylib</text>
+  <line x1="577" y1="415" x2="597" y2="415" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#a)"/>
+
+  <text x="40" y="486" font-size="12" fill="#64748b">T = 이 파일에 정의된 함수 · U = 다른 파일에 있어야 하는 함수(빈칸)</text>
+</svg>
