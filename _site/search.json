@@ -1,6 +1,14 @@
 [
     
         {
+        "title"    : "[C++] C++ 코어로 Swift 라이브러리 만들기 - 해양 알고리즘 라이브러리를 처음부터",
+        "category" : "",
+        "tags"     : "C++, Swift",
+        "url"      : "/marine-algorithms-cpp-core/",
+        "date"     : "2026-11-03 15:00:00 +0000"
+        } ,
+    
+        {
         "title"    : "[Mapbox] Custom Layer 딥다이브 - 셰이더 처음부터 지도 위 삼각형까지",
         "category" : "",
         "tags"     : "Mapbox",
