@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 660" width="960" height="660" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+  <rect x="1" y="1" width="958" height="658" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">Custom Layer로 바꾸면 CPU의 일은 어디로 가나</text>
+  <text x="40" y="74" font-size="13" fill="#64748b">점 N개가 매 프레임 움직이는 경우. 일은 "사라지거나", "GPU로 옮겨 가거나", "CPU에 남는다"</text>
+
+  <!-- 3 columns -->
+  <rect x="40" y="96" width="280" height="300" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+  <text x="58" y="126" font-size="16" font-weight="700" fill="#334155">① 사라지는 일</text>
+  <text x="58" y="148" font-size="12" fill="#64748b">CPU에서도 GPU에서도 안 한다</text>
+  <g font-size="12.5" fill="#334155">
+    <text x="58" y="182">· 매 프레임 Feature 객체 N개 만들기</text>
+    <text x="58" y="206">· Swift → 엔진(C++) 형태 변환</text>
+    <text x="58" y="230">· 줌·타일 단위로 다시 자르기</text>
+    <text x="58" y="254">· Feature마다 Expression 평가</text>
+    <text x="58" y="278">· 점마다 사각형 정점 다시 만들기</text>
+    <text x="58" y="302">· 새 정점 버퍼를 GPU로 업로드</text>
+  </g>
+  <text x="58" y="340" font-size="12" fill="#475569">기준 위치는 처음에 한 번만 올리고</text>
+  <text x="58" y="358" font-size="12" fill="#475569">재사용하므로, 엔진의 범용 준비</text>
+  <text x="58" y="376" font-size="12" fill="#475569">단계가 통째로 필요 없어진다</text>
+
+  <rect x="340" y="96" width="280" height="300" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+  <text x="358" y="126" font-size="16" font-weight="700" fill="#047857">② GPU로 옮겨 가는 일</text>
+  <text x="358" y="148" font-size="12" fill="#64748b">셰이더에 직접 써야 옮겨 간다</text>
+  <g font-size="12.5" fill="#334155">
+    <text x="358" y="182">· 매 프레임 점 위치 계산</text>
+    <text x="358" y="200" font-size="11" fill="#047857" font-family="Menlo,monospace">  기준 + 반경 × (cos t, sin t)</text>
+    <text x="358" y="226">· 점마다 색·크기 정하기</text>
+    <text x="358" y="250">· (좌표 → 화면 변환은 원래 GPU)</text>
+  </g>
+  <text x="358" y="290" font-size="12" fill="#475569">GPU는 수천 개 코어가 같은 계산을</text>
+  <text x="358" y="308" font-size="12" fill="#475569">동시에 한다. 점 1천 개든 2만 개든</text>
+  <text x="358" y="326" font-size="12" fill="#475569">CPU가 넘기는 것은 시간 값 1개와</text>
+  <text x="358" y="344" font-size="12" fill="#475569">행렬 1개, draw call 1번으로 같다</text>
+  <text x="358" y="376" font-size="12" fill="#047857" font-weight="700">셰이더에 안 쓰면 CPU에 그대로 남는다</text>
+
+  <rect x="640" y="96" width="280" height="300" rx="12" fill="#fff7ed" stroke="#f97316" stroke-width="2"/>
+  <text x="658" y="126" font-size="16" font-weight="700" fill="#c2410c">③ CPU에 남는 일</text>
+  <text x="658" y="148" font-size="12" fill="#64748b">Custom Layer여도 0이 되지 않는다</text>
+  <g font-size="12.5" fill="#334155">
+    <text x="658" y="182">· 지도 전체를 1초 60번 다시 그리기</text>
+    <text x="658" y="200" font-size="11" fill="#9a3412">  (배경 타일, 다른 Layer, 명령 기록)</text>
+    <text x="658" y="226">· render() 호출: 시간·행렬 전달,</text>
+    <text x="658" y="244">  draw call 기록</text>
+    <text x="658" y="270">· 데이터가 바뀌면 버퍼 갱신</text>
+    <text x="658" y="294">· 탭 판정·라벨 등 직접 만든 기능</text>
+  </g>
+  <text x="658" y="340" font-size="12" fill="#475569">render()는 메인 스레드에서 불린다</text>
+  <text x="658" y="358" font-size="12" fill="#475569">(이전 글 실측). 여기서 무거운 일을</text>
+  <text x="658" y="376" font-size="12" fill="#475569">하면 UI가 같이 느려진다</text>
+
+  <!-- stacked bars -->
+  <text x="40" y="436" font-size="15" font-weight="700" fill="#0f172a">점 1,000개를 매 프레임 움직일 때 CPU 사용률의 구성 (추정 분해)</text>
+  <text x="40" y="456" font-size="12" fill="#64748b">"다시 그리기 고정 비용"은 Custom · 셰이더 계산의 실측값(12.0%)을 기준선으로 보고 나머지를 뺀 값</text>
+  <g font-size="12.5">
+    <text x="40" y="492" fill="#334155" font-weight="700">Style Layer 60Hz</text>
+    <rect x="230" y="476" width="72" height="24" fill="#94a3b8"/>
+    <rect x="302" y="476" width="261" height="24" fill="#6366f1"/>
+    <text x="571" y="493" fill="#0f172a" font-weight="700">55.5%</text>
+    <text x="236" y="493" fill="#ffffff" font-size="11">12.0</text>
+    <text x="310" y="493" fill="#ffffff" font-size="11">엔진 준비 단계 + 위치 계산 ≈ 43.5</text>
+
+    <text x="40" y="536" fill="#334155" font-weight="700">Custom · CPU 계산</text>
+    <rect x="230" y="520" width="72" height="24" fill="#94a3b8"/>
+    <rect x="302" y="520" width="5" height="24" fill="#f97316"/>
+    <text x="315" y="537" fill="#0f172a" font-weight="700">12.8%</text>
+    <text x="236" y="537" fill="#ffffff" font-size="11">12.0</text>
+    <text x="370" y="537" fill="#9a3412" font-size="11.5">위치 계산 ≈ 0.8 (20,000개에서 ≈ 4.3)</text>
+
+    <text x="40" y="580" fill="#334155" font-weight="700">Custom · 셰이더 계산</text>
+    <rect x="230" y="564" width="72" height="24" fill="#94a3b8"/>
+    <text x="310" y="581" fill="#0f172a" font-weight="700">12.0%</text>
+    <text x="370" y="581" fill="#047857" font-size="11.5">위치 계산은 GPU로 → CPU 몫 ≈ 0</text>
+  </g>
+  <rect x="230" y="606" width="14" height="12" fill="#94a3b8"/><text x="250" y="617" font-size="11.5" fill="#475569">지도 다시 그리기 고정 비용</text>
+  <rect x="420" y="606" width="14" height="12" fill="#6366f1"/><text x="440" y="617" font-size="11.5" fill="#475569">엔진 준비 단계</text>
+  <rect x="560" y="606" width="14" height="12" fill="#f97316"/><text x="580" y="617" font-size="11.5" fill="#475569">CPU 위치 계산</text>
+  <text x="40" y="644" font-size="11" fill="#94a3b8">출처: Custom Layer 딥다이브 15장 측정 (iPhone 16 Pro 시뮬레이터, Mapbox 11.34.1, 3회 평균). 100% = CPU 코어 1개. GPU 사용량은 측정하지 않았다</text>
+</svg>

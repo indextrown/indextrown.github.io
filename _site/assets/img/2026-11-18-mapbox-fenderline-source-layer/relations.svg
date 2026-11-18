@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" width="960" height="600" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+  <defs>
+    <marker id="p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+  </defs>
+  <rect x="1" y="1" width="958" height="598" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">Feature · Source · Layer는 몇 대 몇인가</text>
+  <text x="40" y="74" font-size="13" fill="#64748b">Feature는 Source 하나에만 속한다 · Layer는 Source 하나만 본다 · Source 하나를 Layer 여러 개가 볼 수 있다</text>
+
+  <!-- Source A -->
+  <rect x="40" y="100" width="300" height="250" rx="12" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="56" y="126" font-size="14" font-weight="700" fill="#6d28d9">Source "fenderline-edit"</text>
+  <g font-size="12" font-family="Menlo,monospace">
+    <rect x="56" y="140" width="268" height="28" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/><text x="66" y="159" fill="#92400e">Feature 0 · segment</text>
+    <rect x="56" y="174" width="268" height="28" rx="6" fill="#ffffff" stroke="#ddd6fe"/><text x="66" y="193" fill="#334155">Feature 1 · segment</text>
+    <text x="66" y="222" fill="#94a3b8">…</text>
+    <rect x="56" y="234" width="268" height="28" rx="6" fill="#ffffff" stroke="#ddd6fe"/><text x="66" y="253" fill="#334155">Feature 100000 · vertex</text>
+    <text x="66" y="282" fill="#94a3b8">…</text>
+  </g>
+  <text x="56" y="318" font-size="12" fill="#334155">Source 1개 안에 Feature 13개 (1 : N)</text>
+  <text x="56" y="338" font-size="12" fill="#334155">Feature는 이 Source에만 속한다</text>
+
+  <!-- Layers -->
+  <g font-size="12.5">
+    <rect x="560" y="100" width="360" height="54" rx="10" fill="#ffffff" stroke="#8b5cf6" stroke-width="2"/>
+    <text x="576" y="122" font-weight="700" fill="#6d28d9" font-family="Menlo,monospace">fenderline-line</text>
+    <text x="576" y="142" fill="#475569">filter: segment → Feature 0을 <tspan font-weight="700">얇은 주황 선</tspan>으로</text>
+    <rect x="560" y="166" width="360" height="54" rx="10" fill="#ffffff" stroke="#8b5cf6" stroke-width="2"/>
+    <text x="576" y="188" font-weight="700" fill="#6d28d9" font-family="Menlo,monospace">fenderline-line-hit</text>
+    <text x="576" y="208" fill="#475569">filter: segment → Feature 0을 <tspan font-weight="700">두꺼운 터치 영역</tspan>으로</text>
+    <rect x="560" y="232" width="360" height="54" rx="10" fill="#ffffff" stroke="#c4b5fd"/>
+    <text x="576" y="254" font-weight="700" fill="#6d28d9" font-family="Menlo,monospace">fenderline-point</text>
+    <text x="576" y="274" fill="#94a3b8">filter: vertex → Feature 0은 해당 없음</text>
+    <rect x="560" y="298" width="360" height="54" rx="10" fill="#ffffff" stroke="#c4b5fd"/>
+    <text x="576" y="320" font-weight="700" fill="#6d28d9" font-family="Menlo,monospace">fenderline-point-hit</text>
+    <text x="576" y="340" fill="#94a3b8">filter: vertex → Feature 0은 해당 없음</text>
+  </g>
+  <!-- source -> layers arrows -->
+  <g stroke="#7c3aed" stroke-width="1.8" fill="none">
+    <path d="M342,226 C450,226 470,127 556,127" marker-end="url(#p)"/>
+    <path d="M342,226 C450,226 470,193 556,193" marker-end="url(#p)"/>
+    <path d="M342,226 C450,226 470,259 556,259" marker-end="url(#p)"/>
+    <path d="M342,226 C450,226 470,325 556,325" marker-end="url(#p)"/>
+  </g>
+  <text x="356" y="118" font-size="13" font-weight="700" fill="#6d28d9">Source 1 → Layer 4</text>
+  <text x="356" y="136" font-size="11.5" fill="#475569">Layer마다 source:는 하나</text>
+  <text x="560" y="374" font-size="12.5" fill="#92400e"><tspan font-weight="700">Feature 0은 Layer 2개에서 그려진다</tspan> (filter가 맞는 Layer마다 한 번씩)</text>
+
+  <!-- bottom: old way copies -->
+  <rect x="40" y="400" width="880" height="180" rx="12" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="58" y="428" font-size="15" font-weight="700" fill="#b91c1c">그럼 Source가 여러 개면? - 기존 Annotation 방식</text>
+  <g font-size="12" font-family="Menlo,monospace">
+    <rect x="58" y="446" width="250" height="34" rx="8" fill="#fff7ed" stroke="#f97316"/><text x="70" y="468" fill="#9a3412">visible_line_manager 의 선분 0</text>
+    <rect x="58" y="490" width="250" height="34" rx="8" fill="#fff7ed" stroke="#f97316"/><text x="70" y="512" fill="#9a3412">hit_line_manager 의 선분 0</text>
+  </g>
+  <path d="M312,463 C360,463 360,507 312,507" fill="none" stroke="#dc2626" stroke-width="1.8" stroke-dasharray="5 4"/>
+  <text x="372" y="480" font-size="12.5" fill="#334155">같은 선분이지만 <tspan font-weight="700">Source가 다르면 Feature도 다르다</tspan> (복사본 2개)</text>
+  <text x="372" y="502" font-size="12.5" fill="#334155">각 Source에 Layer가 1개씩 붙어 각자 한 번씩 그린다</text>
+  <text x="372" y="524" font-size="12.5" fill="#334155">좌표가 바뀌면 복사본을 <tspan font-weight="700">모두</tspan> 고쳐야 한다</text>
+  <text x="58" y="560" font-size="12.5" fill="#334155">지도에는 Source가 여러 개 있을 수 있다(배경 지도 Source도 따로 있다). 다만 같은 데이터를 여러 Source에 나눠 담으면 그만큼 복사본이 생긴다.</text>
+</svg>

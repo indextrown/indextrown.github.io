@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="960" height="520" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+<rect x="1" y="1" width="958" height="518" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+<text x="40" y="46" font-size="20" font-weight="700" fill="#0f172a">점 하나를 드래그하는 동안의 CPU 사용률</text>
+<text x="40" y="70" font-size="13" fill="#475569">60Hz로 매 프레임 갱신 · 3회 평균 (막대) · 3회 중 최소~최대 (가는 선) · 100% = CPU 코어 1개</text>
+<rect x="40" y="82" width="12" height="12" rx="3" fill="#eb6834"/><text x="58" y="93" font-size="13" fill="#334155">기존: Annotation Manager 6개</text>
+<rect x="260" y="82" width="12" height="12" rx="3" fill="#2a78d6"/><text x="278" y="93" font-size="13" fill="#334155">개선: Source 1개 + Layer 4개</text>
+<line x1="90" y1="440.0" x2="920" y2="440.0" stroke="#cbd5e1" stroke-width="1"/>
+<text x="80" y="444.0" font-size="12" fill="#64748b" text-anchor="end">0%</text>
+<line x1="90" y1="365.0" x2="920" y2="365.0" stroke="#eef2f6" stroke-width="1"/>
+<text x="80" y="369.0" font-size="12" fill="#64748b" text-anchor="end">50%</text>
+<line x1="90" y1="290.0" x2="920" y2="290.0" stroke="#eef2f6" stroke-width="1"/>
+<text x="80" y="294.0" font-size="12" fill="#64748b" text-anchor="end">100%</text>
+<line x1="90" y1="215.0" x2="920" y2="215.0" stroke="#eef2f6" stroke-width="1"/>
+<text x="80" y="219.0" font-size="12" fill="#64748b" text-anchor="end">150%</text>
+<line x1="90" y1="140.0" x2="920" y2="140.0" stroke="#eef2f6" stroke-width="1"/>
+<text x="80" y="144.0" font-size="12" fill="#64748b" text-anchor="end">200%</text>
+<path d="M154.33333333333334,440 V376.65 Q154.33333333333334,372.65 158.33333333333334,372.65 H220.33333333333334 Q224.33333333333334,372.65 224.33333333333334,376.65 V440 Z" fill="#eb6834"><title>7개 · 기존: 평균 44.9% (최소 44.0%, 최대 46.3%)</title></path>
+<line x1="189.33333333333334" y1="370.6" x2="189.33333333333334" y2="374.0" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<line x1="183.33333333333334" y1="370.6" x2="195.33333333333334" y2="370.6" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<line x1="183.33333333333334" y1="374.0" x2="195.33333333333334" y2="374.0" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<text x="189.33333333333334" y="362.6" font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle">44.9%</text>
+<path d="M232.33333333333334,440 V399.15 Q232.33333333333334,395.15 236.33333333333334,395.15 H298.33333333333337 Q302.33333333333337,395.15 302.33333333333337,399.15 V440 Z" fill="#2a78d6"><title>7개 · 개선: 평균 29.9% (최소 24.2%, 최대 32.7%)</title></path>
+<line x1="267.33333333333337" y1="390.9" x2="267.33333333333337" y2="403.7" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<line x1="261.33333333333337" y1="390.9" x2="273.33333333333337" y2="390.9" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<line x1="261.33333333333337" y1="403.7" x2="273.33333333333337" y2="403.7" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<text x="267.33333333333337" y="382.9" font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle">29.9%</text>
+<text x="228.33333333333334" y="464" font-size="14" font-weight="700" fill="#334155" text-anchor="middle">점 7개</text>
+<text x="228.33333333333334" y="484" font-size="12" fill="#64748b" text-anchor="middle">개선 = 기존의 67%</text>
+<path d="M431.0,440 V323.55 Q431.0,319.55 435.0,319.55 H497.0 Q501.0,319.55 501.0,323.55 V440 Z" fill="#eb6834"><title>50개 · 기존: 평균 80.3% (최소 73.6%, 최대 88.0%)</title></path>
+<line x1="466.0" y1="308.0" x2="466.0" y2="329.6" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<line x1="460.0" y1="308.0" x2="472.0" y2="308.0" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<line x1="460.0" y1="329.6" x2="472.0" y2="329.6" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<text x="466.0" y="300.0" font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle">80.3%</text>
+<path d="M509.0,440 V368.25 Q509.0,364.25 513.0,364.25 H575.0 Q579.0,364.25 579.0,368.25 V440 Z" fill="#2a78d6"><title>50개 · 개선: 평균 50.5% (최소 45.1%, 최대 53.5%)</title></path>
+<line x1="544.0" y1="359.8" x2="544.0" y2="372.4" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<line x1="538.0" y1="359.8" x2="550.0" y2="359.8" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<line x1="538.0" y1="372.4" x2="550.0" y2="372.4" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<text x="544.0" y="351.8" font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle">50.5%</text>
+<text x="505.0" y="464" font-size="14" font-weight="700" fill="#334155" text-anchor="middle">점 50개</text>
+<text x="505.0" y="484" font-size="12" fill="#64748b" text-anchor="middle">개선 = 기존의 63%</text>
+<path d="M707.6666666666667,440 V184.35000000000002 Q707.6666666666667,180.35000000000002 711.6666666666667,180.35000000000002 H773.6666666666667 Q777.6666666666667,180.35000000000002 777.6666666666667,184.35000000000002 V440 Z" fill="#eb6834"><title>200개 · 기존: 평균 173.1% (최소 154.8%, 최대 209.1%)</title></path>
+<line x1="742.6666666666667" y1="126.4" x2="742.6666666666667" y2="207.8" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<line x1="736.6666666666667" y1="126.4" x2="748.6666666666667" y2="126.4" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<line x1="736.6666666666667" y1="207.8" x2="748.6666666666667" y2="207.8" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<text x="742.6666666666667" y="118.4" font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle">173.1%</text>
+<path d="M785.6666666666667,440 V318.3 Q785.6666666666667,314.3 789.6666666666667,314.3 H851.6666666666667 Q855.6666666666667,314.3 855.6666666666667,318.3 V440 Z" fill="#2a78d6"><title>200개 · 개선: 평균 83.8% (최소 82.3%, 최대 86.1%)</title></path>
+<line x1="820.6666666666667" y1="310.9" x2="820.6666666666667" y2="316.6" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<line x1="814.6666666666667" y1="310.9" x2="826.6666666666667" y2="310.9" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<line x1="814.6666666666667" y1="316.6" x2="826.6666666666667" y2="316.6" stroke="#0f172a" stroke-width="1.5" opacity="0.55"/>
+<text x="820.6666666666667" y="302.9" font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle">83.8%</text>
+<text x="781.6666666666667" y="464" font-size="14" font-weight="700" fill="#334155" text-anchor="middle">점 200개</text>
+<text x="781.6666666666667" y="484" font-size="12" fill="#64748b" text-anchor="middle">개선 = 기존의 48%</text>
+<text x="40" y="504" font-size="11" fill="#94a3b8">iPhone 17 시뮬레이터(iOS 27) · Mapbox 11.18.1 · 10초 측정 × 3회, 조합 순서를 섞어 반복</text>
+</svg>

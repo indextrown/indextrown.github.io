@@ -4,6 +4,22 @@
         xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     
     <url>
+        <loc>https://indextrown.github.io/mapbox-fenderline-source-layer/</loc>
+        
+        <lastmod>2026-11-18T00:00:00+00:00</lastmod>
+        
+
+        
+        <changefreq>weekly</changefreq>
+        
+
+        
+        <priority>0.5</priority>
+        
+
+    </url>
+    
+    <url>
         <loc>https://indextrown.github.io/marine-algorithms-cpp-core/</loc>
         
         <lastmod>2026-11-03T15:00:00+00:00</lastmod>

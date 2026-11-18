@@ -1,0 +1,134 @@
+/* ==========================================================================
+   post-clean.css
+   글 단위로 쓰는 깔끔한 표·인라인 코드 스타일.
+   front matter에 custom_css: /assets/css/post-clean.css 를 넣은 글에서만 로드된다.
+   ========================================================================== */
+
+/* ---------- 표 ---------- */
+.page__content table {
+  display: table;
+  width: 100%;
+  margin: 1.25em 0 1.5em;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  font-size: 0.86em;
+  line-height: 1.6;
+  color: #1f2937;
+}
+
+.page__content thead {
+  background: #f8fafc;
+  border-bottom: 0;
+}
+
+.page__content th {
+  padding: 0.7em 0.95em;
+  border-bottom: 1px solid #cbd5e1;
+  font-weight: 600;
+  font-size: 0.94em;
+  color: #475569;
+  text-align: left;
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+.page__content td {
+  padding: 0.7em 0.95em;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: top;
+  word-break: keep-all;      /* 한글은 띄어쓰기 단위로만 줄바꿈 */
+  overflow-wrap: break-word; /* 아주 긴 단어만 예외로 끊는다 */
+}
+
+.page__content tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.page__content tbody tr:hover td {
+  background: #fafbfc;
+}
+
+.page__content td strong,
+.page__content th strong {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* 첫 열의 짧은 이름(feature-state 등)은 줄바꿈하지 않는다 */
+.page__content td:first-child > strong {
+  white-space: nowrap;
+}
+
+/* 좁은 화면에서는 가로 스크롤 */
+@media (max-width: 720px) {
+  .page__content table {
+    display: block;
+    overflow-x: auto;
+  }
+  .page__content th {
+    white-space: normal;
+  }
+}
+
+/* ---------- 인라인 코드: 파란 칩 대신 차분한 회색 ---------- */
+.page__content :not(pre) > code {
+  display: inline;
+  padding: 0.12em 0.38em;
+  border: 1px solid #d0d7de;
+  border-radius: 5px;
+  background: #f6f8fa;
+  color: #24292f;
+  font-family: "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.84em;
+  font-weight: 400;
+  line-height: inherit;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+.page__content :not(pre) > code::before,
+.page__content :not(pre) > code::after {
+  content: none;
+}
+
+.page__content td :not(pre) > code,
+.page__content th :not(pre) > code {
+  font-size: 0.9em;
+}
+
+/* ---------- 다크 모드 ---------- */
+body.dark .page__content table {
+  border-color: #444c56;
+  color: #d1d7e0;
+}
+
+body.dark .page__content thead {
+  background: #161b22 !important;
+}
+
+body.dark .page__content th {
+  border-bottom-color: #444c56;
+  color: #9da7b3 !important;
+}
+
+body.dark .page__content td {
+  border-bottom-color: #373e47;
+}
+
+body.dark .page__content tbody tr:hover td {
+  background: #161b22;
+}
+
+body.dark .page__content td strong,
+body.dark .page__content th strong {
+  color: #f0f3f6;
+}
+
+body.dark .page__content :not(pre) > code {
+  border-color: #30363d;
+  background: #1f242c !important;
+  color: #d1d7e0 !important;
+}

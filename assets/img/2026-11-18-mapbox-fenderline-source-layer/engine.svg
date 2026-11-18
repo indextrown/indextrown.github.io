@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="960" height="520" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+  <defs><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker></defs>
+  <rect x="1" y="1" width="958" height="518" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">이 글에서 말하는 "엔진"</text>
+  <text x="40" y="74" font-size="13" fill="#64748b">Mapbox Maps SDK for iOS 11.18.1을 SPM으로 받으면 실제로 들어오는 패키지 구성</text>
+
+  <!-- app -->
+  <rect x="40" y="96" width="600" height="64" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+  <text x="60" y="124" font-size="15" font-weight="700" fill="#334155">내 앱 코드 (Swift)</text>
+  <text x="60" y="146" font-size="12.5" fill="#475569">addSource, addLayer, annotations = [...], updateGeoJSONSource ...</text>
+  <line x1="340" y1="162" x2="340" y2="182" stroke="#64748b" stroke-width="2" marker-end="url(#g)"/>
+
+  <!-- MapboxMaps -->
+  <rect x="40" y="184" width="600" height="88" rx="12" fill="#fff7ed" stroke="#f97316" stroke-width="2"/>
+  <text x="60" y="212" font-size="15" font-weight="700" fill="#c2410c">MapboxMaps <tspan font-size="12" font-weight="400" fill="#9a3412">· Swift 소스 공개 (파일 389개)</tspan></text>
+  <text x="60" y="236" font-size="12.5" fill="#475569">MapView, Style API, Annotation 매니저, View Annotation, 제스처</text>
+  <text x="60" y="258" font-size="12.5" fill="#475569">→ 대부분 요청을 정리해서 아래 엔진에 넘겨주는 얇은 층</text>
+  <line x1="340" y1="274" x2="340" y2="294" stroke="#64748b" stroke-width="2" marker-end="url(#g)"/>
+
+  <!-- Core engine -->
+  <rect x="40" y="296" width="600" height="140" rx="12" fill="#f5f3ff" stroke="#7c3aed" stroke-width="3"/>
+  <text x="60" y="326" font-size="16" font-weight="700" fill="#6d28d9">MapboxCoreMaps = 엔진 <tspan font-size="12" font-weight="400" fill="#5b21b6">· C++ 바이너리 (소스 비공개, 기기용 약 15MB)</tspan></text>
+  <g font-size="12.5" fill="#334155">
+    <text x="60" y="354">· Style 해석, 타일 내려받기·캐시</text>
+    <text x="60" y="376">· GeoJSON을 줌·타일 단위로 자르기</text>
+    <text x="60" y="398">· Expression 평가, GPU용 정점 만들기, 라벨 충돌 처리</text>
+    <text x="60" y="420">· Layer 목록 순서대로 Metal로 그리기 (Custom Layer 칸에서는 내 render() 호출)</text>
+  </g>
+  <line x1="340" y1="438" x2="340" y2="458" stroke="#64748b" stroke-width="2" marker-end="url(#g)"/>
+  <rect x="40" y="460" width="600" height="40" rx="10" fill="#e2e8f0" stroke="#94a3b8"/>
+  <text x="60" y="486" font-size="13.5" font-weight="700" fill="#334155">Metal → GPU</text>
+
+  <!-- right notes -->
+  <rect x="670" y="96" width="250" height="404" rx="12" fill="#f8fafc" stroke="#e2e8f0"/>
+  <text x="688" y="126" font-size="14" font-weight="700" fill="#0f172a">이 글의 표현</text>
+  <g font-size="12.5" fill="#334155">
+    <text x="688" y="156"><tspan font-weight="700" fill="#6d28d9">엔진</tspan> = MapboxCoreMaps</text>
+    <text x="688" y="178">지도를 실제로 계산하고 그리는</text>
+    <text x="688" y="196">C++ 코어. 렌더러라고도 부른다</text>
+    <text x="688" y="232"><tspan font-weight="700" fill="#6d28d9">엔진이 해 준다</tspan></text>
+    <text x="688" y="252">= 내가 코드로 쓰지 않아도</text>
+    <text x="688" y="270">이 C++ 코어가 처리한다</text>
+    <text x="688" y="306"><tspan font-weight="700" fill="#6d28d9">엔진의 준비 단계</tspan></text>
+    <text x="688" y="326">= 데이터가 바뀌면 이 코어가</text>
+    <text x="688" y="344">CPU에서 하는 변환·타일 분할</text>
+    <text x="688" y="362">·정점 만들기·업로드</text>
+    <text x="688" y="398"><tspan font-weight="700" fill="#c2410c">Annotation 매니저</tspan>는</text>
+    <text x="688" y="416">엔진이 아니라 위쪽 Swift 층에</text>
+    <text x="688" y="434">있다. 엔진에 Source와 Layer를</text>
+    <text x="688" y="452">등록해 주는 도우미일 뿐이다</text>
+  </g>
+</svg>

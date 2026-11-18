@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" width="960" height="640" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+  <defs>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker>
+  </defs>
+  <rect x="1" y="1" width="958" height="638" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">Style Layer와 Custom Layer - 누가 무엇을 하나</text>
+  <text x="40" y="74" font-size="13" fill="#64748b">둘 다 Style의 Layer 목록에 한 칸씩 들어가 같은 프레임에 순서대로 그려진다. 차이는 그 칸을 "엔진이 그리느냐, 내가 그리느냐"</text>
+
+  <!-- Layer 목록 -->
+  <rect x="40" y="96" width="880" height="70" rx="12" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="58" y="122" font-size="13" font-weight="700" fill="#334155">Layer 목록 (아래 → 위 순서로 매 프레임 그림)</text>
+  <g font-size="12" font-family="Menlo,Consolas,monospace">
+    <rect x="58" y="132" width="150" height="24" rx="6" fill="#e2e8f0"/><text x="70" y="149" fill="#334155">osm (raster)</text>
+    <rect x="218" y="132" width="200" height="24" rx="6" fill="#ede9fe" stroke="#8b5cf6"/><text x="230" y="149" fill="#6d28d9">fenderline-line (line)</text>
+    <rect x="428" y="132" width="200" height="24" rx="6" fill="#dbeafe" stroke="#3b82f6"/><text x="440" y="149" fill="#1d4ed8">my-custom (custom)</text>
+    <rect x="638" y="132" width="230" height="24" rx="6" fill="#ede9fe" stroke="#8b5cf6"/><text x="650" y="149" fill="#6d28d9">fenderline-point (circle)</text>
+  </g>
+
+  <!-- Style Layer 경로 -->
+  <rect x="40" y="186" width="430" height="400" rx="14" fill="#faf5ff" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="60" y="216" font-size="17" font-weight="700" fill="#6d28d9">Style Layer 칸 - 엔진이 그린다</text>
+  <g font-size="12.5">
+    <rect x="60" y="232" width="390" height="40" rx="8" fill="#ffffff" stroke="#c4b5fd"/>
+    <text x="74" y="257" fill="#334155"><tspan font-weight="700">내 코드</tspan> · Source에 데이터, Layer에 규칙(색·두께·Expression)</text>
+    <line x1="255" y1="274" x2="255" y2="290" stroke="#64748b" stroke-width="2" marker-end="url(#g)"/>
+    <rect x="60" y="292" width="390" height="150" rx="8" fill="#ffffff" stroke="#c4b5fd"/>
+    <text x="74" y="316" font-weight="700" fill="#334155">엔진 · CPU 준비 단계 (데이터가 바뀔 때만)</text>
+    <text x="74" y="340" fill="#475569">② Swift 데이터 → 엔진(C++) 형태로 변환</text>
+    <text x="74" y="362" fill="#475569">③ 줌·타일 단위로 자르기</text>
+    <text x="74" y="384" fill="#475569">④ Bucket: Expression 평가, GPU용 정점 만들기</text>
+    <text x="74" y="406" fill="#475569">⑤ GPU 메모리로 업로드</text>
+    <text x="74" y="430" font-size="11.5" fill="#7c3aed">데이터가 그대로면 ②~⑤를 건너뛰고 재사용</text>
+    <line x1="255" y1="444" x2="255" y2="460" stroke="#64748b" stroke-width="2" marker-end="url(#g)"/>
+    <rect x="60" y="462" width="390" height="40" rx="8" fill="#ede9fe" stroke="#8b5cf6"/>
+    <text x="74" y="487" fill="#334155"><tspan font-weight="700">GPU</tspan> · Layer 종류별 <tspan font-weight="700">내장 셰이더</tspan>로 그림</text>
+    <text x="60" y="530" fill="#334155">덕분에 공짜로 얻는 것:</text>
+    <text x="60" y="550" fill="#475569">Expression · feature-state · 탭 판정(queryRenderedFeatures)</text>
+    <text x="60" y="570" fill="#475569">라벨 충돌 처리 · 클러스터링 · 줌별 스타일</text>
+  </g>
+
+  <!-- Custom Layer 경로 -->
+  <rect x="490" y="186" width="430" height="400" rx="14" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+  <text x="510" y="216" font-size="17" font-weight="700" fill="#1d4ed8">Custom Layer 칸 - 내가 그린다</text>
+  <g font-size="12.5">
+    <rect x="510" y="232" width="390" height="40" rx="8" fill="#ffffff" stroke="#93c5fd"/>
+    <text x="524" y="257" fill="#334155"><tspan font-weight="700">엔진</tspan> · 이 칸 차례가 오면 내 render() 호출 + 카메라 행렬 전달</text>
+    <line x1="705" y1="274" x2="705" y2="290" stroke="#64748b" stroke-width="2" marker-end="url(#g)"/>
+    <rect x="510" y="292" width="390" height="150" rx="8" fill="#ffffff" stroke="#93c5fd"/>
+    <text x="524" y="316" font-weight="700" fill="#334155">내 코드 · 매 프레임</text>
+    <text x="524" y="340" fill="#475569">정점 버퍼를 내가 만들어 둠 (MTLBuffer)</text>
+    <text x="524" y="362" fill="#475569">위경도 → 화면 좌표 계산도 내가 (행렬 곱)</text>
+    <text x="524" y="384" fill="#475569">Metal 명령을 직접 기록</text>
+    <text x="524" y="406" fill="#475569">엔진의 준비 단계 ②~⑤가 아예 없다</text>
+    <text x="524" y="430" font-size="11.5" fill="#2563eb">위치 계산도 셰이더로 옮기면 CPU 일이 거의 0</text>
+    <line x1="705" y1="444" x2="705" y2="460" stroke="#64748b" stroke-width="2" marker-end="url(#g)"/>
+    <rect x="510" y="462" width="390" height="40" rx="8" fill="#dbeafe" stroke="#3b82f6"/>
+    <text x="524" y="487" fill="#334155"><tspan font-weight="700">GPU</tspan> · <tspan font-weight="700">내가 쓴 셰이더</tspan>로 그림</text>
+    <text x="510" y="530" fill="#334155">대신 직접 만들어야 하는 것:</text>
+    <text x="510" y="550" fill="#475569">스타일 지정 · 탭 판정 · 줌별 처리 · 라벨</text>
+    <text x="510" y="570" fill="#475569">Expression·feature-state는 쓸 수 없다</text>
+  </g>
+
+  <text x="40" y="616" font-size="12.5" fill="#334155">핵심: 둘 다 그림은 GPU가 그린다. 다른 것은 <tspan font-weight="700">그리기 전 CPU 준비(②~⑤)를 엔진이 해 주느냐, 건너뛰고 내가 다 하느냐</tspan>이다.</text>
+</svg>

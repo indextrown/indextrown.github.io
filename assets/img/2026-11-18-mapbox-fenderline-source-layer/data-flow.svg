@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 740" width="960" height="740" font-family="'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+  <defs>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker>
+    <marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#d97706"/></marker>
+    <marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#d97706"/></marker>
+    <marker id="p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker>
+  </defs>
+  <rect x="1" y="1" width="958" height="738" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="40" y="48" font-size="22" font-weight="700" fill="#0f172a">GeoJSON · Source · Feature · filter · Layer</text>
+  <text x="40" y="74" font-size="13" fill="#64748b">Source와 Layer는 따로 등록된다. Layer는 Source 안에 있지 않고, Source를 <tspan font-weight="700" fill="#7c3aed">이름으로 가리킨다</tspan>. <tspan fill="#b45309" font-weight="700">주황색이 Feature 1개</tspan></text>
+
+  <!-- 1. GeoJSON -->
+  <text x="40" y="112" font-size="13" font-weight="700" fill="#475569">① 형식</text>
+  <rect x="40" y="122" width="230" height="350" rx="12" fill="#1e293b"/>
+  <text x="56" y="146" font-size="13" font-weight="700" fill="#e2e8f0">GeoJSON 텍스트</text>
+  <g font-family="Menlo,Consolas,monospace" font-size="10.5" fill="#cbd5e1">
+    <text x="52" y="172">{"type": "FeatureCollection",</text>
+    <text x="52" y="190">&#160;&#160;"features": [</text>
+    <text x="52" y="226">&#160;&#160;&#160;&#160;{ "type": "Feature",</text>
+    <text x="52" y="244">&#160;&#160;&#160;&#160;&#160;&#160;"id": 0,</text>
+    <text x="52" y="262">&#160;&#160;&#160;&#160;&#160;&#160;"geometry": {</text>
+    <text x="52" y="280">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"type": "LineString",</text>
+    <text x="52" y="298">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"coordinates": [...] },</text>
+    <text x="52" y="316">&#160;&#160;&#160;&#160;&#160;&#160;"properties": {</text>
+    <text x="52" y="334">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"kind": "segment" } },</text>
+    <text x="52" y="362">&#160;&#160;&#160;&#160;{ "type": "Feature", ... },</text>
+    <text x="52" y="380">&#160;&#160;&#160;&#160;... 13개 ] }</text>
+  </g>
+  <rect x="62" y="212" width="200" height="130" rx="8" fill="none" stroke="#f59e0b" stroke-width="2.5"/>
+  <rect x="150" y="200" width="104" height="18" rx="9" fill="#f59e0b"/>
+  <text x="202" y="213" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">Feature 1개</text>
+  <text x="56" y="414" font-size="12" fill="#fbbf24" font-weight="700">위치 데이터를 쓰는 규칙(포맷)</text>
+  <text x="56" y="434" font-size="12" fill="#fbbf24">Source도 Layer도 아니다</text>
+  <text x="56" y="456" font-size="11.5" fill="#cbd5e1">Feature도 원래 GeoJSON의 용어</text>
+
+  <!-- Style frame -->
+  <rect x="288" y="96" width="644" height="428" rx="14" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="7 5"/>
+  <rect x="300" y="88" width="250" height="18" fill="#ffffff"/>
+  <text x="306" y="101" font-size="12.5" font-weight="700" fill="#475569">Style - 지도에 등록된 것들 (나란히)</text>
+
+  <!-- 2. Source -->
+  <text x="302" y="128" font-size="13" font-weight="700" fill="#475569">② Source - 데이터를 담는 통</text>
+  <rect x="302" y="138" width="296" height="336" rx="12" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="318" y="162" font-size="14" font-weight="700" fill="#6d28d9">GeoJSON Source</text>
+  <text x="318" y="182" font-size="11.5" fill="#5b21b6" font-family="Menlo,monospace">id: "fenderline-edit"</text>
+  <text x="470" y="182" font-size="11" fill="#7c3aed">← 내가 붙인 통 이름</text>
+  <text x="318" y="206" font-size="11" fill="#b45309">한 줄 = Feature 1개의 세 부분</text>
+  <rect x="318" y="214" width="264" height="38" fill="#ede9fe"/>
+  <g font-size="11.5" font-weight="700" fill="#5b21b6"><text x="326" y="229">id</text><text x="400" y="229">properties.kind</text><text x="508" y="229">geometry</text></g>
+  <g font-size="11" fill="#7c3aed"><text x="326" y="245">(번호)</text><text x="400" y="245">(역할)</text><text x="508" y="245">(모양)</text></g>
+  <rect x="314" y="258" width="272" height="24" rx="5" fill="#fef3c7" fill-opacity="0.6" stroke="#f59e0b" stroke-width="2.5"/>
+  <g font-size="11.5" fill="#334155" font-family="Menlo,monospace">
+    <text x="326" y="275">0</text><text x="400" y="275">segment</text><text x="508" y="275">LineString</text>
+    <text x="326" y="297">1</text><text x="400" y="297">segment</text><text x="508" y="297">LineString</text>
+    <text x="326" y="319">…</text><text x="400" y="319">…</text>
+    <text x="326" y="341">100000</text><text x="400" y="341">vertex</text><text x="508" y="341">Point</text>
+    <text x="326" y="363">100001</text><text x="400" y="363">vertex</text><text x="508" y="363">Point</text>
+  </g>
+  <g stroke="#ddd6fe"><line x1="318" y1="304" x2="582" y2="304"/><line x1="318" y1="326" x2="582" y2="326"/><line x1="318" y1="348" x2="582" y2="348"/></g>
+  <text x="318" y="392" font-size="11.5" fill="#475569"><tspan font-family="Menlo,monospace" fill="#334155">segment</tspan> = 선분, <tspan font-family="Menlo,monospace" fill="#334155">vertex</tspan> = 꼭짓점 (내가 붙인 역할 이름)</text>
+  <text x="318" y="418" font-size="12" fill="#334155"><tspan font-weight="700">Source</tspan> = 통 (표 전체)</text>
+  <text x="318" y="440" font-size="12" fill="#b45309"><tspan font-weight="700">Feature</tspan> = 통 안의 한 줄 · 이 예시는 13줄</text>
+  <text x="318" y="462" font-size="11.5" fill="#64748b">통은 데이터만 담는다. 색·두께는 모른다</text>
+  <path d="M264,288 C285,288 292,270 310,270" fill="none" stroke="#d97706" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#o)"/>
+
+  <!-- 3. Layers -->
+  <text x="624" y="128" font-size="13" font-weight="700" fill="#475569">③ Layer - 어떻게 그릴지</text>
+  <rect x="624" y="138" width="296" height="160" rx="12" fill="#ffffff" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="640" y="162" font-size="14" font-weight="700" fill="#6d28d9">LineLayer "fenderline-line"</text>
+  <g font-size="12">
+    <text x="640" y="188" fill="#7c3aed" font-weight="700">1. 어느 통?</text><text x="716" y="188" fill="#334155" font-family="Menlo,monospace">source: "fenderline-edit"</text>
+    <text x="640" y="212" fill="#7c3aed" font-weight="700">2. 어떤 줄만?</text><text x="728" y="212" fill="#b45309" font-family="Menlo,monospace">kind == "segment"</text>
+    <text x="728" y="230" fill="#475569">→ 13줄 중 선분 6줄 (filter)</text>
+    <text x="640" y="256" fill="#7c3aed" font-weight="700">3. 어떻게?</text><text x="716" y="256" fill="#334155">주황색 선, 두께 3</text>
+    <text x="640" y="282" fill="#64748b" font-size="11.5">Layer 이름 "fenderline-line"도 내가 붙인 것</text>
+  </g>
+  <rect x="624" y="314" width="296" height="160" rx="12" fill="#ffffff" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="640" y="338" font-size="14" font-weight="700" fill="#6d28d9">CircleLayer "fenderline-point"</text>
+  <g font-size="12">
+    <text x="640" y="364" fill="#7c3aed" font-weight="700">1. 어느 통?</text><text x="716" y="364" fill="#334155" font-family="Menlo,monospace">source: "fenderline-edit"</text>
+    <text x="640" y="388" fill="#7c3aed" font-weight="700">2. 어떤 줄만?</text><text x="728" y="388" fill="#b45309" font-family="Menlo,monospace">kind == "vertex"</text>
+    <text x="728" y="406" fill="#475569">→ 13줄 중 꼭짓점 7줄</text>
+    <text x="640" y="432" fill="#7c3aed" font-weight="700">3. 어떻게?</text><text x="716" y="432" fill="#334155">흰 원, 반경 5</text>
+  </g>
+  <!-- reference arrows: Layer -> Source by name -->
+  <path d="M712,180 C680,150 640,176 588,182" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#p)"/>
+  <path d="M712,356 C660,330 630,230 590,190" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#p)"/>
+  <text x="610" y="496" font-size="11.5" font-weight="700" fill="#7c3aed">보라 점선 = Layer가 통을 이름으로 가리킴</text><text x="610" y="514" font-size="11.5" font-weight="700" fill="#d97706">주황 점선 = filter에 맞아 Layer가 가져가는 줄</text>
+
+
+  <!-- filter -> matching rows -->
+  <g fill="none" stroke="#d97706" stroke-width="2" stroke-dasharray="4 3">
+    <path d="M624,214 C606,214 608,270 592,270" marker-end="url(#f)"/>
+    <path d="M624,214 C604,214 610,292 592,292" marker-end="url(#f)"/>
+    <path d="M624,390 C606,390 608,336 592,336" marker-end="url(#f)"/>
+    <path d="M624,390 C604,390 610,358 592,358" marker-end="url(#f)"/>
+  </g>
+  <!-- bottom analogy -->
+  <rect x="40" y="546" width="880" height="170" rx="12" fill="#f8fafc" stroke="#e2e8f0"/>
+  <text x="58" y="574" font-size="14" font-weight="700" fill="#0f172a">엑셀로 비유하면</text>
+  <g font-size="13" fill="#334155">
+    <text x="58" y="602"><tspan font-weight="700">GeoJSON</tspan> = 파일 형식 (.csv 같은 것)</text>
+    <text x="58" y="626"><tspan font-weight="700">Source</tspan> = 시트 하나. "fenderline-edit"는 시트 이름</text>
+    <text x="58" y="650"><tspan font-weight="700" fill="#b45309">Feature</tspan> = 시트의 한 행 (번호 · 역할 · 모양 열)</text>
+    <text x="500" y="602"><tspan font-weight="700">Layer</tspan> = 시트와 <tspan font-weight="700">따로 만든</tspan> 차트</text>
+    <text x="500" y="626">차트는 "어느 시트의 어떤 행을 어떤 모양으로"를 정한다</text>
+    <text x="500" y="650"><tspan font-weight="700">filter</tspan> = 그 차트의 행 필터 (역할이 segment인 행만)</text>
+    <text x="58" y="686" fill="#475569">차트가 시트 안에 들어 있지 않듯, Layer도 Source 안에 있지 않다. 한 시트로 차트를 여러 개 만들 수 있다 = Source 1 · Layer N</text>
+  </g>
+</svg>
